@@ -1,0 +1,58 @@
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+#cloud-config
+repo_update: true
+repo_upgrade: all
+
+packages:
+  - amazon-cloudwatch-agent
+  - parted
+  - yum-cron
+
+runcmd:
+  - /usr/local/bin/disk-mount.sh
+  - yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  - yum install -y collectd
+  - amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:${ssm_param_name_cw_config} -s
+  # The config should be created before the service starts and appends other info, but make sure we do not blow it away
+  - cat /etc/ecs/ecs.config
+%{ for cmd in user_data_commands ~}
+  - ${cmd}
+%{ endfor ~}
+  - echo Done!
+
+write_files:
+  - content: |
+%{ if ecs_cluster_name != "" ~}
+      ECS_CLUSTER=${ecs_cluster_name}
+%{ endif ~}
+      ECS_ENABLE_SPOT_INSTANCE_DRAINING=true
+    path: /etc/ecs/ecs.config
+    permissions: '0644'
+  - content: |
+      #!/bin/bash
+
+      lsblk
+      if [ -b /dev/nvme1n1 ] ; then
+          fdisk -l /dev/nvme1n1
+          parted /dev/nvme1n1 --script \
+              unit GB \
+              print \
+              mklabel gpt \
+              print \
+              mkpart primary 0% 100% \
+              print
+          fdisk -l /dev/nvme1n1
+          mkfs.ext4 /dev/nvme1n1
+          mkdir -p -m 1777 /mnt/ephemeral
+          mount /dev/nvme1n1 /mnt/ephemeral
+          chmod 1777 /mnt/ephemeral
+          lsblk
+      fi
+    path: /usr/local/bin/disk-mount.sh
+    permissions: '0744'
+--==MYBOUNDARY==--
