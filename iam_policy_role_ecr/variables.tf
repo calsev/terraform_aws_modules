@@ -1,3 +1,8 @@
+variable "access_list" {
+  type    = list(string)
+  default = ["read", "read_write", "write"]
+}
+
 variable "repo_name" {
   type = string
 }

@@ -25,7 +25,7 @@ locals {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = module.this_log.data.log_group_name
+          awslogs-group         = var.log_group_name
           awslogs-region        = var.std_map.aws_region_name
           awslogs-stream-prefix = local.resource_name
         }
@@ -62,6 +62,11 @@ locals {
         protocol      = port_map.protocol != null ? port_map.protocol : var.container_port_protocol_default
       }
     ]
+  }
+  output_data = {
+    iam_role_arn_ecs_task          = var.iam_role_arn_ecs_task
+    task_definition_arn_latest     = local.task_definition_arn_latest
+    test_definition_arn_latest_rev = aws_ecs_task_definition.this_task.arn
   }
   deb_package   = "apt-get install -qqy --no-install-recommends"
   resource_name = "${var.std_map.resource_name_prefix}${var.name}${var.std_map.resource_name_suffix}"
@@ -109,13 +114,4 @@ locals {
       }
     }
   }
-  task_role_iam_policy_arn_map = {
-    for arn in var.task_role_iam_policy_arn_list : split("/", arn)[1] => arn
-  }
-  task_role_iam_policy_json_map = merge(
-    {
-      log_to_group = jsonencode(module.this_log.data.iam_policy_doc_map.write)
-    },
-    var.task_role_iam_policy_json_map
-  )
 }

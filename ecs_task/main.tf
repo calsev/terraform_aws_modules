@@ -6,14 +6,6 @@ module "this_event_bus" {
   std_map = var.std_map
 }
 
-module "this_log" {
-  source = "../log_group"
-
-  create_policy = false
-  name          = var.name
-  std_map       = var.std_map
-}
-
 module "this_trigger" {
   for_each = var.cron_expression != null ? { this = {} } : {}
   source   = "../event_cron_trigger"

@@ -78,11 +78,22 @@ variable "efs_transit_encryption_default" {
   default = "ENABLED"
 }
 
+variable "iam_role_arn_ecs_task" {
+  type        = string
+  description = "The role the task will assume"
+}
+
 variable "iam_role_arn_ecs_start_task" {
-  type = string
+  type        = string
+  default     = null
+  description = "Must be provided if a trigger is configured"
 }
 
 variable "iam_role_arn_ecs_task_execution" {
+  type = string
+}
+
+variable "log_group_name" {
   type = string
 }
 
@@ -104,14 +115,4 @@ variable "std_map" {
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
   })
-}
-
-variable "task_role_iam_policy_arn_list" {
-  type    = list(string)
-  default = []
-}
-
-variable "task_role_iam_policy_json_map" {
-  type    = map(string)
-  default = {}
 }

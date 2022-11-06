@@ -5,7 +5,7 @@ resource "aws_ecs_task_definition" "this_task" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   tags                     = local.tags
-  task_role_arn            = module.ecs_task_role.data.iam_role_arn
+  task_role_arn            = var.iam_role_arn_ecs_task
   dynamic "volume" {
     for_each = local.task_efs_map
     content {

@@ -1,7 +1,7 @@
 variable "attach_policy_arn_map" {
   type        = map(string)
   default     = {}
-  description = "The special sauce for the role; log write and artifact read/write come free"
+  description = "The special sauce for the role; log write comes free"
 }
 
 variable "create_policy_json_map" {
@@ -17,7 +17,6 @@ variable "inline_policy_json_map" {
 variable "log_data" {
   type = object({
     iam_policy_arn_map = object({
-      read  = string
       write = string
     })
   })
@@ -57,11 +56,9 @@ variable "role_path" {
 
 variable "std_map" {
   type = object({
-    aws_account_id                 = string
-    iam_partition                  = string
-    resource_name_prefix           = string
-    resource_name_suffix           = string
-    service_resource_access_action = map(map(map(list(string))))
-    tags                           = map(string)
+    iam_partition        = string
+    resource_name_prefix = string
+    resource_name_suffix = string
+    tags                 = map(string)
   })
 }
