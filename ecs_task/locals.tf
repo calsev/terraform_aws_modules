@@ -66,7 +66,7 @@ locals {
   output_data = {
     iam_role_arn_ecs_task          = var.iam_role_arn_ecs_task
     task_definition_arn_latest     = local.task_definition_arn_latest
-    test_definition_arn_latest_rev = aws_ecs_task_definition.this_task.arn
+    task_definition_arn_latest_rev = aws_ecs_task_definition.this_task.arn
   }
   deb_package   = "apt-get install -qqy --no-install-recommends"
   resource_name = "${var.std_map.resource_name_prefix}${var.name}${var.std_map.resource_name_suffix}"
