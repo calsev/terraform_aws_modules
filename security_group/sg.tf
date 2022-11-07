@@ -1,6 +1,5 @@
-
 resource "aws_security_group" "this_sg" {
-  for_each = local.sg_object
+  for_each = local.sg_map
   name     = "${local.sg_name_prefix}${local.sg_name[each.key]}${local.sg_name_suffix}"
   tags = merge(
     var.std_map.tags,
@@ -8,7 +7,7 @@ resource "aws_security_group" "this_sg" {
       Name = "${local.sg_name_prefix}${local.sg_name[each.key]}${local.sg_name_suffix}"
     }
   )
-  vpc_id = aws_vpc.this_vpc.id
+  vpc_id = var.vpc_data.vpc_id
 }
 
 resource "aws_security_group_rule" "this_sg_rule" {
