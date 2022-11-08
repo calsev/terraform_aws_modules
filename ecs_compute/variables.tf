@@ -26,8 +26,10 @@ variable "compute_environment_min_instances_default" {
   default = 0
 }
 
-variable "iam_instance_profile_arn_for_ecs" {
-  type = string
+variable "iam_data" {
+  type = object({
+    iam_instance_profile_arn_for_ecs = string
+  })
 }
 
 variable "name" {

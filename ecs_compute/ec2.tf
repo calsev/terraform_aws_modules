@@ -1,7 +1,7 @@
 module "compute_common" {
   source                           = "../ecs_compute_common"
   compute_environment              = local.compute_environment
-  iam_instance_profile_arn_for_ecs = var.iam_instance_profile_arn_for_ecs
+  iam_instance_profile_arn_for_ecs = var.iam_data.iam_instance_profile_arn_for_ecs
   name                             = var.name
   security_group_id_list           = var.security_group_id_list
   set_ecs_cluster_in_user_data     = true

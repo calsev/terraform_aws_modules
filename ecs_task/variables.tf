@@ -78,19 +78,16 @@ variable "efs_transit_encryption_default" {
   default = "ENABLED"
 }
 
+variable "iam_data" {
+  type = object({
+    iam_role_arn_ecs_start_task     = string
+    iam_role_arn_ecs_task_execution = string
+  })
+}
+
 variable "iam_role_arn_ecs_task" {
   type        = string
   description = "The role the task will assume"
-}
-
-variable "iam_role_arn_ecs_start_task" {
-  type        = string
-  default     = null
-  description = "Must be provided if a trigger is configured"
-}
-
-variable "iam_role_arn_ecs_task_execution" {
-  type = string
 }
 
 variable "log_group_name" {

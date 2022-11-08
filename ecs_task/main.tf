@@ -12,7 +12,7 @@ module "this_trigger" {
 
   compute_arn             = var.ecs_cluster_arn
   cron_expression         = var.cron_expression
-  iam_role_arn_start_task = var.iam_role_arn_ecs_start_task
+  iam_role_arn_start_task = var.iam_data.iam_role_arn_ecs_start_task
   definition_arn          = local.task_definition_arn_latest
   name                    = var.name
   std_map                 = var.std_map

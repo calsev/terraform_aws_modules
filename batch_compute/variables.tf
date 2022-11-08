@@ -26,16 +26,12 @@ variable "compute_environment_min_vcpus_default" {
   default = 0
 }
 
-variable "iam_instance_profile_arn_for_ecs" {
-  type = string
-}
-
-variable "iam_role_arn_batch_service" {
-  type = string
-}
-
-variable "iam_role_arn_batch_spot_fleet" {
-  type = string
+variable "iam_data" {
+  type = object({
+    iam_instance_profile_arn_for_ecs = string
+    iam_role_arn_batch_service       = string
+    iam_role_arn_batch_spot_fleet    = string
+  })
 }
 
 variable "name" {

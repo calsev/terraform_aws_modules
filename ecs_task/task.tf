@@ -1,6 +1,6 @@
 resource "aws_ecs_task_definition" "this_task" {
   container_definitions    = jsonencode(local.container_definition_list)
-  execution_role_arn       = var.iam_role_arn_ecs_task_execution
+  execution_role_arn       = var.iam_data.iam_role_arn_ecs_task_execution
   family                   = local.resource_name
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
