@@ -6,6 +6,7 @@ output "data" {
     subnet_map                  = local.subnet_map
     vpc_cidr_block              = aws_vpc.this_vpc.cidr_block
     vpc_id                      = aws_vpc.this_vpc.id
+    vpc_ipv6_cidr_block         = aws_vpc.this_vpc.ipv6_cidr_block
     vpc_name                    = var.vpc_name
   }
 }

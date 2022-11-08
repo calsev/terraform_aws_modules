@@ -1,5 +1,5 @@
 resource "aws_security_group" "this_sg" {
-  for_each = local.sg_map
+  for_each = var.security_group_map
   name     = "${local.sg_name_prefix}${local.sg_name[each.key]}${local.sg_name_suffix}"
   tags = merge(
     var.std_map.tags,
