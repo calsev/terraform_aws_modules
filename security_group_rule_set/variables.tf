@@ -89,10 +89,30 @@ variable "rule_map_internal" {
     }))
   }))
   default = {
+    internal_mongodb_in = {
+      rules = {
+        mongodb = {
+          from_port = 27017
+          protocol  = null
+          to_port   = null
+          type      = null
+        }
+      }
+    }
     internal_mysql_in = {
       rules = {
         mysql = {
           from_port = 3306
+          protocol  = null
+          to_port   = null
+          type      = null
+        }
+      }
+    }
+    internal_postgres_in = {
+      rules = {
+        postgres = {
+          from_port = 5432
           protocol  = null
           to_port   = null
           type      = null
