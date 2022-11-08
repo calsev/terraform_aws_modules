@@ -52,5 +52,5 @@ resource "aws_launch_template" "this_launch_template" {
 
 resource "local_file" "user_data" {
   content  = local.user_data
-  filename = "${path.root}/user_data/${var.name}-${var.std_map.config_name}.txt"
+  filename = "${path.root}/user_data/${var.name}_${var.std_map.config_name}.txt"
 }
