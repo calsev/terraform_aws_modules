@@ -28,6 +28,7 @@ locals {
   }
   domain_object = {
     for k, v in var.site_map : k => {
+      domain_name   = v.domain_name == null ? var.site_domain_name_default : v.domain_name
       origin_domain = v.bucket_domain
       origin_fqdn   = v.bucket_fqdn
     }

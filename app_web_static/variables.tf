@@ -65,6 +65,7 @@ variable "site_map" {
       output_artifact_list = optional(list(string))
     }))
     cdn_invalidation_path = optional(string)
+    domain_name           = optional(string)
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
     iam_policy_arn_attach_map   = optional(map(string))
     iam_policy_json_inline_map  = optional(map(string))
@@ -88,6 +89,11 @@ variable "site_build_artifact_sync_path_default" {
 variable "site_cdn_invalidation_path_default" {
   type    = string
   default = "/index.html" # Only invalidate the index file
+}
+
+variable "site_domain_name_default" {
+  type    = string
+  default = null
 }
 
 variable "std_map" {
