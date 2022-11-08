@@ -48,6 +48,7 @@ variable "ssm_param_name_cw_config" {
 
 variable "std_map" {
   type = object({
+    config_name          = string
     resource_name_prefix = string
     resource_name_suffix = string
     tags                 = map(string)

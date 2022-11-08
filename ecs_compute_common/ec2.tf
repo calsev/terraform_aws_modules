@@ -49,3 +49,8 @@ resource "aws_launch_template" "this_launch_template" {
   user_data              = local.user_data_encoded
   vpc_security_group_ids = var.security_group_id_list
 }
+
+resource "local_file" "user_data" {
+  content  = local.user_data
+  filename = "${path.root}/user_data/${var.name}-${var.std_map.config_name}.txt"
+}
