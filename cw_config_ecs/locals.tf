@@ -88,17 +88,23 @@ locals {
       }
     }
   }
-  cw_config_gpu = merge(local.cw_config_cpu, {
-    nvidia_gpu = {
-      measurement = [
-        "memory_free",
-        "memory_used",
-        "utilization_gpu",
-        "utilization_memory",
-      ]
-      metrics_collection_interval = 60
+  cw_config_gpu = {
+    agent = local.cw_config_cpu.agent
+    metrics = {
+      append_dimensions = local.cw_config_cpu.metrics.append_dimensions
+      metrics_collected = merge(local.cw_config_cpu.metrics.metrics_collected, {
+        nvidia_gpu = {
+          measurement = [
+            "memory_free",
+            "memory_used",
+            "utilization_gpu",
+            "utilization_memory",
+          ]
+          metrics_collection_interval = 60
+        }
+      })
     }
-  })
+  }
   cw_config_name_cpu = "${var.std_map.resource_name_prefix}cloudwatch-agent-config-ecs-cpu${var.std_map.resource_name_suffix}" # This must match the read policy in IAM
   cw_config_name_gpu = "${var.std_map.resource_name_prefix}cloudwatch-agent-config-ecs-gpu${var.std_map.resource_name_suffix}" # This must match the read policy in IAM
   output_data = {
