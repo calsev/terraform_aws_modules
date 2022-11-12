@@ -1,11 +1,11 @@
 module "compute_common" {
   source                           = "../ecs_compute_common"
   compute_environment              = local.compute_environment
+  cw_config_data                   = var.cw_config_data
   iam_instance_profile_arn_for_ecs = var.iam_data.iam_instance_profile_arn_for_ecs
   name                             = var.name
   security_group_id_list           = var.security_group_id_list
   set_ecs_cluster_in_user_data     = false
-  ssm_param_name_cw_config         = var.ssm_param_name_cw_config
   std_map                          = var.std_map
 }
 

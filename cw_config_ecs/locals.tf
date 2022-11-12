@@ -102,7 +102,7 @@ locals {
   cw_config_name_cpu = "${var.std_map.resource_name_prefix}cloudwatch-agent-config-ecs-cpu${var.std_map.resource_name_suffix}" # This must match the read policy in IAM
   cw_config_name_gpu = "${var.std_map.resource_name_prefix}cloudwatch-agent-config-ecs-gpu${var.std_map.resource_name_suffix}" # This must match the read policy in IAM
   output_data = {
-    ssm_param_name_cw_config = {
+    ssm_param_name = {
       cpu = aws_ssm_parameter.ssm_param_cw_config_cpu.name
       gpu = aws_ssm_parameter.ssm_param_cw_config_gpu.name
     }

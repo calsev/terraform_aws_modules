@@ -9,6 +9,17 @@ variable "compute_environment" {
   })
 }
 
+variable "cw_config_data" {
+  type = object({
+    ecs = object({
+      ssm_param_name = object({
+        cpu = string
+        gpu = string
+      })
+    })
+  })
+}
+
 variable "iam_instance_profile_arn_for_ecs" {
   type = string
 }
@@ -23,10 +34,6 @@ variable "security_group_id_list" {
 
 variable "set_ecs_cluster_in_user_data" {
   type = bool
-}
-
-variable "ssm_param_name_cw_config" {
-  type = string
 }
 
 variable "std_map" {

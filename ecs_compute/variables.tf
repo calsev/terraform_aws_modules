@@ -26,6 +26,17 @@ variable "compute_environment_min_instances_default" {
   default = 0
 }
 
+variable "cw_config_data" {
+  type = object({
+    ecs = object({
+      ssm_param_name = object({
+        cpu = string
+        gpu = string
+      })
+    })
+  })
+}
+
 variable "iam_data" {
   type = object({
     iam_instance_profile_arn_for_ecs = string
@@ -38,10 +49,6 @@ variable "name" {
 
 variable "security_group_id_list" {
   type = list(string)
-}
-
-variable "ssm_param_name_cw_config" {
-  type = string
 }
 
 variable "std_map" {
