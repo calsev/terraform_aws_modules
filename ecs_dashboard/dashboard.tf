@@ -3,8 +3,8 @@ resource "aws_cloudwatch_dashboard" "main" {
   dashboard_body = jsonencode({
     widgets = [
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -23,8 +23,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -43,8 +43,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -63,8 +63,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -83,8 +83,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -103,8 +103,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -123,8 +123,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -143,8 +143,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -163,8 +163,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -183,8 +183,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -203,8 +203,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -223,8 +223,8 @@ resource "aws_cloudwatch_dashboard" "main" {
         yAxis = local.y_axis_object
       },
       {
-        width  = 12
-        height = 8
+        width  = local.widget_width
+        height = local.widget_height
 
         properties = {
           metrics = [
@@ -238,6 +238,86 @@ resource "aws_cloudwatch_dashboard" "main" {
           period = 60
           region = var.std_map.aws_region_name
           title  = "TCP connections closing"
+        }
+        type  = "metric",
+        yAxis = local.y_axis_object
+      },
+      {
+        width  = local.widget_width
+        height = local.widget_height
+
+        properties = {
+          metrics = [
+            [
+
+              {
+                expression = "SEARCH('Namespace=\"CWAgent\" nvidia_gpu_utilization_gpu', 'Average', 60)"
+              }
+            ]
+          ],
+          period = 60
+          region = var.std_map.aws_region_name
+          title  = "GPU utilization %"
+        }
+        type  = "metric",
+        yAxis = local.y_axis_object
+      },
+      {
+        width  = local.widget_width
+        height = local.widget_height
+
+        properties = {
+          metrics = [
+            [
+
+              {
+                expression = "SEARCH('Namespace=\"CWAgent\" nvidia_gpu_utilization_memory', 'Average', 60)"
+              }
+            ]
+          ],
+          period = 60
+          region = var.std_map.aws_region_name
+          title  = "Memory utilization %"
+        }
+        type  = "metric",
+        yAxis = local.y_axis_object
+      },
+      {
+        width  = local.widget_width
+        height = local.widget_height
+
+        properties = {
+          metrics = [
+            [
+
+              {
+                expression = "SEARCH('Namespace=\"CWAgent\" nvidia_gpu_memory_used', 'Average', 60)"
+              }
+            ]
+          ],
+          period = 60
+          region = var.std_map.aws_region_name
+          title  = "Memory used MB"
+        }
+        type  = "metric",
+        yAxis = local.y_axis_object
+      },
+      {
+        width  = local.widget_width
+        height = local.widget_height
+
+        properties = {
+          metrics = [
+            [
+
+              {
+                expression = "SEARCH('Namespace=\"CWAgent\" nvidia_gpu_memory_free', 'Average', 60)"
+              }
+            ]
+          ],
+          period = 60
+          region = var.std_map.aws_region_name
+          title  = "Memory free MB"
         }
         type  = "metric",
         yAxis = local.y_axis_object

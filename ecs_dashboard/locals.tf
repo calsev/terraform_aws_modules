@@ -7,4 +7,6 @@ locals {
       showUnits = false
     }
   }
+  widget_height = 8
+  widget_width  = 12
 }
