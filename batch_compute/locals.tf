@@ -7,6 +7,9 @@ locals {
   })
   instance_family_is_gpu = {
     a1   = false
+    c5   = false
+    c5a  = false
+    c6a  = false
     g4dn = true
     t3a  = false
     t4g  = false

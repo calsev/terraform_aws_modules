@@ -3,6 +3,9 @@ locals {
   instance_family = split(".", var.compute_environment.instance_type)[0]
   instance_family_to_arch = {
     a1   = "aarch64"
+    c5   = "x86_64"
+    c5a  = "x86_64"
+    c6a  = "x86_64"
     g4dn = "x86_64"
     t3a  = "x86_64"
     t4g  = "aarch64"
