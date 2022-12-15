@@ -25,6 +25,7 @@ locals {
       lifecycle_upload_expiration_days  = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
       lifecycle_version_count           = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
       lifecycle_version_expiration_days = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
+      requester_pays                    = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
       resource_name                     = local.name_map[k].resource_name
       sid_map = v.sid_map == null ? {} : {
         for k, v in v.sid_map : k => {
@@ -47,26 +48,18 @@ locals {
     }
   }
   bucket_object = {
-    for k, v in local.bucket_map : k => {
-      allowed_headers                   = v.allowed_headers
-      allowed_origins                   = v.allowed_origins
-      allow_public                      = v.allow_public
-      arn                               = aws_s3_bucket.this_bucket[k].arn
-      bucket_domain_name                = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
-      bucket_name                       = v.bucket_name
-      bucket_policy_doc                 = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
-      bucket_website_endpoint           = aws_s3_bucket.this_bucket[k].website_endpoint
-      enable_acceleration               = v.enable_acceleration
-      encryption_algorithm              = local.bucket_encryption_filter[k] ? v.encryption_algorithm : null
-      lifecycle_expiration_days         = v.lifecycle_expiration_days
-      lifecycle_upload_expiration_days  = v.lifecycle_upload_expiration_days
-      lifecycle_version_count           = v.lifecycle_version_count
-      lifecycle_version_expiration_days = v.lifecycle_version_expiration_days
-      versioning_enabled                = v.versioning_enabled
-      versioning_enabled                = v.versioning_enabled
-      website_domain                    = v.website_domain
-      website_fqdn                      = v.website_fqdn
-    }
+    for k, v in local.bucket_map : k => merge(
+      {
+        for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["create_policy", "encryption_algorithm", "encryption_disabled", "resource_name", "sid_map", "tags"], k_bucket)
+      },
+      {
+        arn                     = aws_s3_bucket.this_bucket[k].arn
+        bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
+        bucket_policy_doc       = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
+        bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
+        encryption_algorithm    = local.bucket_encryption_filter[k] ? v.encryption_algorithm : null
+      },
+    )
   }
   bucket_policy_map = {
     for k, v in local.bucket_map : k => v if v.create_policy

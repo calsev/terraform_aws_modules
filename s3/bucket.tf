@@ -85,3 +85,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
     status = "Enabled"
   }
 }
+
+resource "aws_s3_bucket_request_payment_configuration" "this_payment" {
+  for_each              = local.bucket_map
+  bucket                = aws_s3_bucket.this_bucket[each.key].id
+  expected_bucket_owner = var.std_map.aws_account_id
+  payer                 = each.value.requester_pays ? "Requester" : "BucketOwner"
+}
