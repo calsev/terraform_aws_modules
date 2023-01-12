@@ -27,15 +27,20 @@ locals {
       image_id                   = v_job.image_id == null ? var.job_image_id_default : v_job.image_id
       image_tag                  = v_job.image_tag == null ? var.job_image_tag_default : v_job.image_tag
       memory_gib                 = v_job.memory_gib == null ? var.job_memory_gib_default : v_job.memory_gib
+      mount_map                  = v_job.mount_map == null ? var.job_mount_map_default : v_job.mount_map
+      name                       = local.resource_name_map[k_job]
       number_of_cpu              = v_job.number_of_cpu == null ? var.job_number_of_cpu_default : v_job.number_of_cpu
       number_of_gpu              = v_job.number_of_gpu == null ? var.job_number_of_gpu_default : v_job.number_of_gpu
+      secret_map                 = v_job.secret_map == null ? var.job_secret_map_default : v_job.secret_map
       shared_memory_gib          = local.shared_memory_map[k_job]
       tags                       = local.tag_map[k_job]
+      ulimit_map                 = v_job.ulimit_map == null ? var.job_ulimit_map_default : v_job.ulimit_map
     })
   }
   linux_param_device_map = {
-    devices = []
-    tmpfs   = []
+    devices          = []
+    sharedMemorySize = var.job_shared_memory_gib_default
+    tmpfs            = []
   }
   linux_param_map = {
     for k_job, v_mem in local.shared_memory_map : k_job => v_mem == null ? local.linux_param_device_map : merge(local.linux_param_device_map, {

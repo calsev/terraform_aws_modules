@@ -6,9 +6,18 @@ variable "job_map" {
     image_id                   = optional(string)
     image_tag                  = optional(string)
     memory_gib                 = optional(number)
-    number_of_cpu              = optional(number)
-    number_of_gpu              = optional(number)
-    shared_memory_gib          = optional(number)
+    mount_map = optional(map(object({
+      container_path = string
+      source_path    = string
+    })))
+    number_of_cpu     = optional(number)
+    number_of_gpu     = optional(number)
+    secret_map        = optional(map(string))
+    shared_memory_gib = optional(number)
+    ulimit_map = optional(map(object({
+      hard_limit = number
+      soft_limit = number
+    })))
   }))
 }
 
@@ -42,6 +51,14 @@ variable "job_memory_gib_default" {
   default = null
 }
 
+variable "job_mount_map_default" {
+  type = map(object({
+    container_path = string
+    source_path    = string
+  }))
+  default = {}
+}
+
 variable "job_number_of_cpu_default" {
   type    = number
   default = null
@@ -52,9 +69,22 @@ variable "job_number_of_gpu_default" {
   default = 0
 }
 
+variable "job_secret_map_default" {
+  type    = map(string)
+  default = {}
+}
+
 variable "job_shared_memory_gib_default" {
   type    = number
   default = null
+}
+
+variable "job_ulimit_map_default" {
+  type = map(object({
+    hard_limit = number
+    soft_limit = number
+  }))
+  default = {}
 }
 
 variable "std_map" {
