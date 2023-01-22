@@ -12,7 +12,7 @@ locals {
     for k, v in local.bucket_map : k => v if local.bucket_encryption_filter[k]
   }
   bucket_map = {
-    for k, v in var.bucket_map : k => {
+    for k, v in var.bucket_map : k => merge(local.lifecycle_map[k], {
       allowed_headers                   = v.allowed_headers == null ? var.bucket_allowed_headers_default : v.allowed_headers
       allowed_origins                   = v.allowed_origins == null ? var.bucket_allowed_origins_default : v.allowed_origins
       allow_public                      = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
@@ -21,10 +21,7 @@ locals {
       enable_acceleration               = v.enable_acceleration == null ? var.bucket_enable_acceleration_default : v.enable_acceleration
       encryption_algorithm              = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm
       encryption_disabled               = v.encryption_disabled == null ? var.bucket_encryption_disabled_default : v.encryption_disabled
-      lifecycle_expiration_days         = v.lifecycle_expiration_days == null ? var.bucket_lifecycle_expiration_days_default : v.lifecycle_expiration_days
-      lifecycle_upload_expiration_days  = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
-      lifecycle_version_count           = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
-      lifecycle_version_expiration_days = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
+      lifecycle_version_expiration_days = local.lifecycle_map[k].lifecycle_version_expiration_days == null ? local.lifecycle_map[k].lifecycle_expiration_days : local.lifecycle_map[k].lifecycle_version_expiration_days
       notification_enable_event_bridge  = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
       requester_pays                    = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
       resource_name                     = local.name_map[k].resource_name
@@ -46,7 +43,7 @@ locals {
       versioning_enabled = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
       website_domain     = v.website_domain == null ? var.bucket_website_domain_default : v.website_domain
       website_fqdn       = v.website_fqdn
-    }
+    })
   }
   bucket_object = {
     for k, v in local.bucket_map : k => merge(
@@ -67,6 +64,14 @@ locals {
   }
   bucket_web_map = {
     for k, v in local.bucket_map : k => v if v.allow_public || v.website_fqdn != null
+  }
+  lifecycle_map = {
+    for k, v in var.bucket_map : k => {
+      lifecycle_expiration_days         = v.lifecycle_expiration_days == null ? var.bucket_lifecycle_expiration_days_default : v.lifecycle_expiration_days
+      lifecycle_upload_expiration_days  = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
+      lifecycle_version_count           = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
+      lifecycle_version_expiration_days = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
+    }
   }
   name_map = {
     for k, v in var.bucket_map : k => {

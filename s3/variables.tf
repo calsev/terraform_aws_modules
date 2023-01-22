@@ -10,7 +10,7 @@ variable "bucket_map" {
     lifecycle_expiration_days         = optional(number)
     lifecycle_upload_expiration_days  = optional(number)
     lifecycle_version_count           = optional(number)
-    lifecycle_version_expiration_days = optional(number)
+    lifecycle_version_expiration_days = optional(number) # Defaults to lifecycle_expiration_days
     name_infix                        = optional(bool)
     notification_enable_event_bridge  = optional(bool)
     requester_pays                    = optional(bool)
