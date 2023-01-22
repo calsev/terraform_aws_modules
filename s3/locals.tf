@@ -25,6 +25,7 @@ locals {
       lifecycle_upload_expiration_days  = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
       lifecycle_version_count           = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
       lifecycle_version_expiration_days = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
+      notification_enable_event_bridge  = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
       requester_pays                    = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
       resource_name                     = local.name_map[k].resource_name
       sid_map = v.sid_map == null ? {} : {

@@ -12,6 +12,7 @@ variable "bucket_map" {
     lifecycle_version_count           = optional(number)
     lifecycle_version_expiration_days = optional(number)
     name_infix                        = optional(bool)
+    notification_enable_event_bridge  = optional(bool)
     requester_pays                    = optional(bool)
     sid_map = optional(map(object({
       access = string
@@ -89,6 +90,11 @@ variable "bucket_lifecycle_version_expiration_days_default" {
 variable "bucket_name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "bucket_notification_enable_event_bridge_default" {
+  type    = bool
+  default = false
 }
 
 variable "bucket_requester_pays_default" {

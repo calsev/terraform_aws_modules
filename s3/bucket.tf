@@ -92,3 +92,9 @@ resource "aws_s3_bucket_request_payment_configuration" "this_payment" {
   expected_bucket_owner = var.std_map.aws_account_id
   payer                 = each.value.requester_pays ? "Requester" : "BucketOwner"
 }
+
+resource "aws_s3_bucket_notification" "this_notification" {
+  for_each    = local.bucket_map
+  bucket      = aws_s3_bucket.this_bucket[each.key].id
+  eventbridge = each.value.notification_enable_event_bridge
+}
