@@ -1,13 +1,16 @@
 locals {
+  cpu_map = {
+    for k_job, v_job in var.job_map : k_job => v_job.number_of_cpu == null ? var.job_number_of_cpu_default : v_job.number_of_cpu
+  }
   cpu_requirement_map = {
     for k_job, v_job in var.job_map : k_job => [
       {
         type  = "VCPU"
-        value = tostring(var.job_map[k_job].number_of_cpu)
+        value = tostring(local.cpu_map[k_job])
       },
       {
         type  = "MEMORY"
-        value = tostring(var.job_map[k_job].memory_gib * 1024)
+        value = tostring(local.shared_memory_map[k_job] * 1024)
       },
     ]
   }
