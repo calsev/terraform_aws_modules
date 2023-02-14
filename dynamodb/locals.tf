@@ -18,7 +18,7 @@ locals {
       point_in_time_recovery_enabled = v.point_in_time_recovery_enabled == null ? var.table_point_in_time_recovery_enabled_default : v.point_in_time_recovery_enabled
       resource_name                  = local.resource_name_map[k_table]
       server_side_encryption_enabled = v.server_side_encryption_enabled == null ? var.table_server_side_encryption_enabled_default : v.server_side_encryption_enabled
-      table_name                     = local.name_infix_map[k_table] ? local.resource_name_map[k_table] : k_table
+      table_name                     = local.name_infix_map[k_table] ? local.resource_name_map[k_table] : replace(k_table, "/[_.]/", "-")
       tags = merge(
         var.std_map.tags,
         {
