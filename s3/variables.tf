@@ -1,8 +1,9 @@
 variable "bucket_map" {
   type = map(object({
-    allowed_headers                   = optional(list(string))
-    allowed_origins                   = optional(list(string))
     allow_public                      = optional(bool)
+    cors_allowed_headers              = optional(list(string))
+    cors_allowed_methods              = optional(list(string))
+    cors_allowed_origins              = optional(list(string))
     create_policy                     = optional(bool)
     enable_acceleration               = optional(bool)
     encryption_algorithm              = optional(string)
@@ -31,19 +32,27 @@ variable "bucket_map" {
   }))
 }
 
-variable "bucket_allowed_headers_default" {
-  type    = list(string)
-  default = ["*"]
-}
-
-variable "bucket_allowed_origins_default" {
-  type    = list(string)
-  default = ["*"]
-}
-
 variable "bucket_allow_public_default" {
   type    = bool
   default = false
+}
+
+variable "bucket_cors_allowed_headers_default" {
+  type    = list(string)
+  default = ["*"]
+}
+
+variable "bucket_cors_allowed_methods_default" {
+  type = list(string)
+  default = [
+    "GET",
+    "HEAD",
+  ]
+}
+
+variable "bucket_cors_allowed_origins_default" {
+  type    = list(string)
+  default = ["*"]
 }
 
 variable "bucket_create_policy_default" {

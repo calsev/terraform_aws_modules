@@ -13,10 +13,11 @@ locals {
   }
   bucket_map = {
     for k, v in var.bucket_map : k => merge(local.lifecycle_map[k], {
-      allowed_headers                   = v.allowed_headers == null ? var.bucket_allowed_headers_default : v.allowed_headers
-      allowed_origins                   = v.allowed_origins == null ? var.bucket_allowed_origins_default : v.allowed_origins
       allow_public                      = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
       bucket_name                       = local.name_map[k].name_infix ? local.name_map[k].resource_name : local.name_map[k].name
+      cors_allowed_headers              = v.cors_allowed_headers == null ? var.bucket_cors_allowed_headers_default : v.cors_allowed_headers
+      cors_allowed_methods              = v.cors_allowed_methods == null ? var.bucket_cors_allowed_methods_default : v.cors_allowed_methods
+      cors_allowed_origins              = v.cors_allowed_origins == null ? var.bucket_cors_allowed_origins_default : v.cors_allowed_origins
       create_policy                     = v.create_policy == null ? var.bucket_create_policy_default : v.create_policy
       enable_acceleration               = v.enable_acceleration == null ? var.bucket_enable_acceleration_default : v.enable_acceleration
       encryption_algorithm              = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm

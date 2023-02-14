@@ -2,12 +2,9 @@ resource "aws_s3_bucket_cors_configuration" "this_cors" {
   for_each = local.bucket_map
   bucket   = aws_s3_bucket.this_bucket[each.key].bucket
   cors_rule {
-    allowed_headers = each.value.allowed_headers
-    allowed_methods = [
-      "GET",
-      "HEAD",
-    ]
-    allowed_origins = each.value.allowed_origins
+    allowed_headers = each.value.cors_allowed_headers
+    allowed_methods = each.value.cors_allowed_methods
+    allowed_origins = each.value.cors_allowed_origins
     expose_headers  = []
     max_age_seconds = 3600
   }
