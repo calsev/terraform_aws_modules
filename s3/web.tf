@@ -5,7 +5,7 @@ resource "aws_s3_bucket_cors_configuration" "this_cors" {
     allowed_headers = each.value.cors_allowed_headers
     allowed_methods = each.value.cors_allowed_methods
     allowed_origins = each.value.cors_allowed_origins
-    expose_headers  = []
+    expose_headers  = each.value.cors_expose_headers
     max_age_seconds = 3600
   }
   expected_bucket_owner = var.std_map.aws_account_id

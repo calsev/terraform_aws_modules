@@ -4,6 +4,7 @@ variable "bucket_map" {
     cors_allowed_headers              = optional(list(string))
     cors_allowed_methods              = optional(list(string))
     cors_allowed_origins              = optional(list(string))
+    cors_expose_headers               = optional(list(string))
     create_policy                     = optional(bool)
     enable_acceleration               = optional(bool)
     encryption_algorithm              = optional(string)
@@ -53,6 +54,11 @@ variable "bucket_cors_allowed_methods_default" {
 variable "bucket_cors_allowed_origins_default" {
   type    = list(string)
   default = ["*"]
+}
+
+variable "bucket_cors_expose_headers_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "bucket_create_policy_default" {

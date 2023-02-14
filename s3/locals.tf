@@ -18,6 +18,7 @@ locals {
       cors_allowed_headers              = v.cors_allowed_headers == null ? var.bucket_cors_allowed_headers_default : v.cors_allowed_headers
       cors_allowed_methods              = v.cors_allowed_methods == null ? var.bucket_cors_allowed_methods_default : v.cors_allowed_methods
       cors_allowed_origins              = v.cors_allowed_origins == null ? var.bucket_cors_allowed_origins_default : v.cors_allowed_origins
+      cors_expose_headers               = v.cors_expose_headers == null ? var.bucket_cors_expose_headers_default : v.cors_expose_headers
       create_policy                     = v.create_policy == null ? var.bucket_create_policy_default : v.create_policy
       enable_acceleration               = v.enable_acceleration == null ? var.bucket_enable_acceleration_default : v.enable_acceleration
       encryption_algorithm              = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm
