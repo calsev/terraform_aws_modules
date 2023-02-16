@@ -40,8 +40,8 @@ variable "event_pattern_json" {
 }
 
 variable "retry_attempts" {
-  type = number
-  default = 0
+  type        = number
+  default     = 0
   description = "Number of retries for Batch jobs"
 }
 
@@ -51,8 +51,8 @@ variable "sqs_queue_arn_dead_letter" {
 }
 
 variable "task_count" {
-  type = number
-  default = 1
+  type        = number
+  default     = 1
   description = "Number of Batch jobs or ECS tasks to launch"
 }
 

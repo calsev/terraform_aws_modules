@@ -8,7 +8,7 @@ module "this_event_bus" {
 
 module "this_trigger" {
   for_each = var.cron_expression != null ? { this = {} } : {}
-  source   = "../event_cron_trigger"
+  source   = "../event_trigger"
 
   compute_arn             = var.ecs_cluster_arn
   cron_expression         = var.cron_expression
