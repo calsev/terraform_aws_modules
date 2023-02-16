@@ -15,10 +15,11 @@ variable "cdn_global_data" {
 
 variable "domain_map" {
   type = map(object({
-    domain_name   = optional(string)
-    origin_domain = string
-    origin_fqdn   = string
-    origin_path   = optional(string)
+    bucket_allow_public = optional(bool)
+    domain_name         = optional(string)
+    origin_domain       = string
+    origin_fqdn         = string
+    origin_path         = optional(string)
     sid_map = optional(map(object({
       access = string
       condition_map = optional(map(object({
@@ -31,6 +32,11 @@ variable "domain_map" {
       object_key_list = optional(list(string))
     })))
   }))
+}
+
+variable "domain_bucket_allow_public_default" {
+  type    = bool
+  default = false
 }
 
 variable "domain_name_default" {
