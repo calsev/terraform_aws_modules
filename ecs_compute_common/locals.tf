@@ -14,7 +14,7 @@ locals {
     p3   = true
   }
   instance_family_map = {
-    for k, v in var.compute_map : k => split(".", v.instance_type)[0]
+    for k, v in var.compute_map : k => split(".", local.instance_type_map[k])[0]
   }
   instance_family_to_arch = {
     a1   = "aarch64"
@@ -26,6 +26,9 @@ locals {
     t4g  = "aarch64"
     m5a  = "x86_64"
     p3   = "x86_64"
+  }
+  instance_type_map = {
+    for k, v in var.compute_map : k => v.instance_type == null ? var.compute_instance_type_default : v.instance_type
   }
   is_gpu_map = {
     for k, v in var.compute_map : k => local.instance_family_is_gpu[local.instance_family_map[k]]
@@ -40,7 +43,7 @@ locals {
       instance_allocation_type = v.instance_allocation_type == null ? var.compute_instance_allocation_type_default : v.instance_allocation_type
       instance_family          = local.instance_family_map[k]
       instance_storage_gib     = v.instance_storage_gib == null ? var.compute_instance_storage_gib_default : v.instance_storage_gib
-      instance_type            = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
+      instance_type            = local.instance_type_map[k]
       is_gpu                   = local.is_gpu_map[k]
       key_name                 = v.key_name == null ? var.compute_key_name_default : v.key_name
       name                     = local.name_map[k]

@@ -14,7 +14,7 @@ resource "aws_batch_job_definition" "this_job" {
         sourceVolume  = k_mount
       }
     ]
-    resourceRequirements = local.resource_requirement_map[each.key]
+    resourceRequirements = local.requirement_list_map[each.key]
     secrets = [
       for k, v in each.value.secret_map : {
         name      = k
