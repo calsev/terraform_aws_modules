@@ -1,18 +1,15 @@
 locals {
-  batch_is_spot = local.compute_environment.instance_allocation_type == "SPOT"
-  compute_environment = merge(var.compute_environment, {
-    instance_allocation_type = var.compute_environment.instance_allocation_type == null ? var.compute_environment_instance_allocation_type_default : var.compute_environment.instance_allocation_type
-    instance_storage_gib     = var.compute_environment.instance_storage_gib == null ? var.compute_environment_instance_storage_gib_default : var.compute_environment.instance_storage_gib
-    min_vcpus                = var.compute_environment.min_vcpus == null ? var.compute_environment_min_vcpus_default : var.compute_environment.min_vcpus
-  })
-  image_type           = module.compute_common.data.is_gpu ? "ECS_AL2_NVIDIA" : "ECS_AL2"
-  name                 = replace(var.name, "_", "-")
-  resource_name        = "${var.std_map.resource_name_prefix}${local.name}${var.std_map.resource_name_suffix}"
-  resource_name_prefix = "${local.resource_name}-"
-  tags = merge(
-    var.std_map.tags,
-    {
-      Name = local.resource_name
-    }
-  )
+  compute_map = {
+    for k_comp, v in var.compute_map : k_comp => merge(v, module.compute_common.data[k_comp], {
+      image_type = module.compute_common.data[k_comp].is_gpu ? "ECS_AL2_NVIDIA" : "ECS_AL2"
+      max_vcpus  = v.max_vcpus == null ? var.compute_max_vcpus_default : v.max_vcpus
+      min_vcpus  = v.min_vcpus == null ? var.compute_min_vcpus_default : v.min_vcpus
+    })
+  }
+  output_data = {
+    for k, v in local.compute_map : k => merge(v, {
+      batch_compute_environment_arn = aws_batch_compute_environment.this_compute_env[k].arn
+      batch_job_queue_arn           = aws_batch_job_queue.this_job_queue[k].arn
+    })
+  }
 }

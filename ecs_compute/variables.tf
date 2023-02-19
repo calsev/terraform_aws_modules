@@ -1,29 +1,66 @@
-variable "compute_environment" {
-  type = object({
-    image_id                 = string
+variable "compute_map" {
+  type = map(object({
+    image_id                 = optional(string)
     instance_allocation_type = optional(string)
     instance_storage_gib     = optional(number)
-    instance_type            = string
+    instance_type            = optional(string)
     key_name                 = optional(string)
-    max_instances            = number
+    max_instances            = optional(number)
     min_instances            = optional(number)
+    security_group_id_list   = optional(list(string))
+    subnet_id_list           = optional(list(string))
     user_data_commands       = optional(list(string))
-  })
+  }))
 }
 
-variable "compute_environment_instance_allocation_type_default" {
+variable "compute_image_id_default" {
+  type    = string
+  default = null
+}
+
+variable "compute_instance_allocation_type_default" {
   type    = string
   default = "EC2"
 }
 
-variable "compute_environment_instance_storage_gib_default" {
+variable "compute_instance_storage_gib_default" {
   type    = number
   default = 30
 }
 
-variable "compute_environment_min_instances_default" {
+variable "compute_instance_type_default" {
+  type    = string
+  default = null
+}
+
+variable "compute_key_name_default" {
+  type    = string
+  default = null
+}
+
+variable "compute_max_instances_default" {
+  type    = number
+  default = null
+}
+
+variable "compute_min_instances_default" {
   type    = number
   default = 0
+}
+
+variable "compute_security_group_id_list_default" {
+  type    = list(string)
+  default = null
+}
+
+variable "compute_subnet_id_list_default" {
+  type    = list(string)
+  default = null
+}
+
+variable "compute_user_data_commands_default" {
+  type    = list(string)
+  default = null
 }
 
 variable "cw_config_data" {
@@ -43,14 +80,6 @@ variable "iam_data" {
   })
 }
 
-variable "name" {
-  type = string
-}
-
-variable "security_group_id_list" {
-  type = list(string)
-}
-
 variable "std_map" {
   type = object({
     config_name          = string
@@ -58,8 +87,4 @@ variable "std_map" {
     resource_name_suffix = string
     tags                 = map(string)
   })
-}
-
-variable "subnet_id_list" {
-  type = list(string)
 }
