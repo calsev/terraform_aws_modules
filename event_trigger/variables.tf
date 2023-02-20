@@ -1,56 +1,95 @@
-variable "compute_arn" {
+variable "event_map" {
+  type = map(object({
+    compute_arn                = optional(string)
+    cron_expression            = optional(string)
+    definition_arn             = optional(string)
+    event_bus_name             = optional(string)
+    event_pattern_json         = optional(string)
+    iam_role_arn_start_task    = optional(string)
+    input                      = optional(string)
+    input_path                 = optional(string)
+    input_transformer_path_map = optional(map(string))
+    input_transformer_template = optional(string)
+    is_enabled                 = optional(bool)
+    retry_attempts             = optional(number)
+    sqs_queue_arn_dead_letter  = optional(string)
+    task_count                 = optional(number)
+  }))
+}
+
+variable "event_compute_arn_default" {
   type        = string
+  default     = null
   description = "An ECS cluster or Batch job queue"
 }
 
-variable "cron_expression" {
+variable "event_cron_expression_default" {
   type        = string
   default     = null
   description = "Either Cron expression or event pattern is required"
 }
 
-variable "definition_arn" {
+variable "event_definition_arn_default" {
   type        = string
+  default     = null
   description = "An ECS task or Batch job definition"
 }
 
-variable "iam_role_arn_start_task" {
-  type = string
-}
-
-variable "is_enabled" {
-  type    = bool
-  default = true
-}
-
-variable "name" {
-  type = string
-}
-
-variable "event_bus_name" {
+variable "event_bus_name_default" {
   type        = string
   default     = "default"
   description = "Not supported for schedule expression and will be ignored"
 }
 
-variable "event_pattern_json" {
+variable "event_pattern_json_default" {
   type        = string
   default     = null
   description = "Either Event pattern or cron expression is required"
 }
 
-variable "retry_attempts" {
+variable "event_iam_role_arn_start_task_default" {
+  type    = string
+  default = null
+}
+
+variable "event_input_default" {
+  type    = string
+  default = null
+}
+
+variable "event_input_path_default" {
+  type    = string
+  default = null
+}
+
+variable "event_input_transformer_path_map_default" {
+  type    = map(string)
+  default = null
+}
+
+variable "event_input_transformer_template_default" {
+  type        = string
+  default     = null
+  description = "If an input path is provided, defaults to a simple dict of the inputs"
+}
+
+variable "event_is_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "event_retry_attempts_default" {
   type        = number
   default     = 0
   description = "Number of retries for Batch jobs"
 }
 
-variable "sqs_queue_arn_dead_letter" {
+variable "event_sqs_queue_arn_dead_letter_default" {
   type    = string
   default = null
 }
 
-variable "task_count" {
+variable "event_task_count_default" {
   type        = number
   default     = 1
   description = "Number of Batch jobs or ECS tasks to launch"
