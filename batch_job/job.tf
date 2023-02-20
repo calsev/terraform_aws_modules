@@ -37,7 +37,7 @@ resource "aws_batch_job_definition" "this_job" {
       }
     ]
   })
-  parameters            = {} # TODO
+  parameters            = each.value.parameter_map
   platform_capabilities = [] # TODO
   propagate_tags        = true
   tags                  = each.value.tags

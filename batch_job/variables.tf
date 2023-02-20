@@ -12,6 +12,7 @@ variable "job_map" {
     })))
     number_of_cpu     = optional(number)
     number_of_gpu     = optional(number)
+    parameter_map     = optional(map(string))
     secret_map        = optional(map(string))
     shared_memory_gib = optional(number)
     ulimit_map = optional(map(object({
@@ -67,6 +68,11 @@ variable "job_number_of_cpu_default" {
 variable "job_number_of_gpu_default" {
   type    = number
   default = 0
+}
+
+variable "job_parameter_map_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "job_secret_map_default" {

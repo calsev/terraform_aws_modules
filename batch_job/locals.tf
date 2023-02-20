@@ -8,6 +8,7 @@ locals {
       image_tag                  = v_job.image_tag == null ? var.job_image_tag_default : v_job.image_tag
       mount_map                  = v_job.mount_map == null ? var.job_mount_map_default : v_job.mount_map
       name                       = local.resource_name_map[k_job]
+      parameter_map              = v_job.parameter_map == null ? var.job_parameter_map_default : v_job.parameter_map
       secret_map                 = v_job.secret_map == null ? var.job_secret_map_default : v_job.secret_map
       tags = merge(
         var.std_map.tags,
