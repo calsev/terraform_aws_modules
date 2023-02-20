@@ -1,6 +1,6 @@
 locals {
   bucket_accelerate_map = {
-    for k, v in local.bucket_map : k => v if length(split(".", k)) == 1
+    for k, v in local.bucket_map : k => v if length(split(".", k)) == 1 # TODO: Why not dot buckets?
   }
   bucket_domain_map = {
     for k, v in local.bucket_map : k => v if v.website_fqdn != null
@@ -9,7 +9,7 @@ locals {
     for k, v in local.bucket_map : k => !v.encryption_disabled && !v.allow_public && v.website_fqdn == null
   }
   bucket_encryption_map = {
-    for k, v in local.bucket_map : k => v if local.bucket_encryption_filter[k]
+    for k, v in local.bucket_map : k => v if local.bucket_encryption_filter[k] # TODO: Always create with disabled enc
   }
   bucket_map = {
     for k, v in var.bucket_map : k => merge(local.lifecycle_map[k], {
@@ -44,28 +44,15 @@ locals {
       )
       versioning_enabled = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
       website_domain     = v.website_domain == null ? var.bucket_website_domain_default : v.website_domain
+      website_enabled    = v.website_enabled == null ? var.bucket_website_enabled_default : v.website_enabled
       website_fqdn       = v.website_fqdn
     })
-  }
-  bucket_object = {
-    for k, v in local.bucket_map : k => merge(
-      {
-        for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["create_policy", "encryption_algorithm", "encryption_disabled", "resource_name", "sid_map", "tags"], k_bucket)
-      },
-      {
-        arn                     = aws_s3_bucket.this_bucket[k].arn
-        bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
-        bucket_policy_doc       = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
-        bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
-        encryption_algorithm    = local.bucket_encryption_filter[k] ? v.encryption_algorithm : null
-      },
-    )
   }
   bucket_policy_map = {
     for k, v in local.bucket_map : k => v if v.create_policy
   }
   bucket_web_map = {
-    for k, v in local.bucket_map : k => v if v.allow_public || v.website_fqdn != null
+    for k, v in local.bucket_map : k => v if v.website_enabled
   }
   lifecycle_map = {
     for k, v in var.bucket_map : k => {
@@ -81,6 +68,20 @@ locals {
       name_infix    = v.name_infix == null ? var.bucket_name_infix_default : v.name_infix
       resource_name = "${var.std_map.resource_name_prefix}${replace(k, "/[_.]/", "-")}${var.std_map.resource_name_suffix}"
     }
+  }
+  output_data = {
+    for k, v in local.bucket_map : k => merge(
+      {
+        for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["create_policy", "encryption_algorithm", "encryption_disabled", "resource_name", "sid_map", "tags"], k_bucket)
+      },
+      {
+        arn                     = aws_s3_bucket.this_bucket[k].arn
+        bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
+        bucket_policy_doc       = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
+        bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
+        encryption_algorithm    = local.bucket_encryption_filter[k] ? v.encryption_algorithm : null
+      },
+    )
   }
   region_name_to_s3_dns_zone = {
     # See https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_website_region_endpoints

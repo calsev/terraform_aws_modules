@@ -1,3 +1,3 @@
 output "data" {
-  value = local.bucket_object
+  value = local.output_data
 }

@@ -29,6 +29,7 @@ variable "bucket_map" {
     })))
     versioning_enabled = optional(bool)
     website_domain     = optional(string)
+    website_enabled    = optional(bool)
     website_fqdn       = optional(string)
   }))
 }
@@ -125,6 +126,12 @@ variable "bucket_versioning_enabled_default" {
 variable "bucket_website_domain_default" {
   type    = string
   default = null
+}
+
+variable "bucket_website_enabled_default" {
+  type        = bool
+  default     = true
+  description = "By default, support HTTP access, even for private buckets/objects"
 }
 
 variable "dns_data" {
