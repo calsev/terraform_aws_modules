@@ -4,6 +4,11 @@ resource "aws_cloudwatch_event_bus" "this_bus" {
   tags     = each.value.tags
 }
 
+data "aws_cloudwatch_event_bus" "this_bus" {
+  for_each = local.create_bus_data_map
+  name     = each.value.event_bus_name
+}
+
 resource "aws_cloudwatch_event_archive" "this_archive" {
   for_each         = local.create_archive_map
   name             = each.value.resource_name

@@ -1,7 +1,7 @@
 variable "bus_map" {
   type = map(object({
     archive_retention_days = optional(number)
-    event_bus_arn          = optional(string) # "If provided, a bus will not be created
+    event_bus_name         = optional(string) # "If provided, a bus will not be created
     log_retention_days     = optional(number)
   }))
 }
