@@ -17,7 +17,7 @@ module "basic_build_role" {
   ci_cd_account_data = {
     # We emulate this here of course :)
     bucket = local.bucket_data
-    log    = module.build_log.data
+    log    = module.build_log.data[local.base_name]
   }
   name        = "build_basic"
   name_prefix = var.policy_name_prefix

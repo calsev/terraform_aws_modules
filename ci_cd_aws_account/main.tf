@@ -5,10 +5,13 @@ module "build_bucket" {
 }
 
 module "build_log" {
-  source             = "../log_group"
-  create_policy      = var.create_policy
-  log_retention_days = var.log_retention_days
-  name               = "codebuild"
-  policy_name_prefix = var.policy_name_prefix
-  std_map            = var.std_map
+  source = "../log_group"
+  log_map = {
+    (local.base_name) = {
+      create_policy      = var.create_policy
+      log_retention_days = var.log_retention_days
+      policy_name_prefix = var.policy_name_prefix
+    }
+  }
+  std_map = var.std_map
 }
