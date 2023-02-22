@@ -10,9 +10,9 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
 
 resource "aws_cloudwatch_event_target" "this_target" {
   for_each = local.event_map
-  arn      = each.value.compute_arn
+  arn      = each.value.target_arn
   dynamic "batch_target" {
-    for_each = length(regexall("arn:${var.std_map.iam_partition}:batch:", each.value.definition_arn)) > 0 ? { this = {} } : {}
+    for_each = each.value.batch_targets
     content {
       array_size     = local.batch_array_size_map[each.key]
       job_attempts   = local.batch_retry_attempts_map[each.key]
@@ -24,7 +24,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
     arn = each.value.sqs_queue_arn_dead_letter
   }
   dynamic "ecs_target" {
-    for_each = length(regexall("arn:${var.std_map.iam_partition}:ecs:", each.value.definition_arn)) > 0 ? { this = {} } : {}
+    for_each = each.value.ecs_targets
     content {
       # capacity_provider_strategy - delegate to cluster
       enable_ecs_managed_tags = true

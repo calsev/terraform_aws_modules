@@ -8,11 +8,15 @@ locals {
   cron_expression_map = {
     for k, v in var.event_map : k => v.cron_expression == null ? var.event_cron_expression_default : v.cron_expression
   }
+  definition_arn_map = {
+    for k, v in var.event_map : k => v.definition_arn == null ? var.event_definition_arn_default : v.definition_arn
+  }
   event_map = {
     for k, v in var.event_map : k => {
-      compute_arn                = v.compute_arn == null ? var.event_compute_arn_default : v.compute_arn
+      batch_targets              = local.definition_arn_map[k] == null ? {} : length(regexall("arn:${var.std_map.iam_partition}:batch:", local.definition_arn_map[k])) > 0 ? { this = {} } : {}
       cron_expression            = local.cron_expression_map[k]
-      definition_arn             = v.definition_arn == null ? var.event_definition_arn_default : v.definition_arn
+      definition_arn             = local.definition_arn_map[k]
+      ecs_targets                = local.definition_arn_map[k] == null ? {} : length(regexall("arn:${var.std_map.iam_partition}:ecs:", local.definition_arn_map[k])) > 0 ? { this = {} } : {}
       event_bus_name             = local.cron_expression_map[k] == null && local.event_pattern_json_map[k] == null ? null : local.event_bus_name_map[k]
       event_pattern              = local.event_pattern_json_map[k] == null ? null : jsondecode(local.event_pattern_json_map[k])
       iam_role_arn_start_task    = v.iam_role_arn_start_task == null ? var.event_iam_role_arn_start_task_default : v.iam_role_arn_start_task
@@ -30,6 +34,7 @@ locals {
           Name = local.resource_name_map[k]
         }
       )
+      target_arn = v.target_arn == null ? var.event_target_arn_default : v.target_arn
       task_count = v.task_count == null ? var.event_task_count_default : v.task_count
     }
   }

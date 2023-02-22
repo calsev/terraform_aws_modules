@@ -1,6 +1,5 @@
 variable "event_map" {
   type = map(object({
-    compute_arn                = optional(string)
     cron_expression            = optional(string)
     definition_arn             = optional(string)
     event_bus_name             = optional(string)
@@ -13,14 +12,9 @@ variable "event_map" {
     is_enabled                 = optional(bool)
     retry_attempts             = optional(number)
     sqs_queue_arn_dead_letter  = optional(string)
+    target_arn                 = optional(string)
     task_count                 = optional(number)
   }))
-}
-
-variable "event_compute_arn_default" {
-  type        = string
-  default     = null
-  description = "An ECS cluster or Batch job queue"
 }
 
 variable "event_cron_expression_default" {
@@ -87,6 +81,12 @@ variable "event_retry_attempts_default" {
 variable "event_sqs_queue_arn_dead_letter_default" {
   type    = string
   default = null
+}
+
+variable "event_target_arn_default" {
+  type        = string
+  default     = null
+  description = "An ECS cluster, Batch job queue, Cloudwatch log group ..."
 }
 
 variable "event_task_count_default" {
