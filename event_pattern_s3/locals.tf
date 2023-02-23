@@ -12,16 +12,15 @@ locals {
       var.aws_account_id == null ? var.std_map.aws_account_id : var.aws_account_id
     ]
     detail = {
-      eventName = var.action_list
-      eventSource = [
-        "s3.amazonaws.com",
-      ]
-      requestParameters = {
-        bucketName = [
+      bucket = {
+        name = [
           var.bucket_name,
         ]
+      }
+      object = {
         key = local.object_key
       }
+      reason = var.action_list
     }
     source = [
       "aws.s3",

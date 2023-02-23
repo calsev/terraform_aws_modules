@@ -1,7 +1,8 @@
 module "log_group" {
-  source  = "../log_group"
-  log_map = local.log_map
-  std_map = var.std_map
+  source                  = "../log_group"
+  log_map                 = local.log_map
+  log_name_prefix_default = "/aws/events/" # Must begin /aws/events: https://aws.amazon.com/premiumsupport/knowledge-center/cloudwatch-log-group-eventbridge/
+  std_map                 = var.std_map
 }
 
 module "log_trigger" {
@@ -13,7 +14,10 @@ module "log_trigger" {
     }
   }
   event_pattern_json_default = jsonencode({
-    source = ["aws.events"]
+    account = [
+      var.std_map.aws_account_id
+    ]
+    # Events come from any service, e.g. aws.events. aws.s3, so omit detail.eventsource and source
   })
   std_map = var.std_map
 }

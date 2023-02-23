@@ -6,6 +6,7 @@ locals {
     for k, v in var.log_map : k => merge(v, {
       create_policy      = local.create_policy_map[k]
       log_retention_days = v.log_retention_days == null ? var.log_retention_days_default : v.log_retention_days
+      name_prefix        = local.name_prefix_map[k]
       policy_name        = local.create_policy_map[k] ? v.policy_name == null ? var.log_policy_name_default == null ? "${local.name_map[k]}-log" : var.log_policy_name_default : v.policy_name : null
       policy_name_infix  = v.policy_name_infix == null ? var.log_policy_name_infix_default : v.policy_name_infix
       policy_name_prefix = v.policy_name_prefix == null ? var.log_policy_name_prefix_default : v.policy_name_prefix
@@ -27,7 +28,10 @@ locals {
   name_map = {
     for k, v in var.log_map : k => replace(k, "/[_]/", "-")
   }
+  name_prefix_map = {
+    for k, v in var.log_map : k => v.name_prefix == null ? var.log_name_prefix_default : v.name_prefix
+  }
   resource_name_map = {
-    for k, v in var.log_map : k => "${var.std_map.resource_name_prefix}${local.name_map[k]}${var.std_map.resource_name_suffix}"
+    for k, v in var.log_map : k => "${local.name_prefix_map[k]}${var.std_map.resource_name_prefix}${local.name_map[k]}${var.std_map.resource_name_suffix}"
   }
 }

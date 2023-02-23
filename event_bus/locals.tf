@@ -3,7 +3,7 @@ locals {
     for k, v in var.bus_map : k => merge(v, {
       archive_retention_days = v.archive_retention_days == null ? var.bus_archive_retention_days_default : v.archive_retention_days
       log_retention_days     = v.log_retention_days == null ? var.bus_log_retention_days_default : v.log_retention_days
-      log_name               = "event-bus-${local.name_map[k]}"
+      log_name               = "bus-${local.name_map[k]}"
       name                   = local.name_map[k]
       resource_name          = local.resource_name_map[k]
       tags = merge(
@@ -35,7 +35,7 @@ locals {
   output_data = {
     bus     = local.schema_map
     log     = module.log_group.data
-    trigger = ""
+    trigger = module.log_trigger.data
   }
   schema_map = {
     for k, v in local.bus_map : k => merge(v, {

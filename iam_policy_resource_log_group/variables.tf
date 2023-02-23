@@ -2,6 +2,10 @@ variable "log_group_name" {
   type = string
 }
 
+variable "policy_name" {
+  type = string
+}
+
 variable "sid_map" {
   type = map(object({
     access = string

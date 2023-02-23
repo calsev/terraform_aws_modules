@@ -23,5 +23,5 @@ data "aws_iam_policy_document" "this_policy_doc" {
 
 resource "aws_cloudwatch_log_resource_policy" "this_resource_policy" {
   policy_document = data.aws_iam_policy_document.this_policy_doc.json
-  policy_name     = var.log_group_name
+  policy_name     = var.policy_name
 }

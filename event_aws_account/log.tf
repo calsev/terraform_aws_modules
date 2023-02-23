@@ -2,15 +2,18 @@
 module "log_trust_policy" {
   source         = "../iam_policy_resource_log_group"
   log_group_name = "*"
+  policy_name    = "DefaultLogGroupAllowEvents"
   sid_map = {
     Event = {
       access = "write"
       condition_map = {
         source_account = local.source_account_condition
         source_arn = {
-          test       = "ArnLike"
-          value_list = ["arn:aws:logs:us-west-2:${var.std_map.aws_account_id}:*"]
-          variable   = "AWS:SourceArn"
+          test = "ArnLike"
+          value_list = [
+            "arn:${var.std_map.iam_partition}:events:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:rule/*",
+          ]
+          variable = "AWS:SourceArn"
         }
       }
       identifier_list = ["events.amazonaws.com"]
@@ -21,9 +24,11 @@ module "log_trust_policy" {
       condition_map = {
         source_account = local.source_account_condition
         source_arn = {
-          test       = "ArnLike"
-          value_list = ["arn:aws:logs:us-west-2:${var.std_map.aws_account_id}:*"]
-          variable   = "AWS:SourceArn"
+          test = "ArnLike"
+          value_list = [
+            "arn:${var.std_map.iam_partition}:logs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:*",
+          ]
+          variable = "AWS:SourceArn"
         }
       }
       identifier_list = ["delivery.logs.amazonaws.com"]
