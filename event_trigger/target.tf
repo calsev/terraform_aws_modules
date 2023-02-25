@@ -47,8 +47,14 @@ resource "aws_cloudwatch_event_target" "this_target" {
   dynamic "input_transformer" {
     for_each = each.value.input_transformer_template == null ? {} : { this = {} }
     content {
-      input_paths    = each.value.input_transformer_path_map
-      input_template = jsonencode(each.value.input_transformer_template)
+      input_paths = each.value.input_transformer_path_map
+      # jsonencode escapes angle brackets and breaks the template
+      input_template = <<-EOT
+      {%{for k, v in each.value.input_transformer_template}
+        "${k}": "${v}",%{endfor}
+        "swallow": "comma"
+      }
+      EOT
     }
   }
   # kinesis_target # TODO
