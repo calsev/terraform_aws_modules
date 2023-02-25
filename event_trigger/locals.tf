@@ -15,6 +15,7 @@ locals {
     for k, v in var.event_map : k => {
       batch_targets              = local.definition_arn_map[k] == null ? {} : length(regexall("arn:${var.std_map.iam_partition}:batch:", local.definition_arn_map[k])) > 0 ? { this = {} } : {}
       cron_expression            = local.cron_expression_map[k]
+      dead_letter_queue_enabled  = v.dead_letter_queue_enabled == null ? var.event_dead_letter_queue_enabled_default : v.dead_letter_queue_enabled
       definition_arn             = local.definition_arn_map[k]
       ecs_targets                = local.definition_arn_map[k] == null ? {} : length(regexall("arn:${var.std_map.iam_partition}:ecs:", local.definition_arn_map[k])) > 0 ? { this = {} } : {}
       event_bus_name             = local.cron_expression_map[k] == null && local.event_pattern_json_map[k] == null ? null : local.event_bus_name_map[k]
@@ -27,7 +28,6 @@ locals {
       is_enabled                 = v.is_enabled == null ? var.event_is_enabled_default : v.is_enabled
       retry_attempts             = v.retry_attempts == null ? var.event_retry_attempts_default : v.retry_attempts
       resource_name              = local.resource_name_map[k]
-      sqs_queue_arn_dead_letter  = v.sqs_queue_arn_dead_letter == null ? var.event_sqs_queue_arn_dead_letter_default : v.sqs_queue_arn_dead_letter
       tags = merge(
         var.std_map.tags,
         {
@@ -59,7 +59,16 @@ locals {
     for k, v in local.event_map : k => merge(v, {
       event_rule_arn    = aws_cloudwatch_event_rule.this_rule[k].arn
       event_trigger_arn = aws_cloudwatch_event_target.this_target[k].arn
+      dead_letter       = v.dead_letter_queue_enabled ? module.dead_letter_queue.data[local.queue_name_map[k]] : null
     })
+  }
+  queue_map = {
+    for k, v in local.queue_name_map : local.queue_name_map[k] => {
+      is_fifo = false
+    }
+  }
+  queue_name_map = {
+    for k, v in local.event_map : k => "${k}-dead-letter" if v.dead_letter_queue_enabled
   }
   resource_name_map = {
     for k, v in var.event_map : k => "${var.std_map.resource_name_prefix}${replace(k, "/_/", "-")}${var.std_map.resource_name_suffix}"

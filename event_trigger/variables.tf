@@ -1,6 +1,7 @@
 variable "event_map" {
   type = map(object({
     cron_expression            = optional(string)
+    dead_letter_queue_enabled  = optional(bool)
     definition_arn             = optional(string)
     event_bus_name             = optional(string)
     event_pattern_json         = optional(string)
@@ -11,7 +12,6 @@ variable "event_map" {
     input_transformer_template = optional(string)
     is_enabled                 = optional(bool)
     retry_attempts             = optional(number)
-    sqs_queue_arn_dead_letter  = optional(string)
     target_arn                 = optional(string)
     task_count                 = optional(number)
   }))
@@ -21,6 +21,11 @@ variable "event_cron_expression_default" {
   type        = string
   default     = null
   description = "Either Cron expression or event pattern is required"
+}
+
+variable "event_dead_letter_queue_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "event_definition_arn_default" {
@@ -76,11 +81,6 @@ variable "event_retry_attempts_default" {
   type        = number
   default     = 0
   description = "Number of retries for Batch jobs"
-}
-
-variable "event_sqs_queue_arn_dead_letter_default" {
-  type    = string
-  default = null
 }
 
 variable "event_target_arn_default" {
