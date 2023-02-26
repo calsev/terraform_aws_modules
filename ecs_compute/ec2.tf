@@ -10,7 +10,7 @@ module "compute_common" {
   compute_subnet_id_list_default           = var.compute_subnet_id_list_default
   compute_user_data_commands_default       = var.compute_user_data_commands_default
   cw_config_data                           = var.cw_config_data
-  iam_instance_profile_arn_for_ecs         = var.iam_data.iam_instance_profile_arn_for_ecs
+  iam_instance_profile_arn_ecs             = var.iam_data.iam_instance_profile_arn_ecs
   set_ecs_cluster_in_user_data             = true
   std_map                                  = var.std_map
 }

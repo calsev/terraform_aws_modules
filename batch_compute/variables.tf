@@ -75,9 +75,9 @@ variable "cw_config_data" {
 
 variable "iam_data" {
   type = object({
-    iam_instance_profile_arn_for_ecs = string
-    iam_role_arn_batch_service       = string
-    iam_role_arn_batch_spot_fleet    = string
+    iam_instance_profile_arn_ecs  = string
+    iam_role_arn_batch_service    = string
+    iam_role_arn_batch_spot_fleet = string
   })
 }
 

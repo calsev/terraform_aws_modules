@@ -54,7 +54,7 @@ variable "cw_config_data" {
   })
 }
 
-variable "iam_instance_profile_arn_for_ecs" {
+variable "iam_instance_profile_arn_ecs" {
   type = string
 }
 

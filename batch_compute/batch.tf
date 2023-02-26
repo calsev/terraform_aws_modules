@@ -10,7 +10,7 @@ module "compute_common" {
   compute_subnet_id_list_default           = var.compute_subnet_id_list_default
   compute_user_data_commands_default       = var.compute_user_data_commands_default
   cw_config_data                           = var.cw_config_data
-  iam_instance_profile_arn_for_ecs         = var.iam_data.iam_instance_profile_arn_for_ecs
+  iam_instance_profile_arn_ecs             = var.iam_data.iam_instance_profile_arn_ecs
   set_ecs_cluster_in_user_data             = false
   std_map                                  = var.std_map
 }
@@ -25,7 +25,7 @@ resource "aws_batch_compute_environment" "this_compute_env" {
     ec2_configuration {
       image_type = each.value.image_type
     }
-    instance_role = var.iam_data.iam_instance_profile_arn_for_ecs # ECS service API calls
+    instance_role = var.iam_data.iam_instance_profile_arn_ecs # ECS service API calls
     instance_type = [each.value.instance_type]
     launch_template {
       launch_template_id = each.value.launch_template_id

@@ -21,7 +21,7 @@ resource "aws_launch_template" "this_launch_template" {
   }
   # This role must have a policy to access the kms_key_id used to encrypt the EBS volume
   iam_instance_profile {
-    arn = var.iam_instance_profile_arn_for_ecs
+    arn = var.iam_instance_profile_arn_ecs
   }
   image_id      = each.value.image_id
   instance_type = each.value.instance_type
