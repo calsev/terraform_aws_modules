@@ -56,9 +56,11 @@ resource "aws_cloudwatch_event_target" "this_target" {
       input_paths = each.value.input_transformer_path_map
       # jsonencode escapes angle brackets and breaks the template
       input_template = <<-EOT
-      {%{for k, v in each.value.input_transformer_template}
-        "${k}": "${v}",%{endfor}
-        "swallow": "comma"
+      {
+        "Parameters" : {%{for k, v in each.value.input_transformer_template}
+          "${k}": "${v}",%{endfor}
+          "swallow": "comma"
+        }
       }
       EOT
     }
