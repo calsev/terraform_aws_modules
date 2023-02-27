@@ -358,6 +358,25 @@ locals {
         ]
       }
     }
+    sqs = {
+      queue = {
+        public_read = []
+        read = [
+          "GetQueueUrl",
+          "ListQueueTags",
+          "ListQueues",
+        ]
+        public_write = []
+        write = [
+          "DeleteMessage",
+          "PurgeQueue",
+          "ReceiveMessage",
+          "SendMessage",
+          "TagQueue",
+          "UntagQueue"
+        ]
+      }
+    }
     states = {
       activity = {
         public_read = []

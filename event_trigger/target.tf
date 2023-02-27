@@ -66,7 +66,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
   # kinesis_target # TODO
   # redshift_target # TODO
   # retry_policy # TODO
-  role_arn = each.value.iam_role_arn_start_task
+  role_arn = each.value.iam_role_arn_custom == null ? module.trigger_role[each.key].data.iam_role_arn : each.value.iam_role_arn_custom
   rule     = aws_cloudwatch_event_rule.this_rule[each.key].name
   # run_command_targets # TODO
   # sqs_target # TODO

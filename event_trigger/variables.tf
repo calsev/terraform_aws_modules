@@ -5,7 +5,7 @@ variable "event_map" {
     definition_arn             = optional(string)
     event_bus_name             = optional(string)
     event_pattern_json         = optional(string)
-    iam_role_arn_start_task    = optional(string)
+    iam_role_arn_custom        = optional(string)
     input                      = optional(string)
     input_path                 = optional(string)
     input_transformer_path_map = optional(map(string))
@@ -46,9 +46,10 @@ variable "event_pattern_json_default" {
   description = "Either Event pattern or cron expression is required"
 }
 
-variable "event_iam_role_arn_start_task_default" {
-  type    = string
-  default = null
+variable "event_iam_role_arn_custom_default" {
+  type        = string
+  default     = null
+  description = "By default, a policy is created that allows running the target and sending messages to the dead letter queue. Account for these actions when using a custom policy"
 }
 
 variable "event_input_default" {
@@ -95,11 +96,22 @@ variable "event_task_count_default" {
   description = "Number of Batch jobs or ECS tasks to launch"
 }
 
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_batch_submit_job = string
+    iam_policy_arn_ecs_start_task   = string
+  })
+}
+
 variable "std_map" {
   type = object({
-    iam_partition        = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    iam_partition                  = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }

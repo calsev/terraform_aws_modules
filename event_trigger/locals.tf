@@ -13,14 +13,14 @@ locals {
   }
   event_map = {
     for k, v in var.event_map : k => {
-      batch_targets              = local.definition_arn_map[k] == null ? {} : length(regexall("arn:${var.std_map.iam_partition}:batch:", local.definition_arn_map[k])) > 0 ? { this = {} } : {}
+      batch_targets              = local.definition_arn_map[k] == null ? {} : startswith(local.definition_arn_map[k], "arn:${var.std_map.iam_partition}:batch:") ? { this = {} } : {}
       cron_expression            = local.cron_expression_map[k]
       dead_letter_queue_enabled  = v.dead_letter_queue_enabled == null ? var.event_dead_letter_queue_enabled_default : v.dead_letter_queue_enabled
       definition_arn             = local.definition_arn_map[k]
-      ecs_targets                = local.definition_arn_map[k] == null ? {} : length(regexall("arn:${var.std_map.iam_partition}:ecs:", local.definition_arn_map[k])) > 0 ? { this = {} } : {}
+      ecs_targets                = local.definition_arn_map[k] == null ? {} : startswith(local.definition_arn_map[k], "arn:${var.std_map.iam_partition}:ecs:") ? { this = {} } : {}
       event_bus_name             = local.cron_expression_map[k] == null && local.event_pattern_json_map[k] == null ? null : local.event_bus_name_map[k]
       event_pattern              = local.event_pattern_json_map[k] == null ? null : jsondecode(local.event_pattern_json_map[k])
-      iam_role_arn_start_task    = v.iam_role_arn_start_task == null ? var.event_iam_role_arn_start_task_default : v.iam_role_arn_start_task
+      iam_role_arn_custom        = v.iam_role_arn_custom == null ? var.event_iam_role_arn_custom_default : v.iam_role_arn_custom
       input                      = v.input == null ? var.event_input_default : v.input
       input_path                 = v.input_path == null ? var.event_input_path_default : v.input_path
       input_transformer_path_map = local.input_transformer_path_map[k]
@@ -60,6 +60,7 @@ locals {
       event_rule_arn    = aws_cloudwatch_event_rule.this_rule[k].arn
       event_trigger_arn = aws_cloudwatch_event_target.this_target[k].arn
       dead_letter       = v.dead_letter_queue_enabled ? module.dead_letter_queue.data[local.queue_name_map[k]] : null
+      role              = v.iam_role_arn_custom == null ? module.trigger_role[k].data : null
     })
   }
   queue_map = {
@@ -72,5 +73,8 @@ locals {
   }
   resource_name_map = {
     for k, v in var.event_map : k => "${var.std_map.resource_name_prefix}${replace(k, "/_/", "-")}${var.std_map.resource_name_suffix}"
+  }
+  role_map = {
+    for k, v in local.event_map : k => v if v.iam_role_arn_custom == null
   }
 }
