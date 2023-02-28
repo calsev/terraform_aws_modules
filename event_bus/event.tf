@@ -17,7 +17,7 @@ resource "aws_cloudwatch_event_archive" "this_archive" {
 }
 
 resource "aws_schemas_discoverer" "this_schema" {
-  for_each   = local.schema_map
+  for_each   = local.create_schema_map
   source_arn = each.value.event_bus_arn
   tags       = each.value.tags
 }

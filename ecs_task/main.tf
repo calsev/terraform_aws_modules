@@ -16,6 +16,7 @@ module "this_trigger" {
       target_arn      = var.ecs_cluster_arn
     }
   }
-  iam_data = var.iam_data
-  std_map  = var.std_map
+  event_target_service_default = "ecs"
+  iam_data                     = var.iam_data
+  std_map                      = var.std_map
 }

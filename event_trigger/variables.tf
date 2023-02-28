@@ -6,6 +6,7 @@ variable "event_map" {
     event_bus_name             = optional(string)
     event_pattern_json         = optional(string)
     iam_role_arn_custom        = optional(string)
+    iam_role_use_custom        = optional(bool)
     input                      = optional(string)
     input_path                 = optional(string)
     input_transformer_path_map = optional(map(string))
@@ -13,6 +14,7 @@ variable "event_map" {
     is_enabled                 = optional(bool)
     retry_attempts             = optional(number)
     target_arn                 = optional(string)
+    target_service             = optional(string)
     task_count                 = optional(number)
   }))
 }
@@ -53,6 +55,12 @@ variable "event_iam_role_arn_custom_default" {
   description = "By default, a policy is created that allows running the target and sending messages to the dead letter queue. Account for these actions when using a custom policy. Ignored if the target is a log group."
 }
 
+variable "event_iam_role_use_custom_default" {
+  type        = bool
+  default     = false
+  description = "This is required so that the set of resources does not depend on state, as it typically would with role ARNs"
+}
+
 variable "event_input_default" {
   type    = string
   default = null
@@ -89,6 +97,16 @@ variable "event_target_arn_default" {
   type        = string
   default     = null
   description = "An ECS cluster, Batch job queue, Cloudwatch log group ..."
+}
+
+variable "event_target_service_default" {
+  type        = string
+  default     = null
+  description = "This is required so that the set of resources does not depend on state, as it typically would with target and definition ARNs"
+  validation {
+    condition     = var.event_target_service_default == null ? true : contains(["batch", "ecs", "logs"], var.event_target_service_default)
+    error_message = "Invalid target service"
+  }
 }
 
 variable "event_task_count_default" {
