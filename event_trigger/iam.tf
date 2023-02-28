@@ -16,7 +16,7 @@ module "trigger_role" {
     ecs_start_task = var.iam_data.iam_policy_arn_ecs_start_task
   }
   inline_policy_json_map = each.value.dead_letter_queue_enabled ? {
-    queue_dead_letter = jsonencode(module.queue_policy[local.queue_name_map[each.key]].data.iam_policy_doc_map.write)
+    queue_dead_letter = jsonencode(module.queue_policy[each.value.dead_letter_queue_name].data.iam_policy_doc_map.write)
   } : null
   name    = "trigger-${each.key}"
   std_map = var.std_map

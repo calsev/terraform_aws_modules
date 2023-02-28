@@ -24,8 +24,9 @@ variable "event_cron_expression_default" {
 }
 
 variable "event_dead_letter_queue_enabled_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "Ignored if the target is a log group"
 }
 
 variable "event_definition_arn_default" {
@@ -49,7 +50,7 @@ variable "event_pattern_json_default" {
 variable "event_iam_role_arn_custom_default" {
   type        = string
   default     = null
-  description = "By default, a policy is created that allows running the target and sending messages to the dead letter queue. Account for these actions when using a custom policy"
+  description = "By default, a policy is created that allows running the target and sending messages to the dead letter queue. Account for these actions when using a custom policy. Ignored if the target is a log group."
 }
 
 variable "event_input_default" {

@@ -3,7 +3,7 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
   name                = each.value.resource_name
   is_enabled          = each.value.is_enabled
   event_bus_name      = each.value.event_bus_name
-  event_pattern       = each.value.event_pattern == null ? null : jsonencode(each.value.event_pattern)
+  event_pattern       = each.value.event_pattern_json
   schedule_expression = each.value.cron_expression
   tags                = each.value.tags
 }
@@ -20,14 +20,14 @@ resource "aws_cloudwatch_event_target" "this_target" {
   dynamic "batch_target" {
     for_each = each.value.batch_targets
     content {
-      array_size     = local.batch_array_size_map[each.key]
-      job_attempts   = local.batch_retry_attempts_map[each.key]
+      array_size     = each.value.task_count > 1 ? each.value.task_count : null
+      job_attempts   = each.value.retry_attempts > 0 ? each.value.retry_attempts : null
       job_definition = each.value.definition_arn
       job_name       = each.value.resource_name
     }
   }
   dead_letter_config {
-    arn = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[local.queue_name_map[each.key]].arn : null
+    arn = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.value.dead_letter_queue_name].arn : null
   }
   dynamic "ecs_target" {
     for_each = each.value.ecs_targets
@@ -68,7 +68,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
   # kinesis_target # TODO
   # redshift_target # TODO
   # retry_policy # TODO
-  role_arn = each.value.iam_role_arn_custom == null ? module.trigger_role[each.key].data.iam_role_arn : each.value.iam_role_arn_custom
+  role_arn = each.value.iam_role_has_default ? module.trigger_role[each.key].data.iam_role_arn : each.value.iam_role_arn_custom
   rule     = aws_cloudwatch_event_rule.this_rule[each.key].name
   # run_command_targets # TODO
   # sqs_target # TODO

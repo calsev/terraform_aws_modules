@@ -19,5 +19,6 @@ module "log_trigger" {
     ]
     # Events come from any service, e.g. aws.events. aws.s3, so omit detail.eventsource and source
   })
-  std_map = var.std_map
+  iam_data = var.iam_data
+  std_map  = var.std_map
 }

@@ -1,3 +1,10 @@
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_batch_submit_job = string
+    iam_policy_arn_ecs_start_task   = string
+  })
+}
+
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
