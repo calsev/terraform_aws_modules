@@ -1,10 +1,10 @@
 module "this_role" {
-  source                  = "../iam_role"
-  assume_role_json        = var.std_map.assume_role_json.ec2
-  attach_policy_arn_map   = var.attach_policy_arn_map
-  create_instance_profile = true
-  create_policy_json_map  = var.create_policy_json_map
-  inline_policy_json_map  = var.inline_policy_json_map
+  source                   = "../iam_role"
+  assume_role_service_list = ["ec2"]
+  attach_policy_arn_map    = var.attach_policy_arn_map
+  create_instance_profile  = true
+  create_policy_json_map   = var.create_policy_json_map
+  inline_policy_json_map   = var.inline_policy_json_map
   managed_policy_name_map = {
     cloudwatch_agent = "CloudWatchAgentServerPolicy"
     ecs_service      = "service-role/AmazonEC2ContainerServiceforEC2Role"

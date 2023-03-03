@@ -45,8 +45,9 @@ resource "aws_codebuild_project" "this_build_project" {
       status              = "DISABLED"
     }
   }
-  name         = each.value.name
-  service_role = each.value.iam_role_arn
+  name               = each.value.name
+  project_visibility = each.value.public_visibility ? "PUBLIC_READ" : "PRIVATE"
+  service_role       = each.value.iam_role_arn
   source {
     buildspec       = each.value.source.build_spec
     git_clone_depth = each.value.source.git_clone_depth
@@ -76,13 +77,16 @@ resource "aws_codebuild_project" "this_build_project" {
 resource "aws_codebuild_webhook" "this_web_hook" {
   for_each   = local.webhook_map
   build_type = "BUILD"
-  filter_group {
-    dynamic "filter" {
-      for_each = each.value.webhook.filter_map
-      content {
-        exclude_matched_pattern = filter.value.exclude_matched_pattern
-        pattern                 = filter.value.pattern
-        type                    = filter.value.type
+  dynamic "filter_group" {
+    for_each = each.value.webhook.filter_map
+    content {
+      dynamic "filter" {
+        for_each = filter_group.value
+        content {
+          exclude_matched_pattern = filter.value.exclude_matched_pattern
+          pattern                 = filter.value.pattern
+          type                    = filter.value.type
+        }
       }
     }
   }

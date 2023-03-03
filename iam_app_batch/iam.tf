@@ -1,6 +1,6 @@
 module "batch_service_role" {
-  source           = "../iam_role"
-  assume_role_json = var.std_map.assume_role_json.batch
+  source                   = "../iam_role"
+  assume_role_service_list = ["batch"]
   attach_policy_arn_map = {
     batch_service = module.managed_policies.data.iam_policy_arn_batch_service
   }
@@ -10,8 +10,8 @@ module "batch_service_role" {
 }
 
 module "batch_spot_fleet_role" {
-  source           = "../iam_role"
-  assume_role_json = var.std_map.assume_role_json.spot_fleet
+  source                   = "../iam_role"
+  assume_role_service_list = ["spotfleet"]
   attach_policy_arn_map = {
     batch_spot_fleet = module.managed_policies.data.iam_policy_arn_batch_spot_fleet
   }
@@ -21,8 +21,8 @@ module "batch_spot_fleet_role" {
 }
 
 module "batch_submit_job_role" {
-  source           = "../iam_role"
-  assume_role_json = var.std_map.assume_role_json.task_starter
+  source                   = "../iam_role"
+  assume_role_service_list = var.std_map.task_starter_service_list
   attach_policy_arn_map = {
     batch_submit_job = module.managed_policies.data.iam_policy_arn_batch_submit_job
   }

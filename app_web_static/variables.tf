@@ -98,10 +98,7 @@ variable "site_domain_name_default" {
 
 variable "std_map" {
   type = object({
-    access_title_map = map(string)
-    assume_role_json = object({
-      code_pipeline = string
-    })
+    access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
     env                            = string

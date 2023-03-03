@@ -39,7 +39,7 @@ locals {
         path                = v.artifact_path == null ? local.build_artifact_default_map[k].path : v.artifact_path
         type                = local.build_artifact_pipe_map[k] ? "CODEPIPELINE" : v.artifact_type == null ? local.build_artifact_default_map[k].type : v.artifact_type
       }
-      badge_enabled = local.build_artifact_pipe_map[k] ? false : v.badge_enabled == null ? var.build_badge_enabled_default : v.badge_enabled
+      badge_enabled = local.build_artifact_pipe_map[k] ? false : v.badge_enabled == null ? var.build_badge_enabled_default : v.badge_enabled # Not supported for pipe builds
       build_timeout = v.build_timeout == null ? var.build_build_timeout_default : v.build_timeout
       cache = {
         modes = v.cache_modes == null ? var.build_cache_modes_default : v.cache_modes
@@ -54,8 +54,9 @@ locals {
         type                        = split("-", local.env_compute_type_map[k])[0] == "cpu" ? split("-", local.env_compute_type_map[k])[1] == "amd" ? "LINUX_CONTAINER" : "ARM_CONTAINER" : "LINUX_GPU_CONTAINER"
         variable_map                = v.environment_variable_map == null ? {} : v.environment_variable_map
       }
-      name         = v.name_override == null ? k : v.name_override # This is both the resource name in AWS and the display name in github when reporting status, so make it unique, but no prefix/suffix
-      iam_role_arn = v.iam_role_arn == null ? var.build_iam_role_arn_default == null ? var.ci_cd_account_data.role.build.basic.iam_role_arn : var.build_iam_role_arn_default : v.iam_role_arn
+      name              = v.name_override == null ? k : v.name_override # This is both the resource name in AWS and the display name in github when reporting status, so make it unique, but no prefix/suffix
+      iam_role_arn      = v.iam_role_arn == null ? var.build_iam_role_arn_default == null ? var.ci_cd_account_data.role.build.basic.iam_role_arn : var.build_iam_role_arn_default : v.iam_role_arn
+      public_visibility = v.public_visibility == null ? var.build_public_visibility_default : v.public_visibility
       source = {
         build_spec          = v.source_build_spec == null ? var.build_source_build_spec_default : v.source_build_spec
         fetch_submodules    = v.source_fetch_submodules == null ? var.build_source_fetch_submodules_default : v.source_fetch_submodules
@@ -78,10 +79,12 @@ locals {
       }
       webhook = v.webhook == null ? null : {
         filter_map = v.webhook.filter_map == null ? var.build_webhook_filter_map_default : {
-          for k, v in v.webhook.filter_map : k => {
-            exclude_matched_pattern = v.exclude_matched_pattern == null ? false : v.exclude_matched_pattern
-            pattern                 = v.pattern
-            type                    = v.type
+          for k_group, v_group in v.webhook.filter_map : k_group => {
+            for k_filter, v_filter in v_group : k_filter => {
+              exclude_matched_pattern = v_filter.exclude_matched_pattern == null ? false : v_filter.exclude_matched_pattern
+              pattern                 = v_filter.pattern
+              type                    = v_filter.type
+            }
           }
         }
         key = k # The webhook key encodes the source location

@@ -41,12 +41,12 @@ module "code_build_role" {
 }
 
 module "code_pipe_role" {
-  for_each                = local.site_policy_map
-  source                  = "../iam_role"
-  assume_role_json        = var.std_map.assume_role_json.code_pipeline
-  attach_policy_arn_map   = each.value.attach_policy_arn_map
-  inline_policy_json_map  = each.value.inline_policy_json_map
-  managed_policy_name_map = each.value.managed_policy_name_map
-  name                    = "${each.key}-code-pipe"
-  std_map                 = var.std_map
+  for_each                 = local.site_policy_map
+  source                   = "../iam_role"
+  assume_role_service_list = ["codepipeline"]
+  attach_policy_arn_map    = each.value.attach_policy_arn_map
+  inline_policy_json_map   = each.value.inline_policy_json_map
+  managed_policy_name_map  = each.value.managed_policy_name_map
+  name                     = "${each.key}-code-pipe"
+  std_map                  = var.std_map
 }
