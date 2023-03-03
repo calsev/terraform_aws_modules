@@ -27,15 +27,8 @@ module "ecs_instance_role" {
   std_map     = var.std_map
 }
 
-module "ecs_task_execution_role" {
-  source           = "../iam_role"
-  assume_role_json = var.std_map.assume_role_json.task_starter
-  attach_policy_arn_map = {
-    ecs_task_execution = module.managed_policies.data.iam_policy_arn_ecs_task_execution
-  }
-  name        = "ecs_task_execution"
-  name_prefix = var.name_prefix
-  std_map     = var.std_map
+data "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
 }
 
 data "aws_iam_policy_document" "ecs_start_task_policy" {
@@ -49,7 +42,7 @@ data "aws_iam_policy_document" "ecs_start_task_policy" {
     actions = [
       "iam:PassRole",
     ]
-    resources = [module.ecs_task_execution_role.data.iam_role_arn]
+    resources = [data.aws_iam_role.ecs_task_execution_role.arn]
   }
 }
 
@@ -62,8 +55,8 @@ module "ecs_start_task_policy" {
 }
 
 module "ecs_start_task_role" {
-  source           = "../iam_role"
-  assume_role_json = var.std_map.assume_role_json.task_starter
+  source                   = "../iam_role"
+  assume_role_service_list = var.std_map.task_starter_service_list
   attach_policy_arn_map = {
     ecs_start_task = module.ecs_start_task_policy.iam_policy_arn
   }

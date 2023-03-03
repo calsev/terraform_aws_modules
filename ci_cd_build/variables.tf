@@ -39,6 +39,7 @@ variable "repo_map" {
       })))
       iam_role_arn               = optional(string)
       name_override              = optional(string)
+      public_visibility          = optional(bool)
       source_build_spec          = optional(string)
       source_fetch_submodules    = optional(bool)
       source_git_clone_depth     = optional(number)
@@ -52,11 +53,11 @@ variable "repo_map" {
         vpc_id                 = optional(string)
       }))
       webhook = optional(object({                  # Webhook will be created if this attribute is not null
-        filter_map = optional(map(object({         # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_webhook#filter
+        filter_map = optional(map(map(object({     # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_webhook#filter
           exclude_matched_pattern = optional(bool) # Defaults to false
           pattern                 = string
           type                    = string
-        })))
+        }))))
       }))
     }))
     source_location_default = optional(string)
@@ -153,6 +154,11 @@ variable "build_iam_role_arn_default" {
   description = "Defaults to the basic role in cicd account data"
 }
 
+variable "build_public_visibility_default" {
+  type    = bool
+  default = false
+}
+
 variable "build_source_build_spec_default" {
   type    = string
   default = "build_spec/build.yml"
@@ -203,17 +209,19 @@ variable "build_vpc_id_default" {
 }
 
 variable "build_webhook_filter_map_default" {
-  type = map(object({
+  type = map(map(object({
     exclude_matched_pattern = optional(bool)
     pattern                 = string
     type                    = string
-  }))
+  })))
   default = {
     # The default is to build PR commits
-    all_commits = {
-      exclude_matched_pattern = false
-      pattern                 = "PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_REOPENED"
-      type                    = "EVENT"
+    pr = {
+      all = {
+        exclude_matched_pattern = false
+        pattern                 = "PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_REOPENED"
+        type                    = "EVENT"
+      }
     }
   }
 }

@@ -37,9 +37,6 @@ variable "role_path" {
 
 variable "std_map" {
   type = object({
-    assume_role_json = object({
-      ec2 = string
-    })
     iam_partition        = string
     resource_name_prefix = string
     resource_name_suffix = string

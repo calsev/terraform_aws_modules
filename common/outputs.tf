@@ -2,7 +2,6 @@ output "std_map" {
   value = {
     app                            = var.std_var.app
     access_title_map               = local.access_title_map
-    assume_role_json               = local.assume_role_json
     aws_account_id                 = var.std_var.aws_account_id == null ? data.aws_caller_identity.current.account_id : var.std_var.aws_account_id
     aws_region_abbreviation        = local.aws_region_abbreviation
     aws_region_name                = var.std_var.aws_region_name
@@ -16,6 +15,7 @@ output "std_map" {
     resource_name_suffix           = local.resource_name_suffix
     service_resource_access_action = local.service_resource_access_action
     tags                           = local.tags
+    task_starter_service_list      = local.task_starter_service_list
     workspace_suffix               = local.workspace_suffix
   }
 }
