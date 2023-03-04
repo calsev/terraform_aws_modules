@@ -6,6 +6,9 @@ variable "ci_cd_account_data" {
     log = object({
       log_group_name = string
     })
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
+      log_group_name = string
+    }))
     role = object({
       build = object({
         basic = object({
@@ -37,28 +40,31 @@ variable "repo_map" {
         type  = string
         value = string
       })))
-      iam_role_arn               = optional(string)
-      name_override              = optional(string)
-      public_visibility          = optional(bool)
-      source_build_spec          = optional(string)
-      source_fetch_submodules    = optional(bool)
-      source_git_clone_depth     = optional(number)
-      source_location            = optional(string)
-      source_report_build_status = optional(bool)   # Ignored for pipeline sources
-      source_type                = optional(string) # e.g. GITHUB, GITHUB_ENTERPRISE
-      source_version             = optional(string)
-      vpc_config = optional(object({ # VPC config will be created if this attribute is not null
-        security_group_id_list = optional(list(string))
-        subnet_id_list         = optional(list(string))
-        vpc_id                 = optional(string)
-      }))
-      webhook = optional(object({                  # Webhook will be created if this attribute is not null
-        filter_map = optional(map(map(object({     # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_webhook#filter
-          exclude_matched_pattern = optional(bool) # Defaults to false
-          pattern                 = string
-          type                    = string
-        }))))
-      }))
+      iam_role_arn                 = optional(string)
+      iam_role_arn_resource_access = optional(string)
+      log_cloudwatch_enabled       = optional(bool)
+      log_s3_bucket_name           = optional(string)
+      log_s3_enabled               = optional(bool)
+      log_s3_encryption_disabled   = optional(bool)
+      name_override                = optional(string)
+      public_visibility            = optional(bool)
+      source_build_spec            = optional(string)
+      source_fetch_submodules      = optional(bool)
+      source_git_clone_depth       = optional(number)
+      source_location              = optional(string)
+      source_report_build_status   = optional(bool)   # Ignored for pipeline sources
+      source_type                  = optional(string) # e.g. GITHUB, GITHUB_ENTERPRISE
+      source_version               = optional(string)
+      vpc_enabled                  = optional(bool)
+      vpc_id                       = optional(string)
+      vpc_security_group_id_list   = optional(list(string))
+      vpc_subnet_id_list           = optional(list(string))
+      webhook_enabled              = optional(bool)
+      webhook_filter_map = optional(map(map(object({ # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_webhook#filter
+        exclude_matched_pattern = optional(bool)     # Defaults to false
+        pattern                 = string
+        type                    = string
+      }))))
     }))
     source_location_default = optional(string)
   }))
@@ -154,6 +160,32 @@ variable "build_iam_role_arn_default" {
   description = "Defaults to the basic role in cicd account data"
 }
 
+variable "build_iam_role_arn_resource_access_default" {
+  type        = string
+  default     = null
+  description = "Required for public access to logs"
+}
+
+variable "build_log_cloudwatch_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "build_log_s3_bucket_name_default" {
+  type    = string
+  default = null
+}
+
+variable "build_log_s3_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "build_log_s3_encryption_disabled_default" {
+  type    = bool
+  default = false
+}
+
 variable "build_public_visibility_default" {
   type    = bool
   default = false
@@ -193,6 +225,16 @@ variable "build_source_version_default" {
   default = null
 }
 
+variable "build_vpc_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "build_vpc_id_default" {
+  type    = string
+  default = null
+}
+
 variable "build_vpc_security_group_id_list_default" {
   type    = list(string)
   default = null
@@ -203,9 +245,10 @@ variable "build_vpc_subnet_id_list_default" {
   default = null
 }
 
-variable "build_vpc_id_default" {
-  type    = string
-  default = null
+variable "build_webhook_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for pipe builds"
 }
 
 variable "build_webhook_filter_map_default" {

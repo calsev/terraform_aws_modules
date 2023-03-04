@@ -9,6 +9,7 @@ variable "bucket_map" {
     enable_acceleration               = optional(bool)
     encryption_algorithm              = optional(string)
     encryption_disabled               = optional(bool)
+    encryption_kms_master_key_id      = optional(string)
     lifecycle_expiration_days         = optional(number)
     lifecycle_upload_expiration_days  = optional(number)
     lifecycle_version_count           = optional(number)
@@ -35,8 +36,9 @@ variable "bucket_map" {
 }
 
 variable "bucket_allow_public_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "There are 2 ways to access an S3 object: S3 URI and S3 website. 3 settings govern public access. allow_public is required for ANY public access."
 }
 
 variable "bucket_cors_allowed_headers_default" {
@@ -79,8 +81,14 @@ variable "bucket_encryption_algorithm_default" {
 }
 
 variable "bucket_encryption_disabled_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "allow_public AND encryption_disabled are required for public S3 URI access. For public access, it is recommended to encrypt objects and use website access; otherwise objects will not be encrypted if public access is removed."
+}
+
+variable "bucket_encryption_kms_master_key_id_default" {
+  type    = string
+  default = null
 }
 
 variable "bucket_lifecycle_expiration_days_default" {
@@ -131,7 +139,7 @@ variable "bucket_website_domain_default" {
 variable "bucket_website_enabled_default" {
   type        = bool
   default     = true
-  description = "By default, support HTTP access, even for private buckets/objects"
+  description = "allow_public AND website_enabled are required for public web access. Otherwise, if website_enabled then the website will be private (use resource policy for CIDR access). Website access automatically decrypts objects."
 }
 
 variable "dns_data" {

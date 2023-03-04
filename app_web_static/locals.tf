@@ -23,7 +23,7 @@ locals {
   build_name_list_map = {
     for k, v_site in var.site_map : k => concat(
       [for v_build in v_site.build_list : v_build.build_project_name],
-      [module.code_build.build_map["web-${k}"].deploy.name],
+      [module.code_build.data["web-${k}"].deploy.name],
     )
   }
   domain_object = {
@@ -34,7 +34,7 @@ locals {
     }
   }
   output_data = merge(module.cdn.data, {
-    build = module.code_build.build_map
+    build = module.code_build.data
   })
   pipe_map = {
     for k, v in var.site_map : "${k}_deploy_${var.std_map.env}" => {
@@ -57,7 +57,7 @@ locals {
           {
             action_map = {
               Deploy = {
-                configuration_project_name = module.code_build.build_map["web-${k}"].deploy.name
+                configuration_project_name = module.code_build.data["web-${k}"].deploy.name
                 input_artifact_list        = [local.artifact_name_map[k]]
               }
             }

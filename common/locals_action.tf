@@ -250,9 +250,10 @@ locals {
     }
     logs = {
       group = {
-        public_read = []
-        read = [
+        public_read = [
           "DescribeLogStreams",
+        ]
+        read = [
           "FilterLogEvents",
           "GetLogGroupFields",
           "ListTagsLogGroup",
@@ -266,10 +267,10 @@ locals {
         ]
       }
       stream = {
-        public_read = []
-        read = [
+        public_read = [
           "GetLogEvents",
         ]
+        read         = []
         public_write = []
         write = [
           "CreateLogStream", # Listed incorrectly in docs
@@ -315,11 +316,11 @@ locals {
       object = {
         public_read = [
           "GetObject",
+          "GetObjectVersion",
         ]
         read = [
           "GetObjectAcl",
           "GetObjectTagging",
-          "GetObjectVersion",
           "GetObjectVersionAcl",
           "GetObjectVersionTagging",
         ]
