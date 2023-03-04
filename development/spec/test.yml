@@ -5,8 +5,8 @@ phases:
       - apt-get update
       - apt-get install -yqq git gnupg2 make software-properties-common wget
       - wget -O- https://apt.releases.hashicorp.com/gpg | 
-        gpg --dearmor | 
-        sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        gpg --dearmor > 
+        /usr/share/keyrings/hashicorp-archive-keyring.gpg
       - gpg --no-default-keyring 
         --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg 
         --fingerprint
@@ -16,7 +16,7 @@ phases:
       - apt-get install terraform
       - terraform --version
       - cd development
-      - export BASE_PY=$(which python)
+      - export BASE_PY=$(which python) # Don't bother with Pyenv versions
       - make env-install
   build:
     commands:
@@ -26,7 +26,3 @@ phases:
       # Lint scripts and modules
       - make py-lint
       - make tf-lint
-artifacts:
-  base-directory: app/public
-  files:
-    - '**/*'
