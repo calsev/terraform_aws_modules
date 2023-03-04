@@ -5,6 +5,7 @@ python script/s3_import.py stack/inf/s3 gobble
 """
 import argparse
 import os
+import shlex
 from typing import Dict, List, Optional
 
 from typeguard import typechecked
@@ -58,7 +59,18 @@ def build_bucket_map(
     bucket_map = {}
     for resource_name in resource_list:
         if "aws_s3_bucket.this_bucket" in resource_name:
-            bucket_name = resource_name.split('"')[1]
+            parser = shlex.shlex(resource_name)
+            parser.whitespace = "."
+            bucket_segments = list(parser)
+            print(bucket_segments)
+            bucket_index = bucket_segments.index("this_bucket")
+            bucket_name = bucket_segments[bucket_index + 2]  # [ then name
+            if bucket_name[0] != '"' or bucket_name[-1] != '"':
+                raise ValueError(
+                    f"Could not understand bucket name '{resource_name}', {bucket_segments}, {bucket_name}"
+                )
+            bucket_name = bucket_name[1:-1]
+            print(f"Found bucket {bucket_name}")
             bucket_map[bucket_name] = []  # TODO: This handles only one name
     return bucket_map
 
