@@ -315,11 +315,11 @@ locals {
       object = {
         public_read = [
           "GetObject",
+          "GetObjectVersion",
         ]
         read = [
           "GetObjectAcl",
           "GetObjectTagging",
-          "GetObjectVersion",
           "GetObjectVersionAcl",
           "GetObjectVersionTagging",
         ]
