@@ -17,7 +17,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this_bucket_encry
   expected_bucket_owner = var.std_map.aws_account_id
   rule {
     dynamic "apply_server_side_encryption_by_default" {
-      for_each = local.bucket_encryption_filter[each.key] ? { this = {} } : {}
+      for_each = !each.value.encryption_disabled ? { this = {} } : {}
       content {
         sse_algorithm     = each.value.encryption_algorithm
         kms_master_key_id = each.value.encryption_kms_master_key_id

@@ -1,6 +1,7 @@
 variable "bucket_map" {
   type = map(object({
     allow_public                      = optional(bool)
+    cloudfront_origin_access_identity = optional(string)
     cors_allowed_headers              = optional(list(string))
     cors_allowed_methods              = optional(list(string))
     cors_allowed_origins              = optional(list(string))
@@ -124,6 +125,30 @@ variable "bucket_notification_enable_event_bridge_default" {
 variable "bucket_requester_pays_default" {
   type    = bool
   default = false
+}
+
+variable "bucket_sid_condition_map_default" {
+  type = map(object({
+    test       = string
+    value_list = list(string)
+    variable   = string
+  }))
+  default = {}
+}
+
+variable "bucket_sid_identifier_list_default" {
+  type    = list(string)
+  default = ["*"]
+}
+
+variable "bucket_sid_identifier_type_default" {
+  type    = string
+  default = "*"
+}
+
+variable "bucket_sid_object_key_list_default" {
+  type    = list(string)
+  default = ["*"]
 }
 
 variable "bucket_versioning_enabled_default" {
