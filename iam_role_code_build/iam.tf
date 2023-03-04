@@ -26,16 +26,25 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
+module "s3_log_policy" {
+  for_each = var.log_bucket_name == null ? {} : { this = {} }
+  source   = "../iam_policy_role_s3"
+  sid_map = {
+    Log = {
+      access           = "write"
+      bucket_name_list = [var.log_bucket_name]
+    }
+  }
+  std_map = var.std_map
+}
+
 module "this_role" {
-  source           = "../iam_role"
-  assume_role_json = data.aws_iam_policy_document.assume_role_policy.json
-  attach_policy_arn_map = merge(var.attach_policy_arn_map, {
-    artifact_read_write = var.ci_cd_account_data.bucket.iam_policy_arn_map.read_write
-    log_write           = var.ci_cd_account_data.log.iam_policy_arn_map.write
-  })
+  source                  = "../iam_role"
+  assume_role_json        = data.aws_iam_policy_document.assume_role_policy.json
+  attach_policy_arn_map   = local.attach_policy_arn_map
   create_instance_profile = false
   create_policy_json_map  = var.create_policy_json_map
-  inline_policy_json_map  = var.inline_policy_json_map
+  inline_policy_json_map  = local.inline_policy_json_map
   managed_policy_name_map = var.managed_policy_name_map
   max_session_duration    = var.max_session_duration
   name                    = var.name

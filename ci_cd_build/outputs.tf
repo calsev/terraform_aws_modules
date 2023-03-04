@@ -1,3 +1,3 @@
-output "build_map" {
-  value = local.build_object
+output "data" {
+  value = local.output_data
 }

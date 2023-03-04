@@ -12,12 +12,16 @@ resource "aws_s3_bucket_acl" "this_bucket_acl" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "this_bucket_encryption" {
-  for_each              = local.bucket_encryption_map
+  for_each              = local.bucket_map
   bucket                = aws_s3_bucket.this_bucket[each.key].id
   expected_bucket_owner = var.std_map.aws_account_id
   rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = each.value.encryption_algorithm
+    dynamic "apply_server_side_encryption_by_default" {
+      for_each = local.bucket_encryption_filter[each.key] ? { this = {} } : {}
+      content {
+        sse_algorithm     = each.value.encryption_algorithm
+        kms_master_key_id = each.value.encryption_kms_master_key_id
+      }
     }
     bucket_key_enabled = true
   }

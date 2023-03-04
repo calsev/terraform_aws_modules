@@ -12,6 +12,9 @@ variable "ci_cd_account_data" {
     log = object({
       iam_policy_arn_map = map(string)
     })
+    log_public = optional(object({ # Must be provided if log public access is enabled
+      iam_policy_arn_map = map(string)
+    }))
   })
 }
 
@@ -57,6 +60,18 @@ variable "name_infix" {
   description = "If true, standard resource prefix and suffix will be applied to the role"
 }
 
+variable "log_public_access" {
+  type        = bool
+  default     = false
+  description = "If true, this role will add permissions for the public log"
+}
+
+variable "log_bucket_name" {
+  type        = string
+  default     = null
+  description = "If provided, write permissions for the bucket will be added"
+}
+
 variable "role_path" {
   type    = string
   default = null
@@ -64,11 +79,13 @@ variable "role_path" {
 
 variable "std_map" {
   type = object({
-    aws_account_id       = string
-    iam_partition        = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    iam_partition                  = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
 

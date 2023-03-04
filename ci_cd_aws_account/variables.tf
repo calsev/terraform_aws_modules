@@ -1,6 +1,6 @@
 variable "bucket_lifecycle_expiration_days" {
   type    = number
-  default = 30
+  default = 14
 }
 
 variable "create_policy" {
@@ -8,9 +8,15 @@ variable "create_policy" {
   default = true
 }
 
+variable "log_public_enabled" {
+  type        = bool
+  default     = false
+  description = "If true, a public log group will be created"
+}
+
 variable "log_retention_days" {
   type    = number
-  default = 30
+  default = 14
 }
 
 variable "policy_name_prefix" {

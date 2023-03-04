@@ -6,10 +6,7 @@ locals {
     for k, v in local.bucket_map : k => v if v.website_fqdn != null
   }
   bucket_encryption_filter = {
-    for k, v in local.bucket_map : k => !v.encryption_disabled && !v.allow_public && v.website_fqdn == null
-  }
-  bucket_encryption_map = {
-    for k, v in local.bucket_map : k => v if local.bucket_encryption_filter[k] # TODO: Always create with disabled enc
+    for k, v in local.bucket_map : k => !v.encryption_disabled
   }
   bucket_map = {
     for k, v in var.bucket_map : k => merge(local.lifecycle_map[k], {
@@ -22,6 +19,7 @@ locals {
       create_policy                     = v.create_policy == null ? var.bucket_create_policy_default : v.create_policy
       enable_acceleration               = v.enable_acceleration == null ? var.bucket_enable_acceleration_default : v.enable_acceleration
       encryption_algorithm              = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm
+      encryption_kms_master_key_id      = v.encryption_kms_master_key_id == null ? var.bucket_encryption_kms_master_key_id_default : v.encryption_kms_master_key_id
       encryption_disabled               = v.encryption_disabled == null ? var.bucket_encryption_disabled_default : v.encryption_disabled
       lifecycle_version_expiration_days = local.lifecycle_map[k].lifecycle_version_expiration_days == null ? local.lifecycle_map[k].lifecycle_expiration_days : local.lifecycle_map[k].lifecycle_version_expiration_days
       notification_enable_event_bridge  = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
@@ -75,11 +73,12 @@ locals {
         for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["create_policy", "encryption_algorithm", "encryption_disabled", "resource_name", "sid_map", "tags"], k_bucket)
       },
       {
-        arn                     = aws_s3_bucket.this_bucket[k].arn
-        bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
-        bucket_policy_doc       = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
-        bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
-        encryption_algorithm    = local.bucket_encryption_filter[k] ? v.encryption_algorithm : null
+        arn                          = aws_s3_bucket.this_bucket[k].arn
+        bucket_domain_name           = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
+        bucket_policy_doc            = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
+        bucket_website_endpoint      = aws_s3_bucket.this_bucket[k].website_endpoint
+        encryption_algorithm         = local.bucket_encryption_filter[k] ? v.encryption_algorithm : null
+        encryption_kms_master_key_id = local.bucket_encryption_filter[k] ? v.encryption_kms_master_key_id : null
       },
     )
   }

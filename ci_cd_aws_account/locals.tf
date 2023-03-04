@@ -16,13 +16,26 @@ locals {
     read_write = {}
     write      = {}
   }
+  log_map_base = {
+    create_policy      = var.create_policy
+    log_retention_days = var.log_retention_days
+    policy_name_prefix = var.policy_name_prefix
+  }
+  log_map_private = {
+    (local.base_name) = local.log_map_base
+  }
+  log_map = !var.log_public_enabled ? local.log_map_private : merge(local.log_map_private, {
+    (local.public_name) = local.log_map_base,
+  })
   output_data = {
-    bucket = local.bucket_data
-    log    = module.build_log.data[local.base_name]
+    bucket     = local.bucket_data
+    log        = module.build_log.data[local.base_name]
+    log_public = var.log_public_enabled ? module.build_log.data[local.public_name] : null
     role = {
       build = {
         basic = module.basic_build_role.data
       }
     }
   }
+  public_name = "${local.base_name}-public"
 }
