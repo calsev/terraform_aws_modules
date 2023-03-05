@@ -1,15 +1,7 @@
-data "aws_iam_policy_document" "service_assume_role" {
-  for_each = var.assume_role_service_list != null ? { this = {} } : {}
-  statement {
-    actions = [
-      "sts:AssumeRole",
-    ]
-    principals {
-      identifiers = [for service in var.assume_role_service_list : "${service}.amazonaws.com"]
-      type        = "Service"
-    }
-    sid = "AssumeThisRole"
-  }
+module "assume_role_policy" {
+  source       = "../iam_policy_assume_role"
+  for_each     = var.assume_role_service_list != null ? { this = {} } : {}
+  service_list = var.assume_role_service_list
 }
 
 resource "aws_iam_policy" "this_created_policy" {

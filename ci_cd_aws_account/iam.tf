@@ -1,6 +1,6 @@
 module "bucket_policy" {
   for_each    = local.bucket_policy_map
-  source      = "../iam_policy_role_s3"
+  source      = "../iam_policy_identity_s3"
   name        = "build_bucket_${each.key}"
   name_prefix = var.policy_name_prefix
   sid_map = {

@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "this_policy_doc" {
 
 module "this_policy" {
   for_each        = var.name == null ? {} : local.sid_map
-  source          = "../iam_policy_role"
+  source          = "../iam_policy_identity"
   iam_policy_json = data.aws_iam_policy_document.this_policy_doc[each.key].json
   name            = "${var.name}-${each.key}"
   name_infix      = var.name_infix

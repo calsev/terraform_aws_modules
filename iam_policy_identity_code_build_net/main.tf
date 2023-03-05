@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "network_policy" {
 }
 
 module "this_policy" {
-  source          = "../iam_policy_role"
+  source          = "../iam_policy_identity"
   iam_policy_json = data.aws_iam_policy_document.network_policy.json
   name            = var.name
   name_infix      = var.name_infix

@@ -1,6 +1,6 @@
 locals {
   all_attached_policy_arn_map = merge(local.managed_policy_arn_map, local.attach_policy_arn_map, local.create_policy_arn_map)
-  assume_role_json            = var.assume_role_json != null ? var.assume_role_json : data.aws_iam_policy_document.service_assume_role["this"].json
+  assume_role_json            = var.assume_role_json != null ? var.assume_role_json : jsonencode(module.assume_role_policy["this"].iam_policy_doc_assume_role)
   attach_policy_arn_map = {
     for name, arn in var.attach_policy_arn_map : "2-attached-${name}" => arn
   }

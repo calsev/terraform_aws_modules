@@ -1,5 +1,5 @@
 module "queue_policy" {
-  source      = "../iam_policy_role_sqs_queue"
+  source      = "../iam_policy_identity_sqs_queue"
   for_each    = local.queue_map
   access_list = ["write"]
   queue_name  = module.dead_letter_queue.data[each.key].name

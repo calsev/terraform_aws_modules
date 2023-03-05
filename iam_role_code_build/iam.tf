@@ -1,34 +1,22 @@
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = [
-      "sts:AssumeRole",
-    ]
-    principals {
-      identifiers = ["codebuild.amazonaws.com"]
-      type        = "Service"
+module "assume_role_policy" {
+  source       = "../iam_policy_assume_role"
+  service_list = ["codebuild"]
+  sid_map = {
+    Role = {
+      condition_map = {
+        pipe_role_key_match = {
+          test       = "StringLike" # ArnLike does not work
+          value_list = ["arn:${var.std_map.iam_partition}:iam::${var.std_map.aws_account_id}:role/${var.code_pipe_role_key}"]
+          variable   = "AWS:PrincipalArn" # SourceArn does not work
+        }
+      }
     }
-    sid = "ServiceAssumeRole"
-  }
-  statement {
-    actions = [
-      "sts:AssumeRole",
-    ]
-    condition {
-      test     = "StringLike" # ArnLike does not work
-      values   = ["arn:${var.std_map.iam_partition}:iam::${var.std_map.aws_account_id}:role/${var.code_pipe_role_key}"]
-      variable = "AWS:PrincipalArn" # SourceArn does not work
-    }
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
-    sid = "RoleAssumeRole"
   }
 }
 
 module "s3_log_policy" {
   for_each = var.log_bucket_name == null ? {} : { this = {} }
-  source   = "../iam_policy_role_s3"
+  source   = "../iam_policy_identity_s3"
   sid_map = {
     Log = {
       access           = "write"
@@ -40,7 +28,7 @@ module "s3_log_policy" {
 
 module "this_role" {
   source                  = "../iam_role"
-  assume_role_json        = data.aws_iam_policy_document.assume_role_policy.json
+  assume_role_json        = jsonencode(module.assume_role_policy.iam_policy_doc_assume_role)
   attach_policy_arn_map   = local.attach_policy_arn_map
   create_instance_profile = false
   create_policy_json_map  = var.create_policy_json_map
