@@ -1,6 +1,6 @@
 locals {
   assume_role_doc_map = {
-    for k, _ in local.assume_role_policy_map : k => jsondecode(data.aws_iam_policy_document.assume_role_policy[k].json)
+    for k, _ in local.assume_role_policy_map : k => module.assume_role_policy[k].iam_policy_doc_assume_role
   }
   assume_role_policy_map = {
     batch = ["batch"]

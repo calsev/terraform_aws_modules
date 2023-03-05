@@ -1,13 +1,5 @@
-data "aws_iam_policy_document" "assume_role_policy" {
-  for_each = local.assume_role_policy_map
-  statement {
-    actions = [
-      "sts:AssumeRole",
-    ]
-    principals {
-      identifiers = [for service in each.value : "${service}.amazonaws.com"]
-      type        = "Service"
-    }
-    sid = "AssumeThisRole"
-  }
+module "assume_role_policy" {
+  source       = "../iam_policy_assume_role"
+  for_each     = local.assume_role_policy_map
+  service_list = each.value
 }

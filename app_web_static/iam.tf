@@ -1,6 +1,6 @@
 module "start_build" {
   for_each                = local.build_name_list_map
-  source                  = "../iam_policy_role_code_build_project"
+  source                  = "../iam_policy_identity_code_build_project"
   access_list             = ["read_write"]
   build_project_name_list = each.value
   name                    = "${each.key}_start_build"
@@ -9,7 +9,7 @@ module "start_build" {
 
 module "site_deploy" {
   for_each = var.site_map
-  source   = "../iam_policy_role_s3"
+  source   = "../iam_policy_identity_s3"
   sid_map = {
     Artifact = {
       access           = "write"
@@ -22,7 +22,7 @@ module "site_deploy" {
 
 module "cdn_invalidate" {
   for_each = var.site_map
-  source   = "../iam_policy_role_cdn"
+  source   = "../iam_policy_identity_cdn"
   cdn_arn  = module.cdn.data.cdn[each.key].arn
   name     = "${each.key}_cdn_invalidate"
   std_map  = var.std_map

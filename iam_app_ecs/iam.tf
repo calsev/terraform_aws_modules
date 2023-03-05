@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "read_ssm_cw_config" {
 }
 
 module "read_ssm_cw_config_policy" {
-  source          = "../iam_policy_role"
+  source          = "../iam_policy_identity"
   iam_policy_json = data.aws_iam_policy_document.read_ssm_cw_config.json
   name            = "read_ssm_cw_config_for_ecs"
   name_prefix     = var.name_prefix
@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "ecs_start_task_policy" {
 }
 
 module "ecs_start_task_policy" {
-  source          = "../iam_policy_role"
+  source          = "../iam_policy_identity"
   iam_policy_json = data.aws_iam_policy_document.ecs_start_task_policy.json
   name            = "ecs_task_start"
   name_prefix     = var.name_prefix
