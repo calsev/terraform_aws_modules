@@ -50,12 +50,14 @@ locals {
       bucket_name                       = local.l1_map[k].name_infix ? local.l1_map[k].resource_name : local.l1_map[k].name
       lifecycle_version_expiration_days = local.l1_map[k].lifecycle_version_expiration_days_l1 == null ? local.l1_map[k].lifecycle_expiration_days : local.l1_map[k].lifecycle_version_expiration_days_l1
       sid_map_l2 = local.l1_map[k].cloudfront_origin_access_identity == null ? local.l1_map[k].sid_map_l1 : merge(local.l1_map[k].sid_map_l1, {
-        Cloudfront = {
-          access = "public_read"
+        CloudFront = {
+          access        = "public_read"
+          condition_map = {}
           identifier_list = [
-            "arn:aws:${var.std_map.iam_partition}::cloudfront:user/CloudFront Origin Access Identity ${local.l1_map[k].cloudfront_origin_access_identity}",
+            "arn:${var.std_map.iam_partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${local.l1_map[k].cloudfront_origin_access_identity}",
           ]
           identifier_type = "AWS"
+          object_key_list = ["*"]
         }
       })
       tags = merge(
