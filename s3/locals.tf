@@ -89,7 +89,7 @@ locals {
       {
         arn                     = aws_s3_bucket.this_bucket[k].arn
         bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
-        bucket_policy_doc       = v.create_policy ? jsondecode(module.this_bucket_policy[k].iam_policy_json) : null
+        bucket_policy_doc       = v.create_policy ? module.this_bucket_policy[k].iam_policy_doc : null
         bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
       },
     )

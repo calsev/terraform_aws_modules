@@ -1,3 +1,3 @@
-output "iam_policy_json" {
-  value = local.policy_json
+output "iam_policy_doc" {
+  value = jsondecode(local.policy_json)
 }

@@ -1,3 +1,8 @@
+variable "access_list" {
+  type    = list(string)
+  default = ["write"]
+}
+
 variable "build_project_name" {
   type        = string
   default     = null
