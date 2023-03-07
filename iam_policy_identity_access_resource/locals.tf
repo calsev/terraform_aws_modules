@@ -4,7 +4,7 @@ locals {
       for resource_type, resource_name_list in var.resource_map : resource_type => {
         resource_list = resource_name_list
         sid           = "${local.pascal_map[resource_type]}${var.std_map.access_title_map[access]}"
-      }
+      } if length(var.std_map.service_resource_access_action[var.service_name][resource_type][access]) > 0
     }
   }
   pascal_map = {

@@ -1,3 +1,3 @@
-output "iam_policy_arn" {
-  value = module.this_policy.iam_policy_arn
+output "data" {
+  value = module.this_policy.data
 }

@@ -1,4 +1,5 @@
 data "aws_iam_policy_document" "network_policy" {
+  # EC2 service is infeasible for using access-resource
   statement {
     actions = [
       "ec2:DescribeAvailabilityZones",
