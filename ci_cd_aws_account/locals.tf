@@ -4,10 +4,10 @@ locals {
     module.build_bucket.data[local.bucket_name],
     {
       iam_policy_arn_map = {
-        for k, _ in local.bucket_policy_map : k => module.bucket_policy[k].iam_policy_arn
+        for k, _ in local.bucket_policy_map : k => module.bucket_policy[k].data.iam_policy_arn
       }
       iam_policy_doc_map = {
-        for k, _ in local.bucket_policy_map : k => module.bucket_policy[k].iam_policy_doc
+        for k, _ in local.bucket_policy_map : k => module.bucket_policy[k].data.iam_policy_doc
       }
     },
   )

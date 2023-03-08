@@ -33,7 +33,7 @@ module "code_build_role" {
   source   = "../iam_role_code_build"
   attach_policy_arn_map = {
     cdn_invalidate = module.cdn_invalidate[each.key].data.iam_policy_arn_map.read_write
-    site_deploy    = module.site_deploy[each.key].iam_policy_arn
+    site_deploy    = module.site_deploy[each.key].data.iam_policy_arn
   }
   ci_cd_account_data = var.ci_cd_account_data
   name               = "${each.key}_deploy"

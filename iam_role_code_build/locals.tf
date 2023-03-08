@@ -7,6 +7,6 @@ locals {
     },
   )
   inline_policy_json_map = var.log_bucket_name == null ? var.inline_policy_json_map : merge(var.inline_policy_json_map, {
-    log_s3_write = jsonencode(module.s3_log_policy["this"].iam_policy_doc)
+    log_s3_write = jsonencode(module.s3_log_policy["this"].data.iam_policy_doc)
   })
 }
