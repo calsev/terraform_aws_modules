@@ -22,7 +22,8 @@ TF := terraform
 LINT := tflint
 VALIDATE := $(TF) validate
 
-TFLINT_VER := 45.0 # https://github.com/terraform-linters/tflint/releases
+# https://github.com/terraform-linters/tflint/releases
+TFLINT_VER := v0.45.0
 
 $(VENV):
 	@echo Application Python version is $(PY_VER)

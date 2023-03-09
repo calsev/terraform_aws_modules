@@ -1,8 +1,9 @@
 import json
+import os
 import re
 import shlex
 import subprocess
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 from typeguard import typechecked
 
@@ -16,28 +17,55 @@ def resource_regex(resource_type: str) -> re.Pattern:
 def run_command_as_process(
     command: str,
     cwd: Optional[str] = None,
-    return_code: Optional[int] = 0,
-    empty_err: bool = True,
+    expected_return_code: Optional[int] = 0,
+    expected_stdout: Union[str, re.Pattern, List[Union[str, re.Pattern]], None] = None,
+    expect_empty_stderr: bool = True,
+    env: Optional[Dict[str, str]] = None,
 ) -> subprocess.CompletedProcess:
+    """
+    @param command: The command string to execute
+    @param cwd: The working directory, if not the current directory
+    @param expected_return_code: If not None, the return code will be checked against this
+    @param expected_stdout: If not None, the output of the command will be matched to this
+    @param expect_empty_stderr: If True, the error output will be checked to make sure it is empty
+    @param env: A dictionary of environment variables to add to the inherited environment
+    @return: The process object
+    """
     print(f"Running '{command}'")
-    command = json.dumps(command)[1:-1]
-    arg_list = shlex.split(command)
+    command = json.dumps(command)[1:-1]  # Escape characters
+    arg_list = shlex.split(command)  # So we do not have to use shell form
+    if env:
+        env = {**os.environ, **env}
     result = subprocess.run(
         arg_list,
         cwd=cwd,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
+        env=env,
     )
-    if (
-        return_code is not None
-        and result.returncode != return_code
-        or empty_err
-        and result.stderr
-    ):
+    return_matches = (
+        expected_return_code is None or result.returncode == expected_return_code
+    )
+    err_matches = not expect_empty_stderr or not result.stderr
+    if not return_matches or not err_matches:
         raise RuntimeError(
-            f"Command {command} failed ({result.returncode}): {result.stderr}"
+            f"Command {command} failed ({result.returncode}):\n{result.stderr}"
         )
+    if expected_stdout:
+        expected_stdout = (
+            expected_stdout if isinstance(expected_stdout, list) else [expected_stdout]
+        )
+        for match in expected_stdout:
+            if (
+                isinstance(match, str)
+                and match not in result.stdout
+                or isinstance(match, re.Pattern)
+                and not re.search(match, result.stdout)
+            ):
+                raise RuntimeError(
+                    f"Command {command} output does not match '{match}':\n{result.stdout}"
+                )
     return result
 
 

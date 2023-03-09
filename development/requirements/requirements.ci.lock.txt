@@ -12,12 +12,12 @@ packaging==23.0
 pathspec==0.11.0
 pfzy==0.3.4
 pip==23.0.1
-platformdirs==3.0.0
+platformdirs==3.1.0
 prompt-toolkit==3.0.38
 pycodestyle==2.10.0
 pyflakes==3.0.1
 pyright==1.1.296
-setuptools==67.4.0
+setuptools==67.5.1
 typeguard==2.13.3
 wcwidth==0.2.6
 wheel==0.38.4

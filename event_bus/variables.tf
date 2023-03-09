@@ -2,6 +2,7 @@ variable "bus_map" {
   type = map(object({
     archive_retention_days = optional(number)
     event_bus_name         = optional(string) # "If provided, a bus will not be created
+    logging_enabled        = optional(bool)
     log_retention_days     = optional(number)
   }))
 }
@@ -15,6 +16,11 @@ variable "bus_log_retention_days_default" {
   type        = number
   default     = 14
   description = "If not not null, a log group and rule will be created"
+}
+
+variable "bus_logging_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "iam_data" {
