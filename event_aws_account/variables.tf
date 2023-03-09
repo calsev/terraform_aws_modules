@@ -5,6 +5,21 @@ variable "iam_data" {
   })
 }
 
+variable "archive_retention_days_for_default_bus" {
+  type    = number
+  default = 3
+}
+
+variable "logging_enabled_for_default_bus" {
+  type    = bool
+  default = true
+}
+
+variable "log_retention_days_for_default_bus" {
+  type    = number
+  default = 3
+}
+
 variable "std_map" {
   type = object({
     access_title_map               = map(string)

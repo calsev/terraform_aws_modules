@@ -10,6 +10,7 @@ module "log_trigger" {
   event_map = {
     for k, v in local.log_target_map : k => {
       event_bus_name = v.event_bus_name
+      is_enabled     = v.logging_enabled
       target_arn     = module.log_group.data[k].log_group_arn
     }
   }

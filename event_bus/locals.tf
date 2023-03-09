@@ -58,8 +58,9 @@ locals {
   }
   log_target_map = {
     for k, v in var.bus_map : local.l2_map[k].log_name => {
-      event_bus_name = local.event_bus_map[k].event_bus_name
-      log_group_arn  = module.log_group.data[local.l2_map[k].log_name].log_group_arn
+      event_bus_name  = local.event_bus_map[k].event_bus_name
+      logging_enabled = v.logging_enabled == null ? var.bus_logging_enabled_default : v.logging_enabled
+      log_group_arn   = module.log_group.data[local.l2_map[k].log_name].log_group_arn
     } if local.l1_map[k].log_retention_days != null
   }
   output_data = {
