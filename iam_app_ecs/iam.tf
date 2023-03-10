@@ -53,14 +53,3 @@ module "ecs_start_task_policy" {
   name_prefix     = var.name_prefix
   std_map         = var.std_map
 }
-
-module "ecs_start_task_role" {
-  source                   = "../iam_role"
-  assume_role_service_list = var.std_map.task_starter_service_list
-  attach_policy_arn_map = {
-    ecs_start_task = module.ecs_start_task_policy.iam_policy_arn
-  }
-  name        = "ecs_task_start"
-  name_prefix = var.name_prefix
-  std_map     = var.std_map
-}

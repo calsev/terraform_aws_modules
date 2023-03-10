@@ -66,14 +66,5 @@ locals {
       "tf.workspace" = terraform.workspace
     }
   )
-  task_starter_service_list = [
-    # TODO: Get rid of this
-    "batch",
-    "ec2",
-    "ecs",
-    "ecs-tasks",
-    "events",
-    "lambda",
-  ]
   workspace_suffix = terraform.workspace == "default" ? "" : "-${terraform.workspace}"
 }

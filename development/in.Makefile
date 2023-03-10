@@ -23,7 +23,10 @@ LINT := tflint
 VALIDATE := $(TF) validate
 
 # https://github.com/terraform-linters/tflint/releases
-TFLINT_VER := v0.45.0
+TFLINT_VER := 0.45.0
+
+ci-deps:
+	$(PY) cd .. && python -m development.script.download_ci_dependencies
 
 $(VENV):
 	@echo Application Python version is $(PY_VER)
@@ -64,4 +67,15 @@ tf-lint: tflint-install
 	cd {{ mod_dir }} && $(LINT) --config=../development/.tflint.hcl{% endfor %}
 
 tflint-install:
-	@(command tflint && [[ `tflint --version` =~ $(TFLINT_VER) ]] && echo tflint $(TFLINT_VER) already installed) || (echo Installing tflint && cd /tmp && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash)
+	@(command tflint && [[ `tflint --version` =~ $(TFLINT_VER) ]] && echo tflint $(TFLINT_VER) already installed) || (echo Installing tflint && make tflint-install-cdn)
+
+#This fails in CI due to rate limits
+tflint-install-net:
+	cd /tmp && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+tflint-install-cdn:
+	wget https://cdn.calsev.com/installer/tflint_linux_amd64-v$(TFLINT_VER).zip -O /tmp/tflint.zip
+	cd /tmp && unzip -o tflint.zip
+	ls -alF /tmp | grep tflint
+	sudo chown root:root /tmp/tflint
+	sudo mv /tmp/tflint /usr/local/bin/
