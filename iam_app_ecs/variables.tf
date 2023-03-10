@@ -5,12 +5,11 @@ variable "name_prefix" {
 
 variable "std_map" {
   type = object({
-    aws_account_id            = string
-    aws_region_name           = string
-    iam_partition             = string
-    resource_name_prefix      = string
-    resource_name_suffix      = string
-    tags                      = map(string)
-    task_starter_service_list = list(string)
+    aws_account_id       = string
+    aws_region_name      = string
+    iam_partition        = string
+    resource_name_prefix = string
+    resource_name_suffix = string
+    tags                 = map(string)
   })
 }

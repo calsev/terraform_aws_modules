@@ -15,7 +15,6 @@ output "std_map" {
     resource_name_suffix           = local.resource_name_suffix
     service_resource_access_action = local.service_resource_access_action
     tags                           = local.tags
-    task_starter_service_list      = local.task_starter_service_list
     workspace_suffix               = local.workspace_suffix
   }
 }
