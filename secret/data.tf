@@ -5,11 +5,11 @@ data "aws_ssm_parameter" "token_param" {
 }
 
 data "aws_secretsmanager_secret" "token_secret" {
-  for_each = var.sm_secret_arn == null ? {} : { this = {} }
-  arn      = var.sm_secret_arn
+  for_each = var.sm_secret_id == null ? {} : { this = {} }
+  arn      = "arn:${var.std_map.iam_partition}:secretsmanager:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:secret:${var.sm_secret_id}"
 }
 
 data "aws_secretsmanager_secret_version" "token_version" {
-  for_each  = var.sm_secret_arn == null ? {} : { this = {} }
+  for_each  = var.sm_secret_id == null ? {} : { this = {} }
   secret_id = data.aws_secretsmanager_secret.token_secret[each.key].id
 }
