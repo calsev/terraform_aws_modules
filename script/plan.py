@@ -121,7 +121,7 @@ def get_plan_resources(
     result = run_command_as_process(
         f"terraform plan{var_file} -out plan.tfplan -no-color", cwd=rel_path
     )
-    resources = {
+    change_to_resource_list = {
         "created": [],
         "destroyed": [],
     }
@@ -129,7 +129,10 @@ def get_plan_resources(
     print(f"Read {len(lines)} lines")
     for line in lines:
         process_plan_line(
-            line, resources, resource_type_ignore_regex_map, resource_ignore_list
+            line,
+            change_to_resource_list,
+            resource_type_ignore_regex_map,
+            resource_ignore_list,
         )
-    print(resources)
-    return resources, result.stdout
+    print(change_to_resource_list)
+    return change_to_resource_list, result.stdout

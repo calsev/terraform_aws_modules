@@ -1,18 +1,20 @@
 module "compute_common" {
-  source                                   = "../ecs_compute_common"
-  compute_map                              = var.compute_map
-  compute_image_id_default                 = var.compute_image_id_default
-  compute_instance_allocation_type_default = var.compute_instance_allocation_type_default
-  compute_instance_storage_gib_default     = var.compute_instance_storage_gib_default
-  compute_instance_type_default            = var.compute_instance_type_default
-  compute_key_name_default                 = var.compute_key_name_default
-  compute_security_group_id_list_default   = var.compute_security_group_id_list_default
-  compute_subnet_id_list_default           = var.compute_subnet_id_list_default
-  compute_user_data_commands_default       = var.compute_user_data_commands_default
-  cw_config_data                           = var.cw_config_data
-  iam_instance_profile_arn_ecs             = var.iam_data.iam_instance_profile_arn_ecs
-  set_ecs_cluster_in_user_data             = false
-  std_map                                  = var.std_map
+  source                                      = "../ecs_compute_common"
+  compute_map                                 = var.compute_map
+  compute_image_id_default                    = var.compute_image_id_default
+  compute_instance_allocation_type_default    = var.compute_instance_allocation_type_default
+  compute_instance_storage_gib_default        = var.compute_instance_storage_gib_default
+  compute_instance_type_default               = var.compute_instance_type_default
+  compute_key_name_default                    = var.compute_key_name_default
+  compute_vpc_security_group_key_list_default = var.compute_vpc_security_group_key_list_default
+  compute_vpc_segment_key_default             = var.compute_vpc_segment_key_default
+  compute_vpc_subnet_key_list_default         = var.compute_vpc_subnet_key_list_default
+  compute_user_data_commands_default          = var.compute_user_data_commands_default
+  cw_config_data                              = var.cw_config_data
+  iam_instance_profile_arn_ecs                = var.iam_data.iam_instance_profile_arn_ecs
+  set_ecs_cluster_in_user_data                = false
+  std_map                                     = var.std_map
+  vpc_data                                    = var.vpc_data
 }
 
 resource "aws_batch_compute_environment" "this_compute_env" {
@@ -33,9 +35,9 @@ resource "aws_batch_compute_environment" "this_compute_env" {
     }
     max_vcpus           = each.value.max_vcpus
     min_vcpus           = each.value.min_vcpus
-    security_group_ids  = each.value.security_group_id_list
+    security_group_ids  = each.value.vpc_security_group_id_list
     spot_iam_fleet_role = each.value.instance_allocation_type == "SPOT" ? var.iam_data.iam_role_arn_batch_spot_fleet : null
-    subnets             = each.value.subnet_id_list
+    subnets             = each.value.vpc_subnet_id_list
     tags                = each.value.tags
     type                = each.value.instance_allocation_type
   }

@@ -80,8 +80,8 @@ def map_resources(
     rel_path: str,
     var_file: Optional[str],
 ) -> Dict[str, List[str]]:
-    change_map, _ = get_plan_resources(rel_path, var_file, {}, [])
-    resource_list = change_map["created"]
+    change_to_resource_list, _ = get_plan_resources(rel_path, var_file, {}, [])
+    resource_list = change_to_resource_list["created"]
     bucket_map = build_bucket_map(resource_list)
     for resource_name in resource_list:
         for bucket_name, name_map in bucket_map.items():

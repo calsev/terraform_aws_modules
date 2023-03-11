@@ -47,24 +47,3 @@ resource "aws_iam_policy" "iam_policy_efs_write" {
     }
   )
 }
-
-resource "aws_iam_role_policy" "efs_read" {
-  for_each = local.iam_role_id_efs_read_map
-  name     = "efs_read"
-  policy   = data.aws_iam_policy_document.efs_read.json
-  role     = each.key
-}
-
-resource "aws_iam_role_policy" "efs_write_read" {
-  for_each = local.iam_role_id_efs_write_map
-  name     = "efs_read"
-  policy   = data.aws_iam_policy_document.efs_read.json
-  role     = each.key
-}
-
-resource "aws_iam_role_policy" "efs_write" {
-  for_each = local.iam_role_id_efs_write_map
-  name     = "efs_write"
-  policy   = data.aws_iam_policy_document.efs_write.json
-  role     = each.key
-}

@@ -6,18 +6,16 @@ variable "std_map" {
   })
 }
 
-variable "vpc_data" {
-  type = object({
+variable "vpc_map" {
+  type = map(object({
     segment_map = map(object({
       subnet_cidr_list = list(string)
-      route_internal   = bool
-      route_public     = bool
+      route_internal   = optional(bool)
+      route_public     = optional(bool)
     }))
-    vpc_map = object({
-      assign_ipv6_cidr = optional(bool)
-      cidr             = string
-    })
-  })
+    vpc_assign_ipv6_cidr = optional(bool)
+    vpc_cidr             = string
+  }))
 }
 
 variable "vpc_assign_ipv6_cidr_default" {
@@ -25,6 +23,12 @@ variable "vpc_assign_ipv6_cidr_default" {
   default = true
 }
 
-variable "vpc_name" {
-  type = string
+variable "vpc_segment_route_internal_default" {
+  type    = bool
+  default = true
+}
+
+variable "vpc_segment_route_public_default" {
+  type    = bool
+  default = false
 }

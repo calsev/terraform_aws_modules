@@ -12,7 +12,7 @@ resource "aws_security_group" "efs_mount" {
       Name = local.sg_name
     }
   )
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc_data.vpc_id
 }
 
 resource "aws_security_group_rule" "efs_mount_ingress" {
@@ -28,9 +28,9 @@ resource "aws_security_group_rule" "efs_mount_ingress" {
 resource "aws_efs_mount_target" "this_mount_target" {
   for_each       = local.subnet_id_map
   file_system_id = aws_efs_file_system.this_fs.id
-  subnet_id      = each.key
+  subnet_id      = each.value
   security_groups = [
-    var.security_group_id_egress,
+    local.security_group_id_egress,
     aws_security_group.efs_mount.id,
   ]
 }

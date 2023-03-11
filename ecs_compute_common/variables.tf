@@ -1,13 +1,14 @@
 variable "compute_map" {
   type = map(object({
-    image_id                 = optional(string)
-    instance_allocation_type = optional(string)
-    instance_storage_gib     = optional(number)
-    instance_type            = optional(string)
-    key_name                 = optional(string)
-    security_group_id_list   = optional(list(string))
-    subnet_id_list           = optional(list(string))
-    user_data_commands       = optional(list(string))
+    image_id                    = optional(string)
+    instance_allocation_type    = optional(string)
+    instance_storage_gib        = optional(number)
+    instance_type               = optional(string)
+    key_name                    = optional(string)
+    vpc_security_group_key_list = optional(list(string))
+    vpc_segment_key             = optional(string)
+    vpc_subnet_key_list         = optional(list(string))
+    user_data_commands          = optional(list(string))
   }))
 }
 
@@ -31,12 +32,19 @@ variable "compute_key_name_default" {
   type = string
 }
 
-variable "compute_security_group_id_list_default" {
-  type = list(string)
+variable "compute_vpc_security_group_key_list_default" {
+  type    = list(string)
+  default = ["world_all_out"]
 }
 
-variable "compute_subnet_id_list_default" {
-  type = list(string)
+variable "compute_vpc_segment_key_default" {
+  type    = string
+  default = "internal"
+}
+
+variable "compute_vpc_subnet_key_list_default" {
+  type    = list(string)
+  default = ["a", "b"]
 }
 
 variable "compute_user_data_commands_default" {
@@ -68,5 +76,18 @@ variable "std_map" {
     resource_name_prefix = string
     resource_name_suffix = string
     tags                 = map(string)
+  })
+}
+
+variable "vpc_data" {
+  type = object({
+    security_group_map = map(object({
+      id = string
+    }))
+    segment_map = map(object({
+      subnet_map = map(object({
+        subnet_id = string
+      }))
+    }))
   })
 }

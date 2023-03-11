@@ -18,15 +18,13 @@ variable "create_policy" {
 
 variable "host_map" {
   type = map(object({
-    name_override     = optional(string)
-    provider_endpoint = string
-    provider_type     = optional(string)
-    vpc_configuration = optional(object({
-      security_group_id_list = list(string)
-      subnet_id_list         = list(string)
-      tls_certificate        = optional(string)
-      vpc_id                 = string
-    }))
+    name_override               = optional(string)
+    provider_endpoint           = string
+    provider_type               = optional(string)
+    vpc_key                     = optional(string)
+    vpc_security_group_key_list = optional(list(string))
+    vpc_subnet_key_list         = optional(list(string))
+    vpc_tls_certificate         = optional(string)
   }))
   default = {}
 }
@@ -34,6 +32,27 @@ variable "host_map" {
 variable "host_provider_type_default" {
   type    = string
   default = "GitHubEnterpriseServer"
+}
+
+variable "host_vpc_key_default" {
+  type        = string
+  default     = null
+  description = "If provided, a VPC config will be created"
+}
+
+variable "host_vpc_security_group_key_list_default" {
+  type    = list(string)
+  default = null
+}
+
+variable "host_vpc_subnet_key_list_default" {
+  type    = list(string)
+  default = ["a", "b"]
+}
+
+variable "host_vpc_tls_certificate_default" {
+  type    = string
+  default = null
 }
 
 variable "policy_name" {
@@ -63,4 +82,20 @@ variable "std_map" {
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
   })
+}
+
+variable "vpc_data" {
+  type = map(object({
+    security_group_map = map(object({
+      id = string
+    }))
+    segment_map = map(object({
+      subnet_map = map(object({
+        subnet_id = string
+      }))
+    }))
+    vpc_id = string
+  }))
+  default     = null
+  description = "Must be provided if a vpc_configuration is provided"
 }

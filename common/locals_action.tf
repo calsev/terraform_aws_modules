@@ -359,6 +359,31 @@ locals {
         ]
       }
     }
+    secretsmanager = {
+      secret = {
+        public_read = []
+        read = [
+          "DescribeSecret",
+          "GetSecretValue",
+          "ListSecretVersionIds",
+        ]
+        public_write = []
+        write = [
+          "PutSecretValue",
+          "TagResource",
+          "UntagResource",
+          "UpdateSecret",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "ListSecrets",
+        ]
+        public_write = []
+        write        = []
+      }
+    }
     sqs = {
       queue = {
         public_read = []

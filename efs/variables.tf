@@ -1,31 +1,14 @@
 variable "create_policies" {
-  type        = bool
-  default     = true
-  description = "If created, these policies can be attached to roles. Otherwise policy documents can be used."
+  type    = bool
+  default = true
 }
 
 variable "encrypt_file_system" {
   type    = bool
-  default = false
-}
-
-variable "iam_role_id_efs_read_list" {
-  type        = list(string)
-  default     = []
-  description = "Add the read inline policy to these roles."
-}
-
-variable "iam_role_id_efs_write_list" {
-  type        = list(string)
-  default     = []
-  description = "Add the write inline policy to these roles."
+  default = true
 }
 
 variable "name" {
-  type = string
-}
-
-variable "security_group_id_egress" {
   type = string
 }
 
@@ -37,11 +20,26 @@ variable "std_map" {
   })
 }
 
-variable "subnet_filter_tag" {
+variable "vpc_security_group_key_egress" {
   type    = string
-  default = "private"
+  default = "world_all_out"
 }
 
-variable "vpc_id" {
-  type = string
+variable "vpc_segment_key" {
+  type    = string
+  default = "internal"
+}
+
+variable "vpc_data" {
+  type = object({
+    security_group_map = map(object({
+      id = string
+    }))
+    segment_map = map(object({
+      subnet_id_map = map(string)
+    }))
+    vpc_cidr_block      = string
+    vpc_id              = string
+    vpc_ipv6_cidr_block = string
+  })
 }

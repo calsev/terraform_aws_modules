@@ -5,6 +5,7 @@ This script provides an interactive shell that does the hard parts:
 * Escaping quotes
 """
 import argparse
+import itertools
 import os
 from typing import Dict, List, Optional, Tuple
 
@@ -12,82 +13,6 @@ from InquirerPy.inquirer import confirm, rawlist  # type: ignore
 from typeguard import typechecked
 
 from .plan import get_plan_resources, resource_regex, run_command_as_process
-
-# Lazy-building this list, so add as errors occur
-resource_type_priority_list = [
-    "aws_apigatewayv2_integration",
-    "aws_autoscaling_group",
-    "aws_batch_compute_environment",
-    "aws_batch_job_definition",
-    "aws_batch_job_queue",
-    "aws_cloudfront_distribution",
-    "aws_cloudfront_origin_access_control",
-    "aws_cloudwatch_dashboard",
-    "aws_cloudwatch_event_archive",
-    "aws_cloudwatch_event_bus",
-    "aws_cloudwatch_event_rule",
-    "aws_cloudwatch_event_target",
-    "aws_cloudwatch_log_group",
-    "aws_cloudwatch_log_resource_policy",
-    "aws_codebuild_project",
-    "aws_codebuild_webhook",
-    "aws_codepipeline",
-    "aws_codestarconnections_connection",
-    "aws_codestarconnections_host",
-    "aws_db_instance",
-    "aws_db_subnet_group",
-    "aws_dynamodb_table",
-    "aws_ecr_lifecycle_policy",
-    "aws_ecr_repository",
-    "aws_ecr_repository_policy",
-    "aws_ecs_capacity_provider",
-    "aws_ecs_cluster",
-    "aws_ecs_cluster_capacity_providers",
-    "aws_kms_key",
-    "aws_launch_template",
-    "aws_placement_group",
-    "aws_route53_record",
-    "aws_route_table_association",
-    "aws_s3_bucket",
-    "aws_s3_bucket_accelerate_configuration",
-    "aws_s3_bucket_acl",
-    "aws_s3_bucket_analytics_configuration",
-    "aws_s3_bucket_cors_configuration",
-    "aws_s3_bucket_intelligent_tiering_configuration",
-    "aws_s3_bucket_inventory",
-    "aws_s3_bucket_lifecycle_configuration",
-    "aws_s3_bucket_logging",
-    "aws_s3_bucket_metric",
-    "aws_s3_bucket_notification",
-    "aws_s3_bucket_object_lock_configuration",
-    "aws_s3_bucket_ownership_controls",
-    "aws_s3_bucket_policy",
-    "aws_s3_bucket_public_access_block",
-    "aws_s3_bucket_request_payment_configuration",
-    "aws_s3_bucket_server_side_encryption_configuration",
-    "aws_s3_bucket_versioning",
-    "aws_s3_bucket_website_configuration",
-    "aws_s3_bucket_accelerate_configuration",
-    "aws_schemas_discoverer",
-    "aws_security_group",
-    "aws_security_group_rule",
-    "aws_sfn_state_machine",
-    "aws_sqs_queue",
-    "aws_ssm_parameter",
-    "aws_subnet",
-    "aws_vpc",
-    "aws_iam_instance_profile",
-    "aws_iam_policy",
-    "aws_iam_role",
-    "aws_iam_role_policy",
-    "aws_iam_role_policy_attachment",
-    # "module",
-]
-
-resource_type_priority_regex_map = {
-    resource_type: resource_regex(resource_type)
-    for resource_type in resource_type_priority_list
-}
 
 resource_type_ignore_list = [
     "local_file",
@@ -110,8 +35,36 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
 
 
 @typechecked
+def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
+    all_resources = list(
+        itertools.chain.from_iterable(
+            resource_list for resource_list in change_to_resources.values()
+        )
+    )
+    resource_name_splits_raw = [
+        resource_name.split(".") for resource_name in all_resources
+    ]
+    resource_name_splits_aws = [
+        [split for split in splits if split.startswith("aws_")]
+        for splits in resource_name_splits_raw
+    ]
+    if any(len(splits) != 1 for splits in resource_name_splits_aws):
+        bad_splits = [
+            resource_name_splits_raw[i_split]
+            for i_split, splits in enumerate(resource_name_splits_aws)
+            if len(splits) != 1
+        ]
+        raise ValueError(f"Resource names not understood: {bad_splits}")
+    resource_types = set(splits[0] for splits in resource_name_splits_aws)
+    return sorted(resource_types)
+
+
+@typechecked
 def map_resource_change_type(
-    resource_type: str, change_type: str, resource_name: str, resources: Dict
+    resource_type: str,
+    change_type: str,
+    resource_name: str,
+    resources: Dict,
 ) -> None:
     if resource_type not in resources:
         resources[resource_type] = {}
@@ -121,10 +74,15 @@ def map_resource_change_type(
 
 
 @typechecked
-def map_change_resource(change_type: str, resource_name: str, resources: Dict) -> None:
+def map_change_resource(
+    change_type: str,
+    resource_type_list: List,
+    resource_name: str,
+    resources: Dict,
+) -> None:
     found = False
-    for resource_type in resource_type_priority_regex_map:
-        if resource_type_priority_regex_map[resource_type].search(resource_name):
+    for resource_type in resource_type_list:
+        if resource_type in resource_name:
             found = True
             map_resource_change_type(
                 resource_type, change_type, resource_name, resources
@@ -139,16 +97,19 @@ def map_resources(
     rel_path: str,
     var_file: Optional[str],
     resource_ignore_list: List,
-) -> Tuple[Dict[str, Dict[str, List[str]]], str]:
-    change_map, plan_out = get_plan_resources(
+) -> Tuple[List[str], Dict[str, Dict[str, List[str]]], str]:
+    change_to_resource_list, plan_out = get_plan_resources(
         rel_path, var_file, resource_type_ignore_regex_map, resource_ignore_list
     )
+    resource_type_list = get_resource_types(change_to_resource_list)
     resources = {}
-    for change_type, resource_list in change_map.items():
+    for change_type, resource_list in change_to_resource_list.items():
         for resource_name in resource_list:
-            map_change_resource(change_type, resource_name, resources)
+            map_change_resource(
+                change_type, resource_type_list, resource_name, resources
+            )
     print(resources)
-    return resources, plan_out
+    return resource_type_list, resources, plan_out
 
 
 @typechecked
@@ -191,11 +152,15 @@ def change_one_resource_type(
     resource_ignore_list: List,
 ) -> Optional[bool]:
     """Returns True if one resource was modified, or None to quit"""
-    change_map = change_to_resources[resource_type]
+    change_to_resource_list = change_to_resources[resource_type]
     moved_one = False
-    while len(change_map) > 1 and change_map["destroyed"] and change_map["created"]:
-        resource_to_destroy = change_map["destroyed"].pop(0)
-        create_options = change_map["created"]
+    while (
+        len(change_to_resource_list) > 1
+        and change_to_resource_list["destroyed"]
+        and change_to_resource_list["created"]
+    ):
+        resource_to_destroy = change_to_resource_list["destroyed"].pop(0)
+        create_options = change_to_resource_list["created"]
         choice = prompt_user(resource_to_destroy, create_options)
         if choice > len(create_options):
             print("Quitting")
@@ -215,10 +180,11 @@ def change_one_resource_type(
 @typechecked
 def change_all_resource_types(
     rel_path: str,
+    resource_type_list: List[str],
     change_to_resources: Dict,
     resource_ignore_list: List[str],
 ) -> Optional[bool]:
-    for resource_type in resource_type_priority_list:
+    for resource_type in resource_type_list:
         if resource_type not in change_to_resources:
             continue
         moved_one = change_one_resource_type(
@@ -239,11 +205,11 @@ def print_final_plan(plan_out: str) -> None:
 def change_one_resource(
     rel_path: str, var_file: Optional[str], resource_ignore_list: List[str]
 ) -> bool:
-    change_to_resources, plan_out = map_resources(
+    resource_type_list, change_to_resources, plan_out = map_resources(
         rel_path, var_file, resource_ignore_list
     )
     moved_one = change_all_resource_types(
-        rel_path, change_to_resources, resource_ignore_list
+        rel_path, resource_type_list, change_to_resources, resource_ignore_list
     )
     if moved_one is False:
         print_final_plan(plan_out)
