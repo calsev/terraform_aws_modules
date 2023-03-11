@@ -19,8 +19,8 @@ resource "aws_ecs_service" "this_service" {
   name                              = local.resource_name
   network_configuration {
     assign_public_ip = var.assign_public_ip
-    subnets          = var.subnet_id_list
-    security_groups  = var.security_group_id_list
+    subnets          = local.vpc_subnet_id_list
+    security_groups  = local.vpc_security_group_id_list
   }
   ordered_placement_strategy {
     field = "attribute:ecs.availability-zone"

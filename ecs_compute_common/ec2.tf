@@ -17,7 +17,7 @@ resource "aws_launch_template" "this_launch_template" {
     }
   }
   credit_specification {
-    cpu_credits = substr(each.value.instance_type, 0, 1) == "t" ? "unlimited" : null
+    cpu_credits = each.value.cpu_credit_specification
   }
   # This role must have a policy to access the kms_key_id used to encrypt the EBS volume
   iam_instance_profile {
@@ -49,7 +49,7 @@ resource "aws_launch_template" "this_launch_template" {
   tags                   = each.value.tags
   update_default_version = true
   user_data              = local.user_data_encoded_map[each.key]
-  vpc_security_group_ids = each.value.security_group_id_list
+  vpc_security_group_ids = each.value.vpc_security_group_id_list
 }
 
 resource "local_file" "user_data" {

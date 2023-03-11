@@ -34,10 +34,6 @@ variable "sd_namespace_id" {
   default = null
 }
 
-variable "security_group_id_list" {
-  type = list(string)
-}
-
 variable "std_map" {
   type = object({
     resource_name_prefix = string
@@ -46,11 +42,34 @@ variable "std_map" {
   })
 }
 
-variable "subnet_id_list" {
-  type = list(string)
-}
-
 variable "ttl_dns_a" {
   type    = number
   default = null
+}
+
+variable "vpc_data" {
+  type = object({
+    security_group_map = map(object({
+      id = string
+    }))
+    segment_map = map(object({
+      subnet_map = map(object({
+        subnet_id = string
+      }))
+    }))
+  })
+}
+
+variable "vpc_security_group_key_list" {
+  type = list(string)
+}
+
+variable "vpc_segment_key" {
+  type    = string
+  default = "internal"
+}
+
+variable "vpc_subnet_key_list" {
+  type    = list(string)
+  default = ["a", "b"]
 }
