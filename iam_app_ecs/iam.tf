@@ -27,8 +27,16 @@ module "ecs_instance_role" {
   std_map     = var.std_map
 }
 
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
+module "ecs_task_execution_role" {
+  # ecsTaskExecutionRole does not exist in all accounts
+  source                   = "../iam_role"
+  assume_role_service_list = ["ecs-tasks"]
+  attach_policy_arn_map = {
+    ecs_task_execution = module.managed_policies.data.iam_policy_arn_ecs_task_execution
+  }
+  name        = "ecs_task_execution"
+  name_prefix = var.name_prefix
+  std_map     = var.std_map
 }
 
 data "aws_iam_policy_document" "ecs_start_task_policy" {
@@ -36,13 +44,14 @@ data "aws_iam_policy_document" "ecs_start_task_policy" {
     actions = [
       "ecs:RunTask",
     ]
+    # This seems a bit loose, but the managed policy for batch is analogous
     resources = ["arn:aws:ecs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:task-definition/*"]
   }
   statement {
     actions = [
       "iam:PassRole",
     ]
-    resources = [data.aws_iam_role.ecs_task_execution_role.arn]
+    resources = [module.ecs_task_execution_role.data.iam_role_arn]
   }
 }
 
