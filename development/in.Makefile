@@ -52,8 +52,13 @@ env-update: $(VENV)
 	python $(PIP) --no-cache-dir -r $(REQ).txt && \
 	python -m pip freeze --all > $(REQ).lock.txt
 
+lint: make-lint py-lint tf-lint
+
 make:
 	$(PY) python ../script/makefile.py '{}' --env-file '' --module-root '..' --module-postfixes '..' --module-ignore-postfixes '.git'
+
+make-lint: make
+	git diff --exit-code
 
 py-lint:
 	$(PY) black --check ..

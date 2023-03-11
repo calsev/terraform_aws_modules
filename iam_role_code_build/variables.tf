@@ -48,16 +48,16 @@ variable "name" {
   type = string
 }
 
-variable "name_prefix" {
-  type        = string
-  default     = ""
-  description = "If provided, will be put in front of the standard prefix for the role name."
-}
-
 variable "name_infix" {
   type        = bool
   default     = true
   description = "If true, standard resource prefix and suffix will be applied to the role"
+}
+
+variable "name_prefix" {
+  type        = string
+  default     = ""
+  description = "If provided, will be put in front of the standard prefix for the role name."
 }
 
 variable "log_public_access" {

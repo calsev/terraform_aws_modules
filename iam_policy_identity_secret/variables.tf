@@ -1,10 +1,6 @@
 variable "access_list" {
   type    = list(string)
-  default = ["read", "read_write", "write"]
-}
-
-variable "build_project_name_list" {
-  type = list(string)
+  default = ["read"]
 }
 
 variable "name" {
@@ -23,6 +19,16 @@ variable "name_prefix" {
   type        = string
   default     = ""
   description = "If provided, will be put in front of the standard prefix for the policy"
+}
+
+variable "ssm_param_name" {
+  type    = string
+  default = null
+}
+
+variable "sm_secret_id" {
+  type    = string
+  default = null
 }
 
 variable "std_map" {

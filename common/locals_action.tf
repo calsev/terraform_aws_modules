@@ -399,8 +399,34 @@ locals {
           "ReceiveMessage",
           "SendMessage",
           "TagQueue",
-          "UntagQueue"
+          "UntagQueue",
         ]
+      }
+    }
+    ssm = {
+      parameter = {
+        public_read = []
+        read = [
+          "GetParameter",
+          "GetParameters",
+          "GetParametersByPath",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "AddTagsToResource",
+          "LabelParameterVersion",
+          "RemoveTagsFromResource",
+          "UnlabelParameterVersion",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "DescribeParameters",
+        ]
+        public_write = []
+        write        = []
       }
     }
     states = {

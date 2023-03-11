@@ -3,7 +3,7 @@ variable "ssm_param_name" {
   default = null
 }
 
-variable "sm_secret_arn" {
+variable "sm_secret_id" {
   type    = string
   default = null
 }

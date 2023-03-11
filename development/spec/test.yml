@@ -20,9 +20,4 @@ phases:
       - make env-install
   build:
     commands:
-      # Check that Makefile has been updated
-      - make make
-      - git diff --exit-code
-      # Lint scripts and modules
-      - make py-lint
-      - make tf-lint
+      - make lint

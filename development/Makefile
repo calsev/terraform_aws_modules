@@ -52,8 +52,13 @@ env-update: $(VENV)
 	python $(PIP) --no-cache-dir -r $(REQ).txt && \
 	python -m pip freeze --all > $(REQ).lock.txt
 
+lint: make-lint py-lint tf-lint
+
 make:
 	$(PY) python ../script/makefile.py '{}' --env-file '' --module-root '..' --module-postfixes '..' --module-ignore-postfixes '.git'
+
+make-lint: make
+	git diff --exit-code
 
 py-lint:
 	$(PY) black --check ..
@@ -111,6 +116,7 @@ tf-lint: tflint-install
 	cd ../iam_policy_identity_ecr && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_s3 && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_identity_secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_sqs_queue && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_step_function_starter && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_managed && $(LINT) --config=../development/.tflint.hcl
