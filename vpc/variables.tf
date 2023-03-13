@@ -8,14 +8,21 @@ variable "std_map" {
 
 variable "vpc_map" {
   type = map(object({
+    # Subnets can be added after creation, but not segments
+    availability_zone_count = optional(number)
     segment_map = map(object({
-      subnet_cidr_list = list(string)
-      route_internal   = optional(bool)
-      route_public     = optional(bool)
+      route_internal = optional(bool)
+      route_public   = optional(bool)
     }))
+    subnet_bit_length    = optional(number) # The number of bits to add to the mask, defaults to ceil(log(#segments * #azs, 2)), set higher to accommodate future AZs
     vpc_assign_ipv6_cidr = optional(bool)
     vpc_cidr             = string
   }))
+}
+
+variable "vpc_availability_zone_count_default" {
+  type    = number
+  default = 2
 }
 
 variable "vpc_assign_ipv6_cidr_default" {
