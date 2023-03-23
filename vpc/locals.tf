@@ -1,6 +1,14 @@
 locals {
   availability_zone_name_list   = data.aws_availability_zones.available.names
   availability_zone_letter_list = ["a", "b", "c", "d", "e", "f"]
+  nat_flattened_list = flatten([
+    for k, v in local.vpc_map : [
+      for k_az, v_az in v.nat_gateway_map : merge(v, v_az)
+    ]
+  ])
+  nat_flattened_map = {
+    for v in local.nat_flattened_list : v.k_az_only => v
+  }
   subnet_list_map = {
     for k, v in local.vpc_map : k => sort(flatten([
       for k_seg, v_seg in v.segment_map : [
@@ -14,6 +22,8 @@ locals {
   l1_map = {
     for k, v in var.vpc_map : k => merge(v, {
       availability_zone_count = v.availability_zone_count == null ? var.vpc_availability_zone_count_default : v.availability_zone_count
+      nat_gateway_enabled     = v.nat_gateway_enabled == null ? var.vpc_nat_gateway_enabled_default : v.nat_gateway_enabled
+      nat_gateway_multi_az    = v.nat_gateway_multi_az == null ? var.vpc_nat_gateway_multi_az_default : v.nat_gateway_multi_az
       segment_index_map = {
         for i_seg, k_seg in keys(v.segment_map) : k_seg => i_seg
       }
@@ -23,7 +33,8 @@ locals {
   }
   l2_map = {
     for k, v in var.vpc_map : k => {
-      resource_name = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}${var.std_map.resource_name_suffix}"
+      nat_gateway_availability_zone_list = local.l1_map[k].nat_gateway_enabled ? local.l1_map[k].nat_gateway_multi_az ? slice(local.availability_zone_letter_list, 0, local.l1_map[k].availability_zone_count) : [local.availability_zone_letter_list[0]] : []
+      resource_name                      = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}${var.std_map.resource_name_suffix}"
       segment_map = {
         for k_seg, v_seg in v.segment_map : k_seg => merge(v_seg, {
           assign_ipv6_address       = local.l1_map[k].vpc_assign_ipv6_cidr
@@ -38,12 +49,6 @@ locals {
             for i_az in range(local.l1_map[k].availability_zone_count) : local.availability_zone_letter_list[i_az] => {
               availability_zone_name = local.availability_zone_name_list[i_az]
               cidr_block_index       = length(v.segment_map) * i_az + local.l1_map[k].segment_index_map[k_seg]
-              tags = merge(
-                var.std_map.tags,
-                {
-                  Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}-${lower(replace(k_seg, "/_/", "-"))}-${local.availability_zone_letter_list[i_az]}${var.std_map.resource_name_suffix}"
-                }
-              )
             }
           }
           tags = merge(
@@ -58,15 +63,25 @@ locals {
   }
   l3_map = {
     for k, v in var.vpc_map : k => {
+      public_subnet_list = [for k_seg, v_seg in local.l2_map[k].segment_map : k_seg if v_seg.route_public]
       segment_map = {
         for k_seg, v_seg in local.l2_map[k].segment_map : k_seg => merge(v_seg, {
           route_eog       = local.l1_map[k].vpc_assign_ipv6_cidr && !v_seg.route_public
+          route_nat       = local.l1_map[k].nat_gateway_enabled && !v_seg.route_public
           route_public_v6 = local.l1_map[k].vpc_assign_ipv6_cidr && v_seg.route_public
           subnet_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
               cidr_block = cidrsubnet(v.vpc_cidr, v_seg.subnet_bit_length, v_az.cidr_block_index)
               k_az       = k_az
               k_az_full  = "${k}-${k_seg}-${k_az}"
+              k_az_only  = "${k}-${k_az}"
+              k_az_nat   = local.l1_map[k].nat_gateway_multi_az ? "${k}-${k_az}" : "${k}-${local.l2_map[k].nat_gateway_availability_zone_list[0]}"
+              tags = merge(
+                var.std_map.tags,
+                {
+                  Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}-${lower(replace(k_seg, "/_/", "-"))}-${k_az}${var.std_map.resource_name_suffix}"
+                }
+              )
             })
           }
         })
@@ -79,19 +94,38 @@ locals {
       )
     }
   }
+  l4_map = {
+    for k, v in var.vpc_map : k => {
+      nat_gateway_map = {
+        for k_az in local.l2_map[k].nat_gateway_availability_zone_list : k_az => {
+          k_az      = k_az
+          k_seg     = local.l3_map[k].public_subnet_list[0]
+          k_az_full = "${k}-${local.l3_map[k].public_subnet_list[0]}-${k_az}"
+          k_az_only = "${k}-${k_az}"
+          k_vpc     = k
+          tags = merge(
+            var.std_map.tags,
+            {
+              Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}-${k_az}${var.std_map.resource_name_suffix}"
+            }
+          )
+        }
+      }
+    }
+  }
   output_data = {
     availability_zone_name_list = local.availability_zone_name_list
     vpc_map = {
       for k, v in local.vpc_map : k => merge(v, {
         segment_map = {
           for k_seg, v_seg in v.segment_map : k_seg => merge(v_seg, {
-            route_table_id = aws_route_table.this_route_table[v_seg.k_seg_full].id
             subnet_id_map = {
               for k_az, v_az in v_seg.subnet_map : k_az => aws_subnet.this_subnet[v_az.k_az_full].id
             }
             subnet_map = {
               for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
-                subnet_id = aws_subnet.this_subnet[v_az.k_az_full].id
+                route_table_id = aws_route_table.this_route_table[v_az.k_az_full].id
+                subnet_id      = aws_subnet.this_subnet[v_az.k_az_full].id
               })
             }
           })
@@ -102,23 +136,6 @@ locals {
       })
     }
   }
-  segment_flattened_list = flatten([
-    for k, v in local.vpc_map : flatten([
-      for k_seg, v_seg in v.segment_map : v_seg
-    ])
-  ])
-  segment_flattened_eog_map = {
-    for k, v in local.segment_flattened_map : k => v if v.route_eog
-  }
-  segment_flattened_map = {
-    for segment in local.segment_flattened_list : "${segment.k_vpc}-${segment.k_seg}" => segment
-  }
-  segment_flattened_public_map = {
-    for k, v in local.segment_flattened_map : k => v if v.route_public
-  }
-  segment_flattened_public_v6_map = {
-    for k, v in local.segment_flattened_map : k => v if v.route_public_v6
-  }
   subnet_flattened_list = flatten([
     for k, v in local.vpc_map : flatten([
       for k_seg, v_seg in v.segment_map : flatten([
@@ -126,10 +143,22 @@ locals {
       ])
     ])
   ])
+  subnet_flattened_eog_map = {
+    for k, v in local.subnet_flattened_map : k => v if v.route_eog
+  }
   subnet_flattened_map = {
     for subnet in local.subnet_flattened_list : "${subnet.k_vpc}-${subnet.k_seg}-${subnet.k_az}" => subnet
   }
+  subnet_flattened_nat_map = {
+    for k, v in local.subnet_flattened_map : k => v if v.route_nat
+  }
+  subnet_flattened_public_map = {
+    for k, v in local.subnet_flattened_map : k => v if v.route_public
+  }
+  subnet_flattened_public_v6_map = {
+    for k, v in local.subnet_flattened_map : k => v if v.route_public_v6
+  }
   vpc_map = {
-    for k, v in var.vpc_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+    for k, v in var.vpc_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
 }

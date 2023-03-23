@@ -79,27 +79,27 @@ resource "aws_egress_only_internet_gateway" "this_eog" {
 }
 
 resource "aws_route_table" "this_route_table" {
-  for_each = local.segment_flattened_map
+  for_each = local.subnet_flattened_map
   vpc_id   = aws_vpc.this_vpc[each.value.k_vpc].id
   tags     = each.value.tags
 }
 
 resource "aws_route" "public_to_igw" {
-  for_each               = local.segment_flattened_public_map
+  for_each               = local.subnet_flattened_public_map
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.this_igw[each.value.k_vpc].id
   route_table_id         = aws_route_table.this_route_table[each.key].id
 }
 
 resource "aws_route" "public_to_igw_v6" {
-  for_each                    = local.segment_flattened_public_v6_map
+  for_each                    = local.subnet_flattened_public_v6_map
   destination_ipv6_cidr_block = "::/0"
   gateway_id                  = aws_internet_gateway.this_igw[each.value.k_vpc].id
   route_table_id              = aws_route_table.this_route_table[each.key].id
 }
 
 resource "aws_route" "internal_to_eog" {
-  for_each                    = local.segment_flattened_eog_map
+  for_each                    = local.subnet_flattened_eog_map
   destination_ipv6_cidr_block = "::/0"
   egress_only_gateway_id      = aws_egress_only_internet_gateway.this_eog[each.value.k_vpc].id
   route_table_id              = aws_route_table.this_route_table[each.key].id
@@ -127,5 +127,27 @@ resource "aws_subnet" "this_subnet" {
 resource "aws_route_table_association" "this_rt_association" {
   for_each       = local.subnet_flattened_map
   subnet_id      = aws_subnet.this_subnet[each.key].id
-  route_table_id = aws_route_table.this_route_table[each.value.k_seg_full].id
+  route_table_id = aws_route_table.this_route_table[each.key].id
+}
+
+resource "aws_eip" "nat_eip" {
+  for_each = local.nat_flattened_map
+  tags     = each.value.tags
+  vpc      = true
+}
+
+resource "aws_nat_gateway" "this_nat" {
+  for_each          = local.nat_flattened_map
+  allocation_id     = aws_eip.nat_eip[each.key].id
+  connectivity_type = "public"
+  subnet_id         = aws_subnet.this_subnet[each.value.k_az_full].id
+  tags              = each.value.tags
+  depends_on        = [aws_internet_gateway.this_igw]
+}
+
+resource "aws_route" "internal_to_nat" {
+  for_each               = local.subnet_flattened_nat_map
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.this_nat[each.value.k_az_nat].id
+  route_table_id         = aws_route_table.this_route_table[each.key].id
 }
