@@ -10,6 +10,8 @@ variable "vpc_map" {
   type = map(object({
     # Subnets can be added after creation, but not segments
     availability_zone_count = optional(number)
+    nat_gateway_enabled     = optional(bool)
+    nat_gateway_multi_az    = optional(bool)
     segment_map = map(object({
       route_internal = optional(bool)
       route_public   = optional(bool)
@@ -28,6 +30,17 @@ variable "vpc_availability_zone_count_default" {
 variable "vpc_assign_ipv6_cidr_default" {
   type    = bool
   default = true
+}
+
+variable "vpc_nat_gateway_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "vpc_nat_gateway_multi_az_default" {
+  type        = bool
+  default     = true
+  description = "If false, a single NAT will be created"
 }
 
 variable "vpc_segment_route_internal_default" {
