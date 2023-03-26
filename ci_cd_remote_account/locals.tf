@@ -24,22 +24,15 @@ locals {
     for k, v in var.connection_map : k => merge(local.c1_map[k], local.c2_map[k], local.c3_map[k])
   }
   h1_map = {
-    for k, v in var.host_map : k => merge(v, {
-      provider_type               = v.provider_type == null ? var.host_provider_type_default : v.provider_type
-      resource_name               = "${var.std_map.resource_name_prefix}${replace(k, "_", "-")}${var.std_map.resource_name_suffix}"
-      vpc_key                     = v.vpc_key == null ? var.host_vpc_key_default : v.vpc_key
-      vpc_security_group_key_list = v.vpc_security_group_key_list == null ? var.host_vpc_security_group_key_list_default : v.vpc_security_group_key_list
-      vpc_subnet_key_list         = v.vpc_subnet_key_list == null ? var.host_vpc_subnet_key_list_default : v.vpc_subnet_key_list
-      vpc_tls_certificate         = v.vpc_tls_certificate == null ? var.host_vpc_tls_certificate_default : v.vpc_tls_certificate
+    for k, v in var.host_map : k => merge(v, module.vpc_map.data[k], {
+      provider_type       = v.provider_type == null ? var.host_provider_type_default : v.provider_type
+      resource_name       = "${var.std_map.resource_name_prefix}${replace(k, "_", "-")}${var.std_map.resource_name_suffix}"
+      vpc_tls_certificate = v.vpc_tls_certificate == null ? var.host_vpc_tls_certificate_default : v.vpc_tls_certificate
     })
   }
   h2_map = {
     for k, v in var.host_map : k => merge(v, {
-      vpc_id = local.h1_map[k].vpc_key == null ? null : var.vpc_data[local.h1_map[k].vpc_key].vpc_id
-      vpc_security_group_id_list = local.h1_map[k].vpc_security_group_key_list == null ? null : [
-      ]
-      vpc_subnet_id_list = local.h1_map[k].vpc_subnet_key_list == null ? null : [
-      ]
+      vpc_id = local.h1_map[k].vpc_key == null ? null : var.vpc_data_map[local.h1_map[k].vpc_key].vpc_id
     })
   }
   host_map = {

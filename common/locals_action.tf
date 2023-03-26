@@ -248,6 +248,38 @@ locals {
         ]
       }
     }
+    elasticfilesystem = {
+      access-point = {
+        public_read = []
+        read = [
+          "DescribeAccessPoints",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      file-system = {
+        public_read = []
+        read = [
+          "ClientMount",
+          "DescribeFileSystems",
+          "DescribeMountTargets",
+          "DescribeTags",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "ClientRootAccess", # Needed to delete files owned by root
+          "ClientWrite",
+          "DeleteTags",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+    }
     logs = {
       group = {
         public_read = [

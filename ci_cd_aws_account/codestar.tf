@@ -4,6 +4,7 @@ module "credential_secret" {
   ssm_param_name = each.value.ssm_param_name
   sm_secret_id   = each.value.sm_secret_id
   sm_secret_key  = each.value.sm_secret_key
+  std_map        = var.std_map
 }
 
 resource "aws_codebuild_source_credential" "this_credential" {

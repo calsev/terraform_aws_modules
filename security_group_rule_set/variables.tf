@@ -66,6 +66,18 @@ variable "rule_map_internal" {
         }
       }
     }
+    nfs_in = {
+      rules = {
+        nfs = {
+          cidr_blocks      = null
+          from_port        = 2049
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     postgres_in = {
       rules = {
         postgres = {

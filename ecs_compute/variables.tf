@@ -7,9 +7,10 @@ variable "compute_map" {
     key_name                    = optional(string)
     max_instances               = optional(number)
     min_instances               = optional(number)
+    vpc_az_key_list             = optional(list(string))
+    vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
-    vpc_subnet_key_list         = optional(list(string))
     user_data_commands          = optional(list(string))
   }))
 }
@@ -49,21 +50,6 @@ variable "compute_min_instances_default" {
   default = 0
 }
 
-variable "compute_vpc_security_group_key_list_default" {
-  type    = list(string)
-  default = ["world_all_out"]
-}
-
-variable "compute_vpc_segment_key_default" {
-  type    = string
-  default = "internal"
-}
-
-variable "compute_vpc_subnet_key_list_default" {
-  type    = list(string)
-  default = ["a", "b"]
-}
-
 variable "compute_user_data_commands_default" {
   type    = list(string)
   default = null
@@ -95,15 +81,32 @@ variable "std_map" {
   })
 }
 
-variable "vpc_data" {
-  type = object({
-    security_group_map = map(object({
-      id = string
-    }))
-    segment_map = map(object({
-      subnet_map = map(object({
-        subnet_id = string
-      }))
-    }))
-  })
+variable "vpc_az_key_list_default" {
+  type    = list(string)
+  default = ["a", "b"]
 }
+
+variable "vpc_data_map" {
+  type = map(object({
+    security_group_id_map = map(string)
+    segment_map = map(object({
+      subnet_id_map = map(string)
+    }))
+  }))
+}
+
+variable "vpc_key_default" {
+  type    = string
+  default = null
+}
+
+variable "vpc_security_group_key_list_default" {
+  type    = list(string)
+  default = ["world_all_out"]
+}
+
+variable "vpc_segment_key_default" {
+  type    = string
+  default = "internal"
+}
+

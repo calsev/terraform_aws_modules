@@ -23,7 +23,7 @@ locals {
     for k, v in var.vpc_map : k => merge(v, {
       availability_zone_count = v.availability_zone_count == null ? var.vpc_availability_zone_count_default : v.availability_zone_count
       nat_gateway_enabled     = v.nat_gateway_enabled == null ? var.vpc_nat_gateway_enabled_default : v.nat_gateway_enabled
-      nat_gateway_multi_az    = v.nat_gateway_multi_az == null ? var.vpc_nat_gateway_multi_az_default : v.nat_gateway_multi_az
+      nat_multi_az            = v.nat_multi_az == null ? var.vpc_nat_multi_az_default : v.nat_multi_az
       segment_index_map = {
         for i_seg, k_seg in keys(v.segment_map) : k_seg => i_seg
       }
@@ -33,7 +33,7 @@ locals {
   }
   l2_map = {
     for k, v in var.vpc_map : k => {
-      nat_gateway_availability_zone_list = local.l1_map[k].nat_gateway_enabled ? local.l1_map[k].nat_gateway_multi_az ? slice(local.availability_zone_letter_list, 0, local.l1_map[k].availability_zone_count) : [local.availability_zone_letter_list[0]] : []
+      nat_gateway_availability_zone_list = local.l1_map[k].nat_gateway_enabled ? local.l1_map[k].nat_multi_az ? slice(local.availability_zone_letter_list, 0, local.l1_map[k].availability_zone_count) : [local.availability_zone_letter_list[0]] : []
       resource_name                      = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}${var.std_map.resource_name_suffix}"
       segment_map = {
         for k_seg, v_seg in v.segment_map : k_seg => merge(v_seg, {
@@ -75,7 +75,7 @@ locals {
               k_az       = k_az
               k_az_full  = "${k}-${k_seg}-${k_az}"
               k_az_only  = "${k}-${k_az}"
-              k_az_nat   = local.l1_map[k].nat_gateway_multi_az ? "${k}-${k_az}" : "${k}-${local.l2_map[k].nat_gateway_availability_zone_list[0]}"
+              k_az_nat   = local.l1_map[k].nat_multi_az ? "${k}-${k_az}" : "${k}-${local.l2_map[k].nat_gateway_availability_zone_list[0]}"
               tags = merge(
                 var.std_map.tags,
                 {

@@ -15,13 +15,18 @@ variable "ci_cd_account_data" {
     log_public = optional(object({ # Must be provided if log public access is enabled
       iam_policy_arn_map = map(string)
     }))
+    policy = object({
+      vpc_net = object({
+        iam_policy_arn = string
+      })
+    })
   })
 }
 
-variable "code_pipe_role_key" {
-  type    = string
-  default = "*code-pipe*"
-}
+#variable "code_pipe_role_key" {
+#  type    = string
+#  default = "*code-pipe*"
+#}
 
 variable "create_policy_json_map" {
   type    = map(string)
@@ -92,4 +97,10 @@ variable "std_map" {
 variable "tag" {
   type    = bool
   default = true
+}
+
+variable "vpc_access" {
+  type        = bool
+  default     = false
+  description = "If true, this role will add permissions for VPC networking"
 }

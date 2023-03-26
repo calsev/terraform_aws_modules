@@ -24,6 +24,16 @@ data "aws_iam_policy_document" "network_policy" {
     actions = [
       "ec2:CreateNetworkInterfacePermission",
     ]
+    condition {
+      test     = "StringLike"
+      values   = ["arn:${var.std_map.iam_partition}:ec2:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:subnet/*"]
+      variable = "ec2:Subnet"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = ["codebuild.amazonaws.com"]
+      variable = "ec2:AuthorizedService"
+    }
     resources = ["arn:${var.std_map.iam_partition}:ec2:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:network-interface/*"]
     sid       = "InterfaceWrite"
   }

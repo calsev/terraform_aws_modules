@@ -29,6 +29,11 @@ variable "ci_cd_account_data" {
       iam_policy_arn_map = map(string)
       log_group_name     = string
     })
+    policy = object({
+      vpc_net = object({
+        iam_policy_arn = string
+      })
+    })
     role = object({
       build = object({
         basic = object({

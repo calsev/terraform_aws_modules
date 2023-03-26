@@ -17,7 +17,7 @@ locals {
     for k, v in local.build_flattened_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
   l1_map = {
-    for k, v in local.build_flattened_map : k => merge(v, {
+    for k, v in local.build_flattened_map : k => merge(v, module.vpc_map.data[k], {
       artifact_encryption_disabled = v.artifact_encryption_disabled == null ? var.build_artifact_encryption_disabled_default : v.artifact_encryption_disabled
       artifact_location            = v.artifact_location == null ? var.build_artifact_location_default : v.artifact_location
       build_source_type            = v.source_type == null ? var.build_source_type_default : v.source_type
@@ -26,9 +26,16 @@ locals {
       concurrent_build_limit       = v.concurrent_build_limit == null ? var.build_concurrent_limit_default : v.concurrent_build_limit
       encryption_key               = "arn:${var.std_map.iam_partition}:kms:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:alias/aws/s3" # This is just the default S3 key, but keeps diffs clean
       environment_image_custom     = v.environment_image_custom == null ? var.build_environment_image_custom_default : v.environment_image_custom
-      environment_privileged_mode  = v.environment_privileged_mode == null ? var.build_environment_privileged_mode_default : v.environment_privileged_mode
       environment_variable_map     = v.environment_variable_map == null ? {} : v.environment_variable_map
       environment_type             = v.environment_type == null ? var.build_environment_type_default : v.environment_type
+      file_system_map = v.file_system_map == null ? {} : {
+        for k_fs, v_fs in v.file_system_map : k_fs => merge(v_fs, {
+          location_dns  = v_fs.location_dns == null ? var.build_file_system_location_dns_default : v_fs.location_dns
+          location_path = v_fs.location_path == null ? var.build_file_system_location_path_default : v_fs.location_path
+          mount_options = v_fs.mount_options == null ? var.build_file_system_mount_options_default : v_fs.mount_options
+          mount_point   = v_fs.mount_point == null ? var.build_file_system_mount_point_default : v_fs.mount_point
+        })
+      }
       iam_role_arn                 = v.iam_role_arn == null ? var.build_iam_role_arn_default == null ? var.ci_cd_account_data.role.build.basic.iam_role_arn : var.build_iam_role_arn_default : v.iam_role_arn
       iam_role_arn_resource_access = v.iam_role_arn_resource_access == null ? var.build_iam_role_arn_resource_access_default : v.iam_role_arn_resource_access
       log_cloudwatch_enabled       = v.log_cloudwatch_enabled == null ? var.build_log_cloudwatch_enabled_default : v.log_cloudwatch_enabled
@@ -46,11 +53,7 @@ locals {
           Name = "${var.std_map.resource_name_prefix}${v.k_map}${var.std_map.resource_name_suffix}"
         }
       )
-      vpc_enabled                = v.vpc_enabled == null ? var.build_vpc_enabled_default : v.vpc_enabled
-      vpc_id                     = v.vpc_id == null ? var.build_vpc_id_default : v.vpc_id
-      vpc_security_group_id_list = v.vpc_security_group_id_list == null ? var.build_vpc_security_group_id_list_default : v.vpc_security_group_id_list
-      vpc_subnet_id_list         = v.vpc_subnet_id_list == null ? var.build_vpc_subnet_id_list_default : v.vpc_subnet_id_list
-      webhook_filter_map_raw     = v.webhook_filter_map == null ? var.build_webhook_filter_map_default : v.webhook_filter_map
+      webhook_filter_map_raw = v.webhook_filter_map == null ? var.build_webhook_filter_map_default : v.webhook_filter_map
     })
   }
   l2_map = {
@@ -61,12 +64,20 @@ locals {
       environment_compute_type                = "BUILD_GENERAL1_${upper(split("-", local.l1_map[k].environment_type)[3])}"
       environment_image_standard              = local.compute_env_map[join("-", slice(split("-", local.l1_map[k].environment_type), 0, 3))].image
       environment_image_pull_credentials_type = local.l1_map[k].environment_image_custom == null ? "CODEBUILD" : "SERVICE_ROLE"
+      environment_privileged_mode             = length(local.l1_map[k].file_system_map) > 0 ? true : v.environment_privileged_mode == null ? var.build_environment_privileged_mode_default : v.environment_privileged_mode
       environment_type_tag                    = split("-", local.l1_map[k].environment_type)[0] == "cpu" ? split("-", local.l1_map[k].environment_type)[1] == "amd" ? "LINUX_CONTAINER" : "ARM_CONTAINER" : "LINUX_GPU_CONTAINER"
-      log_group_name                          = local.l1_map[k].public_visibility ? var.ci_cd_account_data.log_public.log_group_name : var.ci_cd_account_data.log.log_group_name
-      log_s3_bucket_location                  = local.l1_map[k].log_s3_enabled && local.l1_map[k].log_s3_bucket_name != null ? "${local.l1_map[k].log_s3_bucket_name}/codebuild-${v.k_map}" : null
-      source_no_clone                         = contains(["CODEPIPELINE", "S3", "NO_SOURCE"], local.l1_map[k].build_source_type)
-      source_report_build_status              = local.l1_map[k].build_source_type == "CODEPIPELINE" ? false : v.source_report_build_status == null ? var.build_source_report_build_status_default : v.source_report_build_status
-      source_type                             = local.l1_map[k].build_source_type
+      file_system_map = local.l1_map[k].file_system_map == null ? {} : {
+        for k_fs, v_fs in local.l1_map[k].file_system_map : k_fs => merge(v_fs, {
+          location = "${v_fs.location_dns}:/${trim(v_fs.location_path, "/")}"
+        })
+      }
+      log_group_name             = local.l1_map[k].public_visibility ? var.ci_cd_account_data.log_public.log_group_name : var.ci_cd_account_data.log.log_group_name
+      log_s3_bucket_location     = local.l1_map[k].log_s3_enabled && local.l1_map[k].log_s3_bucket_name != null ? "${local.l1_map[k].log_s3_bucket_name}/codebuild-${v.k_map}" : null
+      source_no_clone            = contains(["CODEPIPELINE", "S3", "NO_SOURCE"], local.l1_map[k].build_source_type)
+      source_report_build_status = local.l1_map[k].build_source_type == "CODEPIPELINE" ? false : v.source_report_build_status == null ? var.build_source_report_build_status_default : v.source_report_build_status
+      source_type                = local.l1_map[k].build_source_type
+      vpc_enabled                = local.l1_map[k].vpc_key != null
+      vpc_id                     = local.l1_map[k].vpc_key == null ? null : var.vpc_data_map[local.l1_map[k].vpc_key].vpc_id
       webhook_filter_map = {
         for k_group, v_group in local.l1_map[k].webhook_filter_map_raw : k_group => {
           for k_filter, v_filter in v_group : k_filter => {

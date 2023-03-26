@@ -1,8 +1,13 @@
 locals {
   output_data = {
-    for k, v in var.security_group_map : k => merge(v, {
-      id = aws_security_group.this_sg[k].id
-    })
+    security_group_id_map = {
+      for k, v in var.security_group_map : k => aws_security_group.this_sg[k].id
+    }
+    security_group_map = {
+      for k, v in var.security_group_map : k => merge(v, {
+        id = aws_security_group.this_sg[k].id
+      })
+    }
   }
   sg_name = {
     for k, _ in var.security_group_map : k => replace(k, "_", "-")

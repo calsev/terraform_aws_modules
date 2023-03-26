@@ -8,6 +8,6 @@ locals {
     }
   }
   pascal_map = {
-    for resource_type, _ in var.resource_map : resource_type => join("", [for part in split("_", resource_type) : title(part)])
+    for resource_type, _ in var.resource_map : resource_type => join("", [for part in split("-", replace(resource_type, "/[_]/", "-")) : title(part)])
   }
 }

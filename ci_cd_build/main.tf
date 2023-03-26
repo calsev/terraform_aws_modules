@@ -1,3 +1,14 @@
+module "vpc_map" {
+  source                              = "../vpc_id_map"
+  vpc_map                             = local.build_flattened_map
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_key_default                     = var.vpc_key_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
+  vpc_data_map                        = var.vpc_data_map
+}
+
+
 # https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
 # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference.html
 
@@ -34,6 +45,16 @@ resource "aws_codebuild_project" "this_build_project" {
     image_pull_credentials_type = each.value.environment_image_pull_credentials_type
     privileged_mode             = each.value.environment_privileged_mode
     type                        = each.value.environment_type_tag
+  }
+  dynamic "file_system_locations" {
+    for_each = each.value.file_system_map
+    content {
+      identifier    = file_system_locations.key
+      location      = file_system_locations.value.location
+      mount_options = file_system_locations.value.mount_options
+      mount_point   = file_system_locations.value.mount_point
+      type          = "EFS"
+    }
   }
   logs_config {
     cloudwatch_logs {

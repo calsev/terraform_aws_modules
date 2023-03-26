@@ -1,20 +1,21 @@
 module "compute_common" {
-  source                                      = "../ecs_compute_common"
-  compute_map                                 = var.compute_map
-  compute_image_id_default                    = var.compute_image_id_default
-  compute_instance_allocation_type_default    = var.compute_instance_allocation_type_default
-  compute_instance_storage_gib_default        = var.compute_instance_storage_gib_default
-  compute_instance_type_default               = var.compute_instance_type_default
-  compute_key_name_default                    = var.compute_key_name_default
-  compute_vpc_security_group_key_list_default = var.compute_vpc_security_group_key_list_default
-  compute_vpc_segment_key_default             = var.compute_vpc_segment_key_default
-  compute_vpc_subnet_key_list_default         = var.compute_vpc_subnet_key_list_default
-  compute_user_data_commands_default          = var.compute_user_data_commands_default
-  cw_config_data                              = var.cw_config_data
-  iam_instance_profile_arn_ecs                = var.iam_data.iam_instance_profile_arn_ecs
-  set_ecs_cluster_in_user_data                = false
-  std_map                                     = var.std_map
-  vpc_data                                    = var.vpc_data
+  source                                   = "../ecs_compute_common"
+  compute_map                              = var.compute_map
+  compute_image_id_default                 = var.compute_image_id_default
+  compute_instance_allocation_type_default = var.compute_instance_allocation_type_default
+  compute_instance_storage_gib_default     = var.compute_instance_storage_gib_default
+  compute_instance_type_default            = var.compute_instance_type_default
+  compute_key_name_default                 = var.compute_key_name_default
+  compute_user_data_commands_default       = var.compute_user_data_commands_default
+  cw_config_data                           = var.cw_config_data
+  iam_instance_profile_arn_ecs             = var.iam_data.iam_instance_profile_arn_ecs
+  set_ecs_cluster_in_user_data             = false
+  std_map                                  = var.std_map
+  vpc_az_key_list_default                  = var.vpc_az_key_list_default
+  vpc_key_default                          = var.vpc_key_default
+  vpc_security_group_key_list_default      = var.vpc_security_group_key_list_default
+  vpc_segment_key_default                  = var.vpc_segment_key_default
+  vpc_data_map                             = var.vpc_data_map
 }
 
 resource "aws_batch_compute_environment" "this_compute_env" {

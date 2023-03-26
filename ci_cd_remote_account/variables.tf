@@ -21,9 +21,10 @@ variable "host_map" {
     name_override               = optional(string)
     provider_endpoint           = string
     provider_type               = optional(string)
+    vpc_az_key_list             = optional(list(string))
     vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
-    vpc_subnet_key_list         = optional(list(string))
+    vpc_segment_key             = optional(string)
     vpc_tls_certificate         = optional(string)
   }))
   default = {}
@@ -32,22 +33,6 @@ variable "host_map" {
 variable "host_provider_type_default" {
   type    = string
   default = "GitHubEnterpriseServer"
-}
-
-variable "host_vpc_key_default" {
-  type        = string
-  default     = null
-  description = "If provided, a VPC config will be created"
-}
-
-variable "host_vpc_security_group_key_list_default" {
-  type    = list(string)
-  default = null
-}
-
-variable "host_vpc_subnet_key_list_default" {
-  type    = list(string)
-  default = ["a", "b"]
 }
 
 variable "host_vpc_tls_certificate_default" {
@@ -84,18 +69,34 @@ variable "std_map" {
   })
 }
 
-variable "vpc_data" {
+variable "vpc_az_key_list_default" {
+  type    = list(string)
+  default = ["a", "b"]
+}
+
+variable "vpc_data_map" {
   type = map(object({
-    security_group_map = map(object({
-      id = string
-    }))
+    security_group_id_map = map(string)
     segment_map = map(object({
-      subnet_map = map(object({
-        subnet_id = string
-      }))
+      subnet_id_map = map(string)
     }))
     vpc_id = string
   }))
   default     = null
   description = "Must be provided if a vpc_configuration is provided"
+}
+
+variable "vpc_key_default" {
+  type    = string
+  default = null
+}
+
+variable "vpc_security_group_key_list_default" {
+  type    = list(string)
+  default = null
+}
+
+variable "vpc_segment_key_default" {
+  type    = string
+  default = "internal"
 }
