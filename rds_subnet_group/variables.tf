@@ -1,8 +1,10 @@
 variable "group_map" {
   type = map(object({
-    name_infix          = optional(bool)
-    name_prefix         = optional(bool)
-    vpc_subnet_key_list = optional(list(string))
+    name_infix                  = optional(bool)
+    name_prefix                 = optional(bool)
+    vpc_az_key_list             = optional(list(string))
+    vpc_key                     = optional(string)
+    vpc_segment_key             = optional(string)
   }))
 }
 
@@ -17,11 +19,6 @@ variable "group_name_prefix_default" {
   description = "If true, name will be used as a prefix"
 }
 
-variable "group_vpc_subnet_key_list_default" {
-  type    = list(string)
-  default = ["a", "b"]
-}
-
 variable "std_map" {
   type = object({
     resource_name_prefix = string
@@ -30,12 +27,26 @@ variable "std_map" {
   })
 }
 
-variable "vpc_data" {
-  type = object({
+variable "vpc_az_key_list_default" {
+  type    = list(string)
+  default = ["a", "b"]
+}
+
+variable "vpc_data_map" {
+  type = map(object({
+    security_group_id_map = map(string)
     segment_map = map(object({
-      subnet_map = map(object({
-        subnet_id = string
-      }))
+      subnet_id_map = map(string)
     }))
-  })
+  }))
+}
+
+variable "vpc_key_default" {
+  type    = string
+  default = null
+}
+
+variable "vpc_segment_key_default" {
+  type    = string
+  default = "internal"
 }

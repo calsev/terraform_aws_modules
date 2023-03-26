@@ -12,3 +12,11 @@ variable "sm_secret_key" {
   type    = string
   default = null
 }
+
+variable "std_map" {
+  type = object({
+    aws_account_id  = string
+    aws_region_name = string
+    iam_partition   = string
+  })
+}

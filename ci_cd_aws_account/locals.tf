@@ -31,15 +31,21 @@ locals {
     (local.base_name) = local.log_map_base
   }
   log_map = !var.log_public_enabled ? local.log_map_private : merge(local.log_map_private, {
-    (local.public_name) = local.log_map_base,
+    (local.public_name) = merge(local.log_map_base, {
+      allow_public_read = true
+    }),
   })
   output_data = {
     bucket     = local.bucket_data
     log        = module.build_log.data[local.base_name]
     log_public = var.log_public_enabled ? module.build_log.data[local.public_name] : null
+    policy = {
+      vpc_net = module.net_policy.data
+    }
     role = {
       build = {
-        basic = module.basic_build_role.data
+        basic           = module.basic_build_role.data
+        log_public_read = var.log_public_enabled ? module.public_log_access_role["this"].data : null
       }
     }
   }

@@ -1,12 +1,18 @@
 variable "log_map" {
   type = map(object({
+    allow_public_read  = optional(bool)
     create_policy      = optional(bool)
     log_retention_days = optional(number)
     name_prefix        = optional(string)
-    policy_name        = optional(string)
+    policy_name        = optional(string) # Defaults to name-log
     policy_name_infix  = optional(bool)
     policy_name_prefix = optional(string)
   }))
+}
+
+variable "log_allow_public_read_default" {
+  type    = bool
+  default = false
 }
 
 variable "log_create_policy_default" {
@@ -26,12 +32,6 @@ variable "log_retention_days_default" {
 variable "log_name_prefix_default" {
   type    = string
   default = ""
-}
-
-variable "log_policy_name_default" {
-  type        = string
-  default     = null
-  description = "Defaults to name-log"
 }
 
 variable "log_policy_name_infix_default" {

@@ -25,17 +25,14 @@ locals {
     for k, v in var.compute_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
   l1_map = {
-    for k, v in var.compute_map : k => merge(v, {
-      image_id                    = v.image_id == null ? var.compute_image_id_default : v.image_id
-      instance_allocation_type    = v.instance_allocation_type == null ? var.compute_instance_allocation_type_default : v.instance_allocation_type
-      instance_storage_gib        = v.instance_storage_gib == null ? var.compute_instance_storage_gib_default : v.instance_storage_gib
-      instance_type               = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
-      key_name                    = v.key_name == null ? var.compute_key_name_default : v.key_name
-      name                        = replace(k, "/_/", "-")
-      user_data_commands          = v.user_data_commands == null ? var.compute_user_data_commands_default == null ? [] : var.compute_user_data_commands_default : v.user_data_commands
-      vpc_security_group_key_list = v.vpc_security_group_key_list == null ? var.compute_vpc_security_group_key_list_default : v.vpc_security_group_key_list
-      vpc_segment_key             = v.vpc_segment_key == null ? var.compute_vpc_segment_key_default : v.vpc_segment_key
-      vpc_subnet_key_list         = v.vpc_subnet_key_list == null ? var.compute_vpc_subnet_key_list_default : v.vpc_subnet_key_list
+    for k, v in var.compute_map : k => merge(v, module.vpc_map.data[k], {
+      image_id                 = v.image_id == null ? var.compute_image_id_default : v.image_id
+      instance_allocation_type = v.instance_allocation_type == null ? var.compute_instance_allocation_type_default : v.instance_allocation_type
+      instance_storage_gib     = v.instance_storage_gib == null ? var.compute_instance_storage_gib_default : v.instance_storage_gib
+      instance_type            = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
+      key_name                 = v.key_name == null ? var.compute_key_name_default : v.key_name
+      name                     = replace(k, "/_/", "-")
+      user_data_commands       = v.user_data_commands == null ? var.compute_user_data_commands_default == null ? [] : var.compute_user_data_commands_default : v.user_data_commands
     })
   }
   l2_map = {
@@ -43,12 +40,6 @@ locals {
       cpu_credit_specification = substr(local.l1_map[k].instance_type, 0, 1) == "t" ? "unlimited" : null
       instance_family          = split(".", local.l1_map[k].instance_type)[0]
       resource_name            = "${var.std_map.resource_name_prefix}${local.l1_map[k].name}${var.std_map.resource_name_suffix}"
-      vpc_security_group_id_list = [
-        for k_sg in local.l1_map[k].vpc_security_group_key_list : var.vpc_data.security_group_map[k_sg].id
-      ]
-      vpc_subnet_id_list = [
-        for k_az in local.l1_map[k].vpc_subnet_key_list : var.vpc_data.segment_map[local.l1_map[k].vpc_segment_key].subnet_map[k_az].subnet_id
-      ]
     }
   }
   l3_map = {

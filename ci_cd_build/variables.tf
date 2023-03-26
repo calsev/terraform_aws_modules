@@ -40,6 +40,12 @@ variable "repo_map" {
         type  = string
         value = string
       })))
+      file_system_map = optional(map(object({
+        location_dns  = optional(string)
+        location_path = optional(string)
+        mount_options = optional(string)
+        mount_point   = optional(string)
+      })))
       iam_role_arn                 = optional(string)
       iam_role_arn_resource_access = optional(string)
       log_cloudwatch_enabled       = optional(bool)
@@ -55,10 +61,10 @@ variable "repo_map" {
       source_report_build_status   = optional(bool)   # Ignored for pipeline sources
       source_type                  = optional(string) # e.g. GITHUB, GITHUB_ENTERPRISE
       source_version               = optional(string)
-      vpc_enabled                  = optional(bool)
-      vpc_id                       = optional(string)
-      vpc_security_group_id_list   = optional(list(string))
-      vpc_subnet_id_list           = optional(list(string))
+      vpc_az_key_list              = optional(list(string))
+      vpc_key                      = optional(string)
+      vpc_security_group_key_list  = optional(list(string))
+      vpc_segment_key              = optional(string)
       webhook_enabled              = optional(bool)
       webhook_filter_map = optional(map(map(object({ # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_webhook#filter
         exclude_matched_pattern = optional(bool)     # Defaults to false
@@ -145,13 +151,34 @@ variable "build_environment_image_custom_default" {
 }
 
 variable "build_environment_privileged_mode_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "Will be set true if file system locations are specified"
 }
 
 variable "build_environment_type_default" {
   type    = string
   default = "cpu-amd-ubuntu-small"
+}
+
+variable "build_file_system_location_dns_default" {
+  type    = string
+  default = null
+}
+
+variable "build_file_system_location_path_default" {
+  type    = string
+  default = "/"
+}
+
+variable "build_file_system_mount_options_default" {
+  type    = string
+  default = "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2"
+}
+
+variable "build_file_system_mount_point_default" {
+  type    = string
+  default = null
 }
 
 variable "build_iam_role_arn_default" {
@@ -225,26 +252,6 @@ variable "build_source_version_default" {
   default = null
 }
 
-variable "build_vpc_enabled_default" {
-  type    = bool
-  default = false
-}
-
-variable "build_vpc_id_default" {
-  type    = string
-  default = null
-}
-
-variable "build_vpc_security_group_id_list_default" {
-  type    = list(string)
-  default = null
-}
-
-variable "build_vpc_subnet_id_list_default" {
-  type    = list(string)
-  default = null
-}
-
 variable "build_webhook_enabled_default" {
   type        = bool
   default     = true
@@ -278,4 +285,38 @@ variable "std_map" {
     resource_name_suffix = string
     tags                 = map(string)
   })
+}
+
+variable "vpc_az_key_list_default" {
+  type    = list(string)
+  default = ["a", "b"]
+}
+
+variable "vpc_data_map" {
+  type = map(object({
+    security_group_id_map = map(string)
+    segment_map = map(object({
+      subnet_id_map = map(string)
+    }))
+    vpc_cidr_block      = string
+    vpc_id              = string
+    vpc_ipv6_cidr_block = string
+  }))
+  default     = null
+  description = "Must be provided if one or more "
+}
+
+variable "vpc_key_default" {
+  type    = string
+  default = null
+}
+
+variable "vpc_security_group_key_list_default" {
+  type    = list(string)
+  default = ["world_all_out"]
+}
+
+variable "vpc_segment_key_default" {
+  type    = string
+  default = "internal"
 }

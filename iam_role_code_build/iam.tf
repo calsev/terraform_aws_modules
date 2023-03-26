@@ -1,17 +1,17 @@
 module "assume_role_policy" {
   source       = "../iam_policy_assume_role"
   service_list = ["codebuild"]
-  sid_map = {
-    Role = {
-      condition_map = {
-        pipe_role_key_match = {
-          test       = "StringLike" # ArnLike does not work
-          value_list = ["arn:${var.std_map.iam_partition}:iam::${var.std_map.aws_account_id}:role/${var.code_pipe_role_key}"]
-          variable   = "AWS:PrincipalArn" # SourceArn does not work
-        }
-      }
-    }
-  }
+  #  sid_map = {
+  #    Role = {
+  #      condition_map = {
+  #        pipe_role_key_match = {
+  #          test       = "StringLike" # ArnLike does not work
+  #          value_list = ["arn:${var.std_map.iam_partition}:iam::${var.std_map.aws_account_id}:role/${var.code_pipe_role_key}"]
+  #          variable   = "AWS:PrincipalArn" # SourceArn does not work
+  #        }
+  #      }
+  #    }
+  #  }
 }
 
 module "s3_log_policy" {
@@ -29,7 +29,7 @@ module "s3_log_policy" {
 module "this_role" {
   source                  = "../iam_role"
   assume_role_json        = jsonencode(module.assume_role_policy.iam_policy_doc_assume_role)
-  attach_policy_arn_map   = local.attach_policy_arn_map
+  attach_policy_arn_map   = local.attach_policy_arn_map_2
   create_instance_profile = false
   create_policy_json_map  = var.create_policy_json_map
   inline_policy_json_map  = local.inline_policy_json_map

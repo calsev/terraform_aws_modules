@@ -114,6 +114,7 @@ tf-lint: tflint-install
 	cd ../iam_policy_identity_code_build_report && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_codestar_connection && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_ecr && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_identity_efs && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_s3 && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_secret && $(LINT) --config=../development/.tflint.hcl
@@ -142,6 +143,7 @@ tf-lint: tflint-install
 	cd ../sqs_queue && $(LINT) --config=../development/.tflint.hcl
 	cd ../step_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc && $(LINT) --config=../development/.tflint.hcl
+	cd ../vpc_id_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../waf && $(LINT) --config=../development/.tflint.hcl
 
 tflint-install:

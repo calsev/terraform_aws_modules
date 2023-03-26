@@ -1,44 +1,40 @@
 module "assume_role_policy" {
   source       = "../iam_policy_assume_role"
-  for_each     = var.assume_role_service_list != null ? { this = {} } : {}
-  service_list = var.assume_role_service_list
+  for_each     = local.l1_map.enable_assume_role ? { this = {} } : {}
+  service_list = local.l1_map.assume_role_service_list
 }
 
 resource "aws_iam_policy" "this_created_policy" {
-  for_each = var.create_policy_json_map
-  name     = local.policy_name_map[each.key]
-  policy   = each.value
-  tags = merge(
-    var.std_map.tags,
-    {
-      Name = local.policy_name_map[each.key]
-    }
-  )
+  for_each = local.l1_map.create_policy_doc_map
+  name     = local.l2_map.create_policy_name_map[each.key]
+  policy   = jsonencode(each.value)
+  tags     = local.l3_map.create_policy_tag_map[each.key]
 }
 
 resource "aws_iam_role" "this_iam_role" {
-  assume_role_policy   = local.assume_role_json
-  max_session_duration = var.max_session_duration
+  assume_role_policy   = jsonencode(local.l2_map.assume_role_doc)
+  max_session_duration = local.l1_map.max_session_duration
   dynamic "inline_policy" {
-    for_each = local.inline_policy_json_map
+    for_each = local.l1_map.inline_policy_doc_map
     content {
       name   = inline_policy.key
-      policy = inline_policy.value
+      policy = jsonencode(inline_policy.value)
     }
   }
   dynamic "inline_policy" {
-    for_each = length(local.inline_policy_json_map) == 0 ? { this = {} } : {}
+    # This ensures an empty policy
+    for_each = length(local.l1_map.inline_policy_doc_map) == 0 ? { this = {} } : {}
     content {}
   }
-  managed_policy_arns = [for _, arn in local.all_attached_policy_arn_map : arn]
-  name                = local.role_name
-  path                = local.role_path
-  tags                = var.tag ? local.tags : null
+  managed_policy_arns = [for _, arn in local.l5_map.all_attached_policy_arn_map : arn]
+  name                = local.l3_map.role_name
+  path                = local.l1_map.role_path
+  tags                = local.l3_map.tags
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
-  for_each = var.create_instance_profile ? { this = {} } : {}
-  name     = local.role_name
+  for_each = local.l1_map.create_instance_profile ? { this = {} } : {}
+  name     = local.l3_map.role_name
   role     = aws_iam_role.this_iam_role.id
-  tags     = local.tags
+  tags     = local.l3_map.tags
 }

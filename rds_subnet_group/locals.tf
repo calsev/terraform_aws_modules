@@ -3,19 +3,15 @@ locals {
     for k, v in var.group_map : k => merge(local.l2_map[k], local.l2_map[k], local.l3_map[k])
   }
   l1_map = {
-    for k, v in var.group_map : k => merge(v, {
-      name                = replace(k, "/[_]/", "-")
-      name_infix          = v.name_infix == null ? var.group_name_infix_default : v.name_infix
-      name_prefix         = v.name_prefix == null ? var.group_name_prefix_default : v.name_prefix
-      vpc_subnet_key_list = v.vpc_subnet_key_list == null ? var.group_vpc_subnet_key_list_default : v.vpc_subnet_key_list
+    for k, v in var.group_map : k => merge(v, module.vpc_map.data[k], {
+      name        = replace(k, "/[_]/", "-")
+      name_infix  = v.name_infix == null ? var.group_name_infix_default : v.name_infix
+      name_prefix = v.name_prefix == null ? var.group_name_prefix_default : v.name_prefix
     })
   }
   l2_map = {
     for k, v in var.group_map : k => {
       resource_name = "${var.std_map.resource_name_prefix}${local.l1_map[k].name}${var.std_map.resource_name_suffix}"
-      vpc_subnet_id_list = [
-        for k_az in local.l1_map[k].vpc_subnet_key_list : var.vpc_data.segment_map[local.l1_map[k].vpc_segment_key].subnet_map[k_az].subnet_id
-      ]
     }
   }
   l3_map = {

@@ -1,3 +1,13 @@
+module "vpc_map" {
+  source                              = "../vpc_id_map"
+  vpc_map                             = var.compute_map
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_key_default                     = var.vpc_key_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
+  vpc_data_map                        = var.vpc_data_map
+}
+
 resource "aws_placement_group" "this_placement_group" {
   for_each     = local.compute_map
   name         = each.value.resource_name
