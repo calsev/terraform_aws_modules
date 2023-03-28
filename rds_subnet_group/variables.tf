@@ -1,10 +1,10 @@
 variable "group_map" {
   type = map(object({
-    name_infix                  = optional(bool)
-    name_prefix                 = optional(bool)
-    vpc_az_key_list             = optional(list(string))
-    vpc_key                     = optional(string)
-    vpc_segment_key             = optional(string)
+    name_infix      = optional(bool)
+    name_prefix     = optional(bool)
+    vpc_az_key_list = optional(list(string))
+    vpc_key         = optional(string)
+    vpc_segment_key = optional(string)
   }))
 }
 

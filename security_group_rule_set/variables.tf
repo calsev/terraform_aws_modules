@@ -5,8 +5,9 @@ variable "cidr_blocks_internal" {
 }
 
 variable "cidr_blocks_internal_ipv6" {
-  type    = list(string)
-  default = null
+  type        = list(string)
+  default     = null
+  description = "Defaults to IPV6 CIDR blocks of all VPCs"
 }
 
 variable "cidr_blocks_public" {
@@ -30,9 +31,9 @@ variable "cidr_blocks_private_ipv6" {
   default = null
 }
 
-variable "rule_map_internal" {
+variable "sg_map_internal" {
   type = map(object({
-    rules = map(object({
+    rule_map = map(object({
       cidr_blocks      = optional(list(string))
       from_port        = optional(number)
       ipv6_cidr_blocks = optional(list(string))
@@ -42,8 +43,20 @@ variable "rule_map_internal" {
     }))
   }))
   default = {
+    all_in = {
+      rule_map = {
+        all = {
+          cidr_blocks      = null
+          from_port        = null
+          ipv6_cidr_blocks = null
+          protocol         = "-1"
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     mongodb_in = {
-      rules = {
+      rule_map = {
         mongodb = {
           cidr_blocks      = null
           from_port        = 27017
@@ -55,7 +68,7 @@ variable "rule_map_internal" {
       }
     }
     mysql_in = {
-      rules = {
+      rule_map = {
         mysql = {
           cidr_blocks      = null
           from_port        = 3306
@@ -67,7 +80,7 @@ variable "rule_map_internal" {
       }
     }
     nfs_in = {
-      rules = {
+      rule_map = {
         nfs = {
           cidr_blocks      = null
           from_port        = 2049
@@ -79,7 +92,7 @@ variable "rule_map_internal" {
       }
     }
     postgres_in = {
-      rules = {
+      rule_map = {
         postgres = {
           cidr_blocks      = null
           from_port        = 5432
@@ -91,7 +104,7 @@ variable "rule_map_internal" {
       }
     }
     ssh_in = {
-      rules = {
+      rule_map = {
         ssh = {
           cidr_blocks      = null
           from_port        = 22
@@ -106,9 +119,9 @@ variable "rule_map_internal" {
   description = "If CIDR block is provided, these will be created, with that CIDR inserted for each"
 }
 
-variable "rule_map_public" {
+variable "sg_map_public" {
   type = map(object({
-    rules = map(object({
+    rule_map = map(object({
       cidr_blocks      = optional(list(string))
       from_port        = optional(number)
       ipv6_cidr_blocks = optional(list(string))
@@ -119,7 +132,7 @@ variable "rule_map_public" {
   }))
   default = {
     all_out = {
-      rules = {
+      rule_map = {
         all = {
           cidr_blocks      = null
           from_port        = null
@@ -131,7 +144,7 @@ variable "rule_map_public" {
       }
     }
     http_in = {
-      rules = {
+      rule_map = {
         http = {
           cidr_blocks      = null
           from_port        = 80
@@ -151,7 +164,7 @@ variable "rule_map_public" {
       }
     }
     icmp_in = {
-      rules = {
+      rule_map = {
         icmp = {
           cidr_blocks      = null
           from_port        = -1
@@ -171,7 +184,7 @@ variable "rule_map_public" {
       }
     }
     ssh_in = {
-      rules = {
+      rule_map = {
         ssh = {
           cidr_blocks      = null
           from_port        = 22
@@ -183,7 +196,7 @@ variable "rule_map_public" {
       }
     }
     vpn_in = {
-      rules = {
+      rule_map = {
         vpn = {
           cidr_blocks      = null
           from_port        = 1194
@@ -197,9 +210,9 @@ variable "rule_map_public" {
   }
 }
 
-variable "rule_map_private" {
+variable "sg_map_private" {
   type = map(object({
-    rules = map(object({
+    rule_map = map(object({
       cidr_blocks      = optional(list(string))
       from_port        = optional(number)
       ipv6_cidr_blocks = optional(list(string))
@@ -230,4 +243,10 @@ variable "security_group_to_port_default" {
 variable "security_group_type_default" {
   type    = string
   default = "ingress"
+}
+
+variable "vpc_map" {
+  type = map(object({
+    vpc_ipv6_cidr_block = string
+  }))
 }
