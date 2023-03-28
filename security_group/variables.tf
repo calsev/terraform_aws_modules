@@ -1,17 +1,3 @@
-variable "security_group_map" {
-  type = map(object({
-    rules = map(object({
-      cidr_blocks      = list(string)
-      from_port        = number
-      ipv6_cidr_blocks = list(string)
-      protocol         = string
-      to_port          = number
-      type             = string
-    }))
-  }))
-  description = "This can be synthesized using module security_group_rule_set"
-}
-
 variable "std_map" {
   type = object({
     resource_name_prefix = string
@@ -20,9 +6,20 @@ variable "std_map" {
   })
 }
 
-variable "vpc_data" {
-  type = object({
+variable "vpc_map" {
+  type = map(object({
+    security_group_map = map(object({
+      # This can be synthesized using module security_group_rule_set
+      rule_map = map(object({
+        cidr_blocks      = list(string)
+        from_port        = number
+        ipv6_cidr_blocks = list(string)
+        protocol         = string
+        to_port          = number
+        type             = string
+      }))
+    }))
     vpc_id   = string
     vpc_name = string
-  })
+  }))
 }

@@ -19,6 +19,7 @@ PY_INIT := $(PIP) --no-cache-dir pip virtualenv # No sudo; will upgrade packages
 ENV_INIT := python $(PIP) --no-cache-dir pip wheel setuptools
 
 TF := terraform
+FMT := $(TF) fmt --recursive
 LINT := tflint
 VALIDATE := $(TF) validate
 
@@ -52,19 +53,26 @@ env-update: $(VENV)
 	python $(PIP) --no-cache-dir -r $(REQ).txt && \
 	python -m pip freeze --all > $(REQ).lock.txt
 
-lint: make-lint py-lint tf-lint
+git-lint:
+	git diff --exit-code
+
+lint: make-lint tf-fmt-lint py-lint tf-lint
 
 make:
 	$(PY) python ../script/makefile.py '{}' --env-file '' --module-root '..' --module-postfixes '..' --module-ignore-postfixes '.git'
 
-make-lint: make
-	git diff --exit-code
+make-lint: make git-lint
 
 py-lint:
 	$(PY) black --check ..
 	$(PY) isort --check ..
 	$(PY) flake8 ..
 	$(PY) pyright ..
+
+tf-fmt:
+	cd .. && $(FMT)
+
+tf-fmt-lint: tf-fmt git-lint
 
 tf-lint: tflint-install
 	$(LINT) --config=.tflint.hcl --init{% for app_dir, app_data in app_dirs.items() %}

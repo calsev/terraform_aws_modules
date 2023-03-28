@@ -114,6 +114,7 @@ def map_resources(
 
 @typechecked
 def prompt_user(resource_to_destroy: str, create_options: List[str]) -> int:
+    create_options = create_options[:7]  # Max length of rawlist is 9
     choices = [
         *[f"Alias - {create_option}" for create_option in create_options],
         f"Ignore {resource_to_destroy}",
