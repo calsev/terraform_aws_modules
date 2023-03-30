@@ -5,8 +5,8 @@ variable "compute_map" {
     instance_storage_gib        = optional(number)
     instance_type               = optional(string)
     key_name                    = optional(string)
-    max_vcpus                   = optional(number)
-    min_vcpus                   = optional(number)
+    max_instances               = optional(number)
+    min_instances               = optional(number)
     vpc_az_key_list             = optional(list(string))
     vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
@@ -40,12 +40,12 @@ variable "compute_key_name_default" {
   default = null
 }
 
-variable "compute_max_vcpus_default" {
+variable "compute_max_instances_default" {
   type    = number
-  default = null
+  default = 1
 }
 
-variable "compute_min_vcpus_default" {
+variable "compute_min_instances_default" {
   type    = number
   default = 0
 }
