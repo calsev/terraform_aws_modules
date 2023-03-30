@@ -1,14 +1,15 @@
 module "compute_common" {
-  source                                   = "../ecs_compute_common"
-  compute_map                              = var.compute_map
+  source                                   = "../ec2_instance_template"
+  compute_iam_instance_profile_arn_default = var.iam_data.iam_instance_profile_arn_ecs
   compute_image_id_default                 = var.compute_image_id_default
+  compute_image_search_for_ecs_default     = true
   compute_instance_allocation_type_default = var.compute_instance_allocation_type_default
   compute_instance_storage_gib_default     = var.compute_instance_storage_gib_default
   compute_instance_type_default            = var.compute_instance_type_default
   compute_key_name_default                 = var.compute_key_name_default
+  compute_map                              = var.compute_map
   compute_user_data_commands_default       = var.compute_user_data_commands_default
   cw_config_data                           = var.cw_config_data
-  iam_instance_profile_arn_ecs             = var.iam_data.iam_instance_profile_arn_ecs
   set_ecs_cluster_in_user_data             = false
   std_map                                  = var.std_map
   vpc_az_key_list_default                  = var.vpc_az_key_list_default
@@ -26,7 +27,8 @@ resource "aws_batch_compute_environment" "this_compute_env" {
     bid_percentage      = 100 # Bid percentage set to 100 to maximize availability and minimize interruptions
     desired_vcpus       = each.value.min_vcpus
     ec2_configuration {
-      image_type = each.value.image_type
+      image_id_override = each.value.image_id # Cleanup diff
+      image_type        = each.value.image_type
     }
     instance_role = var.iam_data.iam_instance_profile_arn_ecs # ECS service API calls
     instance_type = [each.value.instance_type]

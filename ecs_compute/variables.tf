@@ -42,7 +42,7 @@ variable "compute_key_name_default" {
 
 variable "compute_max_instances_default" {
   type    = number
-  default = null
+  default = 1
 }
 
 variable "compute_min_instances_default" {

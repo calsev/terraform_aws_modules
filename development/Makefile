@@ -97,11 +97,11 @@ tf-lint: tflint-install
 	cd ../dns_zone && $(LINT) --config=../development/.tflint.hcl
 	cd ../dynamodb && $(LINT) --config=../development/.tflint.hcl
 	cd ../dynamodb_terraform_lock && $(LINT) --config=../development/.tflint.hcl
+	cd ../ec2_instance_template && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecr_repo && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_ami_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_compute && $(LINT) --config=../development/.tflint.hcl
-	cd ../ecs_compute_common && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_dashboard && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_service && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_task && $(LINT) --config=../development/.tflint.hcl
