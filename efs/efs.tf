@@ -10,7 +10,7 @@ module "vpc_map" {
 
 resource "aws_efs_file_system" "this_fs" {
   for_each       = local.fs_map
-  creation_token = each.value.resource_name
+  creation_token = each.value.name_context
   encrypted      = each.value.encrypt_file_system
   tags           = each.value.tags
 }

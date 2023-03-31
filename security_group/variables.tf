@@ -8,6 +8,7 @@ variable "std_map" {
 
 variable "vpc_map" {
   type = map(object({
+    name_simple = string
     security_group_map = map(object({
       # This can be synthesized using module security_group_rule_set
       rule_map = map(object({
@@ -19,7 +20,6 @@ variable "vpc_map" {
         type             = string
       }))
     }))
-    vpc_id   = string
-    vpc_name = string
+    vpc_id = string
   }))
 }

@@ -18,7 +18,7 @@ locals {
     for k_vpc, _ in var.vpc_map : k_vpc => {
       security_group_map = {
         for k_sg, v_sg in local.l1_map[k_vpc].security_group_map : k_sg => merge(v_sg, {
-          resource_name = "${var.std_map.resource_name_prefix}${local.l1_map[k_vpc].vpc_name}-${v_sg.name}${var.std_map.resource_name_suffix}"
+          name_context = "${var.std_map.resource_name_prefix}${local.l1_map[k_vpc].name_simple}-${v_sg.name}${var.std_map.resource_name_suffix}"
         })
       }
     }
@@ -27,10 +27,11 @@ locals {
     for k_vpc, _ in var.vpc_map : k_vpc => {
       security_group_map = {
         for k_sg, v_sg in local.l2_map[k_vpc].security_group_map : k_sg => merge(v_sg, {
+          name_effective = v_sg.name_context
           tags = merge(
             var.std_map.tags,
             {
-              Name = v_sg.resource_name
+              Name = v_sg.name_context
             }
           )
         })

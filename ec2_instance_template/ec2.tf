@@ -47,7 +47,7 @@ data "aws_ami" "this_ami" {
 
 resource "aws_placement_group" "this_placement_group" {
   for_each     = local.compute_map
-  name         = each.value.resource_name
+  name         = each.value.name_effective
   spread_level = each.value.placement_spread_level
   strategy     = each.value.placement_strategy
   tags         = each.value.tags
@@ -102,5 +102,5 @@ resource "aws_launch_template" "this_launch_template" {
 resource "local_file" "user_data" {
   for_each = local.compute_map
   content  = local.user_data_map[each.key]
-  filename = "${path.root}/user_data/${replace(each.value.name, "/-/", "_")}_${var.std_map.config_name}.txt"
+  filename = "${path.root}/user_data/${replace(each.value.name_simple, "/-/", "_")}_${var.std_map.config_name}.txt"
 }

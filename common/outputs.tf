@@ -10,7 +10,7 @@ output "std_map" {
     config_name_suffix             = local.config_name_suffix
     env                            = var.std_var.env
     iam_partition                  = local.iam_partition
-    resource_name                  = local.resource_name
+    name_context                   = local.name_context
     resource_name_prefix           = local.resource_name_prefix
     resource_name_suffix           = local.resource_name_suffix
     service_resource_access_action = local.service_resource_access_action

@@ -38,7 +38,7 @@ locals {
   config_name          = replace("config_${var.std_var.app}_${var.std_var.env}_${local.aws_region_abbreviation}", "-", "_")
   config_name_suffix   = "_${local.config_name}"
   iam_partition        = var.std_var.iam_partition == null ? "aws" : var.std_var.iam_partition
-  resource_name        = replace("${local.resource_name_prefix}${local.resource_name_suffix}", "--", "-")
+  name_context         = replace("${local.resource_name_prefix}${local.resource_name_suffix}", "--", "-")
   resource_name_prefix = replace("${var.std_var.app}-", "_", "-")
   resource_name_suffix = replace("-${var.std_var.env}${local.workspace_suffix}-${local.aws_region_abbreviation}", "_", "-")
   service_resource_access_action = {
@@ -56,9 +56,9 @@ locals {
   tags = merge(
     merge(
       {
-        Name = local.resource_name
+        Name = local.name_context
       },
-      var.tags
+      var.tags,
     ),
     {
       application    = var.std_var.app,

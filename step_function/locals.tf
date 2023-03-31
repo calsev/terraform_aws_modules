@@ -1,19 +1,16 @@
+module "name_map" {
+  source             = "../name_map"
+  name_infix_default = var.machine_name_infix_default
+  name_map           = var.machine_map
+  std_map            = var.std_map
+}
+
 locals {
   machine_map = {
-    for k, v in var.machine_map : k => merge(v, {
+    for k, v in var.machine_map : k => merge(v, module.name_map.data[k], {
       iam_role_arn = v.iam_role_arn == null ? var.machine_iam_role_arn_default : v.iam_role_arn
       log_level    = v.log_level == null ? var.machine_log_level_default : v.log_level
-      name         = local.name_map[k]
-      tags = merge(var.std_map.tags, {
-        Name = local.name_map[k]
-      })
     })
-  }
-  name_infix_map = {
-    for k, v in var.machine_map : k => v.name_infix == null ? var.machine_name_infix_default : v.name_infix
-  }
-  name_map = {
-    for k, v in var.machine_map : k => local.name_infix_map[k] ? "${var.std_map.resource_name_prefix}${replace(k, "/[._]/", "-")}${var.std_map.resource_name_suffix}" : replace(k, "/[._]/", "-")
   }
   output_data = {
     for k, v in local.machine_map : k => merge(

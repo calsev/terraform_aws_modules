@@ -1,6 +1,6 @@
 resource "aws_security_group" "this_sg" {
   for_each = local.sg_flattened_map
-  name     = each.value.resource_name
+  name     = each.value.name_effective
   tags     = each.value.tags
   vpc_id   = each.value.vpc_id
 }

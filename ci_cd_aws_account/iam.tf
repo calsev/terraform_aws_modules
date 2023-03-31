@@ -6,7 +6,7 @@ module "bucket_policy" {
   sid_map = {
     Build = {
       access           = each.key
-      bucket_name_list = [module.build_bucket.data[local.bucket_name].bucket_name]
+      bucket_name_list = [module.build_bucket.data[local.bucket_name].name_effective]
     }
   }
   std_map = var.std_map

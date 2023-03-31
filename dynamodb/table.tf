@@ -11,7 +11,7 @@ resource "aws_dynamodb_table" "this_table" {
   # global_secondary_index # TODO
   hash_key = each.value.hash_key
   # local_secondary_index # TODO
-  name = each.value.table_name
+  name = each.value.name_effective
   point_in_time_recovery {
     enabled = each.value.point_in_time_recovery_enabled
   }

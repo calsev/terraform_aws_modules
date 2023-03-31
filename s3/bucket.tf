@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "this_bucket" {
   for_each = local.bucket_map
-  bucket   = each.value.bucket_name
+  bucket   = each.value.name_effective
   tags     = each.value.tags
 }
 

@@ -24,6 +24,7 @@ variable "api_map" {
       vpc_link_id     = optional(string)
     }))
     log_group_arn = string
+    name_infix    = optional(bool)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
@@ -62,6 +63,11 @@ variable "api_cors_expose_headers_default" {
 variable "api_cors_max_age_default" {
   type    = number
   default = null
+}
+
+variable "api_name_infix_default" {
+  type    = bool
+  default = true
 }
 
 variable "api_version_default" {

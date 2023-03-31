@@ -62,7 +62,7 @@ resource "aws_batch_job_queue" "this_job_queue" {
   compute_environments = [
     aws_batch_compute_environment.this_compute_env[each.key].arn
   ]
-  name     = each.value.resource_name
+  name     = each.value.name_effective
   priority = 1
   state    = "ENABLED"
   tags     = each.value.tags

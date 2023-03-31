@@ -11,16 +11,9 @@ resource "aws_ecs_capacity_provider" "this_capacity_provider" {
     }
     managed_termination_protection = "ENABLED"
   }
-  name = each.value.resource_name
+  name = each.value.name_effective
   tags = each.value.tags
 }
-
-#resource "aws_kms_key" "this_kms_key" {
-#  for_each                = local.compute_map
-#  description             = each.value.resource_name
-#  deletion_window_in_days = 7
-#  tags                    = each.value.tags
-#}
 
 resource "aws_cloudwatch_log_group" "this_log_group" {
   for_each          = local.compute_map
@@ -40,7 +33,7 @@ resource "aws_ecs_cluster" "this_ecs_cluster" {
       logging = "OVERRIDE"
     }
   }
-  name = each.value.resource_name
+  name = each.value.name_effective
   setting {
     name  = "containerInsights"
     value = "enabled"

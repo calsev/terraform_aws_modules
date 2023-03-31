@@ -1,3 +1,10 @@
+module "name_map" {
+  source             = "../name_map"
+  name_infix_default = var.db_name_infix_default
+  name_map           = var.db_map
+  std_map            = var.std_map
+}
+
 locals {
   allow_upgrade_map = {
     for k, v in var.db_map : k => {
@@ -8,8 +15,8 @@ locals {
   db_map = {
     for k, v in var.db_map : k => merge(
       v,
+      module.name_map.data[k],
       local.allow_upgrade_map[k],
-      local.name_map[k],
       local.performance_insights_map[k],
       {
         active_directory_domain               = v.active_directory_domain == null ? var.db_active_directory_domain_default : v.active_directory_domain
@@ -42,7 +49,6 @@ locals {
         maintenance_window_utc       = v.maintenance_window_utc == null ? var.db_maintenance_window_utc_default : v.maintenance_window_utc
         monitoring_interval_s        = v.monitoring_interval_s == null ? var.db_monitoring_interval_s_default : v.monitoring_interval_s
         multi_az                     = v.multi_az == null ? var.db_multi_az_default : v.multi_az
-        name                         = local.name_map[k].name_infix ? local.resource_name_map[k] : local.name_map[k].name
         nchar_character_set_name     = v.nchar_character_set_name == null ? var.db_nchar_character_set_name_default : v.nchar_character_set_name
         network_type                 = v.network_type == null ? var.db_network_type_default : v.network_type
         option_group_name            = v.option_group_name == null ? var.db_option_group_name_default : v.option_group_name
@@ -63,12 +69,6 @@ locals {
         storage_throughput  = v.storage_throughput == null ? var.db_storage_throughput_default : v.storage_throughput
         storage_type        = local.iops_map[k] == null ? v.storage_type == null ? var.db_storage_type_default : v.storage_type : "io1"
         subnet_group_name   = v.subnet_group_name == null ? var.db_subnet_group_name_default : v.subnet_group_name
-        tags = merge(
-          var.std_map.tags,
-          {
-            Name = local.resource_name_map[k]
-          }
-        )
         timezone_for_ms_sql = v.timezone_for_ms_sql == null ? var.db_timezone_for_ms_sql_default : v.timezone_for_ms_sql
         username            = v.username == null ? var.db_username_default : v.username
       },
@@ -85,12 +85,6 @@ locals {
   iops_map = {
     for k, v in var.db_map : k => v.provisioned_iops == null ? var.db_provisioned_iops_default : v.provisioned_iops
   }
-  name_map = {
-    for k, v in var.db_map : k => {
-      name       = replace(k, "/[_]/", "-")
-      name_infix = v.name_infix == null ? var.db_name_infix_default : v.name_infix
-    }
-  }
   output_data = {
     for k, v in local.db_map : k => merge(v, {
       address = aws_db_instance.this_db[k].address
@@ -103,9 +97,6 @@ locals {
       performance_insights_kms_key_arn          = v.performance_insights_kms_key_arn == null ? var.db_performance_insights_kms_key_arn_default : v.performance_insights_kms_key_arn
       performance_insights_retention_period_day = v.performance_insights_retention_period_day == null ? var.db_performance_insights_retention_period_day_default : v.performance_insights_retention_period_day
     })
-  }
-  resource_name_map = {
-    for k, v in var.db_map : k => "${var.std_map.resource_name_prefix}${local.name_map[k].name}${var.std_map.resource_name_suffix}"
   }
   security_group_name_map = {
     for k, v in var.db_map : k => v.security_group_name_list == null ? var.db_security_group_name_list_default : v.security_group_name_list

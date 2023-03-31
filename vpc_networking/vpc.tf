@@ -1,42 +1,3 @@
-resource "aws_internet_gateway" "this_igw" {
-  for_each = local.vpc_map
-  vpc_id   = each.value.vpc_id
-  tags     = each.value.tags
-}
-
-resource "aws_egress_only_internet_gateway" "this_eog" {
-  for_each = local.eog_map
-  vpc_id   = each.value.vpc_id
-  tags     = each.value.tags
-}
-
-resource "aws_route_table" "this_route_table" {
-  for_each = local.subnet_flattened_map
-  vpc_id   = each.value.vpc_id
-  tags     = each.value.tags
-}
-
-resource "aws_route" "public_to_igw" {
-  for_each               = local.subnet_flattened_public_map
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.this_igw[each.value.k_vpc].id
-  route_table_id         = aws_route_table.this_route_table[each.key].id
-}
-
-resource "aws_route" "public_to_igw_v6" {
-  for_each                    = local.subnet_flattened_public_v6_map
-  destination_ipv6_cidr_block = "::/0"
-  gateway_id                  = aws_internet_gateway.this_igw[each.value.k_vpc].id
-  route_table_id              = aws_route_table.this_route_table[each.key].id
-}
-
-resource "aws_route" "internal_to_eog" {
-  for_each                    = local.subnet_flattened_eog_map
-  destination_ipv6_cidr_block = "::/0"
-  egress_only_gateway_id      = aws_egress_only_internet_gateway.this_eog[each.value.k_vpc].id
-  route_table_id              = aws_route_table.this_route_table[each.key].id
-}
-
 resource "aws_subnet" "this_subnet" {
   for_each                                       = local.subnet_flattened_map
   assign_ipv6_address_on_creation                = each.value.assign_ipv6_address
@@ -95,30 +56,75 @@ resource "aws_network_acl" "this_nacl" {
   vpc_id     = each.value.vpc_id
 }
 
+resource "aws_route_table" "this_route_table" {
+  for_each = local.subnet_flattened_map
+  vpc_id   = each.value.vpc_id
+  tags     = each.value.tags
+}
+
 resource "aws_route_table_association" "this_rt_association" {
   for_each       = local.subnet_flattened_map
   subnet_id      = aws_subnet.this_subnet[each.key].id
   route_table_id = aws_route_table.this_route_table[each.key].id
 }
 
-resource "aws_eip" "nat_eip" {
-  for_each = local.nat_flattened_map
+resource "aws_internet_gateway" "this_igw" {
+  for_each = local.vpc_map
+  vpc_id   = each.value.vpc_id
   tags     = each.value.tags
-  vpc      = true
 }
 
-resource "aws_nat_gateway" "this_nat" {
-  for_each          = local.nat_flattened_map
-  allocation_id     = aws_eip.nat_eip[each.key].id
-  connectivity_type = "public"
-  subnet_id         = aws_subnet.this_subnet[each.value.k_az_full].id
-  tags              = each.value.tags
-  depends_on        = [aws_internet_gateway.this_igw]
+resource "aws_egress_only_internet_gateway" "this_eog" {
+  for_each = local.eog_map
+  vpc_id   = each.value.vpc_id
+  tags     = each.value.tags
 }
 
-resource "aws_route" "internal_to_nat" {
-  for_each               = local.subnet_flattened_nat_map
+module "nat_gateway" {
+  source        = "../vpc_nat_gateway"
+  nat_map       = local.nat_gateway_flattened_map
+  subnet_id_map = local.subnet_flattened_id_map
+}
+
+module "nat_instance" {
+  source         = "../vpc_nat_instance"
+  cw_config_data = var.cw_config_data
+  nat_map        = local.nat_instance_flattened_map
+  std_map        = var.std_map
+  vpc_data_map   = local.nat_instance_vpc_data_map
+}
+
+resource "aws_route" "public_to_igw" {
+  for_each               = local.subnet_flattened_public_map
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.this_nat[each.value.k_az_nat].id
+  gateway_id             = aws_internet_gateway.this_igw[each.value.k_vpc].id
+  route_table_id         = aws_route_table.this_route_table[each.key].id
+}
+
+resource "aws_route" "public_to_igw_v6" {
+  for_each                    = local.subnet_flattened_public_v6_map
+  destination_ipv6_cidr_block = "::/0"
+  gateway_id                  = aws_internet_gateway.this_igw[each.value.k_vpc].id
+  route_table_id              = aws_route_table.this_route_table[each.key].id
+}
+
+resource "aws_route" "internal_to_eog" {
+  for_each                    = local.subnet_flattened_eog_map
+  destination_ipv6_cidr_block = "::/0"
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.this_eog[each.value.k_vpc].id
+  route_table_id              = aws_route_table.this_route_table[each.key].id
+}
+
+resource "aws_route" "internal_to_nat_gateway" {
+  for_each               = local.subnet_flattened_nat_gateway_map
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = module.nat_gateway.data[each.value.k_az_nat].nat_gateway_id
+  route_table_id         = aws_route_table.this_route_table[each.key].id
+}
+
+resource "aws_route" "internal_to_nat_instance" {
+  for_each               = local.subnet_flattened_nat_instance_map
+  destination_cidr_block = "0.0.0.0/0"
+  network_interface_id   = module.nat_instance.data[each.value.k_az_nat].network_interface_id
   route_table_id         = aws_route_table.this_route_table[each.key].id
 }

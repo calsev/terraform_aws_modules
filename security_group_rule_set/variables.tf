@@ -55,6 +55,26 @@ variable "sg_map_internal" {
         }
       }
     }
+    icmp_in = {
+      rule_map = {
+        icmp = {
+          cidr_blocks      = null
+          from_port        = -1
+          ipv6_cidr_blocks = []
+          protocol         = "icmp"
+          to_port          = -1
+          type             = null
+        }
+        icmp_v6 = {
+          cidr_blocks      = []
+          from_port        = -1
+          ipv6_cidr_blocks = null
+          protocol         = "icmpv6"
+          to_port          = -1
+          type             = null
+        }
+      }
+    }
     mongodb_in = {
       rule_map = {
         mongodb = {

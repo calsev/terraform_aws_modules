@@ -10,7 +10,7 @@ locals {
           iam_role_arn        = module.code_build_role[k].data.iam_role_arn
           input_artifact_list = [local.artifact_name_map[k]]
           source_build_spec = templatefile("${path.module}/deploy_spec.yml", {
-            bucket_name           = module.cdn.data.bucket[k].bucket_name
+            bucket_name           = module.cdn.data.bucket[k].name_effective
             cdn_distribution_id   = module.cdn.data.cdn[k].id
             cdn_invalidation_path = v.cdn_invalidation_path == null ? var.site_cdn_invalidation_path_default : v.cdn_invalidation_path
             local_sync_path       = v.build_artifact_sync_path == null ? var.site_build_artifact_sync_path_default : v.build_artifact_sync_path

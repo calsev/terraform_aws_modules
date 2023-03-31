@@ -16,8 +16,8 @@ variable "cdn_global_data" {
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
-      bucket_name        = string
       iam_policy_arn_map = map(string)
+      name_effective     = string
     })
     code_star = object({
       connection = map(object({

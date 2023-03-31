@@ -1,6 +1,21 @@
+module "api_name_map" {
+  source             = "../name_map"
+  name_infix_default = var.api_name_infix_default
+  name_map           = var.api_map
+  name_regex         = "/[_]/"
+  std_map            = var.std_map
+}
+
+module "domain_name_map" {
+  source             = "../name_map"
+  name_infix_default = false
+  name_map           = var.domain_map
+  std_map            = var.std_map
+}
+
 locals {
   api_map = {
-    for k, v in var.api_map : k => merge(v, {
+    for k, v in var.api_map : k => merge(v, module.api_name_map.data[k], {
       cors_configuration = {
         allow_credentials = v.cors_allow_credentials == null ? var.api_cors_allow_credentials_default : v.cors_allow_credentials
         allow_headers     = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
@@ -9,18 +24,11 @@ locals {
         expose_headers    = v.cors_expose_headers == null ? var.api_cors_expose_headers_default : v.cors_expose_headers
         max_age           = v.cors_max_age == null ? var.api_cors_max_age_default : v.cors_max_age
       }
-      name = replace(k, "/[.]/", "-")
-      tags = merge(var.std_map.tags, {
-        Name = "${var.std_map.resource_name_prefix}${replace(k, ".", "-")}${var.std_map.resource_name_suffix}"
-      })
       version = v.version == null ? var.api_version_default : v.version
     })
   }
   domain_map = {
-    for k, v in var.domain_map : k => merge(v, {
-      tags = merge(var.std_map.tags, {
-        Name = "${var.std_map.resource_name_prefix}${replace(k, "/[.]/", "-")}${var.std_map.resource_name_suffix}"
-      })
+    for k, v in var.domain_map : k => merge(v, module.domain_name_map.data[k], {
       validation_domain = v.validation_domain == null ? var.domain_validation_domain_default : v.validation_domain
     })
   }
