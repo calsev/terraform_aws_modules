@@ -12,7 +12,7 @@ resource "aws_apigatewayv2_api" "this_api" {
   }
   #credentials_arn
   fail_on_warnings = true
-  name             = each.value.name
+  name             = each.value.name_effective
   protocol_type    = "HTTP"
   #route_key
   route_selection_expression = "$request.method $request.path"

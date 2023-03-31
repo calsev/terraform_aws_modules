@@ -1,7 +1,7 @@
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
-      bucket_name = string
+      name_effective = string
     })
     code_star = object({
       connection = map(object({

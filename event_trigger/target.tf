@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_event_rule" "this_rule" {
   for_each            = local.event_map
-  name                = each.value.resource_name
+  name                = each.value.name_effective
   is_enabled          = each.value.is_enabled
   event_bus_name      = each.value.event_bus_name
   event_pattern       = each.value.event_pattern_json
@@ -23,7 +23,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
       array_size     = each.value.task_count > 1 ? each.value.task_count : null
       job_attempts   = each.value.retry_attempts > 0 ? each.value.retry_attempts : null
       job_definition = each.value.definition_arn
-      job_name       = each.value.resource_name
+      job_name       = each.value.name_effective
     }
   }
   dead_letter_config {
@@ -72,5 +72,5 @@ resource "aws_cloudwatch_event_target" "this_target" {
   rule     = aws_cloudwatch_event_rule.this_rule[each.key].name
   # run_command_targets # TODO
   # sqs_target # TODO
-  target_id = each.value.resource_name
+  target_id = each.value.name_effective
 }

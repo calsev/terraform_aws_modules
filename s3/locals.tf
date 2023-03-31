@@ -1,3 +1,11 @@
+module "name_map" {
+  source             = "../name_map"
+  name_infix_default = var.bucket_name_infix_default
+  name_map           = var.bucket_map
+  name_regex         = "/[_]/" # Do not replace "." in domain names
+  std_map            = var.std_map
+}
+
 locals {
   bucket_accelerate_map = {
     for k, v in local.bucket_map : k => v if v.acceleration_enabled
@@ -15,7 +23,7 @@ locals {
     for k, v in local.bucket_map : k => v if v.website_enabled
   }
   l1_map = {
-    for k, v in var.bucket_map : k => {
+    for k, v in var.bucket_map : k => merge(v, module.name_map.data[k], {
       acceleration_enabled                 = length(split(".", k)) == 1 # TODO: Why not dot buckets?
       allow_public                         = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
       cloudfront_origin_access_identity    = v.cloudfront_origin_access_identity
@@ -33,21 +41,17 @@ locals {
       lifecycle_upload_expiration_days     = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
       lifecycle_version_count              = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
       lifecycle_version_expiration_days_l1 = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
-      name                                 = replace(k, "_", "-") # Do not replace "." in domain names
-      name_infix                           = v.name_infix == null ? var.bucket_name_infix_default : v.name_infix
       notification_enable_event_bridge     = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
       requester_pays                       = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
-      resource_name                        = "${var.std_map.resource_name_prefix}${replace(k, "/[_.]/", "-")}${var.std_map.resource_name_suffix}"
       sid_map_l1                           = v.sid_map == null ? {} : v.sid_map
       versioning_enabled                   = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
       website_domain                       = v.website_domain == null ? var.bucket_website_domain_default : v.website_domain
       website_enabled                      = v.website_enabled == null ? var.bucket_website_enabled_default : v.website_enabled
       website_fqdn                         = v.website_fqdn
-    }
+    })
   }
   l2_map = {
     for k, _ in var.bucket_map : k => {
-      bucket_name                       = local.l1_map[k].name_infix ? local.l1_map[k].resource_name : local.l1_map[k].name
       lifecycle_version_expiration_days = local.l1_map[k].lifecycle_version_expiration_days_l1 == null ? local.l1_map[k].lifecycle_expiration_days : local.l1_map[k].lifecycle_version_expiration_days_l1
       sid_map_l2 = local.l1_map[k].cloudfront_origin_access_identity == null ? local.l1_map[k].sid_map_l1 : merge(local.l1_map[k].sid_map_l1, {
         CloudFront = {
@@ -60,12 +64,6 @@ locals {
           object_key_list = ["*"]
         }
       })
-      tags = merge(
-        var.std_map.tags,
-        {
-          Name = local.l1_map[k].resource_name
-        }
-      )
     }
   }
   l3_map = {

@@ -6,7 +6,7 @@ resource "aws_sfn_state_machine" "this_machine" {
     level                  = each.value.log_level
     log_destination        = "${each.value.log_data.log_group_arn}:*"
   }
-  name     = each.value.name
+  name     = each.value.name_effective
   role_arn = each.value.iam_role_arn
   tags     = each.value.tags
   tracing_configuration {

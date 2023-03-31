@@ -27,7 +27,7 @@ locals {
         options = {
           awslogs-group         = var.log_group_name
           awslogs-region        = var.std_map.aws_region_name
-          awslogs-stream-prefix = local.resource_name
+          awslogs-stream-prefix = local.name_context
         }
       }
       memoryReservation = def.memory_reservation_mib != null ? def.memory_reservation_mib : var.container_memory_reservation_mib_default
@@ -68,8 +68,9 @@ locals {
     task_definition_arn_latest     = local.task_definition_arn_latest
     task_definition_arn_latest_rev = aws_ecs_task_definition.this_task.arn
   }
-  deb_package   = "apt-get install -qqy --no-install-recommends"
-  resource_name = "${var.std_map.resource_name_prefix}${var.name}${var.std_map.resource_name_suffix}"
+  deb_package    = "apt-get install -qqy --no-install-recommends"
+  name_context   = "${var.std_map.resource_name_prefix}${var.name}${var.std_map.resource_name_suffix}"
+  name_effective = local.name_context
   standard_deb_install = [
     "ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone",
     "apt-get -qq update",
@@ -93,7 +94,7 @@ locals {
   tags = merge(
     var.std_map.tags,
     {
-      Name = local.resource_name
+      Name = local.name_context
     }
   )
   task_def_arn_split         = split(":", aws_ecs_task_definition.this_task.arn) # Get rid of version number at end

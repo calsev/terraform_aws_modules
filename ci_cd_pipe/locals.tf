@@ -1,8 +1,14 @@
+module "name_map" {
+  source             = "../name_map"
+  name_infix_default = var.pipe_name_infix_default
+  name_map           = var.pipe_map
+  std_map            = var.std_map
+}
+
 locals {
   pipe_map = {
-    for k, v in var.pipe_map : k => merge(v, {
+    for k, v in var.pipe_map : k => merge(v, module.name_map.data[k], {
       iam_role_arn           = v.iam_role_arn == null ? var.pipe_iam_role_arn_default : v.iam_role_arn
-      name                   = (v.name_infix == null ? var.pipe_name_infix_default : v.name_infix) ? local.resource_name_map[k] : replace(k, "/[_.]/", "-")
       source_branch          = v.source_branch == null ? var.pipe_source_branch_default : v.source_branch
       source_connection_name = v.source_connection_name == null ? var.pipe_source_connection_name_default : v.source_connection_name
       source_detect_changes  = v.source_detect_changes == null ? var.pipe_source_detect_changes_default : v.source_detect_changes
@@ -34,12 +40,6 @@ locals {
           }
         })
       ]
-      tags = merge(var.std_map.tags, {
-        Name = local.resource_name_map[k]
-      })
     })
-  }
-  resource_name_map = {
-    for k, v in var.pipe_map : k => "${var.std_map.resource_name_prefix}${replace(k, "/[_.]/", "-")}${var.std_map.resource_name_suffix}"
   }
 }

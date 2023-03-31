@@ -1,5 +1,19 @@
+variable "cw_config_data" {
+  type = object({
+    ecs = object({
+      ssm_param_name = object({
+        cpu = string
+        gpu = string
+      })
+    })
+  })
+  default     = null
+  description = "Must be provided if using a nat instance"
+}
+
 variable "std_map" {
   type = object({
+    config_name          = string
     resource_name_prefix = string
     resource_name_suffix = string
     tags                 = map(string)
@@ -10,10 +24,11 @@ variable "vpc_map" {
   type = map(object({
     # Subnets can be added after creation, but not segments
     availability_zone_count = optional(number)
+    name_context            = string
+    name_simple             = string
     nat_gateway_enabled     = optional(bool)
     nat_instance_enabled    = optional(bool)
     nat_multi_az            = optional(bool)
-    resource_name           = string
     security_group_id_map   = map(string)
     segment_map = map(object({
       route_internal = optional(bool)
@@ -25,7 +40,6 @@ variable "vpc_map" {
     vpc_cidr             = string
     vpc_id               = string
     vpc_ipv6_cidr_block  = string
-    vpc_name             = string
   }))
 }
 
@@ -41,8 +55,9 @@ variable "vpc_nat_gateway_enabled_default" {
 }
 
 variable "vpc_nat_instance_enabled_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "Currently not supported"
 }
 
 variable "vpc_nat_multi_az_default" {

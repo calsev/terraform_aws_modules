@@ -47,7 +47,7 @@ locals {
       lifecycle_rule_list = v.lifecycle_rule_list == null ? var.repo_lifecycle_rule_list_default : v.lifecycle_rule_list
       name_infix          = local.name_infix_map[k]
       repo_name           = local.name_infix_map[k] ? local.resource_name_map[k] : k
-      resource_name       = local.resource_name_map[k]
+      name_context        = local.resource_name_map[k]
       tags = v.base_image == null ? local.tag_map[k] : merge(
         local.tag_map[k],
         {

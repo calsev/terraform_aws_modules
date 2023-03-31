@@ -25,8 +25,8 @@ locals {
     create_policy_name_map = {
       for name, _ in local.l1_map.create_policy_doc_map : name => "${var.std_map.resource_name_prefix}${replace(name, "/[_]/", "-")}${var.std_map.resource_name_suffix}"
     }
-    name_prefix   = local.l1_map.name_prefix_sanitized == "" ? "" : "${local.l1_map.name_prefix_sanitized}-"
-    resource_name = "${var.std_map.resource_name_prefix}${local.l1_map.name}${var.std_map.resource_name_suffix}"
+    name_context = "${var.std_map.resource_name_prefix}${local.l1_map.name}${var.std_map.resource_name_suffix}"
+    name_prefix  = local.l1_map.name_prefix_sanitized == "" ? "" : "${local.l1_map.name_prefix_sanitized}-"
   }
   l3_map = {
     create_policy_tag_map = {
@@ -37,11 +37,11 @@ locals {
         }
       )
     }
-    role_name = var.name_infix ? "${local.l2_map.name_prefix}${local.l2_map.resource_name}" : "${local.l2_map.name_prefix}${local.l1_map.name}"
+    role_name = var.name_infix ? "${local.l2_map.name_prefix}${local.l2_map.name_context}" : "${local.l2_map.name_prefix}${local.l1_map.name}"
     tags = !var.tag ? null : merge(
       var.std_map.tags,
       {
-        Name = local.l2_map.resource_name
+        Name = local.l2_map.name_context
       }
     )
   }

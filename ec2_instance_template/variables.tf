@@ -119,11 +119,11 @@ variable "image_search_ecs_gpu_tag_name" {
     false = {
       false = {
         amazon = "amzn2-ami-hvm-*"
-        ubuntu = "ubuntu/images/hvm-ssd/ubuntu-"
+        ubuntu = "ubuntu/images/hvm-ssd/ubuntu-jammy-*"
       }
       true = {
         amazon = "amzn2-ami-hvm-*"
-        ubuntu = "ubuntu/images/hvm-ssd/ubuntu-"
+        ubuntu = "ubuntu/images/hvm-ssd/ubuntu-jammy-*"
       }
     }
     true = {

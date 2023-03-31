@@ -27,7 +27,7 @@ resource "aws_ecs_service" "this_service" {
   enable_ecs_managed_tags           = true
   enable_execute_command            = true
   health_check_grace_period_seconds = 0
-  name                              = each.value.resource_name
+  name                              = each.value.name_effective
   network_configuration {
     assign_public_ip = each.value.assign_public_ip
     subnets          = each.value.vpc_subnet_id_list

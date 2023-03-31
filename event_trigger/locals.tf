@@ -1,3 +1,9 @@
+module "name_map" {
+  source   = "../name_map"
+  name_map = var.event_map
+  std_map  = var.std_map
+}
+
 locals {
   event_map = {
     for k, v in var.event_map : k => merge(
@@ -13,7 +19,7 @@ locals {
     )
   }
   l1_map = {
-    for k, v in var.event_map : k => {
+    for k, v in var.event_map : k => merge(v, module.name_map.data[k], {
       cron_expression            = v.cron_expression == null ? var.event_cron_expression_default : v.cron_expression
       dead_letter_queue_name     = "${k}-dead-letter"
       event_bus_name             = v.event_bus_name == null ? var.event_bus_name_default : v.event_bus_name
@@ -24,11 +30,10 @@ locals {
       input_transformer_path_map = v.input_transformer_path_map == null ? var.event_input_transformer_path_map_default : v.input_transformer_path_map
       input_transformer_template = v.input_transformer_template == null ? var.event_input_transformer_template_default : v.input_transformer_template
       is_enabled                 = v.is_enabled == null ? var.event_is_enabled_default : v.is_enabled
-      resource_name              = "${var.std_map.resource_name_prefix}${replace(k, "/_/", "-")}${var.std_map.resource_name_suffix}"
       retry_attempts             = v.retry_attempts == null ? var.event_retry_attempts_default : v.retry_attempts
       target_service             = v.target_service == null ? var.event_target_service_default : v.target_service
       task_count                 = v.task_count == null ? var.event_task_count_default : v.task_count
-    }
+    })
   }
   l2_map = {
     for k, v in var.event_map : k => {
@@ -39,12 +44,6 @@ locals {
       input_transformer_template_default = local.l1_map[k].input_transformer_path_map == null ? null : {
         for k_input, _ in local.l1_map[k].input_transformer_path_map : k_input => "<${k_input}>"
       }
-      tags = merge(
-        var.std_map.tags,
-        {
-          Name = local.l1_map[k].resource_name
-        }
-      )
       target_is_log = local.l1_map[k].target_service == "logs"
     }
   }

@@ -1,3 +1,9 @@
+module "name_map" {
+  source   = "../name_map"
+  name_map = var.compute_map
+  std_map  = var.std_map
+}
+
 locals {
   arch_instance_to_ami = {
     arm64  = "aarch64"
@@ -7,7 +13,7 @@ locals {
     for k, v in var.compute_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k], local.l7_map[k])
   }
   l1_map = {
-    for k, v in var.compute_map : k => merge(v, module.vpc_map.data[k], {
+    for k, v in var.compute_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       iam_instance_profile_arn        = v.iam_instance_profile_arn == null ? var.compute_iam_instance_profile_arn_default : v.iam_instance_profile_arn
       image_id                        = v.image_id == null ? var.compute_image_id_default : v.image_id
       image_search_for_ecs            = v.image_search_for_ecs == null ? var.compute_image_search_for_ecs_default : v.image_search_for_ecs
@@ -16,7 +22,6 @@ locals {
       instance_type                   = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
       key_name                        = v.key_name == null ? var.compute_key_name_default : v.key_name
       monitoring_advanced_enabled     = v.monitoring_advanced_enabled == null ? var.compute_monitoring_advanced_enabled_default : v.monitoring_advanced_enabled
-      name                            = replace(k, "/_/", "-")
       placement_spread_level          = v.placement_spread_level == null ? var.compute_placement_spread_level_default : v.placement_spread_level
       placement_strategy              = v.placement_strategy == null ? var.compute_placement_strategy_default : v.placement_strategy
       storage_volume_type             = v.storage_volume_type == null ? var.compute_storage_volume_type_default : v.storage_volume_type
@@ -28,26 +33,18 @@ locals {
     for k, v in var.compute_map : k => {
       image_search_tag = local.l1_map[k].image_search_for_ecs ? "amazon" : v.image_search_tag == null ? var.compute_image_search_tag_default : v.image_search_tag
       instance_family  = split(".", local.l1_map[k].instance_type)[0]
-      resource_name    = "${var.std_map.resource_name_prefix}${local.l1_map[k].name}${var.std_map.resource_name_suffix}"
     }
   }
   l3_map = {
     for k, v in var.compute_map : k => {
       arch                                         = local.arch_instance_to_ami[data.aws_ec2_instance_type.this_instance_type[k].supported_architectures[0]]
       cpu_credit_specification                     = data.aws_ec2_instance_type.this_instance_type[k].burstable_performance_supported ? "unlimited" : null
-      ecs_cluster_name                             = local.l2_map[k].resource_name
       has_gpu                                      = length(data.aws_ec2_instance_type.this_instance_type[k].gpus) > 0
       image_search_owner                           = var.image_search_tag_owner[local.l2_map[k].image_search_tag]
       instance_type_supported_architectures        = data.aws_ec2_instance_type.this_instance_type[k].supported_architectures
       instance_type_supported_root_device_types    = data.aws_ec2_instance_type.this_instance_type[k].supported_root_device_types
       instance_type_supported_virtualization_types = data.aws_ec2_instance_type.this_instance_type[k].supported_virtualization_types
-      resource_name_prefix                         = "${local.l2_map[k].resource_name}-"
-      tags = merge(
-        var.std_map.tags,
-        {
-          Name = local.l2_map[k].resource_name
-        }
-      )
+      resource_name_prefix                         = "${local.l1_map[k].name_context}-"
     }
   }
   l4_map = {
@@ -90,7 +87,7 @@ locals {
       "${path.module}/ec2_user_data.yml",
       {
         arch                     = local.l3_map[k].arch
-        ecs_cluster_name         = var.set_ecs_cluster_in_user_data ? local.l3_map[k].ecs_cluster_name : ""
+        ecs_cluster_name         = var.set_ecs_cluster_in_user_data ? local.l1_map[k].name_effective : ""
         ssm_param_name_cw_config = local.l4_map[k].ssm_param_name_cw_config
         user_data_commands       = local.l1_map[k].user_data_commands
       }

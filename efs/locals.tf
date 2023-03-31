@@ -1,29 +1,23 @@
+module "name_map" {
+  source   = "../name_map"
+  name_map = var.fs_map
+  std_map  = var.std_map
+}
+
 locals {
   fs_map = {
-    for k, v in var.fs_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+    for k, v in var.fs_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
   l1_map = {
-    for k, v in var.fs_map : k => merge(v, module.vpc_map.data[k], {
+    for k, v in var.fs_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       create_policies     = v.create_policies == null ? var.fs_create_policies_default : v.create_policies
       encrypt_file_system = v.encrypt_file_system == null ? var.fs_encrypt_file_system_default : v.encrypt_file_system
       k_fs                = k
-      name                = replace(k, "/_/", "-")
     })
   }
   l2_map = {
     for k, v in var.fs_map : k => merge(module.vpc_map.data[k], {
-      policy_name   = local.l1_map[k].create_policies ? "efs-${local.l1_map[k].name}" : null
-      resource_name = "${var.std_map.resource_name_prefix}${local.l1_map[k].name}${var.std_map.resource_name_suffix}"
-    })
-  }
-  l3_map = {
-    for k, v in var.fs_map : k => merge(module.vpc_map.data[k], {
-      tags = merge(
-        var.std_map.tags,
-        {
-          Name = local.l2_map[k].resource_name
-        }
-      )
+      policy_name = local.l1_map[k].create_policies ? "efs-${local.l1_map[k].name_simple}" : null
     })
   }
   output_data = {

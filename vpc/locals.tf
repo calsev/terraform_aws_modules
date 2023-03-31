@@ -1,24 +1,14 @@
+module "name_map" {
+  source   = "../name_map"
+  name_map = var.vpc_map
+  std_map  = var.std_map
+}
+
 locals {
   l1_map = {
-    for k, v in var.vpc_map : k => merge(v, {
+    for k, v in var.vpc_map : k => merge(v, module.name_map.data[k], {
       vpc_assign_ipv6_cidr = v.vpc_assign_ipv6_cidr == null ? var.vpc_assign_ipv6_cidr_default : v.vpc_assign_ipv6_cidr
-      vpc_name             = replace(k, "/_/", "-")
     })
-  }
-  l2_map = {
-    for k, v in var.vpc_map : k => {
-      resource_name = "${var.std_map.resource_name_prefix}${local.l1_map[k].vpc_name}${var.std_map.resource_name_suffix}"
-    }
-  }
-  l3_map = {
-    for k, v in var.vpc_map : k => {
-      tags = merge(
-        var.std_map.tags,
-        {
-          Name = local.l2_map[k].resource_name
-        }
-      )
-    }
   }
   output_data = {
     vpc_map = {
@@ -33,6 +23,6 @@ locals {
     }
   }
   vpc_map = {
-    for k, v in var.vpc_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+    for k, v in var.vpc_map : k => merge(local.l1_map[k])
   }
 }

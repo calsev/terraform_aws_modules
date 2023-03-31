@@ -141,6 +141,7 @@ tf-lint: tflint-install
 	cd ../iam_role_step_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../local_config && $(LINT) --config=../development/.tflint.hcl
 	cd ../log_group && $(LINT) --config=../development/.tflint.hcl
+	cd ../name_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_subnet_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../s3 && $(LINT) --config=../development/.tflint.hcl
@@ -152,6 +153,8 @@ tf-lint: tflint-install
 	cd ../step_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc_id_map && $(LINT) --config=../development/.tflint.hcl
+	cd ../vpc_nat_gateway && $(LINT) --config=../development/.tflint.hcl
+	cd ../vpc_nat_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc_networking && $(LINT) --config=../development/.tflint.hcl
 	cd ../waf && $(LINT) --config=../development/.tflint.hcl
 

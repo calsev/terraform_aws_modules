@@ -2,11 +2,11 @@ resource "aws_codepipeline" "this_pipeline" {
   for_each = local.pipe_map
   artifact_store {
     # encryption_key # TODO: default
-    location = var.ci_cd_account_data.bucket.bucket_name
+    location = var.ci_cd_account_data.bucket.name_effective
     type     = "S3"
   }
   role_arn = each.value.iam_role_arn
-  name     = each.value.name
+  name     = each.value.name_effective
   stage {
     action {
       category = "Source"

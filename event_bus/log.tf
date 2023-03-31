@@ -1,8 +1,7 @@
 module "log_group" {
-  source                  = "../log_group"
-  log_map                 = local.log_map
-  log_name_prefix_default = "/aws/events/" # Must begin /aws/events: https://aws.amazon.com/premiumsupport/knowledge-center/cloudwatch-log-group-eventbridge/
-  std_map                 = var.std_map
+  source  = "../log_group"
+  log_map = local.log_map
+  std_map = var.std_map
 }
 
 module "log_trigger" {
