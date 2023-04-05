@@ -66,7 +66,7 @@ variable "vpc_data_map" {
 
 variable "vpc_security_group_key_list_default" {
   type    = list(string)
-  default = ["internal_all_in", "internal_icmp_in", "world_all_out"]
+  default = ["internal_all_in", "world_all_out", "world_icmp_in"]
 }
 
 variable "vpc_segment_key_default" {

@@ -156,6 +156,7 @@ tf-lint: tflint-install
 	cd ../vpc_nat_gateway && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc_nat_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc_networking && $(LINT) --config=../development/.tflint.hcl
+	cd ../vpc_peering && $(LINT) --config=../development/.tflint.hcl
 	cd ../waf && $(LINT) --config=../development/.tflint.hcl
 
 tflint-install:
