@@ -9,7 +9,7 @@ variable "std_map" {
 variable "vpc_map" {
   type = map(object({
     vpc_assign_ipv6_cidr = optional(bool)
-    vpc_cidr             = string
+    vpc_cidr_block       = string
   }))
 }
 

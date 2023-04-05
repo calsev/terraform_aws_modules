@@ -30,14 +30,14 @@ variable "vpc_map" {
     nat_instance_enabled    = optional(bool)
     nat_multi_az            = optional(bool)
     security_group_id_map   = map(string)
-    segment_map = map(object({
+    segment_map = optional(map(object({
       route_internal = optional(bool)
       route_public   = optional(bool)
-    }))
+    })))
     subnet_bit_length    = optional(number) # The number of bits to add to the mask, defaults to ceil(log(#segments * #azs, 2)), set higher to accommodate future AZs
     tags                 = map(string)
     vpc_assign_ipv6_cidr = bool
-    vpc_cidr             = string
+    vpc_cidr_block       = string
     vpc_id               = string
     vpc_ipv6_cidr_block  = string
   }))
@@ -64,6 +64,19 @@ variable "vpc_nat_multi_az_default" {
   type        = bool
   default     = true
   description = "If false, a single NAT will be created"
+}
+
+variable "vpc_segment_map_default" {
+  type = map(object({
+    route_internal = optional(bool)
+    route_public   = optional(bool)
+  }))
+  default = {
+    public = {
+      route_public = true
+    }
+    internal = {}
+  }
 }
 
 variable "vpc_segment_route_internal_default" {

@@ -2,7 +2,7 @@ resource "aws_subnet" "this_subnet" {
   for_each                                       = local.subnet_flattened_map
   assign_ipv6_address_on_creation                = each.value.assign_ipv6_address
   availability_zone                              = each.value.availability_zone_name
-  cidr_block                                     = each.value.cidr_block
+  cidr_block                                     = each.value.subnet_cidr_block
   customer_owned_ipv4_pool                       = null
   enable_dns64                                   = each.value.assign_ipv6_address
   enable_resource_name_dns_aaaa_record_on_launch = each.value.assign_ipv6_address

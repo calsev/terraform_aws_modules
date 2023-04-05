@@ -7,7 +7,7 @@ variable "cidr_blocks_internal" {
 variable "cidr_blocks_internal_ipv6" {
   type        = list(string)
   default     = null
-  description = "Defaults to IPV6 CIDR blocks of all VPCs"
+  description = "Defaults to IPV6 CIDR blocks of all VPCs. Set to empty list to bootstrap a new VPC."
 }
 
 variable "cidr_blocks_public" {
@@ -23,7 +23,7 @@ variable "cidr_blocks_public_ipv6" {
 variable "cidr_blocks_private" {
   type        = list(string)
   default     = null
-  description = "Set null to disable internal security groups"
+  description = "Set null to disable private security groups"
 }
 
 variable "cidr_blocks_private_ipv6" {
@@ -51,26 +51,6 @@ variable "sg_map_internal" {
           ipv6_cidr_blocks = null
           protocol         = "-1"
           to_port          = null
-          type             = null
-        }
-      }
-    }
-    icmp_in = {
-      rule_map = {
-        icmp = {
-          cidr_blocks      = null
-          from_port        = -1
-          ipv6_cidr_blocks = []
-          protocol         = "icmp"
-          to_port          = -1
-          type             = null
-        }
-        icmp_v6 = {
-          cidr_blocks      = []
-          from_port        = -1
-          ipv6_cidr_blocks = null
-          protocol         = "icmpv6"
-          to_port          = -1
           type             = null
         }
       }
