@@ -1,7 +1,7 @@
 variable "group_map" {
   type = map(object({
     name_infix      = optional(bool)
-    name_prefix     = optional(bool)
+    name_is_prefix  = optional(bool)
     vpc_az_key_list = optional(list(string))
     vpc_key         = optional(string)
     vpc_segment_key = optional(string)
@@ -13,7 +13,7 @@ variable "group_name_infix_default" {
   default = true
 }
 
-variable "group_name_prefix_default" {
+variable "group_name_is_prefix_default" {
   type        = bool
   default     = false
   description = "If true, name will be used as a prefix"

@@ -150,6 +150,8 @@ tf-lint: tflint-install
 	cd ../security_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group_rule_set && $(LINT) --config=../development/.tflint.hcl
 	cd ../sqs_queue && $(LINT) --config=../development/.tflint.hcl
+	cd ../ssm_parameter_plain && $(LINT) --config=../development/.tflint.hcl
+	cd ../ssm_parameter_secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../step_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc && $(LINT) --config=../development/.tflint.hcl
 	cd ../vpc_id_map && $(LINT) --config=../development/.tflint.hcl

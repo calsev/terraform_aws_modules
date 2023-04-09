@@ -1,23 +1,12 @@
-resource "aws_ssm_parameter" "ssm_param_cw_config_cpu" {
-  name = local.cw_config_name_cpu
-  tags = merge(
-    var.std_map.tags,
-    {
-      Name = local.cw_config_name_cpu
+module "ssm_param_cw_config" {
+  source = "../ssm_parameter_plain"
+  param_map = {
+    cloudwatch_agent_config_ecs_cpu = { # This must match the read policy in IAM
+      insecure_value = jsonencode(local.cw_config_cpu)
     }
-  )
-  type  = "String"
-  value = jsonencode(local.cw_config_cpu)
-}
-
-resource "aws_ssm_parameter" "ssm_param_cw_config_gpu" {
-  name = local.cw_config_name_gpu
-  tags = merge(
-    var.std_map.tags,
-    {
-      Name = local.cw_config_name_gpu
+    cloudwatch_agent_config_ecs_gpu = { # This must match the read policy in IAM
+      insecure_value = jsonencode(local.cw_config_gpu)
     }
-  )
-  type  = "String"
-  value = jsonencode(local.cw_config_gpu)
+  }
+  std_map = var.std_map
 }
