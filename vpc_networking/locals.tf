@@ -21,12 +21,9 @@ locals {
         for k_seg, v_seg in local.l1_map[k].segment_map : k_seg => merge(v_seg, {
           assign_ipv6_address       = local.l1_map[k].vpc_assign_ipv6_cidr
           dns_private_hostname_type = local.l1_map[k].vpc_assign_ipv6_cidr ? "resource-name" : "ip-name"
-          k_seg                     = k_seg
-          k_seg_full                = "${k}-${k_seg}"
           k_vpc                     = k
           route_internal            = v_seg.route_internal == null ? var.vpc_segment_route_internal_default : v_seg.route_internal
           route_public              = v_seg.route_public == null ? var.vpc_segment_route_public_default : v_seg.route_public
-          subnet_bit_length         = v.subnet_bit_length == null ? ceil(log(length(local.l1_map[k].segment_map) * local.l1_map[k].availability_zone_count, 2)) : v.subnet_bit_length
           subnet_map = {
             for i_az in range(local.l1_map[k].availability_zone_count) : local.availability_zone_letter_list[i_az] => {
               availability_zone_name = local.availability_zone_name_list[i_az]
@@ -41,6 +38,7 @@ locals {
           )
         })
       }
+      subnet_bit_length = v.subnet_bit_length == null ? ceil(log(length(local.l1_map[k].segment_map) * local.l1_map[k].availability_zone_count, 2)) : v.subnet_bit_length
     }
   }
   l3_map = {
@@ -54,7 +52,6 @@ locals {
           subnet_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
               cidr_block_index = length(local.l2_map[k].segment_map) * v_az.i_az + local.l2_map[k].segment_index_map[k_seg]
-              k_az             = k_az
               k_az_full        = "${k}-${k_seg}-${k_az}"
               k_az_nat         = local.l1_map[k].nat_multi_az ? "${k}-${k_az}" : "${k}-${local.l2_map[k].nat_availability_zone_list[0]}"
               k_az_only        = "${k}-${k_az}"
@@ -97,7 +94,7 @@ locals {
         for k_seg, v_seg in local.l3_map[k].segment_map : k_seg => merge(v_seg, {
           subnet_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
-              subnet_cidr_block = cidrsubnet(v.vpc_cidr_block, v_seg.subnet_bit_length, v_az.cidr_block_index)
+              subnet_cidr_block = cidrsubnet(v.vpc_cidr_block, local.l2_map[k].subnet_bit_length, v_az.cidr_block_index)
             })
           }
         })
