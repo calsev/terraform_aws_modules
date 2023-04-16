@@ -1,19 +1,3 @@
-variable "attach_policy_arn_map" {
-  type        = map(string)
-  default     = {}
-  description = "The special sauce for the role; log write and artifact read/write come free"
-}
-
-variable "create_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
-variable "inline_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
 variable "log_data" {
   type = object({
     iam_policy_arn_map = object({
@@ -21,12 +5,6 @@ variable "log_data" {
       write = string
     })
   })
-}
-
-variable "managed_policy_name_map" {
-  type        = map(string)
-  default     = {}
-  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
 }
 
 variable "max_session_duration" {
@@ -48,6 +26,28 @@ variable "name_prefix" {
   type        = string
   default     = ""
   description = "If provided, will be put in front of the standard prefix for the role name."
+}
+
+variable "policy_attach_arn_map" {
+  type        = map(string)
+  default     = {}
+  description = "The special sauce for the role; log write and artifact read/write come free"
+}
+
+variable "policy_create_json_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_inline_json_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_managed_name_map" {
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
 }
 
 variable "role_path" {

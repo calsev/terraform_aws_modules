@@ -29,24 +29,24 @@ module "cdn_invalidate" {
 }
 
 module "code_build_role" {
-  for_each = var.site_map
-  source   = "../iam_role_code_build"
-  attach_policy_arn_map = {
+  for_each           = var.site_map
+  source             = "../iam_role_code_build"
+  ci_cd_account_data = var.ci_cd_account_data
+  name               = "${each.key}_deploy"
+  policy_attach_arn_map = {
     cdn_invalidate = module.cdn_invalidate[each.key].data.iam_policy_arn_map.read_write
     site_deploy    = module.site_deploy[each.key].data.iam_policy_arn
   }
-  ci_cd_account_data = var.ci_cd_account_data
-  name               = "${each.key}_deploy"
-  std_map            = var.std_map
+  std_map = var.std_map
 }
 
 module "code_pipe_role" {
   for_each                 = local.site_policy_map
   source                   = "../iam_role"
   assume_role_service_list = ["codepipeline"]
-  attach_policy_arn_map    = each.value.attach_policy_arn_map
-  inline_policy_json_map   = each.value.inline_policy_json_map
-  managed_policy_name_map  = each.value.managed_policy_name_map
   name                     = "${each.key}-code-pipe"
+  policy_attach_arn_map    = each.value.policy_attach_arn_map
+  policy_inline_json_map   = each.value.policy_inline_json_map
+  policy_managed_name_map  = each.value.policy_managed_name_map
   std_map                  = var.std_map
 }

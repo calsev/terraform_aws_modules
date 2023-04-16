@@ -69,13 +69,13 @@ locals {
   }
   site_policy_map = {
     for k, v in var.site_map : k => {
-      attach_policy_arn_map = merge(v.iam_policy_arn_attach_map == null ? {} : v.iam_policy_arn_attach_map, {
+      policy_attach_arn_map = merge(v.iam_policy_arn_attach_map == null ? {} : v.iam_policy_arn_attach_map, {
         build_start     = module.start_build[k].data.iam_policy_arn_map.read_write
         code_connection = var.ci_cd_account_data.code_star.connection[var.code_star_connection_name].iam_policy_arn_map.read_write
         source_write    = var.ci_cd_account_data.bucket.iam_policy_arn_map.write
       })
-      inline_policy_json_map  = v.iam_policy_json_inline_map
-      managed_policy_name_map = v.iam_policy_name_managed_map
+      policy_inline_json_map  = v.iam_policy_json_inline_map
+      policy_managed_name_map = v.iam_policy_name_managed_map
     }
   }
 }

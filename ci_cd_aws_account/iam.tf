@@ -35,9 +35,9 @@ module "public_log_access_role" {
   for_each                 = var.log_public_enabled ? { this = {} } : {}
   source                   = "../iam_role"
   assume_role_service_list = ["codebuild"]
-  attach_policy_arn_map = {
+  name                     = "log_access_public"
+  policy_attach_arn_map = {
     log = module.build_log.data[local.public_name].iam_policy_arn_map.public_read
   }
-  name    = "log_access_public"
   std_map = var.std_map
 }

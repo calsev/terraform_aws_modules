@@ -1,10 +1,10 @@
 module "api_log_role" {
   source                   = "../iam_role"
   assume_role_service_list = ["apigateway"]
-  managed_policy_name_map = {
+  name                     = "api-log"
+  policy_managed_name_map = {
     api_logging = "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
   }
-  name    = "api-log"
   std_map = var.std_map
 }
 

@@ -8,30 +8,9 @@ variable "assume_role_service_list" {
   default = null
 }
 
-variable "attach_policy_arn_map" {
-  type    = map(string)
-  default = {}
-}
-
 variable "create_instance_profile" {
   type    = bool
   default = false
-}
-
-variable "create_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
-variable "inline_policy_json_map" {
-  type    = map(string)
-  default = null
-}
-
-variable "managed_policy_name_map" {
-  type        = map(string)
-  default     = null
-  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
 }
 
 variable "max_session_duration" {
@@ -53,6 +32,27 @@ variable "name_prefix" {
   type        = string
   default     = ""
   description = "If provided, will be put in front of the standard prefix for the role name."
+}
+
+variable "policy_attach_arn_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_create_json_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_inline_json_map" {
+  type    = map(string)
+  default = null
+}
+
+variable "policy_managed_name_map" {
+  type        = map(string)
+  default     = null
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
 }
 
 variable "role_path" {
