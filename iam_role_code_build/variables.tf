@@ -1,9 +1,3 @@
-variable "attach_policy_arn_map" {
-  type        = map(string)
-  default     = {}
-  description = "The special sauce for the role; log write and artifact read/write come free"
-}
-
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
@@ -27,22 +21,6 @@ variable "ci_cd_account_data" {
 #  type    = string
 #  default = "*code-pipe*"
 #}
-
-variable "create_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
-variable "inline_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
-variable "managed_policy_name_map" {
-  type        = map(string)
-  default     = {}
-  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
-}
 
 variable "max_session_duration" {
   type    = number
@@ -75,6 +53,28 @@ variable "log_bucket_name" {
   type        = string
   default     = null
   description = "If provided, write permissions for the bucket will be added"
+}
+
+variable "policy_attach_arn_map" {
+  type        = map(string)
+  default     = {}
+  description = "The special sauce for the role; log write and artifact read/write come free"
+}
+
+variable "policy_create_json_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_inline_json_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_managed_name_map" {
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
 }
 
 variable "role_path" {

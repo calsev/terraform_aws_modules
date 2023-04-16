@@ -45,7 +45,10 @@ resource "aws_ecs_service" "this_service" {
   dynamic "service_registries" {
     for_each = each.value.public_dns_name != null ? { this = {} } : {}
     content {
-      registry_arn = aws_service_discovery_service.discovery[each.key].arn
+      container_name = each.value.sd_container_name
+      container_port = each.value.sd_port
+      port           = null
+      registry_arn   = aws_service_discovery_service.discovery[each.key].arn
     }
   }
   task_definition = each.value.ecs_task_definition_arn

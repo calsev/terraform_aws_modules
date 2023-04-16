@@ -8,7 +8,7 @@ variable "container_definition_list" {
     environment_map        = optional(map(string))
     image                  = optional(string)
     name                   = string
-    memory_reservation_mib = optional(number)
+    memory_reservation_gib = optional(number)
     mount_point_map = optional(map(object({
       container_path = string
       read_only      = optional(bool)
@@ -26,9 +26,9 @@ variable "container_image_default" {
   default = "ubuntu:latest"
 }
 
-variable "container_memory_reservation_mib_default" {
+variable "container_memory_reservation_gib_default" {
   type    = number
-  default = 256
+  default = 0.25
 }
 
 variable "container_mount_read_only_default" {

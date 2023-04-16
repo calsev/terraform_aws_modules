@@ -30,7 +30,7 @@ locals {
           awslogs-stream-prefix = local.name_context
         }
       }
-      memoryReservation = def.memory_reservation_mib != null ? def.memory_reservation_mib : var.container_memory_reservation_mib_default
+      memoryReservation = (def.memory_reservation_gib == null ? var.container_memory_reservation_gib_default : def.memory_reservation_gib) * 1024
       mountPoints = def.mount_point_map == null ? [] : [
         for name, mount_data in def.mount_point_map : {
           containerPath = mount_data.container_path

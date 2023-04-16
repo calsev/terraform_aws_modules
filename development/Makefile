@@ -129,6 +129,7 @@ tf-lint: tflint-install
 	cd ../iam_policy_identity_sqs_queue && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_step_function_starter && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_managed && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_resource_ecr_repo && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_resource_log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_resource_s3 && $(LINT) --config=../development/.tflint.hcl
@@ -139,6 +140,7 @@ tf-lint: tflint-install
 	cd ../iam_role_ecs_task && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_role_rds_monitor && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_role_step_function && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_user_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../local_config && $(LINT) --config=../development/.tflint.hcl
 	cd ../log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../name_map && $(LINT) --config=../development/.tflint.hcl

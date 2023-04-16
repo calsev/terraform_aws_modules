@@ -1,18 +1,3 @@
-variable "attach_policy_arn_map" {
-  type    = map(string)
-  default = {}
-}
-
-variable "create_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
-variable "inline_policy_json_map" {
-  type    = map(string)
-  default = {}
-}
-
 variable "max_session_duration" {
   type    = number
   default = null
@@ -28,6 +13,21 @@ variable "name_prefix" {
   type        = string
   default     = ""
   description = "If provided, will be put in front of the standard prefix for the role name."
+}
+
+variable "policy_attach_arn_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_create_json_map" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_inline_json_map" {
+  type    = map(string)
+  default = {}
 }
 
 variable "role_path" {
