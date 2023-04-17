@@ -5,7 +5,11 @@ locals {
   output_data = {
     security_group_map = local.sg_map
   }
-  sg_map = local.has_internal ? local.has_private ? merge(local.sg_map_public, local.sg_map_internal, local.sg_map_private) : merge(local.sg_map_public, local.sg_map_internal) : local.has_private ? merge(local.sg_map_public, local.sg_map_private) : local.sg_map_public
+  sg_map = merge(
+    local.sg_map_public,
+    local.has_internal ? local.sg_map_internal : {},
+    local.has_private ? local.sg_map_private : {},
+  )
   sg_map_internal = {
     for k_sg, v_sg in var.sg_map_internal : replace("internal_${k_sg}", "/[-]/", "-") => {
       rule_map = {
