@@ -8,6 +8,7 @@ variable "group_map" {
     policy_inline_json_map  = optional(map(string), {})
     policy_managed_name_map = optional(map(string), {})
   }))
+  default = {}
 }
 
 variable "group_k_user_list_default" {
