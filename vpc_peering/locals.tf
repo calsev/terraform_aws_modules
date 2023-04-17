@@ -5,27 +5,19 @@ module "name_map" {
 }
 
 locals {
-  data_peer_rt_flattened_list = distinct(flatten([
+  data_peer_rt_flattened_set = toset(flatten([
     for k, v in local.l1_map : [
       for k_peer, v_peer in v.peer_map : k_peer if !v_peer.peer_id_is_key && v_peer.manage_remote_routes
     ]
   ]))
-  data_peer_rt_flattened_map = {
-    for v in local.data_peer_rt_flattened_list : v => {}
-  }
   data_peer_rt_id_list_map = {
-    for k, _ in local.data_peer_rt_flattened_map : k => sort([
-      data.aws_route_tables.peer_routes[k].ids
-    ])
+    for k in local.data_peer_rt_flattened_set : k => sort(data.aws_route_tables.peer_routes[k].ids)
   }
-  data_peer_vpc_flattened_list = distinct(flatten([
+  data_peer_vpc_flattened_set = toset(flatten([
     for k, v in local.l1_map : flatten([
       for k_peer, v_peer in v.peer_map : k_peer if !v_peer.peer_id_is_key
     ])
   ]))
-  data_peer_vpc_flattened_map = {
-    for v in local.data_peer_vpc_flattened_list : v.k_vpc_peer => {}
-  }
   l1_map = {
     for k, v in var.vpc_data_map : k => merge(v, module.name_map.data[k], {
       connection_auto_accept = false
@@ -59,7 +51,7 @@ locals {
     for k, v in var.vpc_data_map : k => {
       peer_map = {
         for k_peer, v_peer in local.l2_map[k].peer_map : k_peer => merge(v_peer, {
-          peer_is_ipv6_routable = local.l1_map[k].vpc_ipv6_cidr_block != null && v_peer.peer_vpc_ipv6_cidr_block != null
+          peer_is_ipv6_routable = local.l1_map[k].vpc_ipv6_cidr_block != null && local.l1_map[k].vpc_ipv6_cidr_block != "" && v_peer.peer_vpc_ipv6_cidr_block != null && v_peer.peer_vpc_ipv6_cidr_block != ""
           peer_route_list = v_peer.peer_id_is_key ? flatten(
             [
               for k_seg, v_seg in var.vpc_data_map[k_peer].segment_map : [
