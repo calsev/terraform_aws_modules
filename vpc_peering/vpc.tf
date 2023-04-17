@@ -44,3 +44,17 @@ resource "aws_route" "from_peer" {
   route_table_id            = each.value.peer_route_table_id
   vpc_peering_connection_id = aws_vpc_peering_connection.this_peering[each.value.k_vpc_peer].id
 }
+
+resource "aws_route" "to_peer_ipv6" {
+  for_each                    = local.route_ipv6_flattened_map
+  destination_ipv6_cidr_block = each.value.peer_vpc_ipv6_cidr_block
+  route_table_id              = each.value.route_table_id
+  vpc_peering_connection_id   = aws_vpc_peering_connection.this_peering[each.value.k_vpc_peer].id
+}
+
+resource "aws_route" "from_peer_ipv6" {
+  for_each                    = local.peer_route_ipv6_flattened_map
+  destination_ipv6_cidr_block = each.value.vpc_ipv6_cidr_block
+  route_table_id              = each.value.peer_route_table_id
+  vpc_peering_connection_id   = aws_vpc_peering_connection.this_peering[each.value.k_vpc_peer].id
+}

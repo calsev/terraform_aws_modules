@@ -22,8 +22,9 @@ variable "vpc_data_map" {
       manage_remote_routes             = optional(bool)
       peer_allow_remote_dns_resolution = optional(bool)
     })))
-    vpc_cidr_block = string
-    vpc_id         = string
+    vpc_cidr_block      = string
+    vpc_id              = string
+    vpc_ipv6_cidr_block = string
   }))
 }
 
