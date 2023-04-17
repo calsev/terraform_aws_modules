@@ -47,9 +47,10 @@ locals {
     for k, v in var.vpc_data_map : k => {
       peer_map = {
         for k_peer, v_peer in local.l1_map[k].peer_map : k_peer => merge(v_peer, {
-          k_vpc_peer          = "${local.l1_map[k].name_simple}-${v_peer.k_peer}"
-          peer_vpc_cidr_block = v_peer.peer_id_is_key ? var.vpc_data_map[k_peer].vpc_cidr_block : data.aws_vpc.peer_vpc[k_peer].cidr_block
-          peer_vpc_id         = v_peer.peer_id_is_key ? local.l1_map[k_peer].vpc_id : k_peer
+          k_vpc_peer               = "${local.l1_map[k].name_simple}-${v_peer.k_peer}"
+          peer_vpc_cidr_block      = v_peer.peer_id_is_key ? var.vpc_data_map[k_peer].vpc_cidr_block : data.aws_vpc.peer_vpc[k_peer].cidr_block
+          peer_vpc_id              = v_peer.peer_id_is_key ? local.l1_map[k_peer].vpc_id : k_peer
+          peer_vpc_ipv6_cidr_block = v_peer.peer_id_is_key ? local.l1_map[k_peer].vpc_ipv6_cidr_block : data.aws_vpc.peer_vpc[k_peer].ipv6_cidr_block
         })
       }
     }
@@ -58,6 +59,7 @@ locals {
     for k, v in var.vpc_data_map : k => {
       peer_map = {
         for k_peer, v_peer in local.l2_map[k].peer_map : k_peer => merge(v_peer, {
+          peer_is_ipv6_routable = local.l1_map[k].vpc_ipv6_cidr_block != null && v_peer.peer_vpc_ipv6_cidr_block != null
           peer_route_list = v_peer.peer_id_is_key ? flatten(
             [
               for k_seg, v_seg in var.vpc_data_map[k_peer].segment_map : [
@@ -86,10 +88,28 @@ locals {
             for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
               peer_map = {
                 for k_peer, v_peer in local.l2_map[k].peer_map : k_peer => {
-                  k_vpc_peer          = v_peer.k_vpc_peer
-                  k_vpc_peer_seg_az   = "${local.l1_map[k].name_simple}-${v_peer.k_peer}-${replace(k_seg, "/[._]/", "-")}-${replace(k_az, "/[._]/", "-")}"
-                  peer_vpc_cidr_block = v_peer.peer_vpc_cidr_block
+                  k_vpc_peer               = v_peer.k_vpc_peer
+                  k_vpc_peer_seg_az        = "${local.l1_map[k].name_simple}-${v_peer.k_peer}-${replace(k_seg, "/[._]/", "-")}-${replace(k_az, "/[._]/", "-")}"
+                  peer_vpc_cidr_block      = v_peer.peer_vpc_cidr_block
+                  peer_vpc_ipv6_cidr_block = v_peer.peer_vpc_ipv6_cidr_block
                 }
+              }
+            })
+          }
+        })
+      }
+    }
+  }
+  l4_map = {
+    for k, v in var.vpc_data_map : k => {
+      segment_map = {
+        for k_seg, v_seg in local.l3_map[k].segment_map : k_seg => merge(v_seg, {
+          subnet_map = {
+            for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
+              peer_map = {
+                for k_peer, v_peer in v_az.peer_map : k_peer => merge(v_peer, {
+                  peer_is_ipv6_routable = local.l3_map[k].peer_map[k_peer].peer_is_ipv6_routable
+                })
               }
             })
           }
@@ -119,6 +139,9 @@ locals {
   peer_route_flattened_map = {
     for v in local.peer_route_flattened_list : v.k_vpc_peer_rt => v
   }
+  peer_route_ipv6_flattened_map = {
+    for k, v in local.peer_route_flattened_map : k => v if v.peer_is_ipv6_routable
+  }
   route_flattened_list = flatten([
     for k, v in local.vpc_map : flatten([
       for k_seg, v_seg in v.segment_map : flatten([
@@ -131,7 +154,10 @@ locals {
   route_flattened_map = {
     for v in local.route_flattened_list : v.k_vpc_peer_seg_az => v
   }
+  route_ipv6_flattened_map = {
+    for k, v in local.route_flattened_map : k => v if v.peer_is_ipv6_routable
+  }
   vpc_map = {
-    for k, v in var.vpc_data_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+    for k, v in var.vpc_data_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
 }

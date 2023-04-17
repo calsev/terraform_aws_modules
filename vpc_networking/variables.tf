@@ -73,9 +73,13 @@ variable "vpc_segment_map_default" {
   }))
   default = {
     public = {
-      route_public = true
+      route_internal = true
+      route_public   = true
     }
-    internal = {}
+    internal = {
+      route_internal = true
+      route_public   = false
+    }
   }
 }
 
