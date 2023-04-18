@@ -2,6 +2,7 @@ variable "name_map" {
   type = map(object({
     name_infix  = optional(bool)
     name_prefix = optional(string)
+    tags        = optional(map(string))
   }))
 }
 
@@ -33,4 +34,9 @@ variable "std_map" {
     resource_name_suffix = string
     tags                 = map(string)
   })
+}
+
+variable "tags_default" {
+  type    = map(string)
+  default = {}
 }
