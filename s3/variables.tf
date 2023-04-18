@@ -29,6 +29,7 @@ variable "bucket_map" {
       identifier_type = optional(string)
       object_key_list = optional(list(string))
     })))
+    tags               = optional(map(string))
     versioning_enabled = optional(bool)
     website_domain     = optional(string)
     website_enabled    = optional(bool)
@@ -149,6 +150,11 @@ variable "bucket_sid_identifier_type_default" {
 variable "bucket_sid_object_key_list_default" {
   type    = list(string)
   default = ["*"]
+}
+
+variable "bucket_tags_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "bucket_versioning_enabled_default" {

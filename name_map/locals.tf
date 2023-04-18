@@ -1,10 +1,10 @@
 locals {
   l1_map = {
-    for k, v in var.name_map : k => {
+    for k, v in var.name_map : k => merge(v, {
       name_infix  = v.name_infix == null ? var.name_infix_default : v.name_infix
       name_prefix = v.name_prefix == null ? var.name_prefix_default : v.name_prefix
       name_simple = replace(replace(k, var.name_regex, "-"), "--", "-")
-    }
+    })
   }
   l2_map = {
     for k, _ in var.name_map : k => {
@@ -18,7 +18,8 @@ locals {
         var.std_map.tags,
         {
           Name = local.l2_map[k].name_context
-        }
+        },
+        local.l1_map[k].tags == null ? var.tags_default : local.l1_map[k].tags,
       )
     }
   }
