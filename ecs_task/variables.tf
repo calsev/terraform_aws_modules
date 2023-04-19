@@ -41,7 +41,7 @@ variable "container_port_protocol_default" {
   default = "tcp"
 }
 
-variable "cron_expression" {
+variable "schedule_expression" {
   type    = string
   default = null
 }

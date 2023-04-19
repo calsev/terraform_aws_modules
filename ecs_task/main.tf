@@ -1,6 +1,6 @@
 module "this_event_bus" {
   source = "../event_bus"
-  bus_map = var.cron_expression == null ? {} : { # TODO: Other event types
+  bus_map = var.schedule_expression == null ? {} : { # TODO: Other event types
     (var.name) = {}
   }
   iam_data = var.iam_data
@@ -9,9 +9,9 @@ module "this_event_bus" {
 
 module "this_trigger" {
   source = "../event_trigger"
-  event_map = var.cron_expression == null ? {} : {
+  event_map = var.schedule_expression == null ? {} : {
     (var.name) = {
-      cron_expression = var.cron_expression
+      schedule_expression = var.schedule_expression
       definition_arn  = local.task_definition_arn_latest
       target_arn      = var.ecs_cluster_arn
     }
