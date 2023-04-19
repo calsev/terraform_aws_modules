@@ -1,6 +1,6 @@
 variable "event_map" {
   type = map(object({
-    schedule_expression            = optional(string)
+    schedule_expression        = optional(string)
     dead_letter_queue_enabled  = optional(bool)
     definition_arn             = optional(string)
     event_bus_name             = optional(string)

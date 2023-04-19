@@ -12,8 +12,8 @@ module "this_trigger" {
   event_map = var.schedule_expression == null ? {} : {
     (var.name) = {
       schedule_expression = var.schedule_expression
-      definition_arn  = local.task_definition_arn_latest
-      target_arn      = var.ecs_cluster_arn
+      definition_arn      = local.task_definition_arn_latest
+      target_arn          = var.ecs_cluster_arn
     }
   }
   event_target_service_default = "ecs"

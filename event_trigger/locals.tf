@@ -20,7 +20,7 @@ locals {
   }
   l1_map = {
     for k, v in var.event_map : k => merge(v, module.name_map.data[k], {
-      schedule_expression            = v.schedule_expression == null ? var.event_schedule_expression_default : v.schedule_expression
+      schedule_expression        = v.schedule_expression == null ? var.event_schedule_expression_default : v.schedule_expression
       dead_letter_queue_name     = "${k}-dead-letter"
       event_bus_name             = v.event_bus_name == null ? var.event_bus_name_default : v.event_bus_name
       event_pattern_json         = v.event_pattern_json == null ? var.event_pattern_json_default : v.event_pattern_json
