@@ -59,9 +59,14 @@ locals {
       })
     }
     user = {
-      for k, v in local.user_map : k => merge(v, {
-        arn = aws_iam_user.this_user[k].arn
-      })
+      for k, v in local.user_map : k => merge(
+        {
+          for k_user, v_user in v : k_user => v_user if !contains(["policy_inline_json_map"], k_user)
+        },
+        {
+          arn = aws_iam_user.this_user[k].arn
+        },
+      )
     }
   }
 }
