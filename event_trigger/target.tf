@@ -4,7 +4,7 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
   is_enabled          = each.value.is_enabled
   event_bus_name      = each.value.event_bus_name
   event_pattern       = each.value.event_pattern_json
-  schedule_expression = each.value.cron_expression
+  schedule_expression = each.value.schedule_expression
   tags                = each.value.tags
 }
 

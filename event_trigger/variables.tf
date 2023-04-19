@@ -1,6 +1,6 @@
 variable "event_map" {
   type = map(object({
-    cron_expression            = optional(string)
+    schedule_expression            = optional(string)
     dead_letter_queue_enabled  = optional(bool)
     definition_arn             = optional(string)
     event_bus_name             = optional(string)
@@ -19,7 +19,7 @@ variable "event_map" {
   }))
 }
 
-variable "event_cron_expression_default" {
+variable "event_schedule_expression_default" {
   type        = string
   default     = null
   description = "Either Cron expression or event pattern is required"
