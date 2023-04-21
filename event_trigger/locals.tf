@@ -45,12 +45,13 @@ locals {
         for k_input, _ in local.l1_map[k].input_transformer_path_map : k_input => "<${k_input}>"
       }
       target_is_log = local.l1_map[k].target_service == "logs"
+      target_is_sns = local.l1_map[k].target_service == "sns"
     }
   }
   l3_map = {
     for k, v in var.event_map : k => {
-      dead_letter_queue_enabled  = local.l2_map[k].target_is_log ? false : v.dead_letter_queue_enabled == null ? var.event_dead_letter_queue_enabled_default : v.dead_letter_queue_enabled
-      iam_role_has_default       = !local.l1_map[k].iam_role_use_custom && !local.l2_map[k].target_is_log
+      dead_letter_queue_enabled  = local.l2_map[k].target_is_log ? false : local.l2_map[k].target_is_sns ? false : v.dead_letter_queue_enabled == null ? var.event_dead_letter_queue_enabled_default : v.dead_letter_queue_enabled
+      iam_role_has_default       = !local.l1_map[k].iam_role_use_custom && !local.l2_map[k].target_is_log && !local.l2_map[k].target_is_sns # Log and Topic targets do not support identity-based roles; handle with resource policies
       input_transformer_template = local.l1_map[k].input_transformer_template == null ? local.l2_map[k].input_transformer_template_default : jsondecode(local.l1_map[k].input_transformer_template)
     }
   }
@@ -73,6 +74,6 @@ locals {
     } if local.l3_map[k].dead_letter_queue_enabled
   }
   role_map = {
-    for k, v in local.event_map : k => v if local.l3_map[k].iam_role_has_default
+    for k, v in local.event_map : k => v if v.iam_role_has_default
   }
 }

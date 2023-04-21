@@ -1,20 +1,20 @@
 resource "aws_batch_job_definition" "this_job" {
   for_each = local.job_map
-  name     = each.value.name
+  name     = each.value.name_effective
   container_properties = jsonencode({
     command          = each.value.command_list
     environment      = [] # TODO
     executionRoleArn = each.value.iam_role_arn_job_execution
     image            = "${each.value.image_id}:${each.value.image_tag}"
     jobRoleArn       = each.value.iam_role_arn_job_container
-    linuxParameters  = local.linux_param_map[each.key]
+    linuxParameters  = each.value.linux_param_map
     mountPoints = [
       for k_mount, v_mount in each.value.mount_map : {
         containerPath = v_mount.container_path
         sourceVolume  = k_mount
       }
     ]
-    resourceRequirements = local.requirement_list_map[each.key]
+    resourceRequirements = each.value.requirement_list
     secrets = [
       for k, v in each.value.secret_map : {
         name      = k

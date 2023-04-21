@@ -280,6 +280,37 @@ locals {
         ]
       }
     }
+    kms = {
+      key = {
+        public_read = []
+        read = [
+          "Decrypt",
+          "GetPublicKey",
+          "ListResourceTags",
+          "Verify",
+          "VerifyMac",
+        ]
+        public_write = []
+        write = [
+          "Encrypt",
+          "GenerateMac",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "Sign",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+        ]
+        public_write = []
+        write = [
+          "GenerateRandom",
+        ]
+      }
+    }
     logs = {
       group = {
         public_read = [
@@ -414,6 +445,20 @@ locals {
         ]
         public_write = []
         write        = []
+      }
+    }
+    sns = {
+      topic = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "Publish",
+          "TagResource",
+          "UntagResource",
+        ]
       }
     }
     sqs = {

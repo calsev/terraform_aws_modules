@@ -2,6 +2,7 @@ variable "name_map" {
   type = map(object({
     name_infix  = optional(bool)
     name_prefix = optional(string)
+    name_suffix = optional(string)
     tags        = optional(map(string))
   }))
 }
@@ -20,6 +21,11 @@ variable "name_regex" {
   type        = string
   default     = "/[_.]/"
   description = "This regex will be replaced with -"
+}
+
+variable "name_suffix_default" {
+  type    = string
+  default = ""
 }
 
 variable "resource_name_regex" {

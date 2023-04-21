@@ -28,13 +28,13 @@ variable "event_schedule_expression_default" {
 variable "event_dead_letter_queue_enabled_default" {
   type        = bool
   default     = true
-  description = "Ignored if the target is a log group"
+  description = "Ignored if the target is a log group or sns topic"
 }
 
 variable "event_definition_arn_default" {
   type        = string
   default     = null
-  description = "An ECS task or Batch job definition"
+  description = "An ECS task or Batch job definition, if relevant"
 }
 
 variable "event_bus_name_default" {
@@ -96,7 +96,7 @@ variable "event_retry_attempts_default" {
 variable "event_target_arn_default" {
   type        = string
   default     = null
-  description = "An ECS cluster, Batch job queue, Cloudwatch log group ..."
+  description = "An ECS cluster, Batch job queue, Cloudwatch log group, SNS topic ..."
 }
 
 variable "event_target_service_default" {
@@ -104,7 +104,7 @@ variable "event_target_service_default" {
   default     = null
   description = "This is required so that the set of resources does not depend on state, as it typically would with target and definition ARNs"
   validation {
-    condition     = var.event_target_service_default == null ? true : contains(["batch", "ecs", "logs"], var.event_target_service_default)
+    condition     = var.event_target_service_default == null ? true : contains(["batch", "ecs", "logs", "sns"], var.event_target_service_default)
     error_message = "Invalid target service"
   }
 }

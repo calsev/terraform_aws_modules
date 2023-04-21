@@ -1,5 +1,13 @@
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_batch_submit_job = string
+    iam_policy_arn_ecs_start_task   = string
+  })
+}
+
 variable "job_map" {
   type = map(object({
+    alert_level                = optional(string)
     command_list               = optional(list(string))
     iam_role_arn_job_container = optional(string)
     iam_role_arn_job_execution = optional(string)
@@ -20,6 +28,12 @@ variable "job_map" {
       soft_limit = number
     })))
   }))
+}
+
+variable "job_alert_level_default" {
+  type        = string
+  default     = "general_medium"
+  description = "Set to null to disable alerting"
 }
 
 variable "job_command_list_default" {
@@ -93,10 +107,25 @@ variable "job_ulimit_map_default" {
   default = {}
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "std_map" {
   type = object({
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    iam_partition                  = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }

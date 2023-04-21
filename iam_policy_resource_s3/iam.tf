@@ -1,25 +1,9 @@
-data "aws_iam_policy_document" "policy_doc" {
-  for_each = local.has_policy ? { this = {} } : {}
-  dynamic "statement" {
-    for_each = local.sid_map
-    content {
-      actions = var.std_map.service_resource_access_action[local.service_name][statement.value.resource_type][statement.value.access]
-      dynamic "condition" {
-        for_each = statement.value.condition_map == null ? {} : statement.value.condition_map
-        content {
-          test     = condition.value.test
-          values   = condition.value.value_list
-          variable = condition.value.variable
-        }
-      }
-      principals {
-        identifiers = statement.value.identifier_list
-        type        = statement.value.identifier_type
-      }
-      resources = statement.value.resource_list
-      sid       = statement.value.sid
-    }
-  }
+module "this_policy" {
+  for_each     = local.has_policy ? { this = {} } : {}
+  source       = "../iam_policy_resource_access_resource"
+  service_name = local.service_name
+  sid_map      = local.sid_map
+  std_map      = var.std_map
 }
 
 # This is non-trivial as the AWS API actually checks absurd conditions very well
