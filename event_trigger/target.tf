@@ -51,13 +51,13 @@ resource "aws_cloudwatch_event_target" "this_target" {
   input      = each.value.input
   input_path = each.value.input_path
   dynamic "input_transformer" {
-    for_each = each.value.input_transformer_template == null ? {} : { this = {} }
+    for_each = each.value.has_input_transformer ? { this = {} } : {}
     content {
       input_paths = each.value.input_transformer_path_map
       # jsonencode escapes angle brackets and breaks the template
-      input_template = <<-EOT
+      input_template = each.value.input_transformer_template_string != null ? each.value.input_transformer_template_string : <<-EOT
       {
-        "Parameters" : {%{for k, v in each.value.input_transformer_template}
+        "Parameters" : {%{for k, v in each.value.input_transformer_template_doc}
           "${k}": "${v}",%{endfor}
           "swallow": "comma"
         }

@@ -46,7 +46,21 @@ locals {
           "aws.batch",
         ]
       }
-      k_alert = "${local.l1_map[k].name_simple}-failed"
+      alert_target_path_map = {
+        job_id          = "$.detail.jobId"
+        job_name        = "$.detail.jobName"
+        aws_region_name = "$.region"
+        reason          = "$.detail.statusReason"
+      }
+      # tflint-ignore: terraform_unused_declarations
+      alert_target_template = <<-EOT
+      {
+        "Message": "Batch job '<job_name>' failed!",
+        "Reason": "<reason>",
+        "URL": "https://<aws_region_name>.console.aws.amazon.com/batch/home?region=<aws_region_name>#jobs/detail/<job_id>"
+      }
+      EOT
+      k_alert               = "${local.l1_map[k].name_simple}-failed"
       linux_param_map = {
         devices          = []
         sharedMemorySize = local.l1_map[k].shared_memory_gib * 1024

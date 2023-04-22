@@ -1,21 +1,22 @@
 variable "event_map" {
   type = map(object({
-    schedule_expression        = optional(string)
-    dead_letter_queue_enabled  = optional(bool)
-    definition_arn             = optional(string)
-    event_bus_name             = optional(string)
-    event_pattern_json         = optional(string)
-    iam_role_arn_custom        = optional(string)
-    iam_role_use_custom        = optional(bool)
-    input                      = optional(string)
-    input_path                 = optional(string)
-    input_transformer_path_map = optional(map(string))
-    input_transformer_template = optional(string)
-    is_enabled                 = optional(bool)
-    retry_attempts             = optional(number)
-    target_arn                 = optional(string)
-    target_service             = optional(string)
-    task_count                 = optional(number)
+    schedule_expression               = optional(string)
+    dead_letter_queue_enabled         = optional(bool)
+    definition_arn                    = optional(string)
+    event_bus_name                    = optional(string)
+    event_pattern_json                = optional(string)
+    iam_role_arn_custom               = optional(string)
+    iam_role_use_custom               = optional(bool)
+    input                             = optional(string)
+    input_path                        = optional(string)
+    input_transformer_path_map        = optional(map(string))
+    input_transformer_template_json   = optional(string)
+    input_transformer_template_string = optional(string)
+    is_enabled                        = optional(bool)
+    retry_attempts                    = optional(number)
+    target_arn                        = optional(string)
+    target_service                    = optional(string)
+    task_count                        = optional(number)
   }))
 }
 
@@ -76,10 +77,16 @@ variable "event_input_transformer_path_map_default" {
   default = null
 }
 
-variable "event_input_transformer_template_default" {
+variable "event_input_transformer_template_json_default" {
   type        = string
   default     = null
-  description = "If an input path is provided, defaults to a simple dict of the inputs"
+  description = "If an input path is provided, defaults to a simple map of the inputs. Not used if a template string is provided"
+}
+
+variable "event_input_transformer_template_string_default" {
+  type        = string
+  default     = null
+  description = "If provided, will be used as a template string"
 }
 
 variable "event_is_enabled_default" {
