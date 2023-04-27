@@ -84,7 +84,7 @@ variable "repo_lifecycle_rule_list_default" {
 
 variable "repo_name_infix_default" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "std_map" {
