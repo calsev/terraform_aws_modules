@@ -15,11 +15,13 @@ resource "aws_ecs_capacity_provider" "this_capacity_provider" {
   tags = each.value.tags
 }
 
-resource "aws_cloudwatch_log_group" "this_log_group" {
-  for_each          = local.compute_map
-  name_prefix       = each.value.resource_name_prefix
-  retention_in_days = 7
-  tags              = each.value.tags
+module "log_group" {
+  source = "../log_group"
+  log_map = {
+    for k, v in local.compute_map : v.k_log => v
+  }
+  log_create_policy_default = false
+  std_map                   = var.std_map
 }
 
 resource "aws_ecs_cluster" "this_ecs_cluster" {
@@ -28,7 +30,7 @@ resource "aws_ecs_cluster" "this_ecs_cluster" {
     execute_command_configuration {
       #      kms_key_id = aws_kms_key.this_kms_key.arn
       log_configuration {
-        cloud_watch_log_group_name = aws_cloudwatch_log_group.this_log_group[each.key].name
+        cloud_watch_log_group_name = module.log_group.data[each.value.k_log].log_group_name
       }
       logging = "OVERRIDE"
     }
