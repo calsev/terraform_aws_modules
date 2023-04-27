@@ -50,6 +50,7 @@ locals {
       module.repo_policy[k].data,
       {
         repo_arn = aws_ecr_repository.this_repo[k].arn
+        repo_url = aws_ecr_repository.this_repo[k].repository_url
       },
     )
   }
