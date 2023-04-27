@@ -1,13 +1,14 @@
 resource "aws_ecs_task_definition" "this_task" {
-  container_definitions    = jsonencode(local.container_definition_list)
+  for_each                 = local.task_map
+  container_definitions    = jsonencode(each.value.container_definition_list)
   execution_role_arn       = var.iam_data.iam_role_arn_ecs_task_execution
-  family                   = local.name_effective
+  family                   = each.value.name_effective
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
-  tags                     = local.tags
-  task_role_arn            = var.iam_role_arn_ecs_task
+  tags                     = each.value.tags
+  task_role_arn            = each.value.iam_role_arn
   dynamic "volume" {
-    for_each = local.task_efs_map
+    for_each = each.value.efs_volume_map
     content {
       efs_volume_configuration {
         dynamic "authorization_config" {

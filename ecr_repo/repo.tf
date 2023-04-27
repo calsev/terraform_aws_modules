@@ -4,15 +4,15 @@ resource "aws_ecr_repository" "this_repo" {
     scan_on_push = true
   }
   image_tag_mutability = "MUTABLE"
-  name                 = each.value.repo_name
+  name                 = each.value.name_effective
   tags                 = each.value.tags
 }
 
 resource "aws_ecr_lifecycle_policy" "this_lifecycle" {
-  for_each = local.lifecycle_rule_list_map
+  for_each = local.repo_map
   policy = jsonencode(
     {
-      rules = each.value
+      rules = each.value.lifecycle_rule_list
     }
   )
   repository = aws_ecr_repository.this_repo[each.key].id
