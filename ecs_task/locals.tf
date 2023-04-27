@@ -84,7 +84,7 @@ locals {
       }
       container_definition_list = [
         for def in v.container_definition_list : {
-          command    = def.command_list
+          command    = (def.command_join == null ? var.task_container_command_join_default : def.command_join) ? [join(" && ", def.command_list)] : def.command_list
           cpu        = 0
           entryPoint = def.entry_point == null ? var.task_container_entry_point_default : def.entry_point
           environment = [

@@ -5,6 +5,7 @@ variable "compute_map" {
     instance_storage_gib        = optional(number)
     instance_type               = optional(string)
     key_name                    = optional(string)
+    log_retention_days          = optional(number)
     max_instances               = optional(number)
     min_instances               = optional(number)
     vpc_az_key_list             = optional(list(string))
@@ -38,6 +39,11 @@ variable "compute_instance_type_default" {
 variable "compute_key_name_default" {
   type    = string
   default = null
+}
+
+variable "compute_log_retention_days_default" {
+  type    = number
+  default = 7
 }
 
 variable "compute_max_instances_default" {
@@ -74,10 +80,15 @@ variable "iam_data" {
 
 variable "std_map" {
   type = object({
-    config_name          = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    iam_partition                  = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
 

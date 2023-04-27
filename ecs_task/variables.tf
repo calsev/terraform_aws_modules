@@ -34,6 +34,7 @@ variable "task_map" {
     alert_level = optional(string)
     arch        = optional(string)
     container_definition_list = list(object({
+      command_join           = optional(bool)
       command_list           = list(string)
       environment_map        = optional(map(string))
       entry_point            = optional(list(string))
@@ -75,6 +76,11 @@ variable "task_alert_level_default" {
 variable "task_arch_default" {
   type    = string
   default = null
+}
+
+variable "task_container_command_join_default" {
+  type    = bool
+  default = true
 }
 
 variable "task_container_entry_point_default" {
