@@ -10,7 +10,20 @@ locals {
   }
   l1_map = {
     for k, v in var.job_map : k => merge(v, module.name_map.data[k], {
-      alert_level                = v.alert_level == null ? var.job_alert_level_default : v.alert_level
+      alert_level = v.alert_level == null ? var.job_alert_level_default : v.alert_level
+      alert_target_path_map = {
+        job_id          = "$.detail.jobId"
+        job_name        = "$.detail.jobName"
+        aws_region_name = "$.region"
+        reason          = "$.detail.statusReason"
+      }
+      alert_target_template      = <<-EOT
+      {
+        "Message": "Batch job '<job_name>' failed!",
+        "Reason": "<reason>",
+        "URL": "https://<aws_region_name>.console.aws.amazon.com/batch/home?region=<aws_region_name>#jobs/detail/<job_id>"
+      }
+      EOT
       command_list               = v.command_list == null ? var.job_command_list_default : v.command_list
       iam_role_arn_job_container = v.iam_role_arn_job_container == null ? var.job_iam_role_arn_job_container_default : v.iam_role_arn_job_container
       iam_role_arn_job_execution = v.iam_role_arn_job_execution == null ? var.job_iam_role_arn_job_execution_default : v.iam_role_arn_job_execution
@@ -46,21 +59,7 @@ locals {
           "aws.batch",
         ]
       }
-      alert_target_path_map = {
-        job_id          = "$.detail.jobId"
-        job_name        = "$.detail.jobName"
-        aws_region_name = "$.region"
-        reason          = "$.detail.statusReason"
-      }
-      # tflint-ignore: terraform_unused_declarations
-      alert_target_template = <<-EOT
-      {
-        "Message": "Batch job '<job_name>' failed!",
-        "Reason": "<reason>",
-        "URL": "https://<aws_region_name>.console.aws.amazon.com/batch/home?region=<aws_region_name>#jobs/detail/<job_id>"
-      }
-      EOT
-      k_alert               = "${local.l1_map[k].name_simple}-failed"
+      k_alert = "${local.l1_map[k].name_simple}-failed"
       linux_param_map = {
         devices          = []
         sharedMemorySize = local.l1_map[k].shared_memory_gib * 1024
