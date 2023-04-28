@@ -1,19 +1,71 @@
 variable "compute_map" {
   type = map(object({
-    image_id                    = optional(string)
-    instance_allocation_type    = optional(string)
-    instance_storage_gib        = optional(number)
-    instance_type               = optional(string)
-    key_name                    = optional(string)
-    log_retention_days          = optional(number)
-    max_instances               = optional(number)
-    min_instances               = optional(number)
-    vpc_az_key_list             = optional(list(string))
-    vpc_key                     = optional(string)
-    vpc_security_group_key_list = optional(list(string))
-    vpc_segment_key             = optional(string)
-    user_data_commands          = optional(list(string))
+    auto_scaling_instance_warmup_period_s       = optional(number)
+    auto_scaling_managed_scaling_enabled        = optional(bool)
+    auto_scaling_managed_termination_protection = optional(bool)
+    auto_scaling_maximum_scaling_step_size      = optional(number)
+    auto_scaling_minimum_scaling_step_size      = optional(number)
+    auto_scaling_target_capacity                = optional(number)
+    capacity_type                               = optional(string)
+    image_id                                    = optional(string)
+    instance_allocation_type                    = optional(string)
+    instance_storage_gib                        = optional(number)
+    instance_type                               = optional(string)
+    key_name                                    = optional(string)
+    log_retention_days                          = optional(number)
+    max_instances                               = optional(number)
+    min_instances                               = optional(number)
+    vpc_az_key_list                             = optional(list(string))
+    vpc_key                                     = optional(string)
+    vpc_security_group_key_list                 = optional(list(string))
+    vpc_segment_key                             = optional(string)
+    user_data_commands                          = optional(list(string))
   }))
+}
+
+variable "compute_auto_scaling_instance_warmup_period_s_default" {
+  type        = number
+  default     = 300
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_auto_scaling_managed_scaling_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_auto_scaling_managed_termination_protection_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_auto_scaling_maximum_scaling_step_size_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_auto_scaling_minimum_scaling_step_size_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_auto_scaling_target_capacity_default" {
+  type        = number
+  default     = 100
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_capacity_type_default" {
+  type    = string
+  default = "EC2"
+  validation {
+    condition     = contains(["EC2", "FARGATE", "FARGATE_SPOT"], var.compute_capacity_type_default)
+    error_message = "Invalid capacity type"
+  }
 }
 
 variable "compute_image_id_default" {

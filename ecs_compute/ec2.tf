@@ -20,7 +20,7 @@ module "compute_common" {
 }
 
 resource "aws_autoscaling_group" "this_asg" {
-  for_each                  = local.compute_map
+  for_each                  = local.auto_scaling_map
   capacity_rebalance        = true
   default_cooldown          = 300
   desired_capacity          = each.value.min_instances

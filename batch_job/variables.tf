@@ -1,3 +1,11 @@
+variable "batch_cluster_data" {
+  type = map(object({
+    instance_type_memory_gib = number
+    instance_type_num_gpu    = number
+    instance_type_num_vcpu   = number
+  }))
+}
+
 variable "iam_data" {
   type = object({
     iam_policy_arn_batch_submit_job = string
@@ -8,21 +16,23 @@ variable "iam_data" {
 variable "job_map" {
   type = map(object({
     alert_level                = optional(string)
+    batch_cluster_key          = optional(string)
     command_list               = optional(list(string))
     iam_role_arn_job_container = optional(string)
     iam_role_arn_job_execution = optional(string)
     image_id                   = optional(string)
     image_tag                  = optional(string)
-    memory_gib                 = optional(number)
     mount_map = optional(map(object({
       container_path = string
       source_path    = string
     })))
-    number_of_cpu     = optional(number)
-    number_of_gpu     = optional(number)
-    parameter_map     = optional(map(string))
-    secret_map        = optional(map(string))
-    shared_memory_gib = optional(number)
+    parameter_map              = optional(map(string))
+    resource_memory_gib        = optional(number)
+    resource_memory_host_gib   = optional(number)
+    resource_memory_shared_gib = optional(number)
+    resource_num_gpu           = optional(number)
+    resource_num_vcpu          = optional(number)
+    secret_map                 = optional(map(string))
     ulimit_map = optional(map(object({
       hard_limit = number
       soft_limit = number
@@ -34,6 +44,12 @@ variable "job_alert_level_default" {
   type        = string
   default     = "general_medium"
   description = "Set to null to disable alerting"
+}
+
+variable "job_batch_cluster_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to job key"
 }
 
 variable "job_command_list_default" {
@@ -61,11 +77,6 @@ variable "job_image_tag_default" {
   default = "22.04"
 }
 
-variable "job_memory_gib_default" {
-  type    = number
-  default = null
-}
-
 variable "job_mount_map_default" {
   type = map(object({
     container_path = string
@@ -74,29 +85,43 @@ variable "job_mount_map_default" {
   default = {}
 }
 
-variable "job_number_of_cpu_default" {
-  type    = number
-  default = null
-}
-
-variable "job_number_of_gpu_default" {
-  type    = number
-  default = 0
-}
-
 variable "job_parameter_map_default" {
   type    = map(string)
   default = {}
 }
 
+variable "job_resource_memory_gib_default" {
+  type        = number
+  default     = null
+  description = "Defaults to instance type memory - host memory - shared memory"
+}
+
+variable "job_resource_memory_host_gib_default" {
+  type        = number
+  default     = 0.375
+  description = "Memory remaining for host OS."
+}
+
+variable "job_resource_memory_shared_gib_default" {
+  type    = number
+  default = 0.125
+}
+
+variable "job_resource_num_gpu_default" {
+  type        = number
+  default     = null
+  description = "Defaults to instance type GPUs"
+}
+
+variable "job_resource_num_vcpu_default" {
+  type        = number
+  default     = null
+  description = "Defaults to instance type CPUs"
+}
+
 variable "job_secret_map_default" {
   type    = map(string)
   default = {}
-}
-
-variable "job_shared_memory_gib_default" {
-  type    = number
-  default = null
 }
 
 variable "job_ulimit_map_default" {
