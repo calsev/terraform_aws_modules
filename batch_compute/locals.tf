@@ -11,8 +11,8 @@ locals {
   }
   l2_map = {
     for k, v in var.compute_map : k => {
-      max_vcpus = local.l1_map[k].max_instances * local.l1_map[k].instance_type_vcpus
-      min_vcpus = local.l1_map[k].min_instances * local.l1_map[k].instance_type_vcpus
+      max_num_vcpu = local.l1_map[k].max_instances * local.l1_map[k].instance_type_num_vcpu
+      min_num_vcpu = local.l1_map[k].min_instances * local.l1_map[k].instance_type_num_vcpu
     }
   }
   output_data = {

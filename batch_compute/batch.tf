@@ -25,7 +25,7 @@ resource "aws_batch_compute_environment" "this_compute_env" {
   compute_resources {
     allocation_strategy = "BEST_FIT"
     bid_percentage      = 100 # Bid percentage set to 100 to maximize availability and minimize interruptions
-    desired_vcpus       = each.value.min_vcpus
+    desired_vcpus       = each.value.min_num_vcpu
     ec2_configuration {
       image_id_override = each.value.image_id # Cleanup diff
       image_type        = each.value.image_type
@@ -36,8 +36,8 @@ resource "aws_batch_compute_environment" "this_compute_env" {
       launch_template_id = each.value.launch_template_id
       version            = each.value.launch_template_version
     }
-    max_vcpus           = each.value.max_vcpus
-    min_vcpus           = each.value.min_vcpus
+    max_vcpus           = each.value.max_num_vcpu
+    min_vcpus           = each.value.min_num_vcpu
     security_group_ids  = each.value.vpc_security_group_id_list
     spot_iam_fleet_role = each.value.instance_allocation_type == "SPOT" ? var.iam_data.iam_role_arn_batch_spot_fleet : null
     subnets             = each.value.vpc_subnet_id_list

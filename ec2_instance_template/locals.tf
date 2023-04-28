@@ -74,9 +74,9 @@ locals {
       image_name                         = data.aws_ami.this_ami[k].name
       image_name_default                 = data.aws_ami.this_default_ami[k].name
       instance_type_gpu_memory_total_gib = v.has_gpu ? data.aws_ec2_instance_type.this_instance_type[k].total_gpu_memory / 1024 : 0
-      instance_type_gpus                 = v.has_gpu ? sum([for gpu in data.aws_ec2_instance_type.this_instance_type[k].gpus : gpu.count]) : 0
+      instance_type_num_gpu              = v.has_gpu ? sum([for gpu in data.aws_ec2_instance_type.this_instance_type[k].gpus : gpu.count]) : 0
       instance_type_memory_gib           = data.aws_ec2_instance_type.this_instance_type[k].memory_size / 1024
-      instance_type_vcpus                = data.aws_ec2_instance_type.this_instance_type[k].default_vcpus
+      instance_type_num_vcpu             = data.aws_ec2_instance_type.this_instance_type[k].default_vcpus
       launch_template_id                 = aws_launch_template.this_launch_template[k].id
       launch_template_version            = aws_launch_template.this_launch_template[k].latest_version
       placement_group_id                 = aws_placement_group.this_placement_group[k].id
