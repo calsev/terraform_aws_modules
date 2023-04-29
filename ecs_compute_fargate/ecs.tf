@@ -1,20 +1,3 @@
-resource "aws_ecs_capacity_provider" "this_capacity_provider" {
-  for_each = local.compute_map
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.this_asg[each.key].arn
-    managed_scaling {
-      instance_warmup_period    = each.value.auto_scaling_instance_warmup_period_s
-      maximum_scaling_step_size = each.value.auto_scaling_maximum_scaling_step_size
-      minimum_scaling_step_size = each.value.auto_scaling_minimum_scaling_step_size
-      status                    = each.value.auto_scaling_managed_scaling_enabled ? "ENABLED" : "DISABLED"
-      target_capacity           = each.value.auto_scaling_target_capacity
-    }
-    managed_termination_protection = each.value.auto_scaling_managed_termination_protection ? "ENABLED" : "DISABLED"
-  }
-  name = each.value.name_effective
-  tags = each.value.tags
-}
-
 module "log_group" {
   source = "../log_group"
   log_map = {
@@ -51,11 +34,11 @@ resource "aws_ecs_cluster" "this_ecs_cluster" {
 resource "aws_ecs_cluster_capacity_providers" "this_capacity_provider" {
   for_each = local.compute_map
   capacity_providers = [
-    aws_ecs_capacity_provider.this_capacity_provider[each.key].name
+    each.value.capacity_type
   ]
   cluster_name = aws_ecs_cluster.this_ecs_cluster[each.key].name
   default_capacity_provider_strategy {
-    capacity_provider = aws_ecs_capacity_provider.this_capacity_provider[each.key].name
+    capacity_provider = each.value.capacity_type
     weight            = 100
   }
 }

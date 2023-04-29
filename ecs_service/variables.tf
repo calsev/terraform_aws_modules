@@ -1,13 +1,34 @@
+variable "dns_data" {
+  type = object({
+    domain_to_sd_zone_map = map(object({
+      id = string
+    }))
+    ttl_map = object({
+      alias = number
+    })
+  })
+}
+
+variable "ecs_cluster_data" {
+  type = map(object({
+    capability_type        = string
+    capacity_provider_name = string
+    ecs_cluster_id         = string
+  }))
+  description = "Instance values must be provided for EC2 capacity type"
+}
+
+
 variable "service_map" {
   type = map(object({
     assign_public_ip            = optional(bool)
-    capacity_provider_name      = optional(string)
     desired_count               = optional(number)
-    ecs_cluster_id              = optional(string)
+    ecs_cluster_key             = optional(string)
     ecs_task_definition_arn     = optional(string)
     public_dns_name             = optional(string)
     sd_container_name           = optional(string)
-    sd_namespace_id             = optional(string)
+    sd_container_port           = optional(number)
+    sd_namespace_key            = optional(string)
     sd_port                     = optional(number)
     vpc_az_key_list             = optional(list(string))
     vpc_key                     = optional(string)
@@ -18,13 +39,8 @@ variable "service_map" {
 
 variable "service_assign_public_ip_default" {
   type        = bool
-  default     = false
-  description = "Not supported for EC2 launch type"
-}
-
-variable "service_capacity_provider_name_default" {
-  type    = string
-  default = null
+  default     = null
+  description = "Ignored for EC2 launch type. Defaults to the subnet default for Fargate."
 }
 
 variable "service_desired_count_default" {
@@ -32,7 +48,7 @@ variable "service_desired_count_default" {
   default = 1
 }
 
-variable "service_ecs_cluster_id_default" {
+variable "service_ecs_cluster_key_default" {
   type    = string
   default = null
 }
@@ -47,7 +63,7 @@ variable "service_public_dns_name_default" {
   default = null
 }
 
-variable "service_sd_namespace_id_default" {
+variable "service_sd_namespace_key_default" {
   type    = string
   default = null
 }
@@ -60,11 +76,6 @@ variable "std_map" {
   })
 }
 
-variable "ttl_dns_a" {
-  type    = number
-  default = null
-}
-
 variable "vpc_az_key_list_default" {
   type    = list(string)
   default = ["a", "b"]
@@ -74,6 +85,7 @@ variable "vpc_data_map" {
   type = map(object({
     security_group_id_map = map(string)
     segment_map = map(object({
+      route_public  = bool
       subnet_id_map = map(string)
     }))
   }))

@@ -1,9 +1,11 @@
 variable "ecs_cluster_data" {
   type = map(object({
-    instance_type_memory_gib = number
-    instance_type_num_vcpu   = number
+    capability_type          = string
+    instance_type_memory_gib = optional(number)
+    instance_type_num_vcpu   = optional(number)
     ecs_cluster_arn          = string
   }))
+  description = "Instance values must be provided for EC2 capacity type"
 }
 
 variable "iam_data" {
@@ -42,7 +44,7 @@ variable "task_map" {
     alert_level = optional(string)
     container_definition_list = list(object({
       command_join    = optional(bool)
-      command_list    = list(string)
+      command_list    = optional(list(string))
       environment_map = optional(map(string))
       entry_point     = optional(list(string))
       image           = optional(string)
@@ -61,17 +63,16 @@ variable "task_map" {
     }))
     ecs_cluster_key = optional(string)
     efs_volume_map = optional(map(object({
-      authorization_config = optional(object({
-        access_point_id = optional(string)
-        iam             = optional(string)
-      }))
-      file_system_id          = string
-      root_directory          = optional(string)
-      transit_encryption      = optional(string)
-      transit_encryption_port = optional(string)
+      authorization_access_point_id = optional(string)
+      authorization_iam_enabled     = optional(bool)
+      file_system_id                = string
+      root_directory                = optional(string)
+      transit_encryption_enabled    = optional(bool)
+      transit_encryption_port       = optional(string)
     })))
     iam_role_arn             = optional(string)
     log_group_name           = optional(string)
+    network_mode             = optional(string)
     resource_memory_gib      = optional(string)
     resource_memory_host_gib = optional(number)
     resource_num_vcpu        = optional(string)
@@ -130,31 +131,37 @@ variable "task_ecs_cluster_key_default" {
 
 variable "task_efs_volume_map_default" {
   type = map(object({
-    authorization_config = optional(object({
-      access_point_id = optional(string)
-      iam             = optional(string)
-    }))
-    file_system_id          = string
-    root_directory          = optional(string)
-    transit_encryption      = optional(string)
-    transit_encryption_port = optional(number)
+    authorization_access_point_id = optional(string)
+    authorization_iam_enabled     = optional(bool)
+    file_system_id                = string
+    root_directory                = optional(string)
+    transit_encryption_enabled    = optional(bool)
+    transit_encryption_port       = optional(number)
   }))
   default = {}
 }
 
-variable "task_efs_authorization_iam_default" {
+variable "task_efs_authorization_access_point_id_default" {
   type    = string
-  default = "ENABLED"
+  default = null
+}
+
+variable "task_efs_authorization_iam_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Requires transit encryption"
 }
 
 variable "task_efs_root_directory_default" {
-  type    = string
-  default = "/"
+  type        = string
+  default     = "/"
+  description = "Forced to root if an access point is configured"
 }
 
-variable "task_efs_transit_encryption_default" {
-  type    = string
-  default = "ENABLED"
+variable "task_efs_transit_encryption_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Must be true if IAM is enabled"
 }
 
 variable "task_efs_transit_encryption_port_default" {
@@ -173,10 +180,15 @@ variable "task_log_group_name_default" {
   default = null
 }
 
+variable "task_network_mode_default" {
+  type    = string
+  default = "awsvpc"
+}
+
 variable "task_resource_memory_gib_default" {
   type        = number
   default     = null
-  description = "Defaults to instance_type_memory_gib - task_memory_host_gib_default"
+  description = "Required for Fargate, for EC2 defaults to instance_type_memory_gib - task_memory_host_gib_default"
 }
 
 variable "task_resource_memory_host_gib_default" {
@@ -188,7 +200,7 @@ variable "task_resource_memory_host_gib_default" {
 variable "task_resource_num_vcpu_default" {
   type        = number
   default     = null
-  description = "Defaults to number of CPUs for the instance x 1024"
+  description = "Required for Fargate, for EC2 defaults to number of CPUs for the instance x 1024"
 }
 
 variable "task_schedule_expression_default" {

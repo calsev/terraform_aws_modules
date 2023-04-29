@@ -67,3 +67,22 @@ resource "aws_efs_file_system_policy" "policy" {
   file_system_id                     = aws_efs_file_system.this_fs[each.key].id
   policy                             = data.aws_iam_policy_document.this_policy_doc[each.key].json
 }
+
+resource "aws_efs_access_point" "this_access_point" {
+  for_each       = local.access_point_flattened_map
+  file_system_id = aws_efs_file_system.this_fs[each.value.k_fs].id
+  posix_user {
+    gid            = each.value.user_gid
+    secondary_gids = each.value.user_gid_secondary_list
+    uid            = each.value.user_uid
+  }
+  root_directory {
+    creation_info {
+      owner_gid   = each.value.owner_gid
+      owner_uid   = each.value.owner_uid
+      permissions = each.value.permission_mode
+    }
+    path = each.value.access_point_path
+  }
+  tags = each.value.tags
+}
