@@ -42,7 +42,7 @@ resource "aws_ecs_service" "this_service" {
   }
   propagate_tags = "SERVICE"
   dynamic "service_registries" {
-    for_each = each.value.public_dns_name != null ? { this = {} } : {}
+    for_each = each.value.sd_hostname != null ? { this = {} } : {}
     content {
       container_name = each.value.sd_container_name
       container_port = each.value.sd_container_port

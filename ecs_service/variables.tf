@@ -18,16 +18,15 @@ variable "ecs_cluster_data" {
   description = "Instance values must be provided for EC2 capacity type"
 }
 
-
 variable "service_map" {
   type = map(object({
     assign_public_ip            = optional(bool)
     desired_count               = optional(number)
     ecs_cluster_key             = optional(string)
     ecs_task_definition_arn     = optional(string)
-    public_dns_name             = optional(string)
     sd_container_name           = optional(string)
     sd_container_port           = optional(number)
+    sd_hostname                 = optional(string)
     sd_namespace_key            = optional(string)
     sd_port                     = optional(number)
     vpc_az_key_list             = optional(list(string))
@@ -54,11 +53,6 @@ variable "service_ecs_cluster_key_default" {
 }
 
 variable "service_ecs_task_definition_arn_default" {
-  type    = string
-  default = null
-}
-
-variable "service_public_dns_name_default" {
   type    = string
   default = null
 }
