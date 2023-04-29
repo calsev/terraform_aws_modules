@@ -6,7 +6,6 @@ variable "compute_map" {
     auto_scaling_maximum_scaling_step_size      = optional(number)
     auto_scaling_minimum_scaling_step_size      = optional(number)
     auto_scaling_target_capacity                = optional(number)
-    capacity_type                               = optional(string)
     image_id                                    = optional(string)
     instance_allocation_type                    = optional(string)
     instance_storage_gib                        = optional(number)
@@ -59,15 +58,6 @@ variable "compute_auto_scaling_target_capacity_default" {
   description = "Ignored for Fargate capacity type"
 }
 
-variable "compute_capacity_type_default" {
-  type    = string
-  default = "EC2"
-  validation {
-    condition     = contains(["EC2", "FARGATE", "FARGATE_SPOT"], var.compute_capacity_type_default)
-    error_message = "Invalid capacity type"
-  }
-}
-
 variable "compute_image_id_default" {
   type    = string
   default = null
@@ -76,6 +66,10 @@ variable "compute_image_id_default" {
 variable "compute_instance_allocation_type_default" {
   type    = string
   default = "EC2"
+  validation {
+    condition     = contains(["EC2", "SPOT"], var.compute_instance_allocation_type_default)
+    error_message = "Invalid allocation type"
+  }
 }
 
 variable "compute_instance_storage_gib_default" {
@@ -85,7 +79,7 @@ variable "compute_instance_storage_gib_default" {
 
 variable "compute_instance_type_default" {
   type    = string
-  default = null
+  default = "t4g.nano"
 }
 
 variable "compute_key_name_default" {

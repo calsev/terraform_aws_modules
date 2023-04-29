@@ -102,6 +102,7 @@ tf-lint: tflint-install
 	cd ../ecs_ami_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_compute && $(LINT) --config=../development/.tflint.hcl
+	cd ../ecs_compute_fargate && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_dashboard && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_service && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_task && $(LINT) --config=../development/.tflint.hcl

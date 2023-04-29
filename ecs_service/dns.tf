@@ -3,7 +3,7 @@ resource "aws_service_discovery_service" "discovery" {
   dns_config {
     dns_records {
       type = "A"
-      ttl  = var.ttl_dns_a
+      ttl  = var.dns_data.ttl_map.alias
     }
     namespace_id   = each.value.sd_namespace_id
     routing_policy = null

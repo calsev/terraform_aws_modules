@@ -33,21 +33,20 @@ resource "aws_ecs_service" "this_service" {
     subnets          = each.value.vpc_subnet_id_list
     security_groups  = each.value.vpc_security_group_id_list
   }
-  ordered_placement_strategy {
-    field = "attribute:ecs.availability-zone"
-    type  = "spread"
-  }
-  ordered_placement_strategy {
-    field = "instanceId"
-    type  = "spread"
+  dynamic "ordered_placement_strategy" {
+    for_each = each.value.placement_constraint_list
+    content {
+      field = ordered_placement_strategy.value.field
+      type  = ordered_placement_strategy.value.type
+    }
   }
   propagate_tags = "SERVICE"
   dynamic "service_registries" {
     for_each = each.value.public_dns_name != null ? { this = {} } : {}
     content {
       container_name = each.value.sd_container_name
-      container_port = each.value.sd_port
-      port           = null
+      container_port = each.value.sd_container_port
+      port           = each.value.sd_port
       registry_arn   = aws_service_discovery_service.discovery[each.key].arn
     }
   }

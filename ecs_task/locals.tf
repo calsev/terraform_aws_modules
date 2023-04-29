@@ -55,6 +55,7 @@ locals {
       ecs_cluster_key          = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
       efs_volume_map           = v.efs_volume_map == null ? var.task_efs_volume_map_default : v.efs_volume_map
       iam_role_arn             = v.iam_role_arn == null ? var.task_iam_role_arn_default : v.iam_role_arn
+      network_mode             = v.network_mode == null ? var.task_network_mode_default : v.network_mode
       resource_memory_host_gib = v.resource_memory_host_gib == null ? var.task_resource_memory_host_gib_default : v.resource_memory_host_gib
       schedule_expression      = v.schedule_expression == null ? var.task_schedule_expression_default : v.schedule_expression
     })
@@ -91,41 +92,43 @@ locals {
           "aws.ecs",
         ]
       }
+      capability_type = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].capability_type
       ecs_cluster_arn = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].ecs_cluster_arn
       efs_volume_map = {
-        for name, volume_data in local.t1_map[k].efs_volume_map : name => {
-          efs_volume_configuration = {
-            authorization_config = volume_data.root_directory != null ? null : volume_data.authorization_config != null ? {
-              access_point_id = volume_data.authorization_config.access_point_id
-              iam             = volume_data.authorization_config.iam != null ? volume_data.authorization_config.iam : var.task_efs_authorization_iam_default
-              } : {
-              access_point_id = null
-              iam             = var.task_efs_authorization_iam_default
-            }
-            file_system_id          = volume_data.file_system_id
-            root_directory          = volume_data.root_directory == null ? var.task_efs_root_directory_default : volume_data.root_directory
-            transit_encryption      = volume_data.transit_encryption == null ? var.task_efs_transit_encryption_default : volume_data.transit_encryption
-            transit_encryption_port = volume_data.transit_encryption_port == null ? var.task_efs_transit_encryption_port_default : volume_data.transit_encryption_port
-          }
-        }
+        for name, volume_data in local.t1_map[k].efs_volume_map : name => merge(volume_data, {
+          authorization_access_point_id = volume_data.authorization_access_point_id == null ? var.task_efs_authorization_access_point_id_default : volume_data.authorization_access_point_id
+          authorization_iam_enabled     = volume_data.authorization_iam_enabled == null ? var.task_efs_authorization_iam_enabled_default : volume_data.authorization_iam_enabled
+          file_system_id                = volume_data.file_system_id
+          transit_encryption_enabled    = volume_data.transit_encryption_enabled == null ? var.task_efs_transit_encryption_enabled_default : volume_data.transit_encryption_enabled
+          transit_encryption_port       = volume_data.transit_encryption_port == null ? var.task_efs_transit_encryption_port_default : volume_data.transit_encryption_port
+        })
       }
-      k_alert                     = "${local.t1_map[k].name_simple}-failed"
-      resource_memory_gib_default = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_memory_gib - local.t1_map[k].resource_memory_host_gib
-      resource_num_vcpu_default   = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_num_vcpu
+      k_alert = "${local.t1_map[k].name_simple}-failed"
     }
   }
   t3_map = {
     for k, v in var.task_map : k => {
-      resource_num_vcpu   = v.resource_num_vcpu == null ? var.task_resource_num_vcpu_default == null ? local.t2_map[k].resource_num_vcpu_default : var.task_resource_num_vcpu_default : v.resource_num_vcpu
-      resource_memory_gib = v.resource_memory_gib == null ? var.task_resource_memory_gib_default == null ? local.t2_map[k].resource_memory_gib_default : var.task_resource_memory_gib_default : v.resource_memory_gib
+      efs_volume_map = {
+        for name, volume_data in local.t2_map[k].efs_volume_map : name => merge(volume_data, {
+          root_directory = volume_data.authorization_access_point_id != null ? "/" : volume_data.root_directory == null ? var.task_efs_root_directory_default : volume_data.root_directory
+        })
+      }
+      resource_memory_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_memory_gib - local.t1_map[k].resource_memory_host_gib
+      resource_num_vcpu_default   = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_num_vcpu
     }
   }
   t4_map = {
     for k, v in var.task_map : k => {
+      resource_num_vcpu   = v.resource_num_vcpu == null ? var.task_resource_num_vcpu_default == null ? local.t3_map[k].resource_num_vcpu_default : var.task_resource_num_vcpu_default : v.resource_num_vcpu
+      resource_memory_gib = v.resource_memory_gib == null ? var.task_resource_memory_gib_default == null ? local.t3_map[k].resource_memory_gib_default : var.task_resource_memory_gib_default : v.resource_memory_gib
+    }
+  }
+  t5_map = {
+    for k, v in var.task_map : k => {
       container_definition_list = [
         for def in v.container_definition_list : {
-          command    = (def.command_join == null ? var.task_container_command_join_default : def.command_join) ? [join(" && ", def.command_list)] : def.command_list
-          cpu        = (def.reserved_num_vcpu == null ? var.task_container_reserved_num_vcpu_default == null ? local.t3_map[k].resource_num_vcpu / length(v.container_definition_list) : var.task_container_reserved_num_vcpu_default : def.reserved_num_vcpu) * 1024
+          command    = def.command_list == null ? null : (def.command_join == null ? var.task_container_command_join_default : def.command_join) ? [join(" && ", def.command_list)] : def.command_list
+          cpu        = (def.reserved_num_vcpu == null ? var.task_container_reserved_num_vcpu_default == null ? local.t4_map[k].resource_num_vcpu / length(v.container_definition_list) : var.task_container_reserved_num_vcpu_default : def.reserved_num_vcpu) * 1024
           entryPoint = def.entry_point == null ? var.task_container_entry_point_default : def.entry_point
           environment = [
             for k, v in merge(
@@ -151,7 +154,7 @@ locals {
               awslogs-stream-prefix = local.t1_map[k].name_context
             }
           }
-          memoryReservation = (def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.t3_map[k].resource_memory_gib / length(v.container_definition_list) : var.task_container_reserved_memory_gib_default : def.reserved_memory_gib) * 1024
+          memoryReservation = (def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.t4_map[k].resource_memory_gib / length(v.container_definition_list) : var.task_container_reserved_memory_gib_default : def.reserved_memory_gib) * 1024
           mountPoints = def.mount_point_map == null ? [] : [
             for name, mount_data in def.mount_point_map : {
               containerPath = mount_data.container_path
@@ -173,6 +176,6 @@ locals {
     }
   }
   task_map = {
-    for k, v in var.task_map : k => merge(local.t1_map[k], local.t2_map[k], local.t3_map[k], local.t4_map[k])
+    for k, v in var.task_map : k => merge(local.t1_map[k], local.t2_map[k], local.t3_map[k], local.t4_map[k], local.t5_map[k])
   }
 }

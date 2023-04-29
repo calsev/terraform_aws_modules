@@ -5,8 +5,8 @@ resource "aws_ecs_task_definition" "this_task" {
   execution_role_arn       = var.iam_data.iam_role_arn_ecs_task_execution
   family                   = each.value.name_effective
   memory                   = each.value.resource_memory_gib * 1024
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["EC2"]
+  network_mode             = each.value.network_mode
+  requires_compatibilities = [each.value.capability_type]
   tags                     = each.value.tags
   task_role_arn            = each.value.iam_role_arn
   dynamic "volume" {
@@ -14,16 +14,16 @@ resource "aws_ecs_task_definition" "this_task" {
     content {
       efs_volume_configuration {
         dynamic "authorization_config" {
-          for_each = volume.value.efs_volume_configuration.authorization_config != null ? { 0 : volume.value.efs_volume_configuration.authorization_config } : {}
+          for_each = volume.value.authorization_access_point_id == null ? {} : { this = 0 }
           content {
-            access_point_id = authorization_config.value.access_point_id
-            iam             = authorization_config.value.iam
+            access_point_id = volume.value.authorization_access_point_id
+            iam             = volume.value.authorization_iam_enabled ? "ENABLED" : "DISABLED"
           }
         }
-        file_system_id          = volume.value.efs_volume_configuration.file_system_id
-        root_directory          = volume.value.efs_volume_configuration.root_directory
-        transit_encryption      = volume.value.efs_volume_configuration.transit_encryption
-        transit_encryption_port = volume.value.efs_volume_configuration.transit_encryption_port
+        file_system_id          = volume.value.file_system_id
+        root_directory          = volume.value.root_directory
+        transit_encryption      = volume.value.transit_encryption_enabled ? "ENABLED" : "DISABLED"
+        transit_encryption_port = volume.value.transit_encryption_port
       }
       name = volume.key
     }

@@ -1,5 +1,13 @@
 variable "fs_map" {
   type = map(object({
+    access_point_map = optional(map(object({
+      owner_gid               = optional(number)
+      owner_uid               = optional(number)
+      permission_mode         = optional(string)
+      user_gid                = optional(number)
+      user_gid_secondary_list = optional(list(number))
+      user_uid                = optional(number)
+    })))
     create_policies             = optional(bool)
     encrypt_file_system         = optional(bool)
     vpc_az_key_list             = optional(list(string))
@@ -7,6 +15,48 @@ variable "fs_map" {
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
   }))
+}
+
+variable "fs_access_point_map_default" {
+  type = map(object({
+    owner_gid               = optional(number)
+    owner_uid               = optional(number)
+    permission_mode         = optional(string)
+    user_gid                = optional(number)
+    user_gid_secondary_list = optional(list(number))
+    user_uid                = optional(number)
+  }))
+  default = {}
+}
+
+variable "fs_access_point_owner_gid_default" {
+  type    = number
+  default = 0
+}
+
+variable "fs_access_point_owner_uid_default" {
+  type    = number
+  default = 0
+}
+
+variable "fs_access_point_permission_mode_default" {
+  type    = number
+  default = 0755
+}
+
+variable "fs_access_point_user_gid_default" {
+  type    = number
+  default = 0
+}
+
+variable "fs_access_point_user_gid_secondary_list_default" {
+  type    = list(number)
+  default = []
+}
+
+variable "fs_access_point_user_uid_default" {
+  type    = number
+  default = 0
 }
 
 variable "fs_create_policies_default" {
