@@ -5,15 +5,11 @@ module "name_map" {
 }
 
 locals {
-  dns_map = {
-    for k, v in local.service_map : k => v if v.public_dns_name != null
-  }
   l1_map = {
     for k, v in var.service_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       desired_count           = v.desired_count == null ? var.service_desired_count_default : v.desired_count
       ecs_cluster_key         = v.ecs_cluster_key == null ? var.service_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_task_definition_arn = v.ecs_task_definition_arn == null ? var.service_ecs_task_definition_arn_default : v.ecs_task_definition_arn
-      public_dns_name         = v.public_dns_name == null ? var.service_public_dns_name_default : v.public_dns_name
       sd_namespace_key        = v.sd_namespace_key == null ? var.service_sd_namespace_key_default : v.sd_namespace_key
     })
   }
@@ -42,9 +38,12 @@ locals {
   }
   output_data = {
     for k, v in local.service_map : k => merge(v, {
-      dns_name     = v.public_dns_name == null ? null : aws_service_discovery_service.discovery[k].name
+      dns_name     = v.sd_hostname == null ? null : "${v.sd_hostname}.${v.sd_namespace_key}"
       service_name = aws_ecs_service.this_service[k].name
     })
+  }
+  sd_map = {
+    for k, v in local.service_map : k => v if v.sd_hostname != null
   }
   service_map = {
     for k, v in var.service_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
