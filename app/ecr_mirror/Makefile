@@ -26,6 +26,10 @@ TAG := latest
 
 BUILD_COM := --progress plain --file docker/Dockerfile --build-arg aws_account=$(AWS_ACCOUNT)
 MOUNT := 'type=bind,src=$(HOME)/.aws,dst=/root/.aws'
+RUN := docker run --rm -it --mount $(MOUNT) $(IMAGE):$(TAG)
+
+docker-builder:
+	docker buildx ls | grep -q ecr-mirror-builder || docker buildx create --name ecr-mirror-builder --bootstrap --use --platform linux/amd64,linux/arm64
 
 docker-build-local:
 	docker build $(BUILD_COM) -t $(IMAGE):$(TAG) .
@@ -35,21 +39,14 @@ docker-build-remote: ecr-login docker-build-remote-cred
 docker-build-remote-cred: docker-builder
 	docker buildx build --platform linux/amd64,linux/arm64 $(BUILD_COM) --tag $(REPO)/$(IMAGE):$(TAG) --push .
 
-docker-builder:
-	docker buildx ls | grep -q ecr-mirror-builder || docker buildx create --name ecr-mirror-builder --bootstrap --use --platform linux/amd64,linux/arm64
-
 docker-clean:
 	docker container rm `docker container ls -a -q`
 
 docker-run: docker-build-local
-	docker run --rm -it \
-	--mount $(MOUNT) \
-	$(IMAGE):$(TAG)
+	$(RUN)
 
 docker-shell: docker-build-local
-	docker run --rm -it \
-	--mount $(MOUNT) \
-	$(IMAGE):$(TAG) /bin/bash
+	$(RUN) /bin/bash
 
 ecr-login:
 	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(REPO)

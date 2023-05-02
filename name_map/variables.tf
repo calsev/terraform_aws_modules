@@ -17,10 +17,10 @@ variable "name_prefix_default" {
   default = ""
 }
 
-variable "name_regex" {
-  type        = string
-  default     = "/[_.]/"
-  description = "This regex will be replaced with -"
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
 }
 
 variable "name_suffix_default" {

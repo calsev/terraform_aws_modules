@@ -1,10 +1,10 @@
 module "name_map" {
-  source             = "../name_map"
-  name_infix_default = var.bucket_name_infix_default
-  name_map           = var.bucket_map
-  name_regex         = "/[_]/" # Do not replace "." in domain names
-  std_map            = var.std_map
-  tags_default       = var.bucket_tags_default
+  source                = "../name_map"
+  name_infix_default    = var.bucket_name_infix_default
+  name_map              = var.bucket_map
+  name_regex_allow_list = ["."] # Do not replace "." in domain names
+  std_map               = var.std_map
+  tags_default          = var.bucket_tags_default
 }
 
 locals {
