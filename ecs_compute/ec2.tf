@@ -9,7 +9,7 @@ module "compute_common" {
   compute_key_name_default                 = var.compute_key_name_default
   compute_map                              = var.compute_map
   compute_user_data_commands_default       = var.compute_user_data_commands_default
-  cw_config_data                           = var.cw_config_data
+  monitor_data                             = var.monitor_data
   set_ecs_cluster_in_user_data             = true
   std_map                                  = var.std_map
   vpc_az_key_list_default                  = var.vpc_az_key_list_default

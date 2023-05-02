@@ -93,17 +93,6 @@ variable "compute_user_data_commands_default" {
   default = null
 }
 
-variable "cw_config_data" {
-  type = object({
-    ecs = object({
-      ssm_param_name = object({
-        cpu = string
-        gpu = string
-      })
-    })
-  })
-}
-
 variable "image_search_ecs_gpu_tag_name" {
   type = object({
     false = optional(object({
@@ -147,6 +136,19 @@ variable "image_search_tag_owner" {
   description = "A mapping of tag to owner"
 }
 
+variable "monitor_data" {
+  type = object({
+    cw_config_data = object({
+      ecs = object({
+        ssm_param_name = object({
+          cpu = string
+          gpu = string
+        })
+      })
+    })
+  })
+}
+
 variable "set_ecs_cluster_in_user_data" {
   type    = bool
   default = false
@@ -170,6 +172,7 @@ variable "vpc_data_map" {
   type = map(object({
     security_group_id_map = map(string)
     segment_map = map(object({
+      route_public  = bool
       subnet_id_map = map(string)
     }))
   }))

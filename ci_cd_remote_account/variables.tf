@@ -78,6 +78,7 @@ variable "vpc_data_map" {
   type = map(object({
     security_group_id_map = map(string)
     segment_map = map(object({
+      route_public  = bool
       subnet_id_map = map(string)
     }))
     vpc_id = string

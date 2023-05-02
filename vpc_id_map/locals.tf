@@ -12,6 +12,7 @@ locals {
       vpc_security_group_id_list = local.l1_map[k].vpc_key == null ? [] : [
         for k_sg in local.l1_map[k].vpc_security_group_key_list : var.vpc_data_map[local.l1_map[k].vpc_key].security_group_id_map[k_sg]
       ]
+      vpc_segment_route_public = local.l1_map[k].vpc_key == null ? null : var.vpc_data_map[local.l1_map[k].vpc_key].segment_map[local.l1_map[k].vpc_segment_key].route_public
       vpc_subnet_id_list = local.l1_map[k].vpc_key == null ? [] : [
         for k_az in local.l1_map[k].vpc_az_key_list : var.vpc_data_map[local.l1_map[k].vpc_key].segment_map[local.l1_map[k].vpc_segment_key].subnet_id_map[k_az]
       ]

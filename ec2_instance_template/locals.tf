@@ -50,7 +50,7 @@ locals {
   l4_map = {
     for k, v in var.compute_map : k => {
       image_search_name        = var.image_search_ecs_gpu_tag_name[local.l1_map[k].image_search_for_ecs][local.l3_map[k].has_gpu][local.l2_map[k].image_search_tag]
-      ssm_param_name_cw_config = var.cw_config_data.ecs.ssm_param_name[local.l3_map[k].has_gpu ? "gpu" : "cpu"]
+      ssm_param_name_cw_config = var.monitor_data.cw_config_data.ecs.ssm_param_name[local.l3_map[k].has_gpu ? "gpu" : "cpu"]
     }
   }
   l5_map = {

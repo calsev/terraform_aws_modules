@@ -73,7 +73,7 @@ variable "task_map" {
     iam_role_arn             = optional(string)
     log_group_name           = optional(string)
     network_mode             = optional(string)
-    resource_memory_gib      = optional(string)
+    resource_memory_gib      = optional(number)
     resource_memory_host_gib = optional(number)
     resource_num_vcpu        = optional(string)
     schedule_expression      = optional(string)

@@ -55,22 +55,24 @@ variable "compute_user_data_commands_default" {
   default = null
 }
 
-variable "cw_config_data" {
-  type = object({
-    ecs = object({
-      ssm_param_name = object({
-        cpu = string
-        gpu = string
-      })
-    })
-  })
-}
-
 variable "iam_data" {
   type = object({
     iam_instance_profile_arn_ecs  = string
     iam_role_arn_batch_service    = string
     iam_role_arn_batch_spot_fleet = string
+  })
+}
+
+variable "monitor_data" {
+  type = object({
+    cw_config_data = object({
+      ecs = object({
+        ssm_param_name = object({
+          cpu = string
+          gpu = string
+        })
+      })
+    })
   })
 }
 
@@ -92,6 +94,7 @@ variable "vpc_data_map" {
   type = map(object({
     security_group_id_map = map(string)
     segment_map = map(object({
+      route_public  = bool
       subnet_id_map = map(string)
     }))
   }))

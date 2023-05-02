@@ -7,6 +7,8 @@ variable "dns_data" {
       alias = number
     })
   })
+  default     = null
+  description = "Must be provided is service discovery is enabled for any service"
 }
 
 variable "ecs_cluster_data" {
