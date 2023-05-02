@@ -30,11 +30,13 @@ MOUNT := 'type=bind,src=$(HOME)/.aws,dst=/root/.aws'
 docker-build-local:
 	docker build $(BUILD_COM) -t $(IMAGE):$(TAG) .
 
-docker-build-remote: ecr-login
+docker-build-remote: ecr-login docker-build-remote-cred
+
+docker-build-remote-cred: docker-builder
 	docker buildx build --platform linux/amd64,linux/arm64 $(BUILD_COM) --tag $(REPO)/$(IMAGE):$(TAG) --push .
 
 docker-builder:
-	docker buildx create --name builder --bootstrap --use --platform linux/amd64,linux/arm64
+	docker buildx ls | grep -q ecr-mirror-builder || docker buildx create --name ecr-mirror-builder --bootstrap --use --platform linux/amd64,linux/arm64
 
 docker-clean:
 	docker container rm `docker container ls -a -q`
