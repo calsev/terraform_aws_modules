@@ -81,6 +81,7 @@ tf-lint: tflint-install
 	cd ../api_gateway_integration && $(LINT) --config=../development/.tflint.hcl
 	cd ../api_gateway_route && $(LINT) --config=../development/.tflint.hcl
 	cd ../api_gateway_stage && $(LINT) --config=../development/.tflint.hcl
+	cd ../app && $(LINT) --config=../development/.tflint.hcl
 	cd ../app_web_static && $(LINT) --config=../development/.tflint.hcl
 	cd ../batch_compute && $(LINT) --config=../development/.tflint.hcl
 	cd ../batch_job && $(LINT) --config=../development/.tflint.hcl
@@ -99,6 +100,7 @@ tf-lint: tflint-install
 	cd ../dynamodb_terraform_lock && $(LINT) --config=../development/.tflint.hcl
 	cd ../ec2_instance_template && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecr_repo && $(LINT) --config=../development/.tflint.hcl
+	cd ../ecr_repo_mirror && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_ami_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_compute && $(LINT) --config=../development/.tflint.hcl

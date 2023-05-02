@@ -4,6 +4,16 @@ module "name_map" {
   std_map  = var.std_map
 }
 
+module "vpc_map" {
+  source                              = "../vpc_id_map"
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_key_default                     = var.vpc_key_default
+  vpc_map                             = var.event_map
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
+  vpc_data_map                        = var.vpc_data_map
+}
+
 locals {
   event_map = {
     for k, v in var.event_map : k => merge(
@@ -20,7 +30,7 @@ locals {
     )
   }
   l1_map = {
-    for k, v in var.event_map : k => merge(v, module.name_map.data[k], {
+    for k, v in var.event_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       schedule_expression               = v.schedule_expression == null ? var.event_schedule_expression_default : v.schedule_expression
       dead_letter_queue_name            = "${k}-dead-letter"
       event_bus_name                    = v.event_bus_name == null ? var.event_bus_name_default : v.event_bus_name

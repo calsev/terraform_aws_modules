@@ -18,7 +18,7 @@ module "security_group" {
 
 module "vpc_net" {
   source                   = "../vpc_networking"
-  cw_config_data           = var.cw_config_data
+  monitor_data             = var.monitor_data
   std_map                  = var.std_map
   vpc_map                  = local.vpc_net_map
   vpc_nat_multi_az_default = var.vpc_nat_multi_az_default

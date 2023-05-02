@@ -1,9 +1,11 @@
-variable "cw_config_data" {
+variable "monitor_data" {
   type = object({
-    ecs = object({
-      ssm_param_name = object({
-        cpu = string
-        gpu = string
+    cw_config_data = object({
+      ecs = object({
+        ssm_param_name = object({
+          cpu = string
+          gpu = string
+        })
       })
     })
   })
@@ -59,6 +61,7 @@ variable "vpc_data_map" {
   type = map(object({
     security_group_id_map = map(string)
     segment_map = map(object({
+      route_public  = bool
       subnet_id_map = map(string)
     }))
   }))

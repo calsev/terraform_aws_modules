@@ -87,11 +87,11 @@ module "nat_gateway" {
 }
 
 module "nat_instance" {
-  source         = "../vpc_nat_instance"
-  cw_config_data = var.cw_config_data
-  nat_map        = local.nat_instance_flattened_map
-  std_map        = var.std_map
-  vpc_data_map   = local.nat_instance_vpc_data_map
+  source       = "../vpc_nat_instance"
+  monitor_data = var.monitor_data
+  nat_map      = local.nat_instance_flattened_map
+  std_map      = var.std_map
+  vpc_data_map = local.nat_instance_vpc_data_map
 }
 
 resource "aws_route" "public_to_igw" {

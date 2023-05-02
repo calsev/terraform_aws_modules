@@ -139,6 +139,7 @@ locals {
     for k, v in local.vpc_map : k => merge(v, {
       segment_map = {
         for k_seg, v_seg in v.segment_map : k_seg => {
+          route_public = v_seg.route_public
           subnet_id_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => aws_subnet.this_subnet[v_az.k_az_full].id
           }

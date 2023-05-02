@@ -37,7 +37,11 @@ resource "aws_cloudwatch_event_target" "this_target" {
       # enable_execute_command - delegate to task
       # group # TODO
       # launch_type - delegate to task
-      # network_configuration - delegate to task
+      network_configuration {
+        subnets          = each.value.vpc_subnet_id_list
+        security_groups  = each.value.vpc_security_group_id_list
+        assign_public_ip = each.value.vpc_segment_route_public
+      }
       # placement_constraint - delegate to task
       # platform_version # TODO: For fargate
       propagate_tags      = "TASK_DEFINITION"
