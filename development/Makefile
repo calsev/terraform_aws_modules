@@ -114,6 +114,7 @@ tf-lint: tflint-install
 	cd ../event_pattern_s3 && $(LINT) --config=../development/.tflint.hcl
 	cd ../event_trigger && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_batch && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_app_ecr && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_ecs && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_assume_role_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_assume_role && $(LINT) --config=../development/.tflint.hcl
