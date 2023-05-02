@@ -50,7 +50,7 @@ docker-shell: docker-build-local
 	$(IMAGE):$(TAG) /bin/bash
 
 ecr-login:
-	aws ecr get-login-password | docker login --username AWS --password-stdin $(REPO)
+	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(REPO)
 
 ecr-mirror:
 	$(PY) ecr-mirror --registry-id $(AWS_ACCOUNT) sync
