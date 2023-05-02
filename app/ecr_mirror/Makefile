@@ -19,8 +19,9 @@ PY_INIT := $(PIP) --no-cache-dir pip virtualenv # No sudo; will upgrade packages
 ENV_INIT := python $(PIP) --no-cache-dir pip wheel setuptools
 
 AWS_ACCOUNT ?= $(shell aws sts get-caller-identity --query "Account" --output text)
+AWS_REGION ?= $(shell aws configure get region)
 IMAGE ?= ecr-repo-mirror
-REPO := $(AWS_ACCOUNT).dkr.ecr.us-west-2.amazonaws.com
+REPO := $(AWS_ACCOUNT).dkr.ecr.$(AWS_REGION).amazonaws.com
 TAG := latest
 
 BUILD_COM := --progress plain --file docker/Dockerfile --build-arg aws_account=$(AWS_ACCOUNT)
