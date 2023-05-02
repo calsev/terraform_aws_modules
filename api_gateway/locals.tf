@@ -1,9 +1,9 @@
 module "api_name_map" {
-  source             = "../name_map"
-  name_infix_default = var.api_name_infix_default
-  name_map           = var.api_map
-  name_regex         = "/[_]/"
-  std_map            = var.std_map
+  source                = "../name_map"
+  name_infix_default    = var.api_name_infix_default
+  name_map              = var.api_map
+  name_regex_allow_list = ["."]
+  std_map               = var.std_map
 }
 
 module "domain_name_map" {

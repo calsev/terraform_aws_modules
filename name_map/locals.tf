@@ -3,7 +3,7 @@ locals {
     for k, v in var.name_map : k => merge(v, {
       name_infix  = v.name_infix == null ? var.name_infix_default : v.name_infix
       name_prefix = v.name_prefix == null ? var.name_prefix_default : v.name_prefix
-      name_simple = replace(replace(k, var.name_regex, "-"), "--", "-")
+      name_simple = replace(replace(k, local.name_regex, "-"), "--", "-")
       name_suffix = v.name_suffix == null ? var.name_suffix_default : v.name_suffix
     })
   }
@@ -24,6 +24,9 @@ locals {
       )
     }
   }
+  name_regex                   = "/[${join("", local.name_regex_char_list)}]/"
+  name_regex_char_list         = [for char in local.name_regex_char_list_default : char if !contains(var.name_regex_allow_list, char)]
+  name_regex_char_list_default = ["_", ".", "/"]
   output_data = {
     for k, v in var.name_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
