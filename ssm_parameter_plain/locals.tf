@@ -17,6 +17,8 @@ locals {
   }
   output_data = {
     for k, v in var.param_map : k => merge(local.param_map[k], {
+      secret_arn = aws_ssm_parameter.this_param[k].arn
+      secret_id  = aws_ssm_parameter.this_param[k].id
     })
   }
   param_map = {
