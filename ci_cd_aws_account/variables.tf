@@ -27,7 +27,7 @@ variable "policy_name_prefix" {
 variable "server_type_to_secret" {
   type = map(object({
     ssm_param_name = optional(string)
-    sm_secret_id   = optional(string)
+    sm_secret_name = optional(string)
     sm_secret_key  = optional(string)
   }))
   description = "Only one credential is allowed per server type per region. Sever types are BITBUCKET, GITHUB, GITHUB_ENTERPRISE. Token for github can be created at https://github.com/settings/tokens. The token must have permission repo, repo:status, admin:repo_hook. See https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html"

@@ -1,4 +1,4 @@
 locals {
   # tflint-ignore: terraform_unused_declarations
-  mutual_exclusion_secret = var.ssm_param_name == null && var.sm_secret_id != null && var.sm_secret_key != null || var.ssm_param_name != null && var.sm_secret_id == null ? null : file("ERROR: Exactly one secret is required")
+  mutual_exclusion_secret = var.ssm_param_name == null && var.sm_secret_name != null && var.sm_secret_key != null || var.ssm_param_name != null && var.sm_secret_name == null ? null : file("ERROR: Exactly one secret is required")
 }

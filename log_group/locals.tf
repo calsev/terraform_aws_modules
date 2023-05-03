@@ -18,16 +18,20 @@ locals {
   l2_map = {
     for k, _ in var.log_map : k => {
       policy_access_list = local.l1_map[k].allow_public_read ? ["public_read", "read", "write"] : ["read", "write"]
-      policy_name        = local.l1_map[k].create_policy ? local.l1_map[k].policy_name == null ? "${local.l1_map[k].name_simple}-log" : local.l1_map[k].policy_name : null
+      policy_name        = local.l1_map[k].create_policy ? local.l1_map[k].policy_name == null ? "${local.l1_map[k].name_simple}-log" : local.l1_map[k].policy_name : null # This controls policy creation
     }
   }
   log_map = {
     for k, _ in var.log_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
   output_data = {
-    for k, v in local.log_map : k => merge(v, module.this_policy[k].data, {
-      log_group_arn  = aws_cloudwatch_log_group.this_log_group[k].arn
-      log_group_name = aws_cloudwatch_log_group.this_log_group[k].name
-    })
+    for k, v in local.log_map : k => merge(
+      v,
+      module.this_policy[k].data,
+      {
+        log_group_arn  = aws_cloudwatch_log_group.this_log_group[k].arn
+        log_group_name = aws_cloudwatch_log_group.this_log_group[k].name
+      },
+    )
   }
 }

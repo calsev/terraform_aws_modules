@@ -2,7 +2,7 @@ module "password_secret" {
   source         = "../secret"
   for_each       = local.db_map
   ssm_param_name = each.value.password_ssm_param_name
-  sm_secret_id   = each.value.password_sm_secret_id
+  sm_secret_name = each.value.password_sm_secret_name
   sm_secret_key  = each.value.password_sm_secret_key
   std_map        = var.std_map
 }
