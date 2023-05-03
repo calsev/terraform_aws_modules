@@ -159,6 +159,7 @@ tf-lint: tflint-install
 	cd ../secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group_rule_set && $(LINT) --config=../development/.tflint.hcl
+	cd ../sm_secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_alert_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_topic && $(LINT) --config=../development/.tflint.hcl
 	cd ../sqs_queue && $(LINT) --config=../development/.tflint.hcl
