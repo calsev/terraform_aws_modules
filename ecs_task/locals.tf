@@ -170,6 +170,12 @@ locals {
               protocol      = port_map.protocol != null ? port_map.protocol : var.task_container_port_protocol_default
             }
           ]
+          secrets = [
+            for k_secret, v_secret in def.secret_map == null ? var.task_container_secret_map_default : def.secret_map : {
+              name      = k_secret
+              valueFrom = v_secret
+            }
+          ]
           volumesFrom = []
         }
       ]

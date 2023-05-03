@@ -61,6 +61,7 @@ variable "task_map" {
       })))
       reserved_memory_gib = optional(number)
       reserved_num_vcpu   = optional(number)
+      secret_map          = optional(map(string))
     }))
     ecs_cluster_key = optional(string)
     efs_volume_map = optional(map(object({
@@ -122,6 +123,11 @@ variable "task_container_reserved_num_vcpu_default" {
   type        = number
   default     = null
   description = "Defaults to CPU units for the task divided evenly by tasks"
+}
+
+variable "task_container_secret_map_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "task_ecs_cluster_key_default" {
