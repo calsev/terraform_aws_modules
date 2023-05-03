@@ -79,6 +79,7 @@ variable "monitor_data" {
 variable "std_map" {
   type = object({
     config_name          = string
+    name_replace_regex   = string
     resource_name_prefix = string
     resource_name_suffix = string
     tags                 = map(string)

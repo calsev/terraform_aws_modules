@@ -28,14 +28,9 @@ variable "name_suffix_default" {
   default = ""
 }
 
-variable "resource_name_regex" {
-  type        = string
-  default     = "/[_.]/"
-  description = "This regex will be replaced with -"
-}
-
 variable "std_map" {
   type = object({
+    name_replace_regex   = string
     resource_name_prefix = string
     resource_name_suffix = string
     tags                 = map(string)

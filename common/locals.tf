@@ -39,8 +39,9 @@ locals {
   config_name_suffix   = "_${local.config_name}"
   iam_partition        = var.std_var.iam_partition == null ? "aws" : var.std_var.iam_partition
   name_context         = replace("${local.resource_name_prefix}${local.resource_name_suffix}", "--", "-")
-  resource_name_prefix = replace("${var.std_var.app}-", "_", "-")
-  resource_name_suffix = replace("-${var.std_var.env}${local.workspace_suffix}-${local.aws_region_abbreviation}", "_", "-")
+  name_replace_regex   = "/[_./]/"
+  resource_name_prefix = replace("${var.std_var.app}-", local.name_replace_regex, "-")
+  resource_name_suffix = replace("-${var.std_var.env}${local.workspace_suffix}-${local.aws_region_abbreviation}", local.name_replace_regex, "-")
   service_resource_access_action = {
     for k_service, resource_map in local.service_resource_access_action_raw : k_service => {
       for k_resource, action_map in resource_map : k_resource => {

@@ -7,6 +7,7 @@ module "vpc" {
 module "security_group_rule_set" {
   source   = "../security_group_rule_set"
   for_each = var.vpc_map
+  std_map  = var.std_map
   vpc_map  = module.vpc.data.vpc_map
 }
 

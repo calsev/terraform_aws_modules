@@ -16,7 +16,7 @@ locals {
   }
   h1_map = {
     for k, v in var.host_map : k => merge(v, module.vpc_map.data[k], {
-      name_context        = "${var.std_map.resource_name_prefix}${replace(k, "_", "-")}${var.std_map.resource_name_suffix}"
+      name_context        = "${var.std_map.resource_name_prefix}${replace(k, var.std_map.name_replace_regex, "-")}${var.std_map.resource_name_suffix}"
       provider_type       = v.provider_type == null ? var.host_provider_type_default : v.provider_type
       vpc_tls_certificate = v.vpc_tls_certificate == null ? var.host_vpc_tls_certificate_default : v.vpc_tls_certificate
     })

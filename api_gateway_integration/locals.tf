@@ -11,7 +11,7 @@ locals {
           k_int        = k_int
           request_parameters = local.integration_subtype_map[k_api][k_int] != "step_function" ? {} : {
             Input = "$request.body"
-            #Name            = replace("${k_api}-${k_int}", "/[_]/", "-")
+            #Name            = replace("${k_api}-${k_int}", var.std_map.name_replace_regex, "-")
             Region          = var.std_map.aws_region_name
             StateMachineArn = v_int.target_arn
           }
