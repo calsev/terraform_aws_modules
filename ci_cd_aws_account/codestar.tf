@@ -2,7 +2,7 @@ module "credential_secret" {
   source         = "../secret"
   for_each       = var.server_type_to_secret
   ssm_param_name = each.value.ssm_param_name
-  sm_secret_id   = each.value.sm_secret_id
+  sm_secret_name = each.value.sm_secret_name
   sm_secret_key  = each.value.sm_secret_key
   std_map        = var.std_map
 }

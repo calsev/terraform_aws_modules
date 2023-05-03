@@ -46,7 +46,7 @@ locals {
       option_group_name                         = v.option_group_name == null ? var.db_option_group_name_default : v.option_group_name
       parameter_group_name                      = v.parameter_group_name == null ? var.db_parameter_group_name_default : v.parameter_group_name
       password_ssm_param_name                   = v.password_ssm_param_name == null ? var.db_password_ssm_param_name_default : v.password_ssm_param_name
-      password_sm_secret_id                     = v.password_sm_secret_id == null ? var.db_password_sm_secret_id_default : v.password_sm_secret_id
+      password_sm_secret_name                   = v.password_sm_secret_name == null ? var.db_password_sm_secret_name_default : v.password_sm_secret_name
       password_sm_secret_key                    = v.password_sm_secret_key == null ? var.db_password_sm_secret_key_default : v.password_sm_secret_key
       performance_insights_kms_key_arn          = v.performance_insights_kms_key_arn == null ? var.db_performance_insights_kms_key_arn_default : v.performance_insights_kms_key_arn
       performance_insights_retention_period_day = v.performance_insights_retention_period_day == null ? var.db_performance_insights_retention_period_day_default : v.performance_insights_retention_period_day

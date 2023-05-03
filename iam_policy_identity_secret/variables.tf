@@ -26,7 +26,7 @@ variable "ssm_param_name" {
   default = null
 }
 
-variable "sm_secret_id" {
+variable "sm_secret_name" {
   type    = string
   default = null
 }

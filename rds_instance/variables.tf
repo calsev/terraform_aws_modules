@@ -53,7 +53,7 @@ variable "db_map" {
     option_group_name                         = optional(string)
     parameter_group_name                      = optional(string)
     password_ssm_param_name                   = optional(string)
-    password_sm_secret_id                     = optional(string)
+    password_sm_secret_name                   = optional(string)
     password_sm_secret_key                    = optional(string)
     performance_insights_kms_key_arn          = optional(string)
     performance_insights_retention_period_day = optional(number)
@@ -270,7 +270,7 @@ variable "db_password_ssm_param_name_default" {
   default = null
 }
 
-variable "db_password_sm_secret_id_default" {
+variable "db_password_sm_secret_name_default" {
   type    = string
   default = null
 }
