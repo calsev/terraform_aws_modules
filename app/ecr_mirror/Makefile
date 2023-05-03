@@ -18,6 +18,7 @@ PY := $(ACTIVATE) &&
 PY_INIT := $(PIP) --no-cache-dir pip virtualenv # No sudo; will upgrade packages in ~/.local unless running as root, e.g. in Docker
 ENV_INIT := python $(PIP) --no-cache-dir pip wheel setuptools
 
+ARCH := --platform linux/amd64,linux/arm64
 AWS_ACCOUNT ?= $(shell aws sts get-caller-identity --query "Account" --output text)
 AWS_REGION ?= $(shell aws configure get region)
 IMAGE ?= ecr-repo-mirror
@@ -29,7 +30,7 @@ MOUNT := 'type=bind,src=$(HOME)/.aws,dst=/root/.aws'
 RUN := docker run --rm -it --mount $(MOUNT) $(IMAGE):$(TAG)
 
 docker-builder:
-	docker buildx ls | grep -q ecr-mirror-builder || docker buildx create --name ecr-mirror-builder --bootstrap --use --platform linux/amd64,linux/arm64
+	docker buildx ls | grep -q ecr-mirror-builder || docker buildx create --name ecr-mirror-builder --bootstrap --use $(ARCH)
 
 docker-build-local:
 	docker build $(BUILD_COM) -t $(IMAGE):$(TAG) .
@@ -37,7 +38,7 @@ docker-build-local:
 docker-build-remote: ecr-login docker-build-remote-cred
 
 docker-build-remote-cred: docker-builder
-	docker buildx build --platform linux/amd64,linux/arm64 $(BUILD_COM) --tag $(REPO)/$(IMAGE):$(TAG) --push .
+	docker buildx build $(ARCH) $(BUILD_COM) --tag $(REPO)/$(IMAGE):$(TAG) --push .
 
 docker-clean:
 	docker container rm `docker container ls -a -q`
