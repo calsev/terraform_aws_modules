@@ -8,7 +8,7 @@ locals {
   l1_map = {
     for k, v in var.service_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       desired_count           = v.desired_count == null ? var.service_desired_count_default : v.desired_count
-      ecs_cluster_key         = v.ecs_cluster_key == null ? var.service_ecs_cluster_key_default : v.ecs_cluster_key
+      ecs_cluster_key         = v.ecs_cluster_key == null ? var.service_ecs_cluster_key_default == null ? k : var.service_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_task_definition_arn = v.ecs_task_definition_arn == null ? var.service_ecs_task_definition_arn_default : v.ecs_task_definition_arn
       sd_namespace_key        = v.sd_namespace_key == null ? var.service_sd_namespace_key_default : v.sd_namespace_key
     })
