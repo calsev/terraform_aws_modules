@@ -4,8 +4,8 @@ locals {
     enable_assume_role       = var.assume_role_service_list == null ? false : true
     create_instance_profile  = var.create_instance_profile
     max_session_duration     = var.max_session_duration
-    name                     = replace(var.name, "/[._]/", "-")
-    name_prefix_sanitized    = trim(replace(var.name_prefix, "/[._]/", "-"), "-")
+    name                     = replace(var.name, var.std_map.name_replace_regex, "-")
+    name_prefix_sanitized    = trim(replace(var.name_prefix, var.std_map.name_replace_regex, "-"), "-")
     policy_attach_arn_map = {
       for name, arn in var.policy_attach_arn_map : "2-attached-${name}" => arn
     }
@@ -23,7 +23,7 @@ locals {
   l2_map = {
     assume_role_doc = var.assume_role_json == null ? module.assume_role_policy["this"].iam_policy_doc_assume_role : jsondecode(var.assume_role_json)
     create_policy_name_map = {
-      for name, _ in local.l1_map.policy_create_doc_map : name => "${var.std_map.resource_name_prefix}${replace(name, "/[_]/", "-")}${var.std_map.resource_name_suffix}"
+      for name, _ in local.l1_map.policy_create_doc_map : name => "${var.std_map.resource_name_prefix}${replace(name, var.std_map.name_replace_regex, "-")}${var.std_map.resource_name_suffix}"
     }
     name_context = "${var.std_map.resource_name_prefix}${local.l1_map.name}${var.std_map.resource_name_suffix}"
     name_prefix  = local.l1_map.name_prefix_sanitized == "" ? "" : "${local.l1_map.name_prefix_sanitized}-"

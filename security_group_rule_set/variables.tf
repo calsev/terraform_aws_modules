@@ -245,6 +245,13 @@ variable "security_group_type_default" {
   default = "ingress"
 }
 
+variable "std_map" {
+  type = object({
+    name_replace_regex = string
+  })
+}
+
+
 variable "vpc_map" {
   type = map(object({
     vpc_ipv6_cidr_block = string

@@ -9,7 +9,7 @@ locals {
   }
   l2_map = {
     for k, _ in var.name_map : k => {
-      name_context = "${local.l1_map[k].name_prefix}${var.std_map.resource_name_prefix}${replace(replace(k, var.resource_name_regex, "-"), "--", "-")}${var.std_map.resource_name_suffix}${local.l1_map[k].name_suffix}"
+      name_context = "${local.l1_map[k].name_prefix}${var.std_map.resource_name_prefix}${replace(replace(k, var.std_map.name_replace_regex, "-"), "--", "-")}${var.std_map.resource_name_suffix}${local.l1_map[k].name_suffix}" # Always use full regex because infix makes no sense as anything else
     }
   }
   l3_map = {

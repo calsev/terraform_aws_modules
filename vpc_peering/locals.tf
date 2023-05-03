@@ -30,7 +30,7 @@ locals {
           manage_remote_routes             = v_peer.manage_remote_routes == null ? var.vpc_manage_remote_routes_default : v_peer.manage_remote_routes
           peer_allow_remote_dns_resolution = v_peer.peer_allow_remote_dns_resolution == null ? var.vpc_peer_allow_remote_dns_resolution_default : v_peer.peer_allow_remote_dns_resolution
           peer_id_is_key                   = contains(keys(var.vpc_data_map), k_peer)
-          k_peer                           = replace(k_peer, "/[._]/", "-")
+          k_peer                           = replace(k_peer, var.std_map.name_replace_regex, "-")
         })
       }
     })
@@ -56,7 +56,7 @@ locals {
             [
               for k_seg, v_seg in var.vpc_data_map[k_peer].segment_map : [
                 for k_az, v_az in v_seg.subnet_map : {
-                  k_vpc_peer_rt       = "${v_peer.k_vpc_peer}-${replace(k_seg, "/[._]/", "-")}-${replace(k_az, "/[._]/", "-")}"
+                  k_vpc_peer_rt       = "${v_peer.k_vpc_peer}-${replace(k_seg, var.std_map.name_replace_regex, "-")}-${replace(k_az, var.std_map.name_replace_regex, "-")}"
                   peer_route_table_id = v_az.route_table_id
                 }
               ] if v_seg.route_internal
@@ -81,7 +81,7 @@ locals {
               peer_map = {
                 for k_peer, v_peer in local.l2_map[k].peer_map : k_peer => {
                   k_vpc_peer               = v_peer.k_vpc_peer
-                  k_vpc_peer_seg_az        = "${local.l1_map[k].name_simple}-${v_peer.k_peer}-${replace(k_seg, "/[._]/", "-")}-${replace(k_az, "/[._]/", "-")}"
+                  k_vpc_peer_seg_az        = "${local.l1_map[k].name_simple}-${v_peer.k_peer}-${replace(k_seg, var.std_map.name_replace_regex, "-")}-${replace(k_az, var.std_map.name_replace_regex, "-")}"
                   peer_vpc_cidr_block      = v_peer.peer_vpc_cidr_block
                   peer_vpc_ipv6_cidr_block = v_peer.peer_vpc_ipv6_cidr_block
                 }

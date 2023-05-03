@@ -3,11 +3,11 @@ locals {
     for k_vpc, v_vpc in var.vpc_map : k_vpc => merge(v_vpc, {
       security_group_map = {
         for k_sg, v_sg in v_vpc.security_group_map : replace(k_sg, "/[-]/", "_") => merge(v_sg, {
-          k_sg_full = replace("${k_vpc}-${k_sg}", "/[_]/", "-")
-          name      = replace(k_sg, "/[_]/", "-")
+          k_sg_full = replace("${k_vpc}-${k_sg}", var.std_map.name_replace_regex, "-")
+          name      = replace(k_sg, var.std_map.name_replace_regex, "-")
           rule_map = {
-            for k_rule, v_rule in v_sg.rule_map : replace(k_rule, "/[_]/", "-") => merge(v_rule, {
-              k_rule_full = replace("${k_vpc}-${k_sg}-${k_rule}", "/[_]/", "-")
+            for k_rule, v_rule in v_sg.rule_map : replace(k_rule, var.std_map.name_replace_regex, "-") => merge(v_rule, {
+              k_rule_full = replace("${k_vpc}-${k_sg}-${k_rule}", var.std_map.name_replace_regex, "-")
             })
           }
         })

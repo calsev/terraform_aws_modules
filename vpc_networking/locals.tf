@@ -33,7 +33,7 @@ locals {
           tags = merge(
             var.std_map.tags,
             {
-              Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].name_simple}-${lower(replace(k_seg, "/_/", "-"))}${var.std_map.resource_name_suffix}"
+              Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].name_simple}-${lower(replace(k_seg, var.std_map.name_replace_regex, "-"))}${var.std_map.resource_name_suffix}"
             }
           )
         })
@@ -58,7 +58,7 @@ locals {
               tags = merge(
                 var.std_map.tags,
                 {
-                  Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].name_simple}-${lower(replace(k_seg, "/_/", "-"))}-${k_az}${var.std_map.resource_name_suffix}"
+                  Name = "${var.std_map.resource_name_prefix}${local.l1_map[k].name_simple}-${lower(replace(k_seg, var.std_map.name_replace_regex, "-"))}-${k_az}${var.std_map.resource_name_suffix}"
                 }
               )
             })

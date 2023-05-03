@@ -11,6 +11,7 @@ output "std_map" {
     env                            = var.std_var.env
     iam_partition                  = local.iam_partition
     name_context                   = local.name_context
+    name_replace_regex             = local.name_replace_regex
     resource_name_prefix           = local.resource_name_prefix
     resource_name_suffix           = local.resource_name_suffix
     service_resource_access_action = local.service_resource_access_action

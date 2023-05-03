@@ -111,9 +111,9 @@ locals {
   build_name_map = {
     for k_repo, v_repo in var.repo_map : k_repo => {
       for k_build, _ in v_repo.build_map : k_build => {
-        k_repo  = replace(k_repo, "/[_.]/", "-")
-        k_build = replace(k_build, "/[_.]/", "-")
-        k_map   = "${replace(k_repo, "/[_.]/", "-")}-${replace(k_build, "/[_.]/", "-")}"
+        k_repo  = replace(k_repo, var.std_map.name_replace_regex, "-")
+        k_build = replace(k_build, var.std_map.name_replace_regex, "-")
+        k_map   = "${replace(k_repo, var.std_map.name_replace_regex, "-")}-${replace(k_build, var.std_map.name_replace_regex, "-")}"
       }
     }
   }

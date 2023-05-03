@@ -32,7 +32,7 @@ locals {
     for k, v in var.queue_map : k => local.fifo_map[k] ? "${local.name_map_raw[k]}.fifo" : local.name_map_raw[k]
   }
   name_map_raw = {
-    for k, v in var.queue_map : k => "${var.std_map.resource_name_prefix}${replace(k, "/[._]/", "-")}${var.std_map.resource_name_suffix}"
+    for k, v in var.queue_map : k => "${var.std_map.resource_name_prefix}${replace(k, var.std_map.name_replace_regex, "-")}${var.std_map.resource_name_suffix}"
   }
   output_data = {
     for k, v in local.queue_map : k => merge(v, {
