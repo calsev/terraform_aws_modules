@@ -1,3 +1,16 @@
+variable "monitor_data" {
+  type = object({
+    ecs_ssm_param_map = object({
+      cpu = object({
+        iam_policy_arn_map = map(string)
+      })
+      gpu = object({
+        iam_policy_arn_map = map(string)
+      })
+    })
+  })
+}
+
 variable "name_prefix" {
   type    = string
   default = ""

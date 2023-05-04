@@ -24,7 +24,7 @@ LINT := tflint
 VALIDATE := $(TF) validate
 
 # https://github.com/terraform-linters/tflint/releases
-TFLINT_VER := 0.46.0
+TFLINT_VER := $(shell cat tflint_ver)
 
 ci-deps:
 	$(PY) cd .. && python -m development.script.download_ci_dependencies
@@ -152,6 +152,7 @@ tf-lint: tflint-install
 	cd ../local_config && $(LINT) --config=../development/.tflint.hcl
 	cd ../log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../name_map && $(LINT) --config=../development/.tflint.hcl
+	cd ../policy_name_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_subnet_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../s3 && $(LINT) --config=../development/.tflint.hcl

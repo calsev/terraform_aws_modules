@@ -8,6 +8,5 @@ module "default_event_bus" {
       log_retention_days     = var.log_retention_days_for_default_bus
     }
   }
-  iam_data = var.iam_data
-  std_map  = var.std_map
+  std_map = var.std_map
 }

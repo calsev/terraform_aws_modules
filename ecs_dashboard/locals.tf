@@ -103,6 +103,10 @@ locals {
       }
     ]
   }
+  output_data = {
+    ecs_dashboard_body = local.dashboard_body
+    ecs_dashboard_id   = aws_cloudwatch_dashboard.main.id
+  }
   widget_height = 8
   widget_width  = 12
   y_axis_object = {

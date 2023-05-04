@@ -124,13 +124,13 @@ locals {
       image = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
     }
     cpu-amd-ubuntu = {
-      image = "aws/codebuild/standard:6.0"
+      image = "aws/codebuild/standard:7.0"
     }
     cpu-arm-amazon = {
-      image = "aws/codebuild/amazonlinux2-aarch64-standard:2.0"
+      image = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
     }
     gpu-amd-ubuntu = {
-      image = "aws/codebuild/standard:6.0"
+      image = "aws/codebuild/standard:7.0"
     }
   }
   no_default_artifact = var.build_artifact_type_default == "NO_ARTIFACTS"

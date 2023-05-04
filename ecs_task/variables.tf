@@ -98,6 +98,11 @@ variable "task_container_entry_point_default" {
   default = ["/usr/bin/bash", "-cex"]
 }
 
+variable "task_container_environment_map_default" {
+  type    = map(string)
+  default = {}
+}
+
 variable "task_container_image_default" {
   type    = string
   default = "public.ecr.aws/lts/ubuntu:latest"
