@@ -104,8 +104,8 @@ variable "job_resource_memory_gib_default" {
 
 variable "job_resource_memory_host_gib_default" {
   type        = number
-  default     = 0.375
-  description = "Memory remaining for host OS."
+  default     = null
+  description = "Memory remaining for host OS. Defaults to 0.25 + Instance memory / 16"
 }
 
 variable "job_resource_memory_shared_gib_default" {

@@ -205,8 +205,8 @@ variable "task_resource_memory_gib_default" {
 
 variable "task_resource_memory_host_gib_default" {
   type        = number
-  default     = 0.5
-  description = "The default memory left for host OS usage."
+  default     = null
+  description = "Memory remaining for host OS. Defaults to 0.25 + Instance memory / 16"
 }
 
 variable "task_resource_num_vcpu_default" {
