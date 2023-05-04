@@ -135,7 +135,7 @@ locals {
               {
                 AWS_DEFAULT_REGION = var.std_map.aws_region_name
               },
-              def.environment_map == null ? {} : def.environment_map
+              def.environment_map == null ? var.task_container_environment_map_default : def.environment_map
               ) : {
               name  = k
               value = v

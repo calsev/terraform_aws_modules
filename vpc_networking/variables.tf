@@ -1,11 +1,11 @@
 variable "monitor_data" {
   type = object({
-    cw_config_data = object({
-      ecs = object({
-        ssm_param_name = object({
-          cpu = string
-          gpu = string
-        })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        name_effective = string
+      })
+      gpu = object({
+        name_effective = string
       })
     })
   })

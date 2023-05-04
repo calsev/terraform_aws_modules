@@ -131,6 +131,8 @@ variable "iam_data" {
     iam_policy_arn_batch_submit_job = string
     iam_policy_arn_ecs_start_task   = string
   })
+  default     = null
+  description = "Must be provided for Batch and ECS targets"
 }
 
 variable "std_map" {

@@ -106,9 +106,9 @@ locals {
     }
   }
   output_data = {
-    ssm_param_name = {
-      cpu = module.ssm_param_cw_config.data["cloudwatch_agent_config_ecs_cpu"].name_effective
-      gpu = module.ssm_param_cw_config.data["cloudwatch_agent_config_ecs_gpu"].name_effective
+    ecs_ssm_param_map = {
+      cpu = module.ssm_param_cw_config.data["cloudwatch_agent_config_ecs_cpu"]
+      gpu = module.ssm_param_cw_config.data["cloudwatch_agent_config_ecs_gpu"]
     }
   }
 }

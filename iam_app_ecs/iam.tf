@@ -1,28 +1,9 @@
-data "aws_iam_policy_document" "read_ssm_cw_config" {
-  statement {
-    actions = [
-      "ssm:GetParameter"
-    ]
-    resources = [
-      "arn:aws:ssm:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:parameter/*cloudwatch-agent-config*",
-      "arn:aws:ssm:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:parameter/*cloud-watch-agent-config*",
-    ]
-  }
-}
-
-module "read_ssm_cw_config_policy" {
-  source          = "../iam_policy_identity"
-  iam_policy_json = data.aws_iam_policy_document.read_ssm_cw_config.json
-  name            = "read_ssm_cw_config_for_ecs"
-  name_prefix     = var.name_prefix
-  std_map         = var.std_map
-}
-
 module "ecs_instance_role" {
   source      = "../iam_role_ecs_instance"
   name_prefix = var.name_prefix
   policy_attach_arn_map = {
-    read_ssm_cw_config = module.read_ssm_cw_config_policy.iam_policy_arn
+    read_ssm_cw_config_cpu = var.monitor_data.ecs_ssm_param_map.cpu.iam_policy_arn_map["read"]
+    read_ssm_cw_config_gpu = var.monitor_data.ecs_ssm_param_map.gpu.iam_policy_arn_map["read"]
   }
   std_map = var.std_map
 }

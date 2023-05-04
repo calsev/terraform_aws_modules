@@ -1,10 +1,3 @@
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_batch_submit_job = string
-    iam_policy_arn_ecs_start_task   = string
-  })
-}
-
 variable "archive_retention_days_for_default_bus" {
   type    = number
   default = 3

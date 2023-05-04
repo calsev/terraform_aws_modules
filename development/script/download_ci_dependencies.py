@@ -7,7 +7,7 @@ import argparse
 import json
 import os
 import platform
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from typeguard import typechecked
 
@@ -30,13 +30,20 @@ def parse_args(
 
 
 @typechecked
-def get_deps() -> Dict:
+def get_sys_arch() -> Tuple[str, str, str, str]:
     system = platform.system().lower()
-    arch = "amd64"
+    result = run_command_as_process("dpkg-architecture -q DEB_BUILD_ARCH")
+    arch = result.stdout.strip()
+    with open("development/tf_ver") as f:
+        tf_ver = f.read()
+    with open("development/tflint_ver") as f:
+        tflint_ver = f.read()
+    return system, arch, tf_ver, tflint_ver
+
+
+@typechecked
+def get_deps(system: str, arch: str) -> Dict:
     return {
-        "terraform-linters/tflint": {
-            "name": f"tflint_{system}_{arch}.zip",
-        },
         "terraform-linters/tflint-ruleset-aws": {
             "name": f"tflint-ruleset-aws_{system}_{arch}.zip",
         },
@@ -58,19 +65,6 @@ def download_latest_version(repo: str) -> Dict:
 
 
 @typechecked
-def get_version_url(repo_data: Dict, data: Dict) -> str:
-    url = None
-    for asset in data["assets"]:
-        if asset["name"] == repo_data["name"]:
-            url = asset["url"]
-    if not url:
-        raise ValueError(
-            f"URL not found for {repo_data['name']}: {json.dumps(data, indent='  ')}"
-        )
-    return url
-
-
-@typechecked
 def get_browser_url(repo_data: Dict, data: Dict) -> str:
     url = None
     for asset in data["assets"]:
@@ -81,19 +75,6 @@ def get_browser_url(repo_data: Dict, data: Dict) -> str:
             f"URL not found for {repo_data['name']}: {json.dumps(data, indent='  ')}"
         )
     return url
-
-
-@typechecked
-def get_asset_id(repo_data: Dict, data: Dict) -> str:
-    asset_id = None
-    for asset in data["assets"]:
-        if asset["name"] == repo_data["name"]:
-            asset_id = asset["id"]
-    if not asset_id:
-        raise ValueError(
-            f"URL not found for {repo_data['name']}: {json.dumps(data, indent='  ')}"
-        )
-    return str(asset_id)
 
 
 @typechecked
@@ -111,15 +92,6 @@ def download_asset_by_url(url: str, out_file: str) -> None:
 
 
 @typechecked
-def download_asset_by_id(repo: str, asset_id: str, out_file: str) -> None:
-    api_ver = "-H 'X-GitHub-Api-Version: 2022-11-28'"
-    accept = "-H 'Accept: application/octet-stream'"
-
-    command = f"gh api {accept} {api_ver} /repos/{repo}/releases/assets/{asset_id}"
-    run_command_as_process(command, expect_empty_stderr=False)
-
-
-@typechecked
 def move_asset(out_file: str) -> None:
     command = f"aws s3 cp {out_file} s3://cdn-bucket.calsev.com/installer/{out_file}"
     run_command_as_process(command)
@@ -127,11 +99,36 @@ def move_asset(out_file: str) -> None:
 
 
 @typechecked
+def download_terraform(arch: str, tf_ver: str) -> None:
+    download_asset_by_url(
+        f"https://releases.hashicorp.com/terraform/{tf_ver}/terraform_{tf_ver}_linux_{arch}.zip",
+        "tf.zip",
+    )
+    run_command_as_process("unzip tf.zip")
+    os.remove("tf.zip")
+    os.chmod("terraform", 0o755)
+    move_asset("terraform")
+
+
+@typechecked
+def download_tf_lint(arch: str, system: str, tflint_ver: str) -> None:
+    download_asset_by_url(
+        f"https://github.com/terraform-linters/tflint/releases/download/v{tflint_ver}/tflint_{system}_{arch}.zip",
+        "tflint.zip",
+    )
+    run_command_as_process("unzip tflint.zip")
+    os.remove("tflint.zip")
+    os.chmod("tflint", 0o755)
+    move_asset("tflint")
+
+
+@typechecked
 def download_ci_dependencies(
     profile: str,
 ) -> None:
     os.environ["AWS_PROFILE"] = profile
-    for repo, repo_data in get_deps().items():
+    system, arch, tf_ver, tflint_ver = get_sys_arch()
+    for repo, repo_data in get_deps(system, arch).items():
         data = download_latest_version(repo)
         browser_url = get_browser_url(repo_data, data)
 
@@ -139,6 +136,8 @@ def download_ci_dependencies(
         download_asset_by_url(browser_url, out_file)
 
         move_asset(out_file)
+    download_terraform(arch, tf_ver)
+    download_tf_lint(arch, system, tflint_ver)
 
 
 @typechecked

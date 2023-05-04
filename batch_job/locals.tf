@@ -17,15 +17,21 @@ locals {
         aws_region_name = "$.region"
         reason          = "$.detail.statusReason"
       }
-      alert_target_template      = <<-EOT
+      alert_target_template = <<-EOT
       {
         "Message": "Batch job '<job_name>' failed!",
         "Reason": "<reason>",
         "URL": "https://<aws_region_name>.console.aws.amazon.com/batch/home?region=<aws_region_name>#jobs/detail/<job_id>"
       }
       EOT
-      batch_cluster_key          = v.batch_cluster_key == null ? var.job_batch_cluster_key_default == null ? k : var.job_batch_cluster_key_default : v.batch_cluster_key
-      command_list               = v.command_list == null ? var.job_command_list_default : v.command_list
+      batch_cluster_key     = v.batch_cluster_key == null ? var.job_batch_cluster_key_default == null ? k : var.job_batch_cluster_key_default : v.batch_cluster_key
+      command_list          = v.command_list == null ? var.job_command_list_default : v.command_list
+      environment_map = merge(
+        {
+          AWS_DEFAULT_REGION = var.std_map.aws_region_name
+        },
+        v.environment_map == null ? var.job_environment_map_default : v.environment_map
+      )
       iam_role_arn_job_container = v.iam_role_arn_job_container == null ? var.job_iam_role_arn_job_container_default : v.iam_role_arn_job_container
       iam_role_arn_job_execution = v.iam_role_arn_job_execution == null ? var.job_iam_role_arn_job_execution_default : v.iam_role_arn_job_execution
       image_id                   = v.image_id == null ? var.job_image_id_default : v.image_id

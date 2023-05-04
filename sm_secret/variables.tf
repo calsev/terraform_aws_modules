@@ -4,7 +4,7 @@ variable "secret_map" {
     force_overwrite      = optional(bool)
     kms_key_id           = optional(string)
     policy_access_list   = optional(list(string))
-    policy_name          = optional(string) # Defaults to name-log
+    policy_name          = optional(string) # Defaults to name-secret
     policy_name_infix    = optional(bool)
     policy_name_prefix   = optional(string)
     recovery_window_days = optional(string)

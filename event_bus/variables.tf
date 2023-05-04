@@ -6,6 +6,7 @@ variable "bus_map" {
     log_retention_days     = optional(number)
   }))
 }
+
 variable "bus_archive_retention_days_default" {
   type        = number
   default     = 14
@@ -21,13 +22,6 @@ variable "bus_log_retention_days_default" {
 variable "bus_logging_enabled_default" {
   type    = bool
   default = true
-}
-
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_batch_submit_job = string
-    iam_policy_arn_ecs_start_task   = string
-  })
 }
 
 variable "std_map" {

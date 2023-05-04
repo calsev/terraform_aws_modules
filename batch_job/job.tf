@@ -2,8 +2,14 @@ resource "aws_batch_job_definition" "this_job" {
   for_each = local.job_map
   name     = each.value.name_effective
   container_properties = jsonencode({
-    command          = each.value.command_list
-    environment      = [] # TODO
+    command = each.value.command_list
+    environment = [
+      for k, v in each.value.environment_map :
+      {
+        name  = k
+        value = v
+      }
+    ]
     executionRoleArn = each.value.iam_role_arn_job_execution
     image            = "${each.value.image_id}:${each.value.image_tag}"
     jobRoleArn       = each.value.iam_role_arn_job_container
