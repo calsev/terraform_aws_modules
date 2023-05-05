@@ -44,12 +44,13 @@ variable "task_map" {
   type = map(object({
     alert_level = optional(string)
     container_definition_list = list(object({
-      command_join    = optional(bool)
-      command_list    = optional(list(string))
-      environment_map = optional(map(string))
-      entry_point     = optional(list(string))
-      image           = optional(string)
-      name            = string
+      command_join          = optional(bool)
+      command_list          = optional(list(string))
+      environment_file_list = optional(list(string))
+      environment_map       = optional(map(string))
+      entry_point           = optional(list(string))
+      image                 = optional(string)
+      name                  = string
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -96,6 +97,11 @@ variable "task_container_command_join_default" {
 variable "task_container_entry_point_default" {
   type    = list(string)
   default = ["/usr/bin/bash", "-cex"]
+}
+
+variable "task_container_environment_file_list_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "task_container_environment_map_default" {

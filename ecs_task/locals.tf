@@ -152,6 +152,9 @@ locals {
               value = v
             }
           ]
+          environmentFiles = [
+            for file in def.environment_file_list == null ? var.task_container_environment_file_list_default : def.environment_file_list : file
+          ]
           essential = true
           image     = def.image != null ? def.image : var.task_container_image_default
           linuxParameters = {
