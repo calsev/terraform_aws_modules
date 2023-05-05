@@ -69,7 +69,7 @@ locals {
         sharedMemorySize = local.l1_map[k].resource_memory_shared_gib * 1024
         tmpfs            = []
       }
-      resource_memory_host_gib_default = 0.25 + var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib / 16
+      resource_memory_host_gib_default = 13 / 32 + var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib / 64
       resource_num_gpu_default         = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_gpu
       resource_num_vcpu_default        = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_vcpu
     }
