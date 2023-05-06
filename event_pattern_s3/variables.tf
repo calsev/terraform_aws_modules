@@ -1,8 +1,7 @@
 variable "action_list" {
-  type = list(string)
-  default = [
-    "PutObject",
-  ]
+  type        = list(string)
+  default     = null
+  description = "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html. Set null to disable. If used, account for PutObject, CompleteMultipartUpload, etc."
 }
 
 variable "aws_account_id" {
@@ -13,6 +12,12 @@ variable "aws_account_id" {
 
 variable "bucket_name" {
   type = string
+}
+
+variable "detail_type_list" {
+  type        = list(string)
+  default     = ["Object Created"]
+  description = "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html. Set null to disable."
 }
 
 variable "object_key_prefix" {
