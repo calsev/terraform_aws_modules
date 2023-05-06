@@ -1,7 +1,7 @@
 # There is a limit on number of resource policies, so trust events globally
 module "log_trust_policy" {
   source         = "../iam_policy_resource_log_group"
-  log_group_name = "*"
+  log_group_name = "*" # This could be /aws/events/* for events.amazonaws.com, but do not get frivolous with resource policies
   policy_name    = "DefaultLogGroupAllowEvents"
   sid_map = {
     Event = {

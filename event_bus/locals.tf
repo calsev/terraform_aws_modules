@@ -22,9 +22,10 @@ locals {
   }
   l1_map = {
     for k, v in var.bus_map : k => merge(v, module.name_map.data[k], {
-      archive_retention_days = v.archive_retention_days == null ? var.bus_archive_retention_days_default : v.archive_retention_days
-      logging_enabled        = v.logging_enabled == null ? var.bus_logging_enabled_default : v.logging_enabled
-      log_retention_days     = v.log_retention_days == null ? var.bus_log_retention_days_default : v.log_retention_days
+      archive_retention_days        = v.archive_retention_days == null ? var.bus_archive_retention_days_default : v.archive_retention_days
+      logging_enabled               = v.logging_enabled == null ? var.bus_logging_enabled_default : v.logging_enabled
+      logging_excluded_detail_types = v.logging_excluded_detail_types == null ? var.bus_logging_excluded_detail_types_default : v.logging_excluded_detail_types
+      log_retention_days            = v.log_retention_days == null ? var.bus_log_retention_days_default : v.log_retention_days
     })
   }
   l2_map = {
