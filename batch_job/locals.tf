@@ -33,7 +33,7 @@ locals {
         v.environment_map == null ? var.job_environment_map_default : v.environment_map
       )
       iam_role_arn_job_container = v.iam_role_arn_job_container == null ? var.job_iam_role_arn_job_container_default : v.iam_role_arn_job_container
-      iam_role_arn_job_execution = v.iam_role_arn_job_execution == null ? var.job_iam_role_arn_job_execution_default : v.iam_role_arn_job_execution
+      iam_role_arn_job_execution = v.iam_role_arn_job_execution == null ? var.job_iam_role_arn_job_execution_default == null ? var.iam_data.iam_role_arn_ecs_task_execution : var.job_iam_role_arn_job_execution_default : v.iam_role_arn_job_execution
       image_id                   = v.image_id == null ? var.job_image_id_default : v.image_id
       image_tag                  = v.image_tag == null ? var.job_image_tag_default : v.image_tag
       mount_map                  = v.mount_map == null ? var.job_mount_map_default : v.mount_map

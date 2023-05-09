@@ -43,7 +43,7 @@ module "ecr_mirror_task" {
       container_definition_list = local.mirror_container_definition_list
       schedule_expression       = var.schedule_expression
       ecs_cluster_arn           = module.computation.data[var.task_name].ecs_cluster_arn
-      iam_role_arn              = module.ecs_task_role.data.iam_role_arn
+      iam_role_arn_task         = module.ecs_task_role.data.iam_role_arn
       log_group_name            = module.ecr_mirror_log.data[var.task_name].log_group_name
     }
   }

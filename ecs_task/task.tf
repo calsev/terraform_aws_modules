@@ -2,13 +2,13 @@ resource "aws_ecs_task_definition" "this_task" {
   for_each                 = local.task_map
   container_definitions    = jsonencode(each.value.container_definition_list)
   cpu                      = each.value.resource_num_vcpu * 1024
-  execution_role_arn       = var.iam_data.iam_role_arn_ecs_task_execution
+  execution_role_arn       = each.value.iam_role_arn_execution
   family                   = each.value.name_effective
   memory                   = each.value.resource_memory_gib * 1024
   network_mode             = each.value.network_mode
   requires_compatibilities = [each.value.capability_type]
   tags                     = each.value.tags
-  task_role_arn            = each.value.iam_role_arn
+  task_role_arn            = each.value.iam_role_arn_task
   dynamic "volume" {
     for_each = each.value.efs_volume_map
     content {

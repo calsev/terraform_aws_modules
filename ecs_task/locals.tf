@@ -29,9 +29,6 @@ locals {
         for k_o, v_o in local.o1_map[k] : k_o => v_o if !contains(["task_def_arn_split"], k_o)
       },
       local.o2_map[k],
-      {
-        iam_role_arn = v.iam_role_arn
-      },
     )
   }
   t1_map = {
@@ -44,7 +41,7 @@ locals {
         reason          = "$.detail.stoppedReason"
         task_name       = "$.detail.group"
       }
-      alert_target_template = <<-EOT
+      alert_target_template  = <<-EOT
       {
         "Message": "ECS task '<task_name>' failed!",
         "Reason": "<reason>",
@@ -52,11 +49,12 @@ locals {
         "URL": "https://<aws_region_name>.console.aws.amazon.com/ecs/v2/clusters/<cluster_id>/tasks"
       }
       EOT
-      ecs_cluster_key       = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
-      efs_volume_map        = v.efs_volume_map == null ? var.task_efs_volume_map_default : v.efs_volume_map
-      iam_role_arn          = v.iam_role_arn == null ? var.task_iam_role_arn_default : v.iam_role_arn
-      network_mode          = v.network_mode == null ? var.task_network_mode_default : v.network_mode
-      schedule_expression   = v.schedule_expression == null ? var.task_schedule_expression_default : v.schedule_expression
+      ecs_cluster_key        = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
+      efs_volume_map         = v.efs_volume_map == null ? var.task_efs_volume_map_default : v.efs_volume_map
+      iam_role_arn_task      = v.iam_role_arn_task == null ? var.task_iam_role_arn_task_default : v.iam_role_arn_task
+      iam_role_arn_execution = v.iam_role_arn_execution == null ? var.task_iam_role_arn_execution_default == null ? var.iam_data.iam_role_arn_ecs_task_execution : var.task_iam_role_arn_execution_default : v.iam_role_arn_execution
+      network_mode           = v.network_mode == null ? var.task_network_mode_default : v.network_mode
+      schedule_expression    = v.schedule_expression == null ? var.task_schedule_expression_default : v.schedule_expression
     })
   }
   t2_map = {

@@ -73,7 +73,8 @@ variable "task_map" {
       transit_encryption_enabled    = optional(bool)
       transit_encryption_port       = optional(string)
     })))
-    iam_role_arn             = optional(string)
+    iam_role_arn_task        = optional(string)
+    iam_role_arn_execution   = optional(string)
     log_group_name           = optional(string)
     network_mode             = optional(string)
     resource_memory_gib      = optional(number)
@@ -187,10 +188,16 @@ variable "task_efs_transit_encryption_port_default" {
   default = null
 }
 
-variable "task_iam_role_arn_default" {
+variable "task_iam_role_arn_task_default" {
   type        = string
   default     = null
   description = "The role the task will assume"
+}
+
+variable "task_iam_role_arn_execution_default" {
+  type        = string
+  default     = null
+  description = "By default, the task execution role is the basic role from IAM data. This overrides the default."
 }
 
 variable "task_log_group_name_default" {

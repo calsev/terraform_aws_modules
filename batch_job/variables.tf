@@ -10,6 +10,7 @@ variable "iam_data" {
   type = object({
     iam_policy_arn_batch_submit_job = string
     iam_policy_arn_ecs_start_task   = string
+    iam_role_arn_ecs_task_execution = string
   })
 }
 
@@ -69,8 +70,9 @@ variable "job_iam_role_arn_job_container_default" {
 }
 
 variable "job_iam_role_arn_job_execution_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "By default, the job execution role is the basic role from IAM data. This overrides the default."
 }
 
 variable "job_image_id_default" {
