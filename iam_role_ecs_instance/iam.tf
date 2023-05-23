@@ -2,7 +2,7 @@ module "this_role" {
   source                   = "../iam_role"
   assume_role_service_list = ["ec2"]
   create_instance_profile  = true
-  max_session_duration     = var.max_session_duration
+  max_session_duration_m   = var.max_session_duration_m
   name                     = "ecs_instance"
   name_prefix              = var.name_prefix
   name_infix               = var.name_infix

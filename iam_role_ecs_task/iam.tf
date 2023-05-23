@@ -1,8 +1,7 @@
 module "this_role" {
   source                   = "../iam_role"
   assume_role_service_list = ["ecs-tasks"]
-  create_instance_profile  = false
-  max_session_duration     = var.max_session_duration
+  max_session_duration_m   = var.max_session_duration_m
   name                     = var.name
   name_prefix              = var.name_prefix
   name_infix               = var.name_infix

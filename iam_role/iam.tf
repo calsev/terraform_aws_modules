@@ -13,7 +13,7 @@ resource "aws_iam_policy" "this_created_policy" {
 
 resource "aws_iam_role" "this_iam_role" {
   assume_role_policy   = jsonencode(local.l2_map.assume_role_doc)
-  max_session_duration = local.l1_map.max_session_duration
+  max_session_duration = local.l1_map.max_session_duration_m * 60
   dynamic "inline_policy" {
     for_each = local.l1_map.policy_inline_doc_map
     content {
