@@ -118,6 +118,7 @@ tf-lint: tflint-install
 	cd ../iam_app_ecs && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_assume_role_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_assume_role && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_assume_role_external && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_access_resource && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_cdn && $(LINT) --config=../development/.tflint.hcl

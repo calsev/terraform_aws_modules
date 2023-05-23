@@ -3,7 +3,7 @@ locals {
     assume_role_service_list = var.assume_role_service_list
     enable_assume_role       = var.assume_role_service_list == null ? false : true
     create_instance_profile  = var.create_instance_profile
-    max_session_duration     = var.max_session_duration
+    max_session_duration_m   = var.max_session_duration_m
     name                     = replace(var.name, var.std_map.name_replace_regex, "-")
     name_prefix_sanitized    = trim(replace(var.name_prefix, var.std_map.name_replace_regex, "-"), "-")
     policy_attach_arn_map = {

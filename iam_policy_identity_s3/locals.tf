@@ -1,5 +1,13 @@
 locals {
   access_set = toset([for _, v in var.sid_map : v.access])
+  # tflint-ignore: terraform_unused_declarations
+  assert_map = {
+    for k, v in var.sid_map : k => {
+      bucket_name_list_assert = [
+        for bucket_name in v.bucket_name_list : (startswith(bucket_name, "s3://") ? file("Bucket name should not be a URI") : null)
+      ]
+    }
+  }
   sid_list_expanded = flatten([
     for v_sid in local.sid_list_single : [
       merge(v_sid, {

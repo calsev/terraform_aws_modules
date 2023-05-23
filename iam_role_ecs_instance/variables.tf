@@ -1,4 +1,4 @@
-variable "max_session_duration" {
+variable "max_session_duration_m" {
   type    = number
   default = null
 }
