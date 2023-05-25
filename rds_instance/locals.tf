@@ -55,12 +55,13 @@ locals {
       publicly_accessible                       = v.publicly_accessible == null ? var.db_publicly_accessible_default : v.publicly_accessible
       replica_mode_for_oracle                   = v.replica_mode_for_oracle == null ? var.db_replica_mode_for_oracle_default : v.replica_mode_for_oracle
       replicate_source_db_id                    = v.replicate_source_db_id == null ? var.db_replicate_source_db_id_default : v.replicate_source_db_id4
-      snapshot_identifier                       = v.snapshot_identifier == null ? var.db_snapshot_identifier_default : v.snapshot_identifier
+      snapshot_arn                              = v.snapshot_arn == null ? var.db_snapshot_arn_default : v.snapshot_arn
       storage_encrypted                         = v.storage_encrypted == null ? var.db_storage_encrypted_default : v.storage_encrypted
       storage_throughput                        = v.storage_throughput == null ? var.db_storage_throughput_default : v.storage_throughput
       subnet_group_key                          = v.subnet_group_key == null ? var.db_subnet_group_key_default : v.subnet_group_key
       timezone_for_ms_sql                       = v.timezone_for_ms_sql == null ? var.db_timezone_for_ms_sql_default : v.timezone_for_ms_sql
       username                                  = v.username == null ? var.db_username_default : v.username
+      username_sm_secret_key                    = v.username_sm_secret_key == null ? var.db_username_sm_secret_key_default : v.username_sm_secret_key
     })
   }
   l2_map = {
@@ -75,6 +76,7 @@ locals {
       performance_insights_enabled = local.l1_map[k].performance_insights_kms_key_arn != null || !contains([0, null], local.l1_map[k].performance_insights_retention_period_day)
       storage_type                 = local.l1_map[k].provisioned_iops == null ? v.storage_type == null ? var.db_storage_type_default : v.storage_type : "io1"
       subnet_group_name            = var.subnet_group_map[local.l1_map[k].subnet_group_key].name_effective
+      username_sm_secret_name      = v.username_sm_secret_name == null ? var.db_username_sm_secret_name_default == null ? local.l1_map[k].password_sm_secret_name : var.db_username_sm_secret_name_default : v.username_sm_secret_name
       vpc_key                      = var.subnet_group_map[local.l1_map[k].subnet_group_key].vpc_key
     }
   }

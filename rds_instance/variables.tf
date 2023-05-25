@@ -62,13 +62,15 @@ variable "db_map" {
     publicly_accessible                       = optional(bool)
     replica_mode_for_oracle                   = optional(string)
     replicate_source_db_id                    = optional(string)
-    snapshot_identifier                       = optional(string)
+    snapshot_arn                              = optional(string)
     storage_encrypted                         = optional(bool)
     storage_throughput                        = optional(number)
     storage_type                              = optional(string)
     subnet_group_key                          = optional(string) # For read replica, only if writer in different region
     timezone_for_ms_sql                       = optional(string)
     username                                  = optional(string)
+    username_sm_secret_key                    = optional(string)
+    username_sm_secret_name                   = optional(string)
   }))
 }
 
@@ -277,7 +279,7 @@ variable "db_password_sm_secret_name_default" {
 
 variable "db_password_sm_secret_key_default" {
   type    = string
-  default = null
+  default = "password"
 }
 
 variable "db_performance_insights_kms_key_arn_default" {
@@ -332,7 +334,7 @@ variable "db_final_snapshot_enabled_default" {
   description = "Do not spec for replica"
 }
 
-variable "db_snapshot_identifier_default" {
+variable "db_snapshot_arn_default" {
   type    = string
   default = null
 }
@@ -364,7 +366,19 @@ variable "db_timezone_for_ms_sql_default" {
 
 variable "db_username_default" {
   type    = string
-  default = "db_user"
+  default = null
+}
+
+variable "db_username_sm_secret_key_default" {
+  type        = string
+  default     = "username"
+  description = "Ignored if a username is provided"
+}
+
+variable "db_username_sm_secret_name_default" {
+  type        = string
+  default     = null
+  description = "Defaults to the secret for password"
 }
 
 variable "iam_data" {

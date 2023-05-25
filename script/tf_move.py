@@ -82,7 +82,7 @@ def map_change_resource(
 ) -> None:
     found = False
     for resource_type in resource_type_list:
-        if resource_type in resource_name:
+        if f"{resource_type}." in resource_name:
             found = True
             map_resource_change_type(
                 resource_type, change_type, resource_name, resources
