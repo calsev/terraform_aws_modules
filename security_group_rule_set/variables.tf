@@ -251,9 +251,10 @@ variable "std_map" {
   })
 }
 
-
 variable "vpc_map" {
   type = map(object({
     vpc_ipv6_cidr_block = string
   }))
+  default     = null
+  description = "Must be provided if any private security group uses default ipv6 cidr blocks"
 }

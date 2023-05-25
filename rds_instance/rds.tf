@@ -7,6 +7,14 @@ module "password_secret" {
   std_map        = var.std_map
 }
 
+module "username_secret" {
+  source         = "../secret"
+  for_each       = local.db_map
+  sm_secret_name = each.value.username_sm_secret_name
+  sm_secret_key  = each.value.username_sm_secret_key
+  std_map        = var.std_map
+}
+
 resource "aws_db_instance" "this_db" {
   for_each                    = local.db_map
   allocated_storage           = each.value.allocated_storage_gib
@@ -69,12 +77,12 @@ resource "aws_db_instance" "this_db" {
   # TODO: restore_to_point_in_time
   # TODO: s3_import
   skip_final_snapshot    = !each.value.final_snapshot_enabled
-  snapshot_identifier    = each.value.snapshot_identifier
+  snapshot_identifier    = each.value.snapshot_arn
   storage_encrypted      = each.value.storage_encrypted
   storage_throughput     = each.value.storage_throughput # TODO: mutex for iops and throughput
   storage_type           = each.value.storage_type
   tags                   = each.value.tags
   timezone               = each.value.timezone_for_ms_sql
-  username               = each.value.username
+  username               = each.value.username == null ? module.username_secret[each.key].secret : each.value.username
   vpc_security_group_ids = each.value.security_group_id_list
 }

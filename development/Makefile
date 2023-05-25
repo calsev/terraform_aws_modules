@@ -116,6 +116,7 @@ tf-lint: tflint-install
 	cd ../iam_app_batch && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_ecr && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_ecs && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_app_rds && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_assume_role_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_assume_role && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_assume_role_external && $(LINT) --config=../development/.tflint.hcl
@@ -160,6 +161,7 @@ tf-lint: tflint-install
 	cd ../script && $(LINT) --config=../development/.tflint.hcl
 	cd ../secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group && $(LINT) --config=../development/.tflint.hcl
+	cd ../security_group_app && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group_rule_set && $(LINT) --config=../development/.tflint.hcl
 	cd ../sm_secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_alert_aws_account && $(LINT) --config=../development/.tflint.hcl
