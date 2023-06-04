@@ -18,6 +18,9 @@ module "trigger_role" {
     length(each.value.ecs_targets) == 0 ? {} : {
       ecs_start_task = var.iam_data.iam_policy_arn_ecs_start_task
     },
+    each.value.iam_policy_arn_target == null ? {} : {
+      "${each.value.target_service}_write" = each.value.iam_policy_arn_target
+    }
   )
   policy_inline_json_map = merge(
     !each.value.dead_letter_queue_enabled ? {} : {

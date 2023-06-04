@@ -129,6 +129,7 @@ tf-lint: tflint-install
 	cd ../iam_policy_identity_codestar_connection && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_ecr && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_efs && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_identity_event_bus && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_kms && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_s3 && $(LINT) --config=../development/.tflint.hcl

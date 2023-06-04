@@ -1,7 +1,7 @@
 resource "aws_eip" "this_eip" {
   for_each = var.nat_map
+  domain   = "vpc"
   tags     = each.value.tags
-  vpc      = true
 }
 
 resource "aws_nat_gateway" "this_nat_gw" {

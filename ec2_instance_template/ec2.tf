@@ -46,11 +46,12 @@ data "aws_ami" "this_ami" {
 }
 
 resource "aws_placement_group" "this_placement_group" {
-  for_each     = local.compute_map
-  name         = each.value.name_effective
-  spread_level = each.value.placement_spread_level
-  strategy     = each.value.placement_strategy
-  tags         = each.value.tags
+  for_each        = local.compute_map
+  name            = each.value.name_effective
+  partition_count = each.value.placement_strategy == "partition" ? each.value.placement_partition_count : null
+  spread_level    = each.value.placement_strategy == "spread" ? each.value.placement_spread_level : null
+  strategy        = each.value.placement_strategy
+  tags            = each.value.tags
 }
 
 resource "aws_launch_template" "this_launch_template" {

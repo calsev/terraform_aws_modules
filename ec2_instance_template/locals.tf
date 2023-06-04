@@ -22,6 +22,7 @@ locals {
       instance_type                   = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
       key_name                        = v.key_name == null ? var.compute_key_name_default : v.key_name
       monitoring_advanced_enabled     = v.monitoring_advanced_enabled == null ? var.compute_monitoring_advanced_enabled_default : v.monitoring_advanced_enabled
+      placement_partition_count       = v.placement_partition_count == null ? var.compute_placement_partition_count_default : v.placement_partition_count
       placement_spread_level          = v.placement_spread_level == null ? var.compute_placement_spread_level_default : v.placement_spread_level
       placement_strategy              = v.placement_strategy == null ? var.compute_placement_strategy_default : v.placement_strategy
       storage_volume_type             = v.storage_volume_type == null ? var.compute_storage_volume_type_default : v.storage_volume_type
@@ -74,12 +75,14 @@ locals {
       image_name                         = data.aws_ami.this_ami[k].name
       image_name_default                 = data.aws_ami.this_default_ami[k].name
       instance_type_gpu_memory_total_gib = v.has_gpu ? data.aws_ec2_instance_type.this_instance_type[k].total_gpu_memory / 1024 : 0
-      instance_type_num_gpu              = v.has_gpu ? sum([for gpu in data.aws_ec2_instance_type.this_instance_type[k].gpus : gpu.count]) : 0
-      instance_type_memory_gib           = data.aws_ec2_instance_type.this_instance_type[k].memory_size / 1024
-      instance_type_num_vcpu             = data.aws_ec2_instance_type.this_instance_type[k].default_vcpus
-      launch_template_id                 = aws_launch_template.this_launch_template[k].id
-      launch_template_version            = aws_launch_template.this_launch_template[k].latest_version
-      placement_group_id                 = aws_placement_group.this_placement_group[k].id
+      instance_type_num_gpu = v.has_gpu ? sum([
+        for gpu in data.aws_ec2_instance_type.this_instance_type[k].gpus : gpu.count
+      ]) : 0
+      instance_type_memory_gib = data.aws_ec2_instance_type.this_instance_type[k].memory_size / 1024
+      instance_type_num_vcpu   = data.aws_ec2_instance_type.this_instance_type[k].default_vcpus
+      launch_template_id       = aws_launch_template.this_launch_template[k].id
+      launch_template_version  = aws_launch_template.this_launch_template[k].latest_version
+      placement_group_id       = aws_placement_group.this_placement_group[k].id
     })
   }
   user_data_map = {

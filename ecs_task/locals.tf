@@ -29,6 +29,10 @@ locals {
         for k_o, v_o in local.o1_map[k] : k_o => v_o if !contains(["task_def_arn_split"], k_o)
       },
       local.o2_map[k],
+      {
+        alert = module.alert_trigger.data[v.k_alert]
+        event = v.schedule_expression == null ? null : module.this_event_bus.data[k]
+      }
     )
   }
   t1_map = {

@@ -280,6 +280,39 @@ locals {
         ]
       }
     }
+    events = {
+      api-destination = {
+        public_read = []
+        read = [
+        ]
+        public_write = []
+        write = [
+          "InvokeApiDestination",
+        ]
+      }
+      event-bus = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "PutEvents",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "ListApiDestinations",
+          "ListEventBuses",
+        ]
+        public_write = []
+        write = [
+        ]
+      }
+    }
     kms = {
       key = {
         public_read = []

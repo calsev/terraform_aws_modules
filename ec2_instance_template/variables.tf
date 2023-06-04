@@ -9,6 +9,7 @@ variable "compute_map" {
     instance_type                   = optional(string)
     key_name                        = optional(string)
     monitoring_advanced_enabled     = optional(bool)
+    placement_partition_count       = optional(number)
     placement_spread_level          = optional(string)
     placement_strategy              = optional(string)
     storage_volume_type             = optional(string)
@@ -68,14 +69,30 @@ variable "compute_monitoring_advanced_enabled_default" {
   default = true
 }
 
+variable "compute_placement_partition_count_default" {
+  type        = number
+  default     = 7
+  description = "Ignored unless placement strategy is partition."
+  validation {
+    condition     = 0 < var.compute_placement_partition_count_default && var.compute_placement_partition_count_default < 8
+    error_message = "Invalid partition count"
+  }
+}
+
 variable "compute_placement_spread_level_default" {
-  type    = string
-  default = "rack"
+  type        = string
+  default     = "rack"
+  description = "This must be rack in regional data centers and host on outposts. Ignored unless placement strategy is spread."
 }
 
 variable "compute_placement_strategy_default" {
   type    = string
-  default = "spread"
+  default = "partition"
+  validation {
+    condition     = contains(["cluster", "partition", "spread"], var.compute_placement_strategy_default)
+    error_message = "Invalid placement strategy"
+  }
+  description = "Spread allows 7 instances per AZ. Partition allows 7 partitions per AZ, with unlimited instances per partition."
 }
 
 variable "compute_storage_volume_type_default" {
