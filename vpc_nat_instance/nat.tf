@@ -10,9 +10,9 @@ resource "aws_network_interface" "this_interface" {
 
 resource "aws_eip" "nat_eip" {
   for_each          = local.nat_map
+  domain            = "vpc"
   network_interface = aws_network_interface.this_interface[each.key].id
   tags              = each.value.tags
-  vpc               = true
 }
 
 module "nat_instance" {

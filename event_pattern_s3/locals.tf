@@ -11,20 +11,13 @@ locals {
               var.bucket_name,
             ]
           }
-          object = {
-            key = concat(
-              var.object_key_prefix == null ? [] : [
-                {
-                  prefix = var.object_key_prefix
-                },
-              ],
-              var.object_key_suffix == null ? [] : [
-                {
-                  # https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html
-                  suffix = var.object_key_suffix
-                },
-              ],
-            )
+          object = length(var.object_key_list) == 0 ? {} : {
+            key = [
+              for val in var.object_key_list : {
+                # https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html
+                (var.object_key_is_prefix ? "prefix" : "suffix") = val
+              }
+            ]
           }
         },
         var.action_list == null ? null : length(var.action_list) == 0 ? null : {

@@ -5,6 +5,7 @@ variable "event_map" {
     definition_arn                    = optional(string)
     event_bus_name                    = optional(string)
     event_pattern_json                = optional(string)
+    iam_policy_arn_target             = optional(string)
     iam_role_arn_custom               = optional(string)
     iam_role_use_custom               = optional(bool)
     input                             = optional(string)
@@ -52,6 +53,12 @@ variable "event_pattern_json_default" {
   type        = string
   default     = null
   description = "Either Event pattern or cron expression is required"
+}
+
+variable "event_iam_policy_arn_target_default" {
+  type        = string
+  default     = null
+  description = "Logs and sns use resource policies. Batch and ECS use generic managed policies. For other target types, provide a write policy."
 }
 
 variable "event_iam_role_arn_custom_default" {
@@ -115,7 +122,7 @@ variable "event_target_service_default" {
   default     = null
   description = "This is required so that the set of resources does not depend on state, as it typically would with target and definition ARNs"
   validation {
-    condition     = var.event_target_service_default == null ? true : contains(["batch", "ecs", "logs", "sns"], var.event_target_service_default)
+    condition     = var.event_target_service_default == null ? true : contains(["batch", "ecs", "events", "logs", "sns"], var.event_target_service_default)
     error_message = "Invalid target service"
   }
 }

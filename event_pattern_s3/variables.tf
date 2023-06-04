@@ -20,14 +20,16 @@ variable "detail_type_list" {
   description = "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html. Set null to disable."
 }
 
-variable "object_key_prefix" {
-  type    = string
-  default = "/"
+variable "object_key_is_prefix" {
+  type        = bool
+  default     = true
+  description = "Set false for suffix matching"
 }
 
-variable "object_key_suffix" {
-  type    = string
-  default = null
+variable "object_key_list" {
+  type        = list(string)
+  default     = []
+  description = "This should not start with a slash."
 }
 
 variable "std_map" {
