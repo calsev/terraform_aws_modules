@@ -12,7 +12,7 @@ locals {
     policy_create_doc_map = {
       for k, v in var.policy_create_json_map : k => jsondecode(v)
     }
-    policy_inline_doc_map = var.policy_inline_json_map == null ? {} : {
+    policy_inline_doc_map = var.policy_inline_json_map == null ? null : {
       for k, v in var.policy_inline_json_map : k => jsondecode(v)
     }
     policy_managed_arn_map = {

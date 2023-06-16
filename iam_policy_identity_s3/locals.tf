@@ -24,7 +24,7 @@ locals {
   ])
   sid_list_single = [
     for k_sid, v_sid in var.sid_map : merge(v_sid, {
-      bucket_arn_list = [for bucket_name in v_sid.bucket_name_list : "arn:${var.std_map.iam_partition}:s3:::${bucket_name}"]
+      bucket_arn_list = [for bucket_name in v_sid.bucket_name_list : (startswith(bucket_name, "arn:") ? bucket_name : "arn:${var.std_map.iam_partition}:s3:::${bucket_name}")]
       object_key_list = v_sid.object_key_list == null ? var.sid_object_key_list_default : v_sid.object_key_list
       sid             = k_sid
     })
