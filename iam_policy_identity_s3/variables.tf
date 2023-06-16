@@ -19,7 +19,7 @@ variable "name_prefix" {
 variable "sid_map" {
   type = map(object({
     access           = string
-    bucket_name_list = list(string)
+    bucket_name_list = list(string) # Can be bucket names, bucket ARNs, access point ARNs
     object_key_list  = optional(list(string))
   }))
 }
