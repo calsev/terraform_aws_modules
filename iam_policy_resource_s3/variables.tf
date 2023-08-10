@@ -7,6 +7,11 @@ variable "bucket_name" {
   type = string
 }
 
+variable "create_policy" {
+  type    = bool
+  default = true
+}
+
 variable "sid_map" {
   type = map(object({
     access = string

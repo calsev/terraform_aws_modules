@@ -153,6 +153,7 @@ variable "vpc_data_map" {
       route_public  = bool
       subnet_id_map = map(string)
     }))
+    vpc_id = string
   }))
 }
 

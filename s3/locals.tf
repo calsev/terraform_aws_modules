@@ -93,11 +93,4 @@ locals {
       },
     )
   }
-  region_name_to_s3_dns_zone = {
-    # See https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_website_region_endpoints
-    us-east-1    = "Z3AQBSTGFYJSTF"
-    us-west-2    = "Z3BJ6K6RIION7M"
-    eu-central-1 = "Z21DNDUVLTQW6Q"
-    eu-south-1   = "Z30OZKI7KPW7MI"
-  }
 }

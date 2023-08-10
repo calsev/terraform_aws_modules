@@ -77,7 +77,6 @@ locals {
       source_report_build_status = local.l1_map[k].build_source_type == "CODEPIPELINE" ? false : v.source_report_build_status == null ? var.build_source_report_build_status_default : v.source_report_build_status
       source_type                = local.l1_map[k].build_source_type
       vpc_enabled                = local.l1_map[k].vpc_key != null
-      vpc_id                     = local.l1_map[k].vpc_key == null ? null : var.vpc_data_map[local.l1_map[k].vpc_key].vpc_id
       webhook_filter_map = {
         for k_group, v_group in local.l1_map[k].webhook_filter_map_raw : k_group => {
           for k_filter, v_filter in v_group : k_filter => {

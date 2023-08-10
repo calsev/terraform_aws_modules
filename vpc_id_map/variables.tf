@@ -1,5 +1,6 @@
 variable "vpc_az_key_list_default" {
-  type = list(string)
+  type    = list(string)
+  default = []
 }
 
 variable "vpc_data_map" {
@@ -9,6 +10,7 @@ variable "vpc_data_map" {
       route_public  = bool
       subnet_id_map = map(string)
     }))
+    vpc_id = string
   }))
 }
 
@@ -18,7 +20,7 @@ variable "vpc_key_default" {
 
 variable "vpc_map" {
   type = map(object({
-    vpc_az_key_list             = list(string)
+    vpc_az_key_list             = optional(list(string))
     vpc_key                     = string
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
@@ -31,5 +33,6 @@ variable "vpc_security_group_key_list_default" {
 }
 
 variable "vpc_segment_key_default" {
-  type = string
+  type    = string
+  default = null
 }
