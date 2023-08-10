@@ -21,13 +21,8 @@ locals {
       vpc_tls_certificate = v.vpc_tls_certificate == null ? var.host_vpc_tls_certificate_default : v.vpc_tls_certificate
     })
   }
-  h2_map = {
-    for k, v in var.host_map : k => merge(v, {
-      vpc_id = local.h1_map[k].vpc_key == null ? null : var.vpc_data_map[local.h1_map[k].vpc_key].vpc_id
-    })
-  }
   host_map = {
-    for k, v in var.host_map : k => merge(local.h1_map[k], local.h2_map[k])
+    for k, v in var.host_map : k => merge(local.h1_map[k])
   }
   output_data = {
     connection = {

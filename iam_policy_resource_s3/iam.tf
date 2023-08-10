@@ -21,12 +21,13 @@ data "aws_iam_policy_document" "empty_policy" {
       identifiers = ["*"]
       type        = "*"
     }
-    resources = ["arn:${var.std_map.iam_partition}:s3:::${var.bucket_name}"]
+    resources = [local.bucket_arn]
     sid       = "EmptyPolicy"
   }
 }
 
 resource "aws_s3_bucket_policy" "this_bucket_policy" {
-  bucket = var.bucket_name
-  policy = local.policy_json
+  for_each = var.create_policy ? { this = {} } : {}
+  bucket   = var.bucket_name
+  policy   = local.policy_json
 }

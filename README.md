@@ -16,6 +16,16 @@ This library provides modules to configure many common AWS resources.
 The modules follow a consistent, opinionated programming and data flow paradigm,
 but are configurable and un-opinionated in how they configure resources.
 
+## Usage
+
+Because this library is heavily refactored into utility modules,
+the entire library is typically embedded as a git submodule and modules used from local paths,
+rather than as Terraform source modules.
+
+```shell
+git submodule add path/to/terraform/modules/this-library
+```
+
 ## Requirements
 
 ### Terraform

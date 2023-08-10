@@ -27,7 +27,7 @@ resource "aws_route53_record" "this_dns_alias" {
   for_each = local.bucket_domain_map
   alias {
     name                   = aws_s3_bucket.this_bucket[each.key].website_domain # The s3 website uses the endpoint, but the alias uses the domain and sni
-    zone_id                = local.region_name_to_s3_dns_zone[var.std_map.aws_region_name]
+    zone_id                = aws_s3_bucket.this_bucket[each.key].hosted_zone_id
     evaluate_target_health = false
   }
   name    = "${each.value.website_fqdn}."

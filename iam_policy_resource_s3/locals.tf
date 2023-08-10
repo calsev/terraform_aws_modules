@@ -1,5 +1,5 @@
 locals {
-  bucket_arn   = "arn:${var.std_map.iam_partition}:${local.service_name}:::${var.bucket_name}"
+  bucket_arn   = startswith(var.bucket_name, "arn:") ? var.bucket_name : "arn:${var.std_map.iam_partition}:${local.service_name}:::${var.bucket_name}"
   has_policy   = length(local.sid_list_single) != 0
   policy_json  = local.has_policy ? jsonencode(module.this_policy["this"].iam_policy_doc) : data.aws_iam_policy_document.empty_policy["this"].json
   service_name = "s3"

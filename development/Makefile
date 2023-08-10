@@ -160,6 +160,7 @@ tf-lint: tflint-install
 	cd ../rds_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_subnet_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../s3 && $(LINT) --config=../development/.tflint.hcl
+	cd ../s3_access_point && $(LINT) --config=../development/.tflint.hcl
 	cd ../script && $(LINT) --config=../development/.tflint.hcl
 	cd ../secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group && $(LINT) --config=../development/.tflint.hcl

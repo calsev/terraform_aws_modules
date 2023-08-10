@@ -9,18 +9,19 @@ locals {
   }
   l2_map = {
     for k, v in var.vpc_map : k => {
+      vpc_id = local.l1_map[k].vpc_key == null ? null : var.vpc_data_map[local.l1_map[k].vpc_key].vpc_id
       vpc_security_group_id_list = local.l1_map[k].vpc_key == null ? [] : [
         for k_sg in local.l1_map[k].vpc_security_group_key_list : var.vpc_data_map[local.l1_map[k].vpc_key].security_group_id_map[k_sg]
       ]
-      vpc_segment_route_public = local.l1_map[k].vpc_key == null ? null : var.vpc_data_map[local.l1_map[k].vpc_key].segment_map[local.l1_map[k].vpc_segment_key].route_public
-      vpc_subnet_id_list = local.l1_map[k].vpc_key == null ? [] : [
+      vpc_segment_route_public = local.l1_map[k].vpc_key == null ? null : local.l1_map[k].vpc_segment_key == null ? null : var.vpc_data_map[local.l1_map[k].vpc_key].segment_map[local.l1_map[k].vpc_segment_key].route_public
+      vpc_subnet_id_list = local.l1_map[k].vpc_key == null ? [] : local.l1_map[k].vpc_segment_key == null ? [] : [
         for k_az in local.l1_map[k].vpc_az_key_list : var.vpc_data_map[local.l1_map[k].vpc_key].segment_map[local.l1_map[k].vpc_segment_key].subnet_id_map[k_az]
       ]
     }
   }
   l3_map = {
     for k, v in var.vpc_map : k => {
-      vpc_subnet_id_map = local.l1_map[k].vpc_key == null ? {} : {
+      vpc_subnet_id_map = local.l1_map[k].vpc_key == null ? {} : local.l1_map[k].vpc_segment_key == null ? {} : {
         for i_az, k_az in local.l1_map[k].vpc_az_key_list : "${local.l1_map[k].vpc_segment_key}-${k_az}" => local.l2_map[k].vpc_subnet_id_list[i_az]
       }
     }
