@@ -23,7 +23,7 @@ locals {
     write      = {}
   }
   log_map_base = {
-    create_policy      = var.create_policy
+    policy_create      = var.policy_create
     log_retention_days = var.log_retention_days
     policy_name_prefix = var.policy_name_prefix
   }

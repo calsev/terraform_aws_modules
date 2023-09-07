@@ -24,8 +24,9 @@ variable "name_regex_allow_list" {
 }
 
 variable "name_suffix_default" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "std_map" {

@@ -22,15 +22,15 @@ locals {
   }
   l2_map = {
     assume_role_doc = var.assume_role_json == null ? module.assume_role_policy["this"].iam_policy_doc_assume_role : jsondecode(var.assume_role_json)
-    create_policy_name_map = {
+    name_context    = "${var.std_map.resource_name_prefix}${local.l1_map.name}${var.std_map.resource_name_suffix}"
+    name_prefix     = local.l1_map.name_prefix_sanitized == "" ? "" : "${local.l1_map.name_prefix_sanitized}-"
+    policy_create_name_map = {
       for name, _ in local.l1_map.policy_create_doc_map : name => "${var.std_map.resource_name_prefix}${replace(name, var.std_map.name_replace_regex, "-")}${var.std_map.resource_name_suffix}"
     }
-    name_context = "${var.std_map.resource_name_prefix}${local.l1_map.name}${var.std_map.resource_name_suffix}"
-    name_prefix  = local.l1_map.name_prefix_sanitized == "" ? "" : "${local.l1_map.name_prefix_sanitized}-"
   }
   l3_map = {
-    create_policy_tag_map = {
-      for k, v in local.l2_map.create_policy_name_map : k => merge(
+    policy_create_tag_map = {
+      for k, v in local.l2_map.policy_create_name_map : k => merge(
         var.std_map.tags,
         {
           Name = v

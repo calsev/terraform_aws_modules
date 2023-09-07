@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "this_queue" {
-  for_each                          = local.queue_map
+  for_each                          = local.create_queue_map
   content_based_deduplication       = each.value.content_based_deduplication
   deduplication_scope               = each.value.deduplication_scope
   delay_seconds                     = each.value.delay_seconds
@@ -9,7 +9,7 @@ resource "aws_sqs_queue" "this_queue" {
   kms_master_key_id                 = each.value.kms_master_key_id
   max_message_size                  = each.value.max_message_size_kib * 1024
   message_retention_seconds         = each.value.message_retention_hours * 60 * 60
-  name                              = each.value.name
+  name                              = each.value.name_effective
   policy                            = each.value.iam_policy == null ? null : jsonencode(each.value.iam_policy)
   receive_wait_time_seconds         = each.value.receive_wait_time_seconds
   redrive_allow_policy              = each.value.redrive_allow_policy == null ? null : jsonencode(each.value.redrive_allow_policy)

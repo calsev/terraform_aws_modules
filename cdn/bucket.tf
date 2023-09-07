@@ -1,7 +1,7 @@
 module "cdn_origin_bucket" {
   source = "../s3"
 
-  bucket_create_policy_default = false
+  bucket_policy_create_default = false
   bucket_map                   = local.bucket_map
   dns_data                     = var.dns_data
   bucket_name_infix_default    = false

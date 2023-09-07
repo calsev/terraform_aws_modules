@@ -28,7 +28,7 @@ locals {
         "aws.s3",
       ]
     },
-    var.detail_type_list == null ? null : length(var.detail_type_list) == 0 ? null : {
+    var.detail_type_list == null ? {} : length(var.detail_type_list) == 0 ? {} : {
       detail-type = var.detail_type_list
     },
   )

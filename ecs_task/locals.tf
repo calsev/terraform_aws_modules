@@ -5,9 +5,6 @@ module "name_map" {
 }
 
 locals {
-  alert_map = {
-    for k, v in local.task_map : k => v if v.alert_level != null
-  }
   bus_map = {
     for k, v in local.task_map : k => v if v.schedule_expression != null # TODO: Other event types
   }
@@ -24,20 +21,21 @@ locals {
   }
   output_data = {
     for k, v in local.task_map : k => merge(
-      v,
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains(["alert_event_pattern_json"], k_attr)
+      },
       {
         for k_o, v_o in local.o1_map[k] : k_o => v_o if !contains(["task_def_arn_split"], k_o)
       },
       local.o2_map[k],
       {
-        alert = module.alert_trigger.data[v.k_alert]
+        alert = module.alert_trigger.data[k]
         event = v.schedule_expression == null ? null : module.this_event_bus.data[k]
-      }
+      },
     )
   }
   t1_map = {
     for k, v in var.task_map : k => merge(v, module.name_map.data[k], {
-      alert_level = v.alert_level == null ? var.task_alert_level_default : v.alert_level
       alert_target_path_map = {
         aws_region_name = "$.region"
         cluster_id      = "$.detail.capacityProviderName"
@@ -63,7 +61,7 @@ locals {
   }
   t2_map = {
     for k, v in var.task_map : k => {
-      alert_event_pattern_doc = {
+      alert_event_pattern_json = jsonencode({
         detail = {
           containers = {
             exitCode = [
@@ -92,7 +90,7 @@ locals {
         source = [
           "aws.ecs",
         ]
-      }
+      })
       capability_type = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].capability_type
       ecs_cluster_arn = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].ecs_cluster_arn
       efs_volume_map = {
@@ -104,7 +102,6 @@ locals {
           transit_encryption_port       = volume_data.transit_encryption_port == null ? var.task_efs_transit_encryption_port_default : volume_data.transit_encryption_port
         })
       }
-      k_alert = "${local.t1_map[k].name_simple}-failed"
     }
   }
   t3_map = {

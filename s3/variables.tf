@@ -6,7 +6,6 @@ variable "bucket_map" {
     cors_allowed_methods              = optional(list(string))
     cors_allowed_origins              = optional(list(string))
     cors_expose_headers               = optional(list(string))
-    create_policy                     = optional(bool)
     enable_acceleration               = optional(bool)
     encryption_algorithm              = optional(string)
     encryption_disabled               = optional(bool)
@@ -17,6 +16,7 @@ variable "bucket_map" {
     lifecycle_version_expiration_days = optional(number) # Defaults to lifecycle_expiration_days
     name_infix                        = optional(bool)
     notification_enable_event_bridge  = optional(bool)
+    policy_create                     = optional(bool)
     requester_pays                    = optional(bool)
     sid_map = optional(map(object({
       access = string
@@ -64,11 +64,6 @@ variable "bucket_cors_allowed_origins_default" {
 variable "bucket_cors_expose_headers_default" {
   type    = list(string)
   default = []
-}
-
-variable "bucket_create_policy_default" {
-  type    = bool
-  default = true
 }
 
 variable "bucket_enable_acceleration_default" {
@@ -121,6 +116,11 @@ variable "bucket_name_infix_default" {
 variable "bucket_notification_enable_event_bridge_default" {
   type    = bool
   default = false
+}
+
+variable "bucket_policy_create_default" {
+  type    = bool
+  default = true
 }
 
 variable "bucket_requester_pays_default" {

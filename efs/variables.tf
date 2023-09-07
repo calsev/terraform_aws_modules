@@ -8,8 +8,15 @@ variable "fs_map" {
       user_gid_secondary_list = optional(list(number))
       user_uid                = optional(number)
     })))
-    create_policies             = optional(bool)
     encrypt_file_system         = optional(bool)
+    policy_access_list          = optional(list(string))
+    policy_create               = optional(bool)
+    policy_name                 = optional(string)
+    policy_name_append          = optional(string)
+    policy_name_infix           = optional(bool)
+    policy_name_prefix          = optional(string)
+    policy_name_prepend         = optional(string)
+    policy_name_suffix          = optional(string)
     vpc_az_key_list             = optional(list(string))
     vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
@@ -59,14 +66,44 @@ variable "fs_access_point_user_uid_default" {
   default = 0
 }
 
-variable "fs_create_policies_default" {
+variable "fs_encrypt_file_system_default" {
   type    = bool
   default = true
 }
 
-variable "fs_encrypt_file_system_default" {
+variable "policy_access_list_default" {
+  type    = list(string)
+  default = ["write"]
+}
+
+variable "policy_create_default" {
   type    = bool
   default = true
+}
+
+variable "policy_name_append_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prepend_default" {
+  type    = string
+  default = "efs"
+}
+
+variable "policy_name_suffix_default" {
+  type    = string
+  default = ""
 }
 
 variable "std_map" {

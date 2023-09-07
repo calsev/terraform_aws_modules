@@ -2,7 +2,6 @@ variable "event_map" {
   type = map(object({
     dead_letter_queue_enabled         = optional(bool)
     definition_arn                    = optional(string)
-    iam_policy_arn_target             = optional(string)
     iam_role_arn_custom               = optional(string)
     iam_role_use_custom               = optional(bool)
     input_path                        = optional(string)
@@ -11,6 +10,10 @@ variable "event_map" {
     input_transformer_template_string = optional(string)
     is_enabled                        = optional(bool)
     retry_attempts                    = optional(number)
+    role_policy_attach_arn_map        = optional(map(string))
+    role_policy_create_json_map       = optional(map(string))
+    role_policy_inline_json_map       = optional(map(string))
+    role_policy_managed_name_map      = optional(map(string))
     s3_bucket_name                    = optional(string)
     s3_object_key_prefix_list         = optional(list(string))
     s3_object_key_suffix_list         = optional(list(string))
@@ -34,12 +37,6 @@ variable "event_definition_arn_default" {
   type        = string
   default     = null
   description = "An ECS task or Batch job definition, if relevant"
-}
-
-variable "event_iam_policy_arn_target_default" {
-  type        = string
-  default     = null
-  description = "Logs and sns use resource policies. Batch and ECS use generic managed policies. For other target types, provide a write policy."
 }
 
 variable "event_iam_role_arn_custom_default" {
@@ -135,6 +132,26 @@ variable "iam_data" {
   })
   default     = null
   description = "Must be provided for Batch and ECS targets"
+}
+
+variable "role_policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "std_map" {

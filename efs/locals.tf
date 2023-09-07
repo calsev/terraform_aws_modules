@@ -4,6 +4,19 @@ module "name_map" {
   std_map  = var.std_map
 }
 
+module "policy_map" {
+  source                      = "../policy_name_map"
+  name_map                    = var.fs_map
+  policy_access_list_default  = var.policy_access_list_default
+  policy_create_default       = var.policy_create_default
+  policy_name_append_default  = var.policy_name_append_default
+  policy_name_infix_default   = var.policy_name_infix_default
+  policy_name_prefix_default  = var.policy_name_prefix_default
+  policy_name_prepend_default = var.policy_name_prepend_default
+  policy_name_suffix_default  = var.policy_name_suffix_default
+  std_map                     = var.std_map
+}
+
 locals {
   access_point_flattened_list = flatten([
     for k, v in local.fs_map : [
@@ -17,9 +30,8 @@ locals {
     for k, v in var.fs_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
   l1_map = {
-    for k, v in var.fs_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+    for k, v in var.fs_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], module.vpc_map.data[k], {
       access_point_map    = v.access_point_map == null ? var.fs_access_point_map_default : v.access_point_map
-      create_policies     = v.create_policies == null ? var.fs_create_policies_default : v.create_policies
       encrypt_file_system = v.encrypt_file_system == null ? var.fs_encrypt_file_system_default : v.encrypt_file_system
       k_fs                = k
     })
@@ -39,12 +51,12 @@ locals {
           user_uid                = v_ap.user_uid == null ? var.fs_access_point_user_uid_default : v_ap.user_uid
         })
       }
-      policy_name = local.l1_map[k].create_policies ? "efs-${local.l1_map[k].name_simple}" : null
     })
   }
   output_data = {
     for k, v in local.fs_map : k => merge(
-      v.create_policies ? module.this_policy[k].data : null,
+      v,
+      module.this_policy[k].data,
       {
         access_point_map = {
           for k_ap, v_ap in v.access_point_map : k_ap => merge(v_ap, {
@@ -57,9 +69,6 @@ locals {
         iam_policy_doc_efs = jsondecode(data.aws_iam_policy_document.this_policy_doc[k].json)
       },
     )
-  }
-  policy_map = {
-    for k, v in local.fs_map : k => v if v.create_policies
   }
   subnet_flattened_list = flatten([
     for k, v in local.fs_map : flatten([

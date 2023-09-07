@@ -1,11 +1,9 @@
 variable "event_map" {
   type = map(object({
-    schedule_expression               = optional(string)
     dead_letter_queue_enabled         = optional(bool)
     definition_arn                    = optional(string)
     event_bus_name                    = optional(string)
     event_pattern_json                = optional(string)
-    iam_policy_arn_target             = optional(string)
     iam_role_arn_custom               = optional(string)
     iam_role_use_custom               = optional(bool)
     input                             = optional(string)
@@ -15,6 +13,11 @@ variable "event_map" {
     input_transformer_template_string = optional(string)
     is_enabled                        = optional(bool)
     retry_attempts                    = optional(number)
+    role_policy_attach_arn_map        = optional(map(string))
+    role_policy_create_json_map       = optional(map(string))
+    role_policy_inline_json_map       = optional(map(string))
+    role_policy_managed_name_map      = optional(map(string))
+    schedule_expression               = optional(string)
     target_arn                        = optional(string)
     target_service                    = optional(string)
     task_count                        = optional(number)
@@ -53,12 +56,6 @@ variable "event_pattern_json_default" {
   type        = string
   default     = null
   description = "Either Event pattern or cron expression is required"
-}
-
-variable "event_iam_policy_arn_target_default" {
-  type        = string
-  default     = null
-  description = "Logs and sns use resource policies. Batch and ECS use generic managed policies. For other target types, provide a write policy."
 }
 
 variable "event_iam_role_arn_custom_default" {
@@ -140,6 +137,26 @@ variable "iam_data" {
   })
   default     = null
   description = "Must be provided for Batch and ECS targets"
+}
+
+variable "role_policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "std_map" {

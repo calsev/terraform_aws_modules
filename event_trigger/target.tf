@@ -9,8 +9,8 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
 }
 
 module "dead_letter_queue" {
-  source    = "../sqs_queue"
-  queue_map = local.queue_map
+  source    = "../sqs_dead_letter_queue"
+  queue_map = local.event_map
   std_map   = var.std_map
 }
 
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
     }
   }
   dead_letter_config {
-    arn = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.value.dead_letter_queue_name].arn : null
+    arn = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.key].arn : null
   }
   dynamic "ecs_target" {
     for_each = each.value.ecs_targets

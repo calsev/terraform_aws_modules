@@ -20,11 +20,13 @@ locals {
     )
   }
   trigger_prefix_map = {
-    for k, v in local.event_map : "${k}_prefix" => merge(local.l1_map[k], {
-      event_pattern_json    = jsonencode(module.s3_prefix_pattern[k].data)
-      iam_policy_arn_target = module.event_bus.data["${k}_prefix"].bus.iam_policy_arn_map["write"]
-      target_arn            = module.event_bus.data["${k}_prefix"].bus.event_bus_arn
-      target_service        = "events"
+    for k, v in local.event_map : "${k}_prefix" => merge(v, {
+      event_pattern_json = jsonencode(module.s3_prefix_pattern[k].data)
+      role_policy_attach_arn_map = {
+        events_write = module.event_bus.data["${k}_prefix"].bus.iam_policy_arn_map["write"]
+      }
+      target_arn     = module.event_bus.data["${k}_prefix"].bus.event_bus_arn
+      target_service = "events"
     })
   }
   trigger_suffix_map = {

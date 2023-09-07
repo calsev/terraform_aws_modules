@@ -6,9 +6,9 @@ module "assume_role_policy" {
 
 resource "aws_iam_policy" "this_created_policy" {
   for_each = local.l1_map.policy_create_doc_map
-  name     = local.l2_map.create_policy_name_map[each.key]
+  name     = local.l2_map.policy_create_name_map[each.key]
   policy   = jsonencode(each.value)
-  tags     = local.l3_map.create_policy_tag_map[each.key]
+  tags     = local.l3_map.policy_create_tag_map[each.key]
 }
 
 resource "aws_iam_role" "this_iam_role" {

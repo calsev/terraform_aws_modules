@@ -1,20 +1,53 @@
+variable "policy_access_list_default" {
+  type    = list(string)
+  default = ["read"]
+}
+
+variable "policy_create_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_append_default" {
+  type    = string
+  default = "secret"
+}
+
+variable "policy_name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prepend_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_suffix_default" {
+  type    = string
+  default = ""
+}
+
 variable "secret_map" {
   type = map(object({
-    create_policy        = optional(bool)
     force_overwrite      = optional(bool)
     kms_key_id           = optional(string)
     policy_access_list   = optional(list(string))
-    policy_name          = optional(string) # Defaults to name-secret
+    policy_create        = optional(bool)
+    policy_name          = optional(string)
+    policy_name_append   = optional(string)
     policy_name_infix    = optional(bool)
     policy_name_prefix   = optional(string)
+    policy_name_prepend  = optional(string)
+    policy_name_suffix   = optional(string)
     recovery_window_days = optional(string)
     resource_policy_json = optional(string)
   }))
-}
-
-variable "secret_create_policy_default" {
-  type    = bool
-  default = true
 }
 
 variable "secret_force_overwrite_default" {
@@ -25,21 +58,6 @@ variable "secret_force_overwrite_default" {
 variable "secret_kms_key_id_default" {
   type    = string
   default = null
-}
-
-variable "secret_policy_access_list_default" {
-  type    = list(string)
-  default = ["read"]
-}
-
-variable "secret_policy_name_infix_default" {
-  type    = bool
-  default = true
-}
-
-variable "secret_policy_name_prefix_default" {
-  type    = string
-  default = ""
 }
 
 variable "secret_recovery_window_days_default" {

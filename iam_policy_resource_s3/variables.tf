@@ -7,7 +7,7 @@ variable "bucket_name" {
   type = string
 }
 
-variable "create_policy" {
+variable "policy_create" {
   type    = bool
   default = true
 }

@@ -32,7 +32,6 @@ module "trigger_suffix" {
   source                                          = "../event_trigger"
   event_dead_letter_queue_enabled_default         = var.event_dead_letter_queue_enabled_default
   event_definition_arn_default                    = var.event_definition_arn_default
-  event_iam_policy_arn_target_default             = var.event_iam_policy_arn_target_default
   event_iam_role_arn_custom_default               = var.event_iam_role_arn_custom_default
   event_iam_role_use_custom_default               = var.event_iam_role_use_custom_default
   event_input_path_default                        = var.event_input_path_default
@@ -46,6 +45,10 @@ module "trigger_suffix" {
   event_target_service_default                    = var.event_target_service_default
   event_task_count_default                        = var.event_task_count_default
   iam_data                                        = var.iam_data
+  role_policy_attach_arn_map_default              = var.role_policy_attach_arn_map_default
+  role_policy_create_json_map_default             = var.role_policy_create_json_map_default
+  role_policy_inline_json_map_default             = var.role_policy_inline_json_map_default
+  role_policy_managed_name_map_default            = var.role_policy_managed_name_map_default
   std_map                                         = var.std_map
   vpc_az_key_list_default                         = var.vpc_az_key_list_default
   vpc_data_map                                    = var.vpc_data_map

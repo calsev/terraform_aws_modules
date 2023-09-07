@@ -1,23 +1,22 @@
 variable "log_map" {
   type = map(object({
-    allow_public_read  = optional(bool)
-    create_policy      = optional(bool)
-    log_retention_days = optional(number)
-    name_prefix        = optional(string)
-    policy_name        = optional(string) # Defaults to name-log
-    policy_name_infix  = optional(bool)
-    policy_name_prefix = optional(string)
+    allow_public_read   = optional(bool)
+    log_retention_days  = optional(number)
+    name_prefix         = optional(string)
+    policy_access_list  = optional(list(string))
+    policy_create       = optional(bool)
+    policy_name         = optional(string)
+    policy_name_append  = optional(string)
+    policy_name_infix   = optional(bool)
+    policy_name_prefix  = optional(string)
+    policy_name_prepend = optional(string)
+    policy_name_suffix  = optional(string)
   }))
 }
 
 variable "log_allow_public_read_default" {
   type    = bool
   default = false
-}
-
-variable "log_create_policy_default" {
-  type    = bool
-  default = true
 }
 
 variable "log_retention_days_default" {
@@ -34,12 +33,37 @@ variable "log_name_prefix_default" {
   default = ""
 }
 
-variable "log_policy_name_infix_default" {
+variable "policy_access_list_default" {
+  type    = list(string)
+  default = ["read", "write"]
+}
+
+variable "policy_create_default" {
   type    = bool
   default = true
 }
 
-variable "log_policy_name_prefix_default" {
+variable "policy_name_append_default" {
+  type    = string
+  default = "log"
+}
+
+variable "policy_name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prepend_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_suffix_default" {
   type    = string
   default = ""
 }

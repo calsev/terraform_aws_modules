@@ -17,12 +17,12 @@ locals {
     for k, v in var.ap_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
   ap_policy_map = {
-    for k, v in local.ap_map : k => v if v.create_policy
+    for k, v in local.ap_map : k => v if v.policy_create
   }
   l1_map = {
     for k, v in var.ap_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       allow_public  = v.allow_public == null ? var.ap_allow_public_default : v.allow_public
-      create_policy = v.create_policy == null ? var.ap_create_policy_default : v.create_policy
+      policy_create = v.policy_create == null ? var.ap_policy_create_default : v.policy_create
       sid_map_l1    = v.sid_map == null ? {} : v.sid_map
     })
   }
@@ -46,7 +46,7 @@ locals {
       },
       {
         arn            = aws_s3_access_point.this_ap[k].arn
-        iam_policy_doc = v.create_policy ? module.this_bucket_policy[k].iam_policy_doc : null
+        iam_policy_doc = v.policy_create ? module.this_bucket_policy[k].iam_policy_doc : null
       },
     )
   }

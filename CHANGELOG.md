@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0
+
+### New modules
+
+* Lambda function
+* Dead letter queue
+* Event alert
+
+### General
+
+* Improved handling of custom policies for embedded roles
+
 ## 0.3.0
 
 ### New modules
