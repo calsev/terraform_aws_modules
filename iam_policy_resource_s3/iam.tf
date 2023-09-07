@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "empty_policy" {
 }
 
 resource "aws_s3_bucket_policy" "this_bucket_policy" {
-  for_each = var.create_policy ? { this = {} } : {}
+  for_each = var.policy_create ? { this = {} } : {}
   bucket   = var.bucket_name
   policy   = local.policy_json
 }

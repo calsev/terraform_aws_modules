@@ -5,12 +5,8 @@ module "name_map" {
 }
 
 locals {
-  alert_map = {
-    for k, v in local.job_map : k => v if v.alert_level != null
-  }
   l1_map = {
     for k, v in var.job_map : k => merge(v, module.name_map.data[k], {
-      alert_level = v.alert_level == null ? var.job_alert_level_default : v.alert_level
       alert_target_path_map = {
         job_id          = "$.detail.jobId"
         job_name        = "$.detail.jobName"
@@ -45,7 +41,7 @@ locals {
   }
   l2_map = {
     for k, v in var.job_map : k => {
-      alert_event_pattern_doc = {
+      alert_event_pattern_json = jsonencode({
         detail = {
           jobDefinition = [
             {
@@ -62,8 +58,7 @@ locals {
         source = [
           "aws.batch",
         ]
-      }
-      k_alert = "${local.l1_map[k].name_simple}-failed"
+      })
       linux_param_map = {
         devices          = []
         sharedMemorySize = local.l1_map[k].resource_memory_shared_gib * 1024
@@ -124,10 +119,10 @@ locals {
     for k, v in local.job_map : k => merge(
       {
         for k_job, v_job in v : k_job => v_job
-        if !contains(["requirement_list", "requirement_list_cpu", "requirement_list_gpu"], k_job)
+        if !contains(["alert_event_pattern_json", "requirement_list", "requirement_list_cpu", "requirement_list_gpu"], k_job)
       },
       {
-        alert               = v.alert_level == null ? null : module.alert_trigger.data[v.k_alert]
+        alert               = module.alert_trigger.data[k]
         job_definition_arn  = aws_batch_job_definition.this_job[k].arn
         job_definition_name = aws_batch_job_definition.this_job[k].name
       }

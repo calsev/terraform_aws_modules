@@ -6,10 +6,22 @@ module "name_map" {
   std_map               = var.std_map
 }
 
+module "policy_map" {
+  source                      = "../policy_name_map"
+  name_map                    = var.repo_map
+  policy_access_list_default  = var.policy_access_list_default
+  policy_create_default       = var.policy_create_default
+  policy_name_append_default  = var.policy_name_append_default
+  policy_name_infix_default   = var.policy_name_infix_default
+  policy_name_prefix_default  = var.policy_name_prefix_default
+  policy_name_prepend_default = var.policy_name_prepend_default
+  policy_name_suffix_default  = var.policy_name_suffix_default
+  std_map                     = var.std_map
+}
+
 locals {
   l1_map = {
-    for k, v in var.repo_map : k => merge(v, module.name_map.data[k], {
-      create_policy       = v.create_policy == null ? var.repo_create_policy_default : v.create_policy
+    for k, v in var.repo_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
       iam_policy_json     = v.iam_policy_json == null ? var.repo_iam_policy_json_default : v.iam_policy_json
       image_tag_list      = v.image_tag_list == null ? var.repo_image_tag_list_default : v.image_tag_list
       image_tag_max_count = v.image_tag_max_count == null ? var.repo_image_tag_max_count_default : v.image_tag_max_count

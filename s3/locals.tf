@@ -18,7 +18,7 @@ locals {
     for k, v in var.bucket_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
   bucket_policy_map = {
-    for k, v in local.bucket_map : k => v if v.create_policy
+    for k, v in local.bucket_map : k => v if v.policy_create
   }
   bucket_web_map = {
     for k, v in local.bucket_map : k => v if v.website_enabled
@@ -32,7 +32,6 @@ locals {
       cors_allowed_methods                 = v.cors_allowed_methods == null ? var.bucket_cors_allowed_methods_default : v.cors_allowed_methods
       cors_allowed_origins                 = v.cors_allowed_origins == null ? var.bucket_cors_allowed_origins_default : v.cors_allowed_origins
       cors_expose_headers                  = v.cors_expose_headers == null ? var.bucket_cors_expose_headers_default : v.cors_expose_headers
-      create_policy                        = v.create_policy == null ? var.bucket_create_policy_default : v.create_policy
       enable_acceleration                  = v.enable_acceleration == null ? var.bucket_enable_acceleration_default : v.enable_acceleration
       encryption_algorithm                 = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm
       encryption_kms_master_key_id         = v.encryption_kms_master_key_id == null ? var.bucket_encryption_kms_master_key_id_default : v.encryption_kms_master_key_id
@@ -43,6 +42,7 @@ locals {
       lifecycle_version_count              = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
       lifecycle_version_expiration_days_l1 = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
       notification_enable_event_bridge     = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
+      policy_create                        = v.policy_create == null ? var.bucket_policy_create_default : v.policy_create
       requester_pays                       = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
       sid_map_l1                           = v.sid_map == null ? {} : v.sid_map
       versioning_enabled                   = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
@@ -83,12 +83,12 @@ locals {
   output_data = {
     for k, v in local.bucket_map : k => merge(
       {
-        for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["create_policy", "lifecycle_version_expiration_days_l1", "sid_map", "sid_map_l1", "sid_map_l2"], k_bucket)
+        for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["policy_create", "lifecycle_version_expiration_days_l1", "sid_map", "sid_map_l1", "sid_map_l2"], k_bucket)
       },
       {
         arn                     = aws_s3_bucket.this_bucket[k].arn
         bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
-        bucket_policy_doc       = v.create_policy ? module.this_bucket_policy[k].iam_policy_doc : null
+        bucket_policy_doc       = v.policy_create ? module.this_bucket_policy[k].iam_policy_doc : null
         bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
       },
     )

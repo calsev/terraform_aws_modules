@@ -352,6 +352,9 @@ locals {
         read = [
           "FilterLogEvents",
           "GetLogGroupFields",
+          "GetLogRecord",
+          "GetQueryResults",
+          "ListTagsForResource",
           "ListTagsLogGroup",
           "StartQuery",
         ]
@@ -359,7 +362,9 @@ locals {
         write = [
           # CreateLogGroup expressly not allowed: do not let services create goofy groups
           "TagLogGroup",
+          "TagResource",
           "UntagLogGroup",
+          "UntagResource",
         ]
       }
       stream = {
@@ -378,17 +383,12 @@ locals {
         public_read = []
         read = [
           "DescribeLogGroups",
-          "DescribeQueries",
           "DescribeQueryDefinitions",
-          "GetLogRecord",
-          "GetQueryResults",
-        ]
-        public_write = []
-        write = [
-          "DeleteQueryDefinition",
-          "PutQueryDefinition",
+          "DescribeQueries",
           "StopQuery",
         ]
+        public_write = []
+        write        = []
       }
     }
     s3 = {

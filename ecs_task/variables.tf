@@ -1,3 +1,13 @@
+variable "alert_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "ecs_cluster_data" {
   type = map(object({
     capability_type          = string
@@ -42,7 +52,8 @@ variable "std_map" {
 
 variable "task_map" {
   type = map(object({
-    alert_level = optional(string)
+    alert_enabled = optional(bool)
+    alert_level   = optional(string)
     container_definition_list = list(object({
       command_join          = optional(bool)
       command_list          = optional(list(string))
@@ -82,12 +93,6 @@ variable "task_map" {
     resource_num_vcpu        = optional(string)
     schedule_expression      = optional(string)
   }))
-}
-
-variable "task_alert_level_default" {
-  type        = string
-  default     = "general_medium"
-  description = "Set to null to disable alerting"
 }
 
 variable "task_container_command_join_default" {

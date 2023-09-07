@@ -6,14 +6,16 @@ module "name_map" {
 }
 
 module "policy_map" {
-  source                     = "../policy_name_map"
-  create_policy_default      = var.log_create_policy_default
-  name_map                   = var.log_map
-  policy_access_list_default = null
-  policy_name_infix_default  = var.log_policy_name_infix_default
-  policy_name_prefix_default = var.log_policy_name_prefix_default
-  policy_name_suffix         = "log"
-  std_map                    = var.std_map
+  source                      = "../policy_name_map"
+  name_map                    = var.log_map
+  policy_access_list_default  = var.policy_access_list_default
+  policy_create_default       = var.policy_create_default
+  policy_name_append_default  = var.policy_name_append_default
+  policy_name_infix_default   = var.policy_name_infix_default
+  policy_name_prefix_default  = var.policy_name_prefix_default
+  policy_name_prepend_default = var.policy_name_prepend_default
+  policy_name_suffix_default  = var.policy_name_suffix_default
+  std_map                     = var.std_map
 }
 
 locals {

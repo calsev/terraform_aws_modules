@@ -3,8 +3,8 @@ module "log_group" {
   log_map = {
     for k, v in local.compute_map : v.k_log => v
   }
-  log_create_policy_default = false
-  std_map                   = var.std_map
+  policy_create_default = false
+  std_map               = var.std_map
 }
 
 resource "aws_ecs_cluster" "this_ecs_cluster" {

@@ -17,7 +17,6 @@ module "vpc_map" {
 locals {
   event_map = {
     for k, v in var.event_map : k => merge(
-      v,
       local.l1_map[k],
       local.l2_map[k],
       local.l3_map[k],
@@ -27,7 +26,6 @@ locals {
   l1_map = {
     for k, v in var.event_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       schedule_expression               = v.schedule_expression == null ? var.event_schedule_expression_default : v.schedule_expression
-      dead_letter_queue_name            = "${k}-dead-letter"
       definition_arn                    = v.definition_arn == null ? var.event_definition_arn_default : v.definition_arn
       event_bus_name                    = v.event_bus_name == null ? var.event_bus_name_default : v.event_bus_name
       event_pattern_json                = v.event_pattern_json == null ? var.event_pattern_json_default : v.event_pattern_json
@@ -47,11 +45,10 @@ locals {
   }
   l2_map = {
     for k, v in var.event_map : k => {
-      batch_targets         = local.l1_map[k].target_service == "batch" ? { this = {} } : {}
-      ecs_targets           = local.l1_map[k].target_service == "ecs" ? { this = {} } : {}
-      event_bus_name        = local.l1_map[k].schedule_expression == null && local.l1_map[k].event_pattern_json == null ? null : local.l1_map[k].event_bus_name
-      event_pattern         = local.l1_map[k].event_pattern_json == null ? null : jsondecode(local.l1_map[k].event_pattern_json)
-      iam_policy_arn_target = v.iam_policy_arn_target == null ? var.event_iam_policy_arn_target_default : v.iam_policy_arn_target
+      batch_targets     = local.l1_map[k].target_service == "batch" ? { this = {} } : {}
+      ecs_targets       = local.l1_map[k].target_service == "ecs" ? { this = {} } : {}
+      event_bus_name    = local.l1_map[k].schedule_expression == null && local.l1_map[k].event_pattern_json == null ? null : local.l1_map[k].event_bus_name
+      event_pattern_doc = local.l1_map[k].event_pattern_json == null ? null : jsondecode(local.l1_map[k].event_pattern_json)
       input_transformer_template_doc_default = local.l1_map[k].input_transformer_path_map == null ? null : {
         for k_input, _ in local.l1_map[k].input_transformer_path_map : k_input => "<${k_input}>"
       }
@@ -80,15 +77,10 @@ locals {
       {
         event_rule_arn    = aws_cloudwatch_event_rule.this_rule[k].arn
         event_target_arn  = aws_cloudwatch_event_target.this_target[k].arn
-        dead_letter_queue = v.dead_letter_queue_enabled ? module.dead_letter_queue.data[local.l1_map[k].dead_letter_queue_name] : null
+        dead_letter_queue = module.dead_letter_queue.data[k]
         role              = local.l3_map[k].iam_role_has_default ? module.trigger_role[k].data : null
       }
     )
-  }
-  queue_map = {
-    for k, v in var.event_map : local.l1_map[k].dead_letter_queue_name => {
-      is_fifo = false
-    } if local.l3_map[k].dead_letter_queue_enabled
   }
   role_map = {
     for k, v in local.event_map : k => v if v.iam_role_has_default

@@ -11,11 +11,6 @@ variable "connection_provider_type_default" {
   default = "GitHub"
 }
 
-variable "create_policy" {
-  type    = bool
-  default = true
-}
-
 variable "host_map" {
   type = map(object({
     name_override               = optional(string)
@@ -38,6 +33,11 @@ variable "host_provider_type_default" {
 variable "host_vpc_tls_certificate_default" {
   type    = string
   default = null
+}
+
+variable "policy_create" {
+  type    = bool
+  default = true
 }
 
 variable "policy_name" {

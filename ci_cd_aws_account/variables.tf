@@ -3,11 +3,6 @@ variable "bucket_lifecycle_expiration_days" {
   default = 14
 }
 
-variable "create_policy" {
-  type    = bool
-  default = true
-}
-
 variable "log_public_enabled" {
   type        = bool
   default     = false
@@ -17,6 +12,11 @@ variable "log_public_enabled" {
 variable "log_retention_days" {
   type    = number
   default = 14
+}
+
+variable "policy_create" {
+  type    = bool
+  default = true
 }
 
 variable "policy_name_prefix" {

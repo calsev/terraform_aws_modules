@@ -96,6 +96,7 @@ tf-lint: tflint-install
 	cd ../development && $(LINT) --config=../development/.tflint.hcl
 	cd ../dns_sd_public && $(LINT) --config=../development/.tflint.hcl
 	cd ../dns_zone && $(LINT) --config=../development/.tflint.hcl
+	cd ../documentation && $(LINT) --config=../development/.tflint.hcl
 	cd ../dynamodb && $(LINT) --config=../development/.tflint.hcl
 	cd ../dynamodb_terraform_lock && $(LINT) --config=../development/.tflint.hcl
 	cd ../ec2_instance_template && $(LINT) --config=../development/.tflint.hcl
@@ -109,6 +110,7 @@ tf-lint: tflint-install
 	cd ../ecs_service && $(LINT) --config=../development/.tflint.hcl
 	cd ../ecs_task && $(LINT) --config=../development/.tflint.hcl
 	cd ../efs && $(LINT) --config=../development/.tflint.hcl
+	cd ../event_alert && $(LINT) --config=../development/.tflint.hcl
 	cd ../event_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../event_bus && $(LINT) --config=../development/.tflint.hcl
 	cd ../event_pattern_s3 && $(LINT) --config=../development/.tflint.hcl
@@ -132,6 +134,7 @@ tf-lint: tflint-install
 	cd ../iam_policy_identity_efs && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_event_bus && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_kms && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_identity_lambda_net && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_s3 && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_secret && $(LINT) --config=../development/.tflint.hcl
@@ -150,9 +153,11 @@ tf-lint: tflint-install
 	cd ../iam_role_code_build && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_role_ecs_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_role_ecs_task && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_role_policy_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_role_rds_monitor && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_role_step_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_user_group && $(LINT) --config=../development/.tflint.hcl
+	cd ../lambda_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../local_config && $(LINT) --config=../development/.tflint.hcl
 	cd ../log_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../name_map && $(LINT) --config=../development/.tflint.hcl
@@ -169,6 +174,7 @@ tf-lint: tflint-install
 	cd ../sm_secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_alert_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_topic && $(LINT) --config=../development/.tflint.hcl
+	cd ../sqs_dead_letter_queue && $(LINT) --config=../development/.tflint.hcl
 	cd ../sqs_queue && $(LINT) --config=../development/.tflint.hcl
 	cd ../ssm_parameter_plain && $(LINT) --config=../development/.tflint.hcl
 	cd ../ssm_parameter_secret && $(LINT) --config=../development/.tflint.hcl

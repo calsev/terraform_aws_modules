@@ -24,7 +24,7 @@ module "this_bucket_policy" {
   source        = "../iam_policy_resource_s3"
   allow_public  = each.value.allow_public
   bucket_name   = aws_s3_access_point.this_ap[each.key].arn
-  create_policy = false
+  policy_create = false
   sid_map       = each.value.sid_map
   std_map       = var.std_map
 }

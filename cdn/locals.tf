@@ -8,20 +8,23 @@ locals {
   }
   bucket_policy_map = {
     for k, v in var.domain_map : v.origin_fqdn => merge(local.bucket_map[v.origin_fqdn], {
-      sid_map = merge(v.sid_map == null ? {} : v.sid_map, {
-        Cloudfront = {
-          access = "public_read"
-          condition_map = {
-            cloudfront_distribution = {
-              test       = "StringEquals"
-              value_list = [aws_cloudfront_distribution.this_distribution[k].arn]
-              variable   = "AWS:SourceArn"
+      sid_map = merge(
+        v.sid_map,
+        {
+          Cloudfront = {
+            access = "public_read"
+            condition_map = {
+              cloudfront_distribution = {
+                test       = "StringEquals"
+                value_list = [aws_cloudfront_distribution.this_distribution[k].arn]
+                variable   = "AWS:SourceArn"
+              }
             }
+            identifier_list = ["cloudfront.amazonaws.com"]
+            identifier_type = "Service"
           }
-          identifier_list = ["cloudfront.amazonaws.com"]
-          identifier_type = "Service"
-        }
-      })
+        },
+      )
     })
   }
   domain_map = {

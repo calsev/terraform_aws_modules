@@ -1,9 +1,34 @@
-variable "policy_name_infix" {
+variable "policy_access_list_default" {
+  type    = list(string)
+  default = ["read", "write"]
+}
+
+variable "policy_create_default" {
   type    = bool
   default = true
 }
 
-variable "policy_name_prefix" {
+variable "policy_name_append_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prepend_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_suffix_default" {
   type    = string
   default = ""
 }
@@ -11,7 +36,6 @@ variable "policy_name_prefix" {
 variable "repo_map" {
   type = map(object({
     base_image          = optional(string) # For Setting up a mirror repo
-    create_policy       = optional(bool)
     iam_policy_json     = optional(string)
     image_tag_list      = optional(list(string))
     image_tag_max_count = optional(number)
@@ -28,13 +52,16 @@ variable "repo_map" {
       })
       }
     )))
-    name_infix = optional(bool)
+    name_infix          = optional(bool)
+    policy_access_list  = optional(list(string))
+    policy_create       = optional(bool)
+    policy_name         = optional(string)
+    policy_name_append  = optional(string)
+    policy_name_infix   = optional(bool)
+    policy_name_prefix  = optional(string)
+    policy_name_prepend = optional(string)
+    policy_name_suffix  = optional(string)
   }))
-}
-
-variable "repo_create_policy_default" {
-  type    = bool
-  default = true
 }
 
 variable "repo_iam_policy_json_default" {

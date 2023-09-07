@@ -2,8 +2,8 @@ variable "ap_map" {
   type = map(object({
     allow_public          = optional(bool)
     bucket_name_effective = string
-    create_policy         = optional(bool)
     name_infix            = optional(bool)
+    policy_create         = optional(bool)
     sid_map = optional(map(object({
       access = string
       condition_map = optional(map(object({
@@ -25,12 +25,12 @@ variable "ap_allow_public_default" {
   description = "There are 2 ways to access an S3 object: S3 URI and S3 website. 3 settings govern public access. allow_public is required for ANY public access."
 }
 
-variable "ap_create_policy_default" {
+variable "ap_name_infix_default" {
   type    = bool
   default = true
 }
 
-variable "ap_name_infix_default" {
+variable "ap_policy_create_default" {
   type    = bool
   default = true
 }

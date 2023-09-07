@@ -1,3 +1,13 @@
+variable "alert_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "batch_cluster_data" {
   type = map(object({
     instance_type_memory_gib = number
@@ -16,6 +26,7 @@ variable "iam_data" {
 
 variable "job_map" {
   type = map(object({
+    alert_enabled              = optional(bool)
     alert_level                = optional(string)
     batch_cluster_key          = optional(string)
     command_list               = optional(list(string))
@@ -40,12 +51,6 @@ variable "job_map" {
       soft_limit = number
     })))
   }))
-}
-
-variable "job_alert_level_default" {
-  type        = string
-  default     = "general_medium"
-  description = "Set to null to disable alerting"
 }
 
 variable "job_batch_cluster_key_default" {
