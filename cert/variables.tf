@@ -14,7 +14,9 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = map(string)
+    ttl_map = object({
+      challenge = number
+    })
   })
 }
 

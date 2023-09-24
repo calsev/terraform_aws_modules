@@ -20,9 +20,9 @@ resource "aws_route53_record" "this_dns_alias" {
   for_each = local.domain_map
   alias {
     # TODO: Map to stages; api key happens to match right now
+    evaluate_target_health = false
     name                   = aws_apigatewayv2_domain_name.this_domain[each.key].domain_name_configuration[0].target_domain_name
     zone_id                = aws_apigatewayv2_domain_name.this_domain[each.key].domain_name_configuration[0].hosted_zone_id
-    evaluate_target_health = false
   }
   name    = "${each.key}."
   type    = "A"

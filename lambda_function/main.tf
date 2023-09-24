@@ -6,12 +6,27 @@ module "log_group" {
 
 module "dead_letter_queue" {
   source    = "../sqs_dead_letter_queue"
-  queue_map = local.function_map
+  queue_map = local.lx_map
   std_map   = var.std_map
 }
 
+data "archive_file" "package" {
+  for_each    = local.create_archive_map
+  type        = "zip"
+  output_path = each.value.source_package_directory_archive_path
+  source_dir  = each.value.source_package_directory_local_path
+}
+
+resource "aws_s3_object" "package" {
+  for_each    = local.create_s3_map
+  bucket      = each.value.source_package_s3_bucket_name
+  key         = each.value.source_package_s3_object_key
+  source      = each.value.source_package_final_archive_local_path
+  source_hash = local.create_hash_map[each.key]
+}
+
 resource "aws_lambda_function" "this_function" {
-  for_each                = local.function_map
+  for_each                = local.lx_map
   architectures           = each.value.architecture_list
   code_signing_config_arn = each.value.code_signing_config_arn
   dynamic "dead_letter_config" {
@@ -26,7 +41,7 @@ resource "aws_lambda_function" "this_function" {
   ephemeral_storage {
     size = each.value.ephemeral_storage_mib
   }
-  filename = each.value.source_package_local_path
+  filename = each.value.source_final_is_local_path ? each.value.source_package_final_archive_local_path : null
   # file_system_config # TODO
   function_name = each.value.name_effective
   handler       = each.value.source_package_handler
@@ -47,11 +62,11 @@ resource "aws_lambda_function" "this_function" {
   reserved_concurrent_executions = each.value.reserved_concurrent_executions
   role                           = module.function_role[each.key].data.iam_role_arn
   runtime                        = each.value.source_package_runtime
-  s3_bucket                      = each.value.source_package_s3_bucket_name
-  s3_key                         = each.value.source_package_s3_object_key
+  s3_bucket                      = each.value.source_final_is_s3_object ? each.value.source_package_s3_bucket_name : null
+  s3_key                         = each.value.source_final_is_s3_object ? each.value.source_package_s3_object_key : null
   s3_object_version              = each.value.source_package_s3_object_version
   skip_destroy                   = false
-  source_code_hash               = each.value.source_package_hash
+  source_code_hash               = local.create_hash_map[each.key]
   dynamic "snap_start" {
     for_each = each.value.source_package_snap_start_enabled ? { this = {} } : {}
     content {

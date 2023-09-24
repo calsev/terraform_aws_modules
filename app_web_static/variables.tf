@@ -3,7 +3,7 @@ variable "cdn_global_data" {
     cache_policy_id_map = object({
       max_cache = string
     })
-    cert = map(object({
+    domain_cert_map = map(object({
       arn = string
     }))
     origin_request_policy_id_map = object({
@@ -53,7 +53,10 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = map(number)
+    ttl_map = object({
+      alias     = number
+      challenge = number
+    })
   })
 }
 

@@ -4,7 +4,7 @@ locals {
   }
   l1_map = {
     for k, v in var.compute_map : k => merge(v, module.compute_common.data[k], {
-      image_type    = module.compute_common.data[k].has_gpu ? "ECS_AL2_NVIDIA" : "ECS_AL2"
+      image_type    = module.compute_common.data[k].has_gpu ? "ECS_AL2_NVIDIA" : "ECS_AL2023"
       max_instances = v.max_instances == null ? var.compute_max_instances_default : v.max_instances
       min_instances = v.min_instances == null ? var.compute_min_instances_default : v.min_instances
     })

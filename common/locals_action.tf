@@ -391,6 +391,16 @@ locals {
         write        = []
       }
     }
+    mobileanalytics = {
+      star = {
+        public_read  = []
+        read         = []
+        public_write = []
+        write = [
+          "PutEvents",
+        ]
+      }
+    }
     s3 = {
       bucket = {
         public_read = [

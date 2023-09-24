@@ -7,7 +7,9 @@ variable "std_map" {
 }
 
 variable "ttl_map" {
-  type = map(string)
+  type = object({
+    ns = number
+  })
 }
 
 variable "zone_list" {

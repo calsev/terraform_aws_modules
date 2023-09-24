@@ -119,8 +119,9 @@ locals {
   compute_env_map = {
     # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
     # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+    # Ubuntu is only built for amd64: https://github.com/aws/aws-codebuild-docker-images/blob/master/ubuntu/standard/7.0/Dockerfile
     cpu-amd-amazon = {
-      image = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+      image = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
     }
     cpu-amd-ubuntu = {
       image = "aws/codebuild/standard:7.0"

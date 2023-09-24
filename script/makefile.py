@@ -170,17 +170,17 @@ def render_makefile_and_env(
     template: str,
     makefile: str,
     module_root: str,
-    module_postfixes: List[str],  # type: ignore
+    module_postfixes: List[str],
     module_ignore_postfixes: List[str],
     tf_root: str,
     env_template: str,
     env_file: str,
-    provisioning_directories: str,  # type: ignore
+    provisioning_directories: str,
 ) -> None:
-    provisioning_directories: Dict[str, Any] = json.loads(provisioning_directories)
+    provisioning_dirs: Dict[str, Any] = json.loads(provisioning_directories)
     ensure_env_file(env_template, env_file)
     app_dir_to_conf_data = {}
-    for provisioning_dir, dir_data in provisioning_directories.items():
+    for provisioning_dir, dir_data in provisioning_dirs.items():
         get_app_dir_conf(tf_root, provisioning_dir, dir_data, app_dir_to_conf_data)
     all_mod_dirs = []
     get_mod_dirs(

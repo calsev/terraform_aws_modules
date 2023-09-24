@@ -44,12 +44,14 @@ env-clean:
 
 env-install: $(VENV)
 	$(ACTIVATE) && \
-	$(ENV_INIT) && \
+	$(ENV_INIT) # Break here to get new tools in the next command
+	$(ACTIVATE) && \
 	python $(PIP) -r $(REQ).lock.txt
 
 env-update: $(VENV)
 	$(ACTIVATE) && \
-	$(ENV_INIT) && \
+	$(ENV_INIT) # Break here to get new tools in the next command
+	$(ACTIVATE) && \
 	python $(PIP) --no-cache-dir -r $(REQ).txt && \
 	python -m pip freeze --all > $(REQ).lock.txt
 
@@ -80,15 +82,4 @@ tf-lint: tflint-install
 	cd {{ mod_dir }} && $(LINT) --config=../development/.tflint.hcl{% endfor %}
 
 tflint-install:
-	@(command tflint && [[ `tflint --version` =~ $(TFLINT_VER) ]] && echo tflint $(TFLINT_VER) already installed) || (echo Installing tflint && make tflint-install-cdn)
-
-#This fails in CI due to rate limits
-tflint-install-net:
-	cd /tmp && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-
-tflint-install-cdn:
-	wget https://cdn.calsev.com/installer/tflint_linux_amd64-v$(TFLINT_VER).zip -O /tmp/tflint.zip
-	cd /tmp && unzip -o tflint.zip
-	ls -alF /tmp | grep tflint
-	sudo chown root:root /tmp/tflint
-	sudo mv /tmp/tflint /usr/local/bin/
+	./script/install_tf_and_tflint.sh

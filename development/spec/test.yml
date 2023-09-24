@@ -3,12 +3,7 @@ phases:
   install:
     commands:
       - cd development
-      - aws s3 sync --quiet s3://cdn-bucket.calsev.com/installer /usr/local/bin --exclude '*' --include 'terraform' --include 'tflint'
-      - ls -alF /usr/local/bin
-      - chmod +x /usr/local/bin/terraform
-      - chmod +x /usr/local/bin/tflint
-      - terraform --version
-      - tflint --version
+      - ./script/install_tf_and_tflint.sh
       - export BASE_PY=$(which python) # Don't bother with Pyenv versions
       - make env-install
   build:
