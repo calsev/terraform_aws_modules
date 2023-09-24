@@ -1,5 +1,6 @@
 variable "api_map" {
   type = map(object({
+    authorizer_key                   = optional(string) # TODO: Authorizer
     cors_allow_credentials           = optional(bool)
     cors_allow_headers               = optional(list(string))
     cors_allow_methods               = optional(list(string))
@@ -33,6 +34,11 @@ variable "api_map" {
     }))
     version = optional(string)
   }))
+}
+
+variable "api_authorizer_key_default" {
+  type    = string
+  default = null
 }
 
 variable "api_cors_allow_credentials_default" {
@@ -75,12 +81,21 @@ variable "api_version_default" {
   default = "1"
 }
 
+#variable "auth_data_map" {
+#  type = map(object({
+#  }))
+#  default     = null
+#  description = "Must be provided if any API in configured for an authorizer"
+#}
+
 variable "dns_data" {
   type = object({
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = map(string)
+    ttl_map = object({
+      challenge = number
+    })
   })
   default = null
 }

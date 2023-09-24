@@ -124,7 +124,7 @@ variable "image_search_ecs_gpu_tag_name" {
   default = {
     false = {
       false = {
-        amazon = "amzn2-ami-hvm-*"
+        amazon = "al2023-ami-hvm-*"
         ubuntu = "ubuntu/images/hvm-ssd/ubuntu-jammy-*"
       }
       true = {
@@ -134,7 +134,7 @@ variable "image_search_ecs_gpu_tag_name" {
     }
     true = {
       false = {
-        amazon = "amzn2-ami-ecs-hvm-*"
+        amazon = "al2023-ami-ecs-hvm-*"
       }
       true = {
         amazon = "amzn2-ami-ecs-gpu-*"

@@ -1,7 +1,7 @@
 module "role_policy_map" {
   source = "../iam_role_policy_map"
   role_map = {
-    for k, v in local.function_map : k => merge(v, {
+    for k, v in local.lx_map : k => merge(v, {
       embedded_role_policy_attach_arn_map = {
         ecr_image_read = {
           condition = v.source_is_image
@@ -32,7 +32,7 @@ module "role_policy_map" {
 
 module "function_role" {
   source                   = "../iam_role"
-  for_each                 = local.function_map
+  for_each                 = local.lx_map
   assume_role_service_list = ["lambda"]
   name                     = "lambda-${each.key}"
   policy_attach_arn_map    = module.role_policy_map.data[each.key].role_policy_attach_arn_map

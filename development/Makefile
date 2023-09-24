@@ -44,12 +44,14 @@ env-clean:
 
 env-install: $(VENV)
 	$(ACTIVATE) && \
-	$(ENV_INIT) && \
+	$(ENV_INIT) # Break here to get new tools in the next command
+	$(ACTIVATE) && \
 	python $(PIP) -r $(REQ).lock.txt
 
 env-update: $(VENV)
 	$(ACTIVATE) && \
-	$(ENV_INIT) && \
+	$(ENV_INIT) # Break here to get new tools in the next command
+	$(ACTIVATE) && \
 	python $(PIP) --no-cache-dir -r $(REQ).txt && \
 	python -m pip freeze --all > $(REQ).lock.txt
 
@@ -77,6 +79,7 @@ tf-fmt-lint: tf-fmt git-lint
 tf-lint: tflint-install
 	$(LINT) --config=.tflint.hcl --init
 	cd ../api_gateway && $(LINT) --config=../development/.tflint.hcl
+	cd ../api_gateway_authorizer && $(LINT) --config=../development/.tflint.hcl
 	cd ../api_gateway_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../api_gateway_integration && $(LINT) --config=../development/.tflint.hcl
 	cd ../api_gateway_route && $(LINT) --config=../development/.tflint.hcl
@@ -91,6 +94,7 @@ tf-lint: tflint-install
 	cd ../ci_cd_build && $(LINT) --config=../development/.tflint.hcl
 	cd ../ci_cd_pipe && $(LINT) --config=../development/.tflint.hcl
 	cd ../ci_cd_remote_account && $(LINT) --config=../development/.tflint.hcl
+	cd ../cognito_user_pool && $(LINT) --config=../development/.tflint.hcl
 	cd ../common && $(LINT) --config=../development/.tflint.hcl
 	cd ../cw_config_ecs && $(LINT) --config=../development/.tflint.hcl
 	cd ../development && $(LINT) --config=../development/.tflint.hcl
@@ -119,6 +123,7 @@ tf-lint: tflint-install
 	cd ../iam_app_batch && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_ecr && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_ecs && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_app_mobile_analytics && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_app_rds && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_assume_role_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_assume_role && $(LINT) --config=../development/.tflint.hcl
@@ -136,6 +141,7 @@ tf-lint: tflint-install
 	cd ../iam_policy_identity_kms && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_lambda_net && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_log_group && $(LINT) --config=../development/.tflint.hcl
+	cd ../iam_policy_identity_mobile_analytics && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_s3 && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_secret && $(LINT) --config=../development/.tflint.hcl
 	cd ../iam_policy_identity_sns && $(LINT) --config=../development/.tflint.hcl
@@ -160,7 +166,11 @@ tf-lint: tflint-install
 	cd ../lambda_function && $(LINT) --config=../development/.tflint.hcl
 	cd ../local_config && $(LINT) --config=../development/.tflint.hcl
 	cd ../log_group && $(LINT) --config=../development/.tflint.hcl
+	cd ../module_template && $(LINT) --config=../development/.tflint.hcl
 	cd ../name_map && $(LINT) --config=../development/.tflint.hcl
+	cd ../pinpoint_app && $(LINT) --config=../development/.tflint.hcl
+	cd ../pinpoint_email_channel && $(LINT) --config=../development/.tflint.hcl
+	cd ../pinpoint_sms_channel && $(LINT) --config=../development/.tflint.hcl
 	cd ../policy_name_map && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_instance && $(LINT) --config=../development/.tflint.hcl
 	cd ../rds_subnet_group && $(LINT) --config=../development/.tflint.hcl
@@ -171,7 +181,11 @@ tf-lint: tflint-install
 	cd ../security_group && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group_app && $(LINT) --config=../development/.tflint.hcl
 	cd ../security_group_rule_set && $(LINT) --config=../development/.tflint.hcl
+	cd ../ses_configuration_set && $(LINT) --config=../development/.tflint.hcl
+	cd ../ses_domain_identity && $(LINT) --config=../development/.tflint.hcl
+	cd ../ses_email_identity && $(LINT) --config=../development/.tflint.hcl
 	cd ../sm_secret && $(LINT) --config=../development/.tflint.hcl
+	cd ../sms_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_alert_aws_account && $(LINT) --config=../development/.tflint.hcl
 	cd ../sns_topic && $(LINT) --config=../development/.tflint.hcl
 	cd ../sqs_dead_letter_queue && $(LINT) --config=../development/.tflint.hcl
@@ -189,15 +203,4 @@ tf-lint: tflint-install
 	cd ../waf && $(LINT) --config=../development/.tflint.hcl
 
 tflint-install:
-	@(command tflint && [[ `tflint --version` =~ $(TFLINT_VER) ]] && echo tflint $(TFLINT_VER) already installed) || (echo Installing tflint && make tflint-install-cdn)
-
-#This fails in CI due to rate limits
-tflint-install-net:
-	cd /tmp && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-
-tflint-install-cdn:
-	wget https://cdn.calsev.com/installer/tflint_linux_amd64-v$(TFLINT_VER).zip -O /tmp/tflint.zip
-	cd /tmp && unzip -o tflint.zip
-	ls -alF /tmp | grep tflint
-	sudo chown root:root /tmp/tflint
-	sudo mv /tmp/tflint /usr/local/bin/
+	./script/install_tf_and_tflint.sh

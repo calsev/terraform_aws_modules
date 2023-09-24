@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lts/ubuntu:latest
 
 SHELL ["/bin/bash", "-c"]
-ARG TF_VER=1.4.6
+ARG TF_VER=1.5.7
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm-256color
 ENV TZ=Etc/UTC

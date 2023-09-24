@@ -29,7 +29,7 @@ locals {
   }
   domain_map = {
     for k, v in var.domain_map : k => merge(v, {
-      acm_certificate_arn = var.cdn_global_data.cert[k].arn
+      acm_certificate_arn = var.cdn_global_data.domain_cert_map[k].arn
       domain_name         = v.domain_name == null ? var.domain_name_default : v.domain_name
       origin_path         = v.origin_path == null ? var.domain_origin_path_default : v.origin_path
     })

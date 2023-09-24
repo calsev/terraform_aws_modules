@@ -1,7 +1,7 @@
 module "api_name_map" {
   source                = "../name_map"
   name_infix_default    = var.api_name_infix_default
-  name_map              = var.api_map
+  name_map              = local.l0_map
   name_regex_allow_list = ["."]
   std_map               = var.std_map
 }
@@ -14,32 +14,41 @@ module "domain_name_map" {
 }
 
 locals {
-  api_map = {
-    for k, v in var.api_map : k => merge(v, module.api_name_map.data[k], {
-      cors_configuration = {
-        allow_credentials = v.cors_allow_credentials == null ? var.api_cors_allow_credentials_default : v.cors_allow_credentials
-        allow_headers     = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
-        allow_methods     = v.cors_allow_methods == null ? var.api_cors_allow_methods_default : v.cors_allow_methods
-        allow_origins     = v.cors_allow_origins == null ? var.api_cors_allow_origins_default : v.cors_allow_origins
-        expose_headers    = v.cors_expose_headers == null ? var.api_cors_expose_headers_default : v.cors_expose_headers
-        max_age           = v.cors_max_age == null ? var.api_cors_max_age_default : v.cors_max_age
-      }
-      version = v.version == null ? var.api_version_default : v.version
-    })
-  }
   domain_map = {
     for k, v in var.domain_map : k => merge(v, module.domain_name_map.data[k], {
       validation_domain = v.validation_domain == null ? var.domain_validation_domain_default : v.validation_domain
     })
   }
   integration_map = {
-    for k_api, v_api in local.api_map : k_api => merge(v_api, {
+    for k_api, v_api in local.lx_map : k_api => merge(v_api, {
       api_id = aws_apigatewayv2_api.this_api[k_api].id
     })
   }
+  l0_map = {
+    for k, v in var.api_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.api_name_map.data[k], {
+      authorizer_key         = v.authorizer_key == null ? var.api_authorizer_key_default : v.authorizer_key
+      cors_allow_credentials = v.cors_allow_credentials == null ? var.api_cors_allow_credentials_default : v.cors_allow_credentials
+      cors_allow_headers     = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
+      cors_allow_methods     = v.cors_allow_methods == null ? var.api_cors_allow_methods_default : v.cors_allow_methods
+      cors_allow_origins     = v.cors_allow_origins == null ? var.api_cors_allow_origins_default : v.cors_allow_origins
+      cors_expose_headers    = v.cors_expose_headers == null ? var.api_cors_expose_headers_default : v.cors_expose_headers
+      cors_max_age           = v.cors_max_age == null ? var.api_cors_max_age_default : v.cors_max_age
+      version                = v.version == null ? var.api_version_default : v.version
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+    }
+  }
+  lx_map = {
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
   output_data = {
     api = {
-      for k_api, v_api in local.api_map : k_api => merge(
+      for k_api, v_api in local.lx_map : k_api => merge(
         {
           for k, v in v_api : k => v if !contains(["integration_map", "stage_map"], k)
         },

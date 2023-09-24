@@ -8,45 +8,47 @@ variable "ecr_data" {
     }))
   })
   default     = null
-  description = "Must be provided if any function is configured in a VPC"
+  description = "Must be provided if any function is configured with an image"
 }
 
 variable "function_map" {
   type = map(object({
-    architecture_list                 = optional(list(string))
-    code_signing_config_arn           = optional(string)
-    dead_letter_queue_enabled         = optional(bool)
-    environment_variable_map          = optional(map(string))
-    ephemeral_storage_mib             = optional(number)
-    kms_key_arn                       = optional(string)
-    layer_version_arn_list            = optional(list(string))
-    memory_size_mib                   = optional(number)
-    name_infix                        = optional(bool)
-    publish_numbered_version          = optional(bool)
-    reserved_concurrent_executions    = optional(number)
-    role_policy_attach_arn_map        = optional(map(string))
-    role_policy_create_json_map       = optional(map(string))
-    role_policy_inline_json_map       = optional(map(string))
-    role_policy_managed_name_map      = optional(map(string))
-    source_image_command              = optional(list(string))
-    source_image_entry_point          = optional(list(string))
-    source_image_repo_key             = optional(string)
-    source_image_repo_tag             = optional(string)
-    source_image_working_directory    = optional(string)
-    source_package_handler            = optional(string)
-    source_package_hash               = optional(string)
-    source_package_local_path         = optional(string)
-    source_package_runtime            = optional(string)
-    source_package_s3_bucket_name     = optional(string)
-    source_package_s3_object_key      = optional(string)
-    source_package_s3_object_version  = optional(number)
-    source_package_snap_start_enabled = optional(bool)
-    timeout_seconds                   = optional(number)
-    tracing_mode                      = optional(string)
-    vpc_az_key_list                   = optional(list(string))
-    vpc_key                           = optional(string)
-    vpc_security_group_key_list       = optional(list(string))
-    vpc_segment_key                   = optional(string)
+    architecture_list                     = optional(list(string))
+    code_signing_config_arn               = optional(string)
+    dead_letter_queue_enabled             = optional(bool)
+    environment_variable_map              = optional(map(string))
+    ephemeral_storage_mib                 = optional(number)
+    kms_key_arn                           = optional(string)
+    layer_version_arn_list                = optional(list(string))
+    memory_size_mib                       = optional(number)
+    name_infix                            = optional(bool)
+    publish_numbered_version              = optional(bool)
+    reserved_concurrent_executions        = optional(number)
+    role_policy_attach_arn_map            = optional(map(string))
+    role_policy_create_json_map           = optional(map(string))
+    role_policy_inline_json_map           = optional(map(string))
+    role_policy_managed_name_map          = optional(map(string))
+    source_image_command                  = optional(list(string))
+    source_image_entry_point              = optional(list(string))
+    source_image_repo_key                 = optional(string)
+    source_image_repo_tag                 = optional(string)
+    source_image_working_directory        = optional(string)
+    source_package_archive_local_path     = optional(string)
+    source_package_directory_local_path   = optional(string)
+    source_package_directory_archive_path = optional(string) # Defaults to the directory with .zip appended
+    source_package_handler                = optional(string)
+    source_package_runtime                = optional(string)
+    source_package_s3_bucket_name         = optional(string)
+    source_package_s3_object_hash         = optional(string) # TODO: Calc for local, this for S3
+    source_package_s3_object_key          = optional(string) # Defaults to ${var.function_source_package_s3_object_key_base_default}/deployment_package_${key}zip
+    source_package_s3_object_version      = optional(number)
+    source_package_snap_start_enabled     = optional(bool)
+    timeout_seconds                       = optional(number)
+    tracing_mode                          = optional(string)
+    vpc_az_key_list                       = optional(list(string))
+    vpc_key                               = optional(string)
+    vpc_security_group_key_list           = optional(list(string))
+    vpc_segment_key                       = optional(string)
   }))
 }
 
@@ -132,20 +134,27 @@ variable "function_source_image_working_directory_default" {
   default = null
 }
 
+variable "function_source_package_archive_local_path_default" {
+  type        = string
+  default     = null
+  description = "Overrides a local directory or S3 object"
+}
+
+variable "function_source_package_directory_local_path_default" {
+  type        = string
+  default     = null
+  description = "Ignored if an archive path is provided. Overrides an S3 object."
+}
+
 variable "function_source_package_handler_default" {
   type    = string
   default = null
 }
 
-variable "function_source_package_hash_default" {
+variable "function_source_package_s3_object_hash_default" {
   type        = string
   default     = null
-  description = "Ignored if image key is provided"
-}
-
-variable "function_source_package_local_path_default" {
-  type    = string
-  default = null
+  description = "Ignored if image key is provided or an archive or directory is provided"
 }
 
 variable "function_source_package_runtime_default" {
@@ -155,18 +164,21 @@ variable "function_source_package_runtime_default" {
 }
 
 variable "function_source_package_s3_bucket_name_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "If no local path is provided, the object must exist in S3. Otherwise optionally provide bucket and key to create an S3 object."
 }
 
-variable "function_source_package_s3_object_key_default" {
-  type    = string
-  default = null
+variable "function_source_package_s3_object_key_base_default" {
+  type        = string
+  default     = "lambda_function"
+  description = "Used a a base path segment for default S3 paths. If no local path is provided, the object must exist in S3. Otherwise optionally provide bucket and key to create an S3 object."
 }
 
 variable "function_source_package_s3_object_version_default" {
-  type    = number
-  default = null
+  type        = number
+  default     = null
+  description = "Ignored if an archive or directory is provided"
 }
 
 variable "function_package_snap_start_enabled_default" {

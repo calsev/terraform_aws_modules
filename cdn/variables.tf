@@ -3,13 +3,25 @@ variable "cdn_global_data" {
     cache_policy_id_map = object({
       max_cache = string
     })
-    cert = map(object({
+    domain_cert_map = map(object({
       arn = string
     }))
     origin_request_policy_id_map = object({
       max_cache = string
     })
     web_acl_arn = string
+  })
+}
+
+variable "dns_data" {
+  type = object({
+    domain_to_dns_zone_map = map(object({
+      dns_zone_id = string
+    }))
+    ttl_map = object({
+      alias     = number
+      challenge = number
+    })
   })
 }
 
@@ -47,15 +59,6 @@ variable "domain_name_default" {
 variable "domain_origin_path_default" {
   type    = string
   default = ""
-}
-
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-    ttl_map = map(string)
-  })
 }
 
 variable "std_map" {

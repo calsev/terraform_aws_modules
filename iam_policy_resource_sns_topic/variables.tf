@@ -28,7 +28,6 @@ variable "sns_topic_name" {
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
-    iam_partition                  = string
     aws_account_id                 = string
     aws_region_name                = string
     iam_partition                  = string

@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.5.0
+
+### New modules
+
+* API Gateway authorizer
+* Cognito user pool
+* Mobile Analytics IAM app
+* Mobile Analytics IAM policy
+* Pinpoint app
+* Pinpoint email channel
+* Pinpoint SMS channel
+* SES configuration set
+* SES domain identity
+* SES email identity
+* SMS account
+
+### General
+
+* Module template
+* More attributes for DynamoDB table
+* More examples
+* Update compute defaults to AL 2023
+* Uplift archive handling into Lambda function
+
 ## 0.4.0
 
 ### New modules
