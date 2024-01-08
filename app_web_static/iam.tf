@@ -1,6 +1,6 @@
 module "start_build" {
   for_each                = local.build_name_list_map
-  source                  = "../iam_policy_identity_code_build_project"
+  source                  = "../iam/policy/identity/code_build_project"
   access_list             = ["read_write"]
   build_project_name_list = each.value
   name                    = "${each.key}_start_build"
@@ -9,7 +9,7 @@ module "start_build" {
 
 module "site_deploy" {
   for_each = var.site_map
-  source   = "../iam_policy_identity_s3"
+  source   = "../iam/policy/identity/s3"
   sid_map = {
     Artifact = {
       access           = "write"
@@ -22,7 +22,7 @@ module "site_deploy" {
 
 module "cdn_invalidate" {
   for_each = var.site_map
-  source   = "../iam_policy_identity_cdn"
+  source   = "../iam/policy/identity/cdn"
   cdn_arn  = module.cdn.data.cdn[each.key].arn
   name     = "${each.key}_cdn_invalidate"
   std_map  = var.std_map
@@ -30,7 +30,7 @@ module "cdn_invalidate" {
 
 module "code_build_role" {
   for_each           = var.site_map
-  source             = "../iam_role_code_build"
+  source             = "../iam/role/code_build"
   ci_cd_account_data = var.ci_cd_account_data
   name               = "${each.key}_deploy"
   policy_attach_arn_map = {
@@ -42,7 +42,7 @@ module "code_build_role" {
 
 module "code_pipe_role" {
   for_each                 = local.site_policy_map
-  source                   = "../iam_role"
+  source                   = "../iam/role/base"
   assume_role_service_list = ["codepipeline"]
   name                     = "${each.key}-code-pipe"
   policy_attach_arn_map    = each.value.policy_attach_arn_map

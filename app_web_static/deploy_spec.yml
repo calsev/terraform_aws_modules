@@ -3,5 +3,5 @@ phases:
   build:
     commands:
       - ls -alF
-      - aws s3 sync --quiet --cache-control='public, max-age=31536000, immutable' ${local_sync_path} s3://${bucket_name}
+      - aws s3 sync --no-progress --cache-control='public, max-age=31536000, immutable' ${local_sync_path} s3://${bucket_name}
       - aws cloudfront create-invalidation --distribution-id ${cdn_distribution_id} --paths "${cdn_invalidation_path}"

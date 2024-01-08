@@ -4,7 +4,6 @@ variable "param_map" {
     data_type           = optional(string)
     insecure_value      = string
     kms_key_id          = optional(string)
-    overwrite           = optional(bool)
     policy_access_list  = optional(list(string))
     policy_create       = optional(bool)
     policy_name         = optional(string)
@@ -35,11 +34,6 @@ variable "param_data_type_default" {
 variable "param_kms_key_id_default" {
   type    = string
   default = null
-}
-
-variable "param_overwrite_default" {
-  type    = bool
-  default = true
 }
 
 variable "param_tier_default" {

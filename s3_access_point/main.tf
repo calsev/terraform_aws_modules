@@ -21,7 +21,7 @@ resource "aws_s3_access_point" "this_ap" {
 
 module "this_bucket_policy" {
   for_each      = local.ap_policy_map
-  source        = "../iam_policy_resource_s3"
+  source        = "../iam/policy/resource/s3"
   allow_public  = each.value.allow_public
   bucket_name   = aws_s3_access_point.this_ap[each.key].arn
   policy_create = false

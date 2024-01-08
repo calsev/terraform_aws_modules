@@ -6,6 +6,7 @@ locals {
   }
   vpc_map = {
     main = {
+      nat_gateway_enabled = false
       peer_map = {
         # Create a VPC peering between main and test VPCs
         test = {}

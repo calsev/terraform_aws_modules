@@ -1,6 +1,6 @@
 module "this_policy" {
   for_each = local.topic_policy_map
-  source   = "../iam_policy_resource_sns_topic"
+  source   = "../iam/policy/resource/sns_topic"
   sid_map = {
     Event = {
       access = "write"
