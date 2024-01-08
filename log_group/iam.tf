@@ -1,5 +1,5 @@
 module "this_policy" {
-  source         = "../iam_policy_identity_log_group"
+  source         = "../iam/policy/identity/log_group"
   for_each       = local.log_map
   access_list    = each.value.policy_access_list
   log_group_name = aws_cloudwatch_log_group.this_log_group[each.key].name

@@ -36,11 +36,11 @@ Modules make extensive use of optional parameters as introduced in [Terraform 1.
 
 This module set has no external dependencies or submodules.
 
-## Usage
+## Usage paradigms
 
-### Common paradigms
+Some common paradigms used by this library are enumerated below.
 
-#### Item map
+### Item map
 
 Most modules in this library support creating multiple items.
 The basic paradigm is outlined below.
@@ -72,7 +72,7 @@ The output from such modules will be a map containing:
 
 A Notable exception to this paradigm is IAM modules that always create a single IAM entity.
 
-#### Context from std_map
+### Context from std_map
 
 Modules universally take a context object called `std_map`.
 This struct can be created using the [common module](common) and by passing typically 3 variables for `app`, `region_name` and `env`.
@@ -87,7 +87,7 @@ This context provides:
 One `std_map` context is used per region and environment, in a `for_each` loop.
 Examples of multi-region, multi-environment usage are given below.
 
-#### Naming
+### Naming
 
 Most modules support a standard naming convention that distinguishes:
 
@@ -102,7 +102,7 @@ This is usually appropriate for internal and "glue" resources so they are easy t
 but is usually changed for external-facing resources or resources with lifetimes that transcend management in Terraform.
 
 
-#### Trivial, structured output
+### Trivial, structured output
 
 The vast majority of modules provide a single output object named `data`.
 Thus outputs from modules are easy to aggregate.
@@ -119,7 +119,7 @@ module "local_config" {
 This output enables easy consumption by other languages.
 This paradigm is used extensively in the examples.
 
-#### Networking from vpc_data_map
+### Networking from vpc_data_map
 
 Rather than lists of CIDRs and subnet IDs and security group IDs,
 modules that require networking take a `vpc_data_map` and each item in the list takes a
@@ -130,7 +130,7 @@ modules that require networking take a `vpc_data_map` and each item in the list 
 
 Low-level lists of IDs are synthesized.
 
-#### Permissions by access level
+### Permissions by access level
 
 IAM policies can be created by hand,
 but this library typically does not bother with individual actions.
@@ -174,19 +174,19 @@ and optionally a non-null `iam_policy_arn` if a policy name is provided.
 Read and write permissions granted in this way refer to only _using_ the resource. 
 Permission for management actions such as attaching policies or adding configurations is never granted in this manner.
 
-### Examples
+## Examples
 
-#### S3 buckets and Terraform locks
+### S3 buckets and Terraform locks
 
 To get started with Terraform, typically an S3 bucket for the backend and a DynamoDB table for locks is required.
-These can be created as in [this example]().
+These can be created as in [this example](documentation/example/inf/s3).
 Also demonstrated are:
 
 * Multi-region usage
 * S3 websites
 * S3 access points
 
-#### VPC networking
+### VPC networking
 
 For an example of creating VPC networking infrastructure the easy way, [see this example](documentation/example/inf/net).
 This app uses the [vpc_stack module](vpc_stack) to create multiple peered VPCs in a few lines.
@@ -196,30 +196,41 @@ For finer-grained control and advanced usage, see the underlying [vpc_networking
 Notably, this example app generates output that is suitable for usage as the `vpc_data_map` variable that is expected by many other modules.
 Specifically, the output of this example can be imported and passed as `vpc_data_map = data.terraform_remote_state.net.outputs.data.vpc_map`.
 
-#### ECR images
+### ECR images
 
 This [small example](documentation/example/inf/ecr) uses the [ecr_repo module](ecr_repo) to generate `ecr_data` as expected by modules that use a container.
 
 Notably, the output from this example app can be imported and passed as `ecr_data = data.terraform_remote_state.ecr.outputs.data`.
 
-#### S3 object ingestion
+### S3 object ingestion
 
-The example [app/s3_proc](documentation/example/s3_proc)
+The example [app/s3_proc](documentation/example/app/s3_proc)
 shows two common patterns in an AWS account
 
 * Triggering a process based on an S3 upload
 * Processing data using Batch
 
-### Development scripts
+### Lambda functions
+
+The example [app/lambda](documentation/example/app/lambda)
+shows examples of lambda functions from several sources
+
+* Create archive from local directory
+* Create archive from local directory and create S3 archive
+* Use existing local archive
+* Use existing archive and create S3 archive
+* Use existing S3 archive
+
+## Development scripts
 
 This library provides some scripts to improve quality of life for the Terraform developer.
 
-#### Auto move
+### Auto move
 
 Terraform provides a programmatic `move` resource, but these do not support `for_each`.
 The [script/tf_move.py](script/tf_move.py) provides a CLI for interactive movement of all resources after a refactor.
 
-#### Auto import of S3 buckets
+### Auto import of S3 buckets
 
 An S3 bucket requires upwards of a dozen resources to manage in Terraform.
 The [script/s3_import](script/s3_import.py) makes importing existing S3 buckets less tedious.
@@ -227,7 +238,7 @@ All resources supported by the [s3 module](s3) will be imported for each bucket 
 Remaining resources can be created without risk of overwriting existing configuration.
 Note that the bucket itself should not be imported before running this script.
 
-#### App target generation
+### App target generation
 
 Products such as [Terragrunt](https://terragrunt.gruntwork.io/)
 extend Terraform by providing `for_each` semantics for common Terraform commands.

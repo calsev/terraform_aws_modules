@@ -1,10 +1,10 @@
 resource "aws_cloudwatch_event_rule" "this_rule" {
   for_each            = local.event_map
   name                = each.value.name_effective
-  is_enabled          = each.value.is_enabled
   event_bus_name      = each.value.event_bus_name
   event_pattern       = each.value.event_pattern_json
   schedule_expression = each.value.schedule_expression
+  state               = each.value.is_enabled ? "ENABLED" : "DISABLED" # TODO: ENABLED_WITH_ALL_CLOUDTRAIL_MANAGEMENT_EVENTS
   tags                = each.value.tags
 }
 

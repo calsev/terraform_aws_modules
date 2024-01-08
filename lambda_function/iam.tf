@@ -1,5 +1,5 @@
 module "role_policy_map" {
-  source = "../iam_role_policy_map"
+  source = "../iam/role/policy_map"
   role_map = {
     for k, v in local.lx_map : k => merge(v, {
       embedded_role_policy_attach_arn_map = {
@@ -31,7 +31,7 @@ module "role_policy_map" {
 }
 
 module "function_role" {
-  source                   = "../iam_role"
+  source                   = "../iam/role/base"
   for_each                 = local.lx_map
   assume_role_service_list = ["lambda"]
   name                     = "lambda-${each.key}"

@@ -1,5 +1,5 @@
 module "ecr_mirror_policy" {
-  source      = "../iam_policy_identity_ecr"
+  source      = "../iam/policy/identity/ecr"
   access_list = ["read_write"]
   name        = var.task_name
   repo_name   = "*"
@@ -7,7 +7,7 @@ module "ecr_mirror_policy" {
 }
 
 module "ecs_task_role" {
-  source   = "../iam_role_ecs_task"
+  source   = "../iam/role/ecs_task"
   log_data = module.ecr_mirror_log.data[var.task_name]
   name     = var.task_name
   policy_attach_arn_map = {

@@ -30,6 +30,13 @@ resource "aws_batch_compute_environment" "this_compute_env" {
       image_id_override = each.value.image_id # Cleanup diff
       image_type        = each.value.image_type
     }
+    dynamic "ec2_configuration" {
+      for_each = each.value.image_type_second == null ? {} : { this = {} }
+      content {
+        image_id_override = null
+        image_type        = each.value.image_type_second
+      }
+    }
     instance_role = var.iam_data.iam_instance_profile_arn_ecs # ECS service API calls
     instance_type = [each.value.instance_type]
     launch_template {

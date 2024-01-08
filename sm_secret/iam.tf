@@ -1,5 +1,5 @@
 module "this_policy" {
-  source         = "../iam_policy_identity_secret"
+  source         = "../iam/policy/identity/secret"
   for_each       = local.secret_map
   access_list    = each.value.policy_access_list
   name           = each.value.policy_name

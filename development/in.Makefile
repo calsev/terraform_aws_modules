@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 
+DEV_ROOT = $(shell pwd)
 REQ := requirements/requirements.ci
 VER_REGEX := sed -nre 's/.*?([0-9]+\.[0-9]+)\.[0-9]+.*/\1/p'
 PY_VER ?= $(shell echo 3.11.0 | $(VER_REGEX))
@@ -61,7 +62,7 @@ git-lint:
 lint: make-lint tf-fmt-lint py-lint tf-lint
 
 make:
-	$(PY) python ../script/makefile.py '{}' --env-file '' --module-root '..' --module-postfixes '..' --module-ignore-postfixes '.git'
+	$(PY) python ../script/makefile.py '{}' --env-file '' --module-root '..' --module-ignore-postfixes 'development' 'documentation' '.git' 'script' '.venv'
 
 make-lint: make git-lint
 
@@ -78,8 +79,8 @@ tf-fmt-lint: tf-fmt git-lint
 
 tf-lint: tflint-install
 	$(LINT) --config=.tflint.hcl --init{% for app_dir, app_data in app_dirs.items() %}
-	cd {{ app_data.path }} && $(LINT) --config=../development/.tflint.hcl --module{% if app_data.var_file %} --var-file {{ app_data.var_file }}.tfvars{% endif %}{% endfor %}{% for mod_dir in mod_dirs %}
-	cd {{ mod_dir }} && $(LINT) --config=../development/.tflint.hcl{% endfor %}
+	cd {{ app_data.path }} && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl --module{% if app_data.var_file %} --var-file {{ app_data.var_file }}.tfvars{% endif %}{% endfor %}{% for mod_dir in mod_dirs %}
+	cd {{ mod_dir }} && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl{% endfor %}
 
 tflint-install:
 	./script/install_tf_and_tflint.sh

@@ -34,13 +34,6 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
         help="Relative path to the module root",
     )
     args.add_argument(
-        "--module-postfixes",
-        type=str,
-        nargs="+",
-        default=["modules"],
-        help="List of filters for Terraform module parent directories to lint",
-    )
-    args.add_argument(
         "--module-ignore-postfixes",
         type=str,
         nargs="+",
@@ -133,7 +126,6 @@ def get_app_dir_conf(
 def get_mod_dirs(
     parent_dir: str,
     curr_dir: str,
-    module_postfixes: List[str],
     module_ignore_postfixes: List[str],
     all_mod_dirs: List[str],
 ) -> None:
@@ -141,14 +133,11 @@ def get_mod_dirs(
     if any(curr_dir.endswith(postfix) for postfix in module_ignore_postfixes):
         return
     rel_dir = os.path.join(parent_dir, curr_dir)
-    if any(parent_dir.endswith(parent) for parent in module_postfixes):
-        all_mod_dirs.append(rel_dir)
+    all_mod_dirs.append(rel_dir)
     child_dirs = get_child_dirs(rel_dir)
     child_mods = []
     for child_dir in child_dirs:
-        get_mod_dirs(
-            rel_dir, child_dir, module_postfixes, module_ignore_postfixes, child_mods
-        )
+        get_mod_dirs(rel_dir, child_dir, module_ignore_postfixes, child_mods)
     all_mod_dirs.extend(child_mods)
 
 
@@ -170,7 +159,6 @@ def render_makefile_and_env(
     template: str,
     makefile: str,
     module_root: str,
-    module_postfixes: List[str],
     module_ignore_postfixes: List[str],
     tf_root: str,
     env_template: str,
@@ -183,9 +171,7 @@ def render_makefile_and_env(
     for provisioning_dir, dir_data in provisioning_dirs.items():
         get_app_dir_conf(tf_root, provisioning_dir, dir_data, app_dir_to_conf_data)
     all_mod_dirs = []
-    get_mod_dirs(
-        "", module_root, module_postfixes, module_ignore_postfixes, all_mod_dirs
-    )
+    get_mod_dirs("", module_root, module_ignore_postfixes, all_mod_dirs)
     render_makefile(template, makefile, app_dir_to_conf_data, all_mod_dirs)
 
 

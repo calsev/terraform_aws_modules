@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+### General
+
+* Moved IAM modules into subdirectories to reduce vertical size
+
 ## 0.5.0
 
 ### New modules
