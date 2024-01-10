@@ -81,11 +81,12 @@ tf-lint: tflint-install
 	$(LINT) --config=.tflint.hcl --init
 	cd .. && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../api_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../api_gateway_authorizer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../api_gateway_aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../api_gateway_integration && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../api_gateway_route && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../api_gateway_stage && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../api_gateway/authorizer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../api_gateway/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../api_gateway/integration && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../api_gateway/route && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../api_gateway/stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../api_gateway/stage && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_mirror/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

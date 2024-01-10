@@ -1,7 +1,14 @@
+module "name_map" {
+  source   = "../name_map"
+  name_map = var.domain_map
+  std_map  = var.std_map
+}
+
 locals {
   domain_map = {
-    for k, v in var.domain_map : k => merge(v, {
-      validation_domain = v.validation_domain == null ? var.domain_validation_domain_default : v.validation_domain
+    for k, v in var.domain_map : k => merge(v, module.name_map.data[k], {
+      enable_transparency_logging = v.enable_transparency_logging == null ? var.domain_enable_transparency_logging_default : v.enable_transparency_logging
+      validation_domain           = v.validation_domain == null ? var.domain_validation_domain_default : v.validation_domain
     })
   }
   output_data = {

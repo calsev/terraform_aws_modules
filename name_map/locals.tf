@@ -4,14 +4,14 @@ locals {
       name_infix  = v.name_infix == null ? var.name_infix_default : v.name_infix
       name_prefix = replace(replace(v.name_prefix == null ? var.name_prefix_default : v.name_prefix, "/[_.]/", "-"), "--", "-") # Prefix must allow /aws/
       name_simple = replace(replace(k, local.name_regex, "-"), "--", "-")
-      name_suffix = replace(replace(v.name_suffix == null ? var.name_suffix_default : v.name_suffix, var.std_map.name_replace_regex, "-"), "--", "-")
+      name_suffix = replace(replace(v.name_suffix == null ? var.name_suffix_default : v.name_suffix, "/[_/]/", "-"), "--", "-") # Suffix must allow .fifo
     })
   }
   l2_map = {
     for k, _ in var.name_map : k => {
       # Always use full regex because infix makes no sense as anything else
       # Always do standard replace for name_context - use name_effective for DNS, etc.
-      name_context = replace("${local.l1_map[k].name_prefix}${replace("${var.std_map.resource_name_prefix}${k}${var.std_map.resource_name_suffix}${local.l1_map[k].name_suffix}", var.std_map.name_replace_regex, "-")}", "--", "-")
+      name_context = replace("${local.l1_map[k].name_prefix}${replace("${var.std_map.resource_name_prefix}${k}${var.std_map.resource_name_suffix}", var.std_map.name_replace_regex, "-")}${local.l1_map[k].name_suffix}", "--", "-")
     }
   }
   l3_map = {

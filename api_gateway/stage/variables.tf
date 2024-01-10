@@ -1,16 +1,17 @@
 variable "api_map" {
   type = map(object({
-    api_id         = string
-    deployment_id  = string
-    domain_name_id = optional(string) # If set, a mapping will be created
+    api_id             = string
+    deployment_id      = string
+    domain_name_id     = optional(string)
+    enable_dns_mapping = bool # If true, a mapping will be created
     integration_map = map(object({
       route_map = map(object({ # All routes are reproduced for each stage
       }))
     }))
-    log_group_arn = string
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
+      log_group_arn            = string
       throttling_burst_limit   = optional(number)
       throttling_rate_limit    = optional(number)
     }))

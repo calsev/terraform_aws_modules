@@ -1,20 +1,16 @@
 resource "aws_acm_certificate" "this_cert" {
-  for_each    = local.domain_map
-  domain_name = each.key
+  for_each      = local.domain_map
+  domain_name   = each.key
+  key_algorithm = null # TODO
   lifecycle {
     create_before_destroy = true
   }
   options {
-    certificate_transparency_logging_preference = "ENABLED"
+    certificate_transparency_logging_preference = each.value.enable_transparency_logging ? "ENABLED" : "DISABLED"
   }
-  subject_alternative_names = []
-  tags = merge(
-    var.std_map.tags,
-    {
-      Name = "${var.std_map.resource_name_prefix}${each.key}${var.std_map.resource_name_suffix}"
-    }
-  )
-  validation_method = "DNS"
+  subject_alternative_names = [] # TODO
+  tags                      = each.value.tags
+  validation_method         = "DNS"
   validation_option {
     domain_name       = each.key
     validation_domain = each.value.validation_domain
