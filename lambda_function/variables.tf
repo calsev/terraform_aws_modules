@@ -22,6 +22,14 @@ variable "function_map" {
     layer_version_arn_list                = optional(list(string))
     memory_size_mib                       = optional(number)
     name_infix                            = optional(bool)
+    policy_access_list                    = optional(list(string))
+    policy_create                         = optional(bool)
+    policy_name                           = optional(string)
+    policy_name_append                    = optional(string)
+    policy_name_infix                     = optional(bool)
+    policy_name_prefix                    = optional(string)
+    policy_name_prepend                   = optional(string)
+    policy_name_suffix                    = optional(string)
     publish_numbered_version              = optional(bool)
     reserved_concurrent_executions        = optional(number)
     role_policy_attach_arn_map            = optional(map(string))
@@ -203,6 +211,41 @@ variable "iam_data" {
   })
   default     = null
   description = "Must be provided if any function is configured in a VPC"
+}
+
+variable "policy_access_list_default" {
+  type    = list(string)
+  default = ["write"]
+}
+
+variable "policy_create_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_append_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prepend_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_suffix_default" {
+  type    = string
+  default = ""
 }
 
 variable "role_policy_attach_arn_map_default" {

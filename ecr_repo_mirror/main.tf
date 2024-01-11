@@ -7,7 +7,7 @@ module "ecr_repo" {
 }
 
 module "computation" {
-  source = "../ecs_compute"
+  source = "../ecs/compute"
   compute_map = {
     (var.task_name) = {
       instance_type = var.instance_type

@@ -6,10 +6,11 @@ variable "api_map" {
       http_method          = optional(string) # Ignored for sqs, states
       iam_role_arn         = optional(string)
       passthrough_behavior = optional(string)
+      request_parameters   = optional(map(string)) # Defaults provided for sqs, states
       service              = optional(string)
       subtype              = optional(string)
-      target_arn           = optional(string) # Used for sqs, states, ignored for lambda
-      target_uri           = optional(string) # Used for lambda, ignored for sqs, states
+      target_arn           = optional(string) # Used for states, ignored for lambda, sqs
+      target_uri           = optional(string) # Used for lambda, sqs, ignored for states
       timeout_seconds      = optional(number)
       vpc_link_id          = optional(string)
     }))
@@ -18,7 +19,7 @@ variable "api_map" {
 
 variable "integration_http_method_default" {
   type        = string
-  default     = "ANY"
+  default     = "POST"
   description = "Ignored for integrations with subtype, e.g. SQS, StepFunctions"
 }
 

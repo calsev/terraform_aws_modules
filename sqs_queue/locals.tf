@@ -62,6 +62,7 @@ locals {
       module.queue_policy[k].data,
       {
         arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
+        url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null
       },
     )
   }
