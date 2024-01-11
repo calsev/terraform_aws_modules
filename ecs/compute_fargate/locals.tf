@@ -1,5 +1,5 @@
 module "name_map" {
-  source   = "../name_map"
+  source   = "../../name_map"
   name_map = var.compute_map
   std_map  = var.std_map
 }

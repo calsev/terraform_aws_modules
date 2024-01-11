@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.0
+
+### Feature
+
+* Add embedded policy to Step Function
+* Add embedded policy to Lambda
+
+### General
+
+* Reorganized CI/CD modules into subdirectories to reduce vertical size
+* Reorganized ECS modules into subdirectories to reduce vertical size
+
 ## 0.7.0
 
 ### Feature

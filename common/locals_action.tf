@@ -344,6 +344,30 @@ locals {
         ]
       }
     }
+    lambda = {
+      function = {
+        public_read = []
+        read = [
+          "ListTags",
+        ]
+        public_write = []
+        write = [
+          "InvokeFunction",
+          "InvokeFunctionUrl",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "ListFunctions",
+        ]
+        public_write = []
+        write = [
+        ]
+      }
+    }
     logs = {
       group = {
         public_read = [

@@ -1,3 +1,8 @@
+variable "access_list" {
+  type    = list(string)
+  default = ["write"]
+}
+
 variable "name" {
   type        = string
   default     = null
@@ -30,11 +35,6 @@ variable "std_map" {
   })
 }
 
-variable "step_function_name" {
+variable "machine_name" {
   type = string
-}
-
-variable "step_function_name_infix" {
-  type    = bool
-  default = true
 }

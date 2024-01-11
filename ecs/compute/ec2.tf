@@ -1,5 +1,5 @@
 module "compute_common" {
-  source                                   = "../ec2_instance_template"
+  source                                   = "../../ec2_instance_template"
   compute_iam_instance_profile_arn_default = var.iam_data.iam_instance_profile_arn_ecs
   compute_image_id_default                 = var.compute_image_id_default
   compute_image_search_for_ecs_default     = true

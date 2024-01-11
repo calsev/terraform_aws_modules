@@ -1,5 +1,5 @@
 module "name_map" {
-  source             = "../name_map"
+  source             = "../../name_map"
   name_infix_default = var.pipe_name_infix_default
   name_map           = var.pipe_map
   std_map            = var.std_map

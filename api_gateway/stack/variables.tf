@@ -13,17 +13,18 @@ variable "api_map" {
       http_method          = optional(string) # Ignored for sqs, states
       iam_role_arn         = optional(string)
       passthrough_behavior = optional(string)
-      service              = optional(string)
-      route_map = map(object({ # Key is "Method path" e.g. "GET /pet" or "$default"
+      request_parameters   = optional(map(string)) # Defaults provided for sqs, states
+      route_map = map(object({                     # Key is "Method path" e.g. "GET /pet" or "$default"
         authorization_scopes = optional(list(string))
         authorization_type   = optional(string)
         authorizer_id        = optional(string)
         integration_id       = optional(string)
         operation_name       = optional(string)
       }))
+      service         = optional(string)
       subtype         = optional(string)
-      target_arn      = optional(string) # Used for sqs, states, ignored for lambda
-      target_uri      = optional(string) # Used for lambda, ignored for sqs, states
+      target_arn      = optional(string) # Used for states, ignored for lambda, sqs
+      target_uri      = optional(string) # Used for lambda, sqs, ignored for states
       timeout_seconds = optional(number)
       vpc_link_id     = optional(string)
     }))

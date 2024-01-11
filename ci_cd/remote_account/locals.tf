@@ -1,5 +1,5 @@
 module "name_map" {
-  source             = "../name_map"
+  source             = "../../name_map"
   name_infix_default = false # <= 32 chars
   name_map           = var.connection_map
   std_map            = var.std_map

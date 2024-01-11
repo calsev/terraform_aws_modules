@@ -20,7 +20,13 @@ locals {
   ])
   i2_list = [
     for v in local.i1_list : merge(v, {
-      request_parameters = v.service == "states" ? {
+      request_parameters = v.request_parameters != null ? v.request_parameters : v.service == "sqs" ? {
+        MessageBody            = "$request.body"
+        MessageDeduplicationId = "$context.requestId"
+        MessageGroupId         = "$context.requestId"
+        QueueUrl               = v.target_uri
+        Region                 = var.std_map.aws_region_name
+        } : v.service == "states" ? {
         Input = "$request.body"
         #Name            = replace("${k_api}-${k_int}", var.std_map.name_replace_regex, "-")
         Region          = var.std_map.aws_region_name

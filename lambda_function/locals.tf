@@ -5,6 +5,19 @@ module "name_map" {
   std_map            = var.std_map
 }
 
+module "policy_map" {
+  source                      = "../policy_name_map"
+  name_map                    = var.function_map
+  policy_access_list_default  = var.policy_access_list_default
+  policy_create_default       = var.policy_create_default
+  policy_name_append_default  = var.policy_name_append_default
+  policy_name_infix_default   = var.policy_name_infix_default
+  policy_name_prefix_default  = var.policy_name_prefix_default
+  policy_name_prepend_default = var.policy_name_prepend_default
+  policy_name_suffix_default  = var.policy_name_suffix_default
+  std_map                     = var.std_map
+}
+
 module "vpc_map" {
   source                              = "../vpc_id_map"
   vpc_az_key_list_default             = var.vpc_az_key_list_default
@@ -29,7 +42,7 @@ locals {
     for k, v in var.function_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], module.vpc_map.data[k], {
       architecture_list                   = v.architecture_list == null ? var.function_architecture_list_default : v.architecture_list
       code_signing_config_arn             = v.code_signing_config_arn == null ? var.function_code_signing_config_arn_default : v.code_signing_config_arn
       dead_letter_queue_enabled           = v.dead_letter_queue_enabled == null ? var.function_dead_letter_queue_enabled_default : v.dead_letter_queue_enabled
@@ -110,9 +123,11 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr
         if !contains([], k_attr)
       },
+      module.function_policy[k].data,
       {
         arn                 = aws_lambda_function.this_function[k].arn
         dead_letter_queue   = module.dead_letter_queue.data[k]
+        invoke_arn          = aws_lambda_function.this_function[k].invoke_arn
         role                = module.function_role[k].data
         source_package_hash = local.create_hash_map[k]
       },
