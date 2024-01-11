@@ -4,8 +4,9 @@ resource "aws_apigatewayv2_stage" "this_stage" {
     destination_arn = each.value.log_group_arn
     format          = jsonencode(local.log_format_map)
   }
-  api_id      = each.value.api_id
-  auto_deploy = false # This deploys in-flight changes; we basically auto-deploy after api change
+  api_id                = each.value.api_id
+  auto_deploy           = false # This deploys in-flight changes; we basically auto-deploy after api change
+  client_certificate_id = null  # For WebSocket only
   dynamic "default_route_settings" {
     for_each = each.value.enable_default_route ? { this = {} } : {}
     content {
@@ -29,11 +30,11 @@ resource "aws_apigatewayv2_stage" "this_stage" {
       throttling_rate_limit    = each.value.throttling_rate_limit
     }
   }
-  #stage_variables
-  tags = each.value.tags
+  stage_variables = {} # TODO
+  tags            = each.value.tags
 }
 
-resource "aws_apigatewayv2_api_mapping" "example" {
+resource "aws_apigatewayv2_api_mapping" "this_mapping" {
   for_each        = local.mapping_map
   api_id          = each.value.api_id
   api_mapping_key = each.value.k_stage

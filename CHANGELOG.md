@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.7.0
+
+### Feature
+
+* Added service designation for API Gateway integration
+* Removed certificate from API Gateway. Cert is now passed in DNS data.
+
+### Bugfix
+
+* Name map no longer replaces punctuation in suffixes. This fixes ".fifo" -> "-fifo" conversion for SQS
+
+### General
+
+* Reorganized API Gateway modules into subdirectories to reduce vertical size
+* Local config now uses sensitive file to avoid large diffs
+
 ## 0.6.0
 
 ### General

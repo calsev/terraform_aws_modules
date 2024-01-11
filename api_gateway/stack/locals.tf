@@ -1,5 +1,5 @@
 module "api_name_map" {
-  source                = "../name_map"
+  source                = "../../name_map"
   name_infix_default    = var.api_name_infix_default
   name_map              = local.l0_map
   name_regex_allow_list = ["."]
@@ -7,7 +7,7 @@ module "api_name_map" {
 }
 
 module "domain_name_map" {
-  source             = "../name_map"
+  source             = "../../name_map"
   name_infix_default = false
   name_map           = var.domain_map
   std_map            = var.std_map
@@ -29,14 +29,16 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.api_name_map.data[k], {
-      authorizer_key         = v.authorizer_key == null ? var.api_authorizer_key_default : v.authorizer_key
-      cors_allow_credentials = v.cors_allow_credentials == null ? var.api_cors_allow_credentials_default : v.cors_allow_credentials
-      cors_allow_headers     = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
-      cors_allow_methods     = v.cors_allow_methods == null ? var.api_cors_allow_methods_default : v.cors_allow_methods
-      cors_allow_origins     = v.cors_allow_origins == null ? var.api_cors_allow_origins_default : v.cors_allow_origins
-      cors_expose_headers    = v.cors_expose_headers == null ? var.api_cors_expose_headers_default : v.cors_expose_headers
-      cors_max_age           = v.cors_max_age == null ? var.api_cors_max_age_default : v.cors_max_age
-      version                = v.version == null ? var.api_version_default : v.version
+      authorizer_key           = v.authorizer_key == null ? var.api_authorizer_key_default : v.authorizer_key
+      cors_allow_credentials   = v.cors_allow_credentials == null ? var.api_cors_allow_credentials_default : v.cors_allow_credentials
+      cors_allow_headers       = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
+      cors_allow_methods       = v.cors_allow_methods == null ? var.api_cors_allow_methods_default : v.cors_allow_methods
+      cors_allow_origins       = v.cors_allow_origins == null ? var.api_cors_allow_origins_default : v.cors_allow_origins
+      cors_expose_headers      = v.cors_expose_headers == null ? var.api_cors_expose_headers_default : v.cors_expose_headers
+      cors_max_age             = v.cors_max_age == null ? var.api_cors_max_age_default : v.cors_max_age
+      disable_execute_endpoint = v.disable_execute_endpoint == null ? var.api_disable_execute_endpoint_default : v.disable_execute_endpoint
+      enable_dns_mapping       = lookup(var.domain_map, k, null) != null
+      version                  = v.version == null ? var.api_version_default : v.version
     })
   }
   l2_map = {
@@ -79,7 +81,6 @@ locals {
       )
     }
     domain = local.domain_map
-    cert   = module.cert.data
   }
   route_map = {
     for k_api, v_api in local.integration_map : k_api => merge(v_api, {

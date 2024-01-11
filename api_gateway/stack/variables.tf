@@ -7,10 +7,13 @@ variable "api_map" {
     cors_allow_origins               = optional(list(string))
     cors_expose_headers              = optional(list(string))
     cors_max_age                     = optional(number)
+    disable_execute_endpoint         = optional(bool)
     integration_iam_role_arn_default = optional(string)
     integration_map = map(object({
-      http_method  = optional(string) # Ignored for sqs, step function
-      iam_role_arn = optional(string)
+      http_method          = optional(string) # Ignored for sqs, states
+      iam_role_arn         = optional(string)
+      passthrough_behavior = optional(string)
+      service              = optional(string)
       route_map = map(object({ # Key is "Method path" e.g. "GET /pet" or "$default"
         authorization_scopes = optional(list(string))
         authorization_type   = optional(string)
@@ -19,16 +22,16 @@ variable "api_map" {
         operation_name       = optional(string)
       }))
       subtype         = optional(string)
-      target_arn      = optional(string) # Used for step function
-      target_uri      = optional(string) # This is ignored for step function
+      target_arn      = optional(string) # Used for sqs, states, ignored for lambda
+      target_uri      = optional(string) # Used for lambda, ignored for sqs, states
       timeout_seconds = optional(number)
       vpc_link_id     = optional(string)
     }))
-    log_group_arn = string
-    name_infix    = optional(bool)
+    name_infix = optional(bool)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
+      log_group_arn            = string
       throttling_burst_limit   = optional(number)
       throttling_rate_limit    = optional(number)
     }))
@@ -53,12 +56,12 @@ variable "api_cors_allow_headers_default" {
 
 variable "api_cors_allow_methods_default" {
   type    = list(string)
-  default = ["GET", "HEAD"]
+  default = ["GET", "HEAD"] # TODO?
 }
 
 variable "api_cors_allow_origins_default" {
   type    = list(string)
-  default = ["*"]
+  default = ["*"] # TODO: Default to mapped domains
 }
 
 variable "api_cors_expose_headers_default" {
@@ -69,6 +72,11 @@ variable "api_cors_expose_headers_default" {
 variable "api_cors_max_age_default" {
   type    = number
   default = null
+}
+
+variable "api_disable_execute_endpoint_default" {
+  type    = bool
+  default = false
 }
 
 variable "api_name_infix_default" {
@@ -93,11 +101,15 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    region_domain_cert_map = map(map(object({
+      arn = string
+    })))
     ttl_map = object({
       challenge = number
     })
   })
-  default = null
+  default     = null
+  description = "Must be provided if any stage has a DNS mapping"
 }
 
 variable "domain_map" {
