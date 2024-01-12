@@ -1,24 +1,24 @@
 module "vpc" {
-  source  = "../vpc"
+  source  = "../../vpc/vpc"
   std_map = var.std_map
   vpc_map = var.vpc_map
 }
 
 module "security_group_rule_set" {
-  source   = "../security_group_rule_set"
+  source   = "../../security_group_rule_set"
   for_each = var.vpc_map
   std_map  = var.std_map
   vpc_map  = module.vpc.data.vpc_map
 }
 
 module "security_group" {
-  source  = "../security_group"
+  source  = "../../security_group"
   std_map = var.std_map
   vpc_map = local.sg_map
 }
 
 module "vpc_net" {
-  source                   = "../vpc_networking"
+  source                   = "../../vpc/networking"
   monitor_data             = var.monitor_data
   std_map                  = var.std_map
   vpc_map                  = local.vpc_net_map
@@ -26,7 +26,7 @@ module "vpc_net" {
 }
 
 module "vpc_peer" {
-  source       = "../vpc_peering"
+  source       = "../../vpc/peering"
   std_map      = var.std_map
   vpc_data_map = local.vpc_peer_map
 }

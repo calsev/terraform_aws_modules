@@ -10,3 +10,12 @@ extend-exclude = '''
 )
 '''
 target-version = ["py311"]
+
+[tool.pyright]
+include = [
+  "..",
+]
+ignore = [
+    "../documentation",
+    "../development/.venv",
+]

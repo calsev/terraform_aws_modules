@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0
+
+### Feature
+
+* Add response header policy for CDN
+
+### General
+
+* Add example for API Gateway
+* Add example for DNS
+* Add example for CDN global resources
+
 ## 0.8.0
 
 ### Feature

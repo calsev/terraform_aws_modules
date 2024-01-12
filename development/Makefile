@@ -70,7 +70,7 @@ py-lint:
 	$(PY) black --check ..
 	$(PY) isort --check ..
 	$(PY) flake8 ..
-	$(PY) pyright ..
+	$(PY) pyright .
 
 tf-fmt:
 	cd .. && $(FMT)
@@ -206,12 +206,13 @@ tf-lint: tflint-install
 	cd ../ssm_parameter_secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../vpc_id_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../vpc_nat_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../vpc_nat_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../vpc_networking && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../vpc_peering && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../vpc_stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/id_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/nat_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/nat_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/networking && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/peering && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../waf && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 
 tflint-install:

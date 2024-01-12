@@ -81,13 +81,13 @@ resource "aws_egress_only_internet_gateway" "this_eog" {
 }
 
 module "nat_gateway" {
-  source        = "../vpc_nat_gateway"
+  source        = "../../vpc/nat_gateway"
   nat_map       = local.nat_gateway_flattened_map
   subnet_id_map = local.subnet_flattened_id_map
 }
 
 module "nat_instance" {
-  source       = "../vpc_nat_instance"
+  source       = "../../vpc/nat_instance"
   monitor_data = var.monitor_data
   nat_map      = local.nat_instance_flattened_map
   std_map      = var.std_map

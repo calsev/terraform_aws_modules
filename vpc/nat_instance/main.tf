@@ -16,7 +16,7 @@ resource "aws_eip" "nat_eip" {
 }
 
 module "nat_instance" {
-  source       = "../ec2_instance_template"
+  source       = "../../ec2_instance_template"
   compute_map  = local.nat_map
   monitor_data = var.monitor_data
   std_map      = var.std_map

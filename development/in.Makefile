@@ -70,7 +70,7 @@ py-lint:
 	$(PY) black --check ..
 	$(PY) isort --check ..
 	$(PY) flake8 ..
-	$(PY) pyright ..
+	$(PY) pyright .
 
 tf-fmt:
 	cd .. && $(FMT)

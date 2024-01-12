@@ -196,6 +196,21 @@ For finer-grained control and advanced usage, see the underlying [vpc_networking
 Notably, this example app generates output that is suitable for usage as the `vpc_data_map` variable that is expected by many other modules.
 Specifically, the output of this example can be imported and passed as `vpc_data_map = data.terraform_remote_state.net.outputs.data.vpc_map`.
 
+### DNS
+
+This [example](documentation/example/inf/dns) uses the [dns_zone module](dns_zone) to generate multiple hosted zones.
+It also demonstrates using the [dns_sd_public module](dns_sd_public) to create a service discovery domain.
+Finally, the [cert module](cert) is used to create multiple ACM certificates.
+
+Notably, the output from this example app can be imported and passed to many modules as `dns_data = data.terraform_remote_state.dns.outputs.data`.
+
+### Global CDN
+
+This [example](documentation/example/inf/cdn_global) uses the [cert module](cert) and [waf module](waf) to generate multiple hosted zones.
+It also shows some reusable request and caching policies for Cloudfront.
+
+Notably, the output from this example app can be imported and passed to modules as `cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data`.
+
 ### ECR images
 
 This [small example](documentation/example/inf/ecr) uses the [ecr_repo module](ecr_repo) to generate `ecr_data` as expected by modules that use a container.
@@ -220,6 +235,17 @@ shows examples of lambda functions from several sources
 * Use existing local archive
 * Use existing archive and create S3 archive
 * Use existing S3 archive
+
+### API Gateway
+
+The example [app/api](documentation/example/app/api)
+provides code to create several targets:
+
+* Lambda function
+* SQS queue
+* State machine
+
+Integrations for each of these with API Gateway are also shown.
 
 ## Development scripts
 
