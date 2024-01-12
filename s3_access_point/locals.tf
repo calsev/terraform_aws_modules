@@ -6,7 +6,7 @@ module "name_map" {
 }
 
 module "vpc_map" {
-  source          = "../vpc_id_map"
+  source          = "../vpc/id_map"
   vpc_key_default = var.vpc_key_default
   vpc_map         = var.ap_map
   vpc_data_map    = var.vpc_data_map

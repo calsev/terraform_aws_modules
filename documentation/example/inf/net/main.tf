@@ -8,7 +8,7 @@ module "com_lib" {
 }
 
 module "vpc_stack" {
-  source                   = "path/to/modules/vpc_stack"
+  source                   = "path/to/modules/vpc/stack"
   std_map                  = module.com_lib.std_map
   vpc_map                  = local.vpc_map
   vpc_nat_multi_az_default = false
