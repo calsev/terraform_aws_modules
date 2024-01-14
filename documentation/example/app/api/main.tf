@@ -14,7 +14,7 @@ module "stage_log" {
 }
 
 module "sqs" {
-  source = "path/to/modules/sqs_queue"
+  source = "path/to/modules/sqs/queue"
   queue_map = {
     (local.queue_name) = {}
   }

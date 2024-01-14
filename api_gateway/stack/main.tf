@@ -22,6 +22,12 @@ resource "aws_apigatewayv2_api" "this_api" {
   version                      = each.value.version
 }
 
+module "auth" {
+  source  = "../../api_gateway/authorizer"
+  api_map = local.auth_map
+  std_map = var.std_map
+}
+
 module "integration" {
   source  = "../../api_gateway/integration"
   api_map = local.integration_map

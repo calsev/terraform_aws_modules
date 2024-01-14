@@ -14,6 +14,7 @@ variable "api_map" {
       timeout_seconds      = optional(number)
       vpc_link_id          = optional(string)
     }))
+    integration_service_default = optional(string)
   }))
 }
 
@@ -31,11 +32,6 @@ variable "integration_iam_role_arn_default" {
 variable "integration_passthrough_behavior_default" {
   type    = string
   default = "WHEN_NO_MATCH"
-}
-
-variable "integration_service_default" {
-  type    = string
-  default = null
 }
 
 variable "integration_subtype_map_default" {

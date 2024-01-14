@@ -1,19 +1,19 @@
 locals {
   i1_list = flatten([
     for k_api, v_api in var.api_map : [
-      for k, v in v_api.integration_map : merge(
+      for k_int, v_int in v_api.integration_map : merge(
         {
           for k, v in v_api : k => v if !contains(["integration_map"], k)
         },
-        v,
+        v_int,
         {
-          iam_role_arn         = v.iam_role_arn == null ? v_api.integration_iam_role_arn_default == null ? var.integration_iam_role_arn_default : v_api.integration_iam_role_arn_default : v.iam_role_arn
+          iam_role_arn         = v_int.iam_role_arn == null ? v_api.integration_iam_role_arn_default == null ? var.integration_iam_role_arn_default : v_api.integration_iam_role_arn_default : v_int.iam_role_arn
           k_api                = k_api
-          k_int                = k
-          passthrough_behavior = v.passthrough_behavior == null ? var.integration_passthrough_behavior_default : v.passthrough_behavior
-          service              = v.service == null ? var.integration_service_default : v.service
-          timeout_seconds      = v.timeout_seconds == null ? var.integration_timeout_seconds_default : v.timeout_seconds
-          vpc_link_id          = v.vpc_link_id == null ? var.integration_vpc_link_id_default : v.vpc_link_id
+          k_int                = k_int
+          passthrough_behavior = v_int.passthrough_behavior == null ? var.integration_passthrough_behavior_default : v_int.passthrough_behavior
+          service              = v_int.service == null ? v_api.integration_service_default : v_int.service
+          timeout_seconds      = v_int.timeout_seconds == null ? var.integration_timeout_seconds_default : v_int.timeout_seconds
+          vpc_link_id          = v_int.vpc_link_id == null ? var.integration_vpc_link_id_default : v_int.vpc_link_id
         },
       )
     ]

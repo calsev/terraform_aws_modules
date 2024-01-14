@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.10.0
+
+### New modules
+
+* Cognito client app
+
+### Feature
+
+* Add Cognito auth to API stack
+
+### General
+
+* Reorganized Cognito modules into subdirectories to reduce vertical size
+* Reorganized event modules into subdirectories to reduce vertical size
+* Reorganized pinpoint modules into subdirectories to reduce vertical size
+* Reorganized SQS modules into subdirectories to reduce vertical size
+* Reorganized SSM modules into subdirectories to reduce vertical size
+
 ## 0.9.0
 
 ### Feature

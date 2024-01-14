@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_route" "this_route" {
-  for_each                   = local.route_map
+  for_each                   = local.lx_map
   api_id                     = each.value.api_id
   api_key_required           = null # WS
   authorization_scopes       = each.value.authorization_scopes

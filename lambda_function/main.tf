@@ -5,7 +5,7 @@ module "log_group" {
 }
 
 module "dead_letter_queue" {
-  source    = "../sqs_dead_letter_queue"
+  source    = "../sqs/dead_letter_queue"
   queue_map = local.lx_map
   std_map   = var.std_map
 }

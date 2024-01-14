@@ -3,7 +3,7 @@ variable "api_map" {
     api_id = string
     integration_map = map(object({
       integration_id = optional(string)
-      route_map = map(object({ # Key is "Method path" e.g. "GET /pet" or "$default"
+      route_map = map(object({ # Key is "Method path", e.g. "GET /pet", or "$default"
         authorization_scopes = optional(list(string))
         authorization_type   = optional(string)
         authorizer_id        = optional(string)

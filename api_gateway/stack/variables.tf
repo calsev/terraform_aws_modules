@@ -1,6 +1,9 @@
 variable "api_map" {
   type = map(object({
-    authorizer_key                   = optional(string) # TODO: Authorizer
+    auth_map = optional(map(object({
+      cognito_client_app_key = optional(string)
+      cognito_pool_key       = optional(string)
+    })))
     cors_allow_credentials           = optional(bool)
     cors_allow_headers               = optional(list(string))
     cors_allow_methods               = optional(list(string))
@@ -14,21 +17,21 @@ variable "api_map" {
       iam_role_arn         = optional(string)
       passthrough_behavior = optional(string)
       request_parameters   = optional(map(string)) # Defaults provided for sqs, states
-      route_map = map(object({                     # Key is "Method path" e.g. "GET /pet" or "$default"
+      route_map = optional(map(object({            # Key is "Method path", e.g. "GET /pet", or "$default", defaults to { "integration_route_method_default /route_key" = {} }
         authorization_scopes = optional(list(string))
         authorization_type   = optional(string)
         authorizer_id        = optional(string)
-        integration_id       = optional(string)
         operation_name       = optional(string)
-      }))
+      })))
       service         = optional(string)
-      subtype         = optional(string)
       target_arn      = optional(string) # Used for states, ignored for lambda, sqs
       target_uri      = optional(string) # Used for lambda, sqs, ignored for states
       timeout_seconds = optional(number)
       vpc_link_id     = optional(string)
     }))
-    name_infix = optional(bool)
+    integration_route_method_default = optional(string) # Used only for default route maps
+    integration_service_default      = optional(string)
+    name_infix                       = optional(bool)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
@@ -40,7 +43,20 @@ variable "api_map" {
   }))
 }
 
-variable "api_authorizer_key_default" {
+variable "api_auth_map_default" {
+  type = map(object({
+    cognito_client_app_key = optional(string)
+    cognito_pool_key       = optional(string)
+  }))
+  default = {}
+}
+
+variable "api_auth_cognito_pool_key_default" {
+  type    = string
+  default = null
+}
+
+variable "api_cognito_client_app_key_default" {
   type    = string
   default = null
 }
@@ -90,12 +106,16 @@ variable "api_version_default" {
   default = "1"
 }
 
-#variable "auth_data_map" {
-#  type = map(object({
-#  }))
-#  default     = null
-#  description = "Must be provided if any API in configured for an authorizer"
-#}
+variable "cognito_data_map" {
+  type = map(object({
+    client_app_map = map(object({
+      client_app_id = string
+    }))
+    user_pool_endpoint = string
+  }))
+  default     = {}
+  description = "Must be provided if any API uses a cognito authorizer"
+}
 
 variable "dns_data" {
   type = object({
