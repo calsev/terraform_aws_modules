@@ -51,7 +51,7 @@ module "job" {
 }
 
 module "s3_trigger" {
-  source = "path/to/modules/event_trigger_s3"
+  source = "path/to/modules/event/trigger/s3"
   event_map = {
     task = {
       definition_arn            = module.job.data[local.job_name].job_definition_arn

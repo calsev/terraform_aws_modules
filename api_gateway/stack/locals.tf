@@ -14,6 +14,16 @@ module "domain_name_map" {
 }
 
 locals {
+  auth_map = {
+    for k_api, v_api in local.integration_map : k_api => merge(v_api, {
+      auth_map = {
+        for k_auth, v_auth in v_api.auth_map : k_auth => merge(v_auth, {
+          jwt_audience_list = [var.cognito_data_map[v_auth.cognito_pool_key].client_app_map[v_auth.cognito_client_app_key].client_app_id]
+          jwt_issuer        = "https://${var.cognito_data_map[v_auth.cognito_pool_key].user_pool_endpoint}"
+        })
+      }
+    })
+  }
   domain_map = {
     for k, v in var.domain_map : k => merge(v, module.domain_name_map.data[k], {
       validation_domain = v.validation_domain == null ? var.domain_validation_domain_default : v.validation_domain
@@ -29,7 +39,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.api_name_map.data[k], {
-      authorizer_key           = v.authorizer_key == null ? var.api_authorizer_key_default : v.authorizer_key
+      auth_map                 = v.auth_map == null ? var.api_auth_map_default : v.auth_map
       cors_allow_credentials   = v.cors_allow_credentials == null ? var.api_cors_allow_credentials_default : v.cors_allow_credentials
       cors_allow_headers       = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
       cors_allow_methods       = v.cors_allow_methods == null ? var.api_cors_allow_methods_default : v.cors_allow_methods
@@ -43,35 +53,42 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      auth_map = {
+        for k_auth, v_auth in local.l1_map[k].auth_map : k_auth => merge(v_auth, {
+          cognito_client_app_key = v_auth.cognito_client_app_key == null ? var.api_cognito_client_app_key_default : v_auth.cognito_client_app_key
+          cognito_pool_key       = v_auth.cognito_pool_key == null ? var.api_auth_cognito_pool_key_default : v_auth.cognito_pool_key
+        })
+      }
     }
   }
   lx_map = {
     for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
   output_data = {
-    api = {
+    api_map = {
       for k_api, v_api in local.lx_map : k_api => merge(
         {
-          for k, v in v_api : k => v if !contains(["integration_map", "stage_map"], k)
+          for k, v in v_api : k => v if !contains(["auth_map", "integration_map", "stage_map"], k)
         },
         {
-          api_endpoint  = aws_apigatewayv2_api.this_api[k_api].api_endpoint
-          arn           = aws_apigatewayv2_api.this_api[k_api].arn
-          deployment    = aws_apigatewayv2_deployment.this_deployment[k_api].id
-          execution_arn = aws_apigatewayv2_api.this_api[k_api].execution_arn
-          id            = aws_apigatewayv2_api.this_api[k_api].id
-          integration = {
+          api_arn           = aws_apigatewayv2_api.this_api[k_api].arn
+          api_endpoint      = aws_apigatewayv2_api.this_api[k_api].api_endpoint
+          api_execution_arn = aws_apigatewayv2_api.this_api[k_api].execution_arn
+          api_id            = aws_apigatewayv2_api.this_api[k_api].id
+          auth_map = {
+            for k_auth, v_auth in v_api.auth_map : k_auth => merge(v_auth, module.auth.data[k_api].auth_map[k_auth])
+          }
+          deployment_id = aws_apigatewayv2_deployment.this_deployment[k_api].id
+          integration_map = {
             for k_int, v_int in v_api.integration_map : k_int => merge(
               {
                 for k, v in v_int : k => v if !contains(["route_map"], k)
               },
               module.integration.data[k_api][k_int],
-              {
-                route = module.route.data[k_api][k_int]
-              },
+              module.route.data[k_api][k_int],
             )
           }
-          stage = {
+          stage_map = {
             for k_stage, v_stage in v_api.stage_map : k_stage => merge(
               v_stage,
               module.stage.data[k_api][k_stage],
@@ -80,13 +97,21 @@ locals {
         }
       )
     }
-    domain = local.domain_map
+    domain_map = local.domain_map
   }
   route_map = {
     for k_api, v_api in local.integration_map : k_api => merge(v_api, {
       integration_map = {
         for k_int, v_int in v_api.integration_map : k_int => merge(v_int, {
           integration_id = module.integration.data[k_api][k_int].id
+          route_map = v_int.route_map != null ? v_int.route_map : {
+            "${v_api.integration_route_method_default} /${k_int}" = {
+              authorization_scopes = null
+              authorization_type   = null
+              authorizer_id        = null
+              operation_name       = null
+            }
+          }
         })
       }
     })

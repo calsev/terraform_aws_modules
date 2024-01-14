@@ -50,7 +50,7 @@ module "ecr_mirror_task" {
 }
 
 module "task_trigger" {
-  source = "../event_trigger"
+  source = "../event/trigger/base"
   event_map = {
     (var.task_name) = {
       definition_arn = module.ecr_mirror_task.data[var.task_name].task_definition_arn_latest

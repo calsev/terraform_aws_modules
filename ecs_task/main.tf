@@ -1,5 +1,5 @@
 module "this_event_bus" {
-  source  = "../event_bus"
+  source  = "../event/bus"
   bus_map = local.bus_map
   std_map = var.std_map
 }
@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "this_task" {
 }
 
 module "alert_trigger" {
-  source                = "../event_alert"
+  source                = "../event/alert"
   alert_enabled_default = var.alert_enabled_default
   alert_level_default   = var.alert_level_default
   alert_map             = local.task_map
