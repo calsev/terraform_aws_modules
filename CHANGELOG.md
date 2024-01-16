@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.11.0
+
+### New modules
+
+* API Gateway API
+* API Gateway domain
+
+### General
+
+* Add example for API auth
+
 ## 0.10.0
 
 ### New modules

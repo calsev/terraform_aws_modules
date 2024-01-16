@@ -38,6 +38,6 @@ resource "aws_apigatewayv2_api_mapping" "this_mapping" {
   for_each        = local.mapping_map
   api_id          = each.value.api_id
   api_mapping_key = each.value.k_stage
-  domain_name     = each.value.domain_name_id
+  domain_name     = each.value.domain_id
   stage           = aws_apigatewayv2_stage.this_stage[each.key].id
 }

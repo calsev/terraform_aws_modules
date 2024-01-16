@@ -1,17 +1,22 @@
 variable "api_map" {
   type = map(object({
+    auth_cognito_client_app_key_default = optional(string)
+    auth_cognito_pool_key_default       = optional(string)
+    auth_lambda_key_default             = optional(string)
     auth_map = optional(map(object({
       cognito_client_app_key = optional(string)
       cognito_pool_key       = optional(string)
+      lambda_key             = optional(string)
     })))
-    cors_allow_credentials           = optional(bool)
-    cors_allow_headers               = optional(list(string))
-    cors_allow_methods               = optional(list(string))
-    cors_allow_origins               = optional(list(string))
-    cors_expose_headers              = optional(list(string))
-    cors_max_age                     = optional(number)
-    disable_execute_endpoint         = optional(bool)
-    integration_iam_role_arn_default = optional(string)
+    auth_request_iam_role_arn_default = optional(string)
+    cors_allow_credentials            = optional(bool)
+    cors_allow_headers                = optional(list(string))
+    cors_allow_methods                = optional(list(string))
+    cors_allow_origins                = optional(list(string))
+    cors_expose_headers               = optional(list(string))
+    cors_max_age                      = optional(number)
+    disable_execute_endpoint          = optional(bool)
+    integration_iam_role_arn_default  = optional(string)
     integration_map = map(object({
       http_method          = optional(string) # Ignored for sqs, states
       iam_role_arn         = optional(string)
@@ -22,6 +27,7 @@ variable "api_map" {
         authorization_type   = optional(string)
         authorizer_id        = optional(string)
         operation_name       = optional(string)
+        auth_key             = optional(string)
       })))
       service         = optional(string)
       target_arn      = optional(string) # Used for states, ignored for lambda, sqs
@@ -29,9 +35,10 @@ variable "api_map" {
       timeout_seconds = optional(number)
       vpc_link_id     = optional(string)
     }))
-    integration_route_method_default = optional(string) # Used only for default route maps
-    integration_service_default      = optional(string)
-    name_infix                       = optional(bool)
+    integration_route_auth_key_default = optional(string)
+    integration_route_method_default   = optional(string) # Used only for default route maps
+    integration_service_default        = optional(string)
+    name_infix                         = optional(bool)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
@@ -47,18 +54,9 @@ variable "api_auth_map_default" {
   type = map(object({
     cognito_client_app_key = optional(string)
     cognito_pool_key       = optional(string)
+    lambda_key             = optional(string)
   }))
   default = {}
-}
-
-variable "api_auth_cognito_pool_key_default" {
-  type    = string
-  default = null
-}
-
-variable "api_cognito_client_app_key_default" {
-  type    = string
-  default = null
 }
 
 variable "api_cors_allow_credentials_default" {
@@ -143,6 +141,14 @@ variable "domain_map" {
 variable "domain_validation_domain_default" {
   type    = string
   default = null
+}
+
+variable "lambda_data_map" {
+  type = map(object({
+    invoke_arn = string
+  }))
+  default     = {}
+  description = "Must be provided if any API uses a Lambda authorizer"
 }
 
 variable "std_map" {

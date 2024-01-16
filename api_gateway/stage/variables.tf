@@ -2,7 +2,7 @@ variable "api_map" {
   type = map(object({
     api_id             = string
     deployment_id      = string
-    domain_name_id     = optional(string)
+    domain_id          = optional(string)
     enable_dns_mapping = bool # If true, a mapping will be created
     integration_map = map(object({
       route_map = map(object({ # All routes are reproduced for each stage

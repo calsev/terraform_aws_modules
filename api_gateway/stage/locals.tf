@@ -49,15 +49,18 @@ locals {
     for stage in local.stage_list : "${stage.k_api}-${stage.k_stage}" => stage
   }
   output_data = {
-    for k_api, v_api in var.api_map : k_api => {
-      for k_stage, _ in v_api.stage_map : k_stage => merge(
-        {
-          for k, v in local.stage_map["${k_api}-${k_stage}"] : k => v if !contains(["k_api", "k_stage"], k)
-        },
-        {
-          id = aws_apigatewayv2_stage.this_stage["${k_api}-${k_stage}"].id
-        },
-      )
-    }
+    for k_api, v_api in var.api_map : k_api => merge(v_api, {
+      stage_map = {
+        for k_stage, v_stage in v_api.stage_map : k_stage => merge(
+          v_stage,
+          {
+            for k, v in local.stage_map["${k_api}-${k_stage}"] : k => v if !contains(["k_api", "k_stage"], k)
+          },
+          {
+            stage_id = aws_apigatewayv2_stage.this_stage["${k_api}-${k_stage}"].id
+          },
+        )
+      }
+    })
   }
 }
