@@ -47,15 +47,18 @@ locals {
     for integration in local.integration_list : "${integration.k_api}-${integration.k_int}" => integration
   }
   output_data = {
-    for k_api, v_api in var.api_map : k_api => {
-      for k_int, _ in v_api.integration_map : k_int => merge(
-        {
-          for k, v in local.integration_map["${k_api}-${k_int}"] : k => v if !contains(["k_api", "k_int"], k)
-        },
-        {
-          id = aws_apigatewayv2_integration.this_integration["${k_api}-${k_int}"].id
-        },
-      )
-    }
+    for k_api, v_api in var.api_map : k_api => merge(v_api, {
+      integration_map = {
+        for k_int, v_int in v_api.integration_map : k_int => merge(
+          v_int,
+          {
+            for k, v in local.integration_map["${k_api}-${k_int}"] : k => v if !contains(["k_api", "k_int"], k)
+          },
+          {
+            integration_id = aws_apigatewayv2_integration.this_integration["${k_api}-${k_int}"].id
+          },
+        )
+      }
+    })
   }
 }

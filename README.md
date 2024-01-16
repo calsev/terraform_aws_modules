@@ -236,7 +236,7 @@ shows examples of lambda functions from several sources
 * Use existing archive and create S3 archive
 * Use existing S3 archive
 
-### API Gateway
+### API Gateway Integrations
 
 The example [app/api](documentation/example/app/api)
 provides code to create several targets:
@@ -246,6 +246,14 @@ provides code to create several targets:
 * State machine
 
 Integrations for each of these with API Gateway are also shown.
+
+### API Gateway Auth
+
+The example [app/api_auth](documentation/example/app/api_auth)
+provides an example of integrating authorization with API Gateway:
+
+* Lambda authorizer
+* Cognito user pool and JWT token
 
 ## Development scripts
 

@@ -48,6 +48,7 @@ variable "client_explicit_auth_flow_list_default" {
   type = list(string)
   default = [
     "ALLOW_REFRESH_TOKEN_AUTH",
+    "ALLOW_USER_PASSWORD_AUTH",
     "ALLOW_USER_SRP_AUTH",
   ]
 }
