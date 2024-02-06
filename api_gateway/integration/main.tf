@@ -7,7 +7,7 @@ resource "aws_apigatewayv2_integration" "this_integration" {
   credentials_arn           = each.value.iam_role_arn
   integration_method        = each.value.http_method
   integration_subtype       = each.value.subtype
-  integration_type          = "AWS_PROXY"
+  integration_type          = each.value.type
   integration_uri           = each.value.target_uri
   passthrough_behavior      = each.value.passthrough_behavior
   payload_format_version    = null # This defaults to the latest for the integration, and errors if the version is not supported

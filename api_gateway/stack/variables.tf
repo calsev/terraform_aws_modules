@@ -13,6 +13,7 @@ variable "api_map" {
     cors_allow_headers                = optional(list(string))
     cors_allow_methods                = optional(list(string))
     cors_allow_origins                = optional(list(string))
+    cors_enabled                      = optional(bool)
     cors_expose_headers               = optional(list(string))
     cors_max_age                      = optional(number)
     disable_execute_endpoint          = optional(bool)
@@ -33,6 +34,7 @@ variable "api_map" {
       target_arn      = optional(string) # Used for states, ignored for lambda, sqs
       target_uri      = optional(string) # Used for lambda, sqs, ignored for states
       timeout_seconds = optional(number)
+      type            = optional(string)
       vpc_link_id     = optional(string)
     }))
     integration_route_auth_key_default = optional(string)
@@ -71,7 +73,7 @@ variable "api_cors_allow_headers_default" {
 
 variable "api_cors_allow_methods_default" {
   type    = list(string)
-  default = ["GET", "HEAD"] # TODO?
+  default = ["GET", "HEAD", "OPTIONS", "POST"]
 }
 
 variable "api_cors_allow_origins_default" {
@@ -79,9 +81,15 @@ variable "api_cors_allow_origins_default" {
   default = ["*"] # TODO: Default to mapped domains
 }
 
+variable "api_cors_enabled_default" {
+  type        = bool
+  default     = false
+  description = "CORS at the API level does a few things: Auto-reply to OPTIONS requests (no route required), ignore CORS headers from integrations, see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html"
+}
+
 variable "api_cors_expose_headers_default" {
   type    = list(string)
-  default = null
+  default = ["*"]
 }
 
 variable "api_cors_max_age_default" {

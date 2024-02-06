@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.1
+
+General
+
+* Fix API auth for preflight requests
+
 ## 0.11.0
 
 ### New modules

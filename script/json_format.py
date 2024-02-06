@@ -11,11 +11,14 @@ from typeguard import typechecked
 
 @typechecked
 def format_json(file_path: str) -> None:
-    with open(file_path) as f:
-        content = json.load(f)
-    with open(file_path, "w") as f:
-        json.dump(content, f, indent="  ")
-        f.write("\n")
+    try:
+        with open(file_path) as f:
+            content = json.load(f)
+        with open(file_path, "w") as f:
+            json.dump(content, f, indent="  ")
+            f.write("\n")
+    except Exception as e:
+        print(f"Error formatting {file_path}:\n{e}")
 
 
 @typechecked

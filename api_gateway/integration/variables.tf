@@ -12,6 +12,7 @@ variable "api_map" {
       target_arn           = optional(string) # Used for states, ignored for lambda, sqs
       target_uri           = optional(string) # Used for lambda, sqs, ignored for states
       timeout_seconds      = optional(number)
+      type                 = optional(string)
       vpc_link_id          = optional(string)
     }))
     integration_service_default = optional(string)
@@ -50,6 +51,15 @@ variable "integration_subtype_map_default" {
 variable "integration_timeout_seconds_default" {
   type    = number
   default = null
+}
+
+variable "integration_type_default" {
+  type    = string
+  default = "AWS_PROXY"
+  validation {
+    condition     = contains(["AWS_PROXY", "HTTP_PROXY"], var.integration_type_default)
+    error_message = "HTTP APIs support only proxy integrations"
+  }
 }
 
 variable "integration_vpc_link_id_default" {

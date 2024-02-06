@@ -16,6 +16,7 @@ locals {
       cors_allow_headers       = v.cors_allow_headers == null ? var.api_cors_allow_headers_default : v.cors_allow_headers
       cors_allow_methods       = v.cors_allow_methods == null ? var.api_cors_allow_methods_default : v.cors_allow_methods
       cors_allow_origins       = v.cors_allow_origins == null ? var.api_cors_allow_origins_default : v.cors_allow_origins
+      cors_enabled             = v.cors_enabled == null ? var.api_cors_enabled_default : v.cors_enabled
       cors_expose_headers      = v.cors_expose_headers == null ? var.api_cors_expose_headers_default : v.cors_expose_headers
       cors_max_age             = v.cors_max_age == null ? var.api_cors_max_age_default : v.cors_max_age
       disable_execute_endpoint = v.disable_execute_endpoint == null ? var.api_disable_execute_endpoint_default : v.disable_execute_endpoint

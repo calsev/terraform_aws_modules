@@ -4,6 +4,7 @@ module "api" {
   api_cors_allow_headers_default       = var.api_cors_allow_headers_default
   api_cors_allow_methods_default       = var.api_cors_allow_methods_default
   api_cors_allow_origins_default       = var.api_cors_allow_origins_default
+  api_cors_enabled_default             = var.api_cors_enabled_default
   api_cors_expose_headers_default      = var.api_cors_expose_headers_default
   api_cors_max_age_default             = var.api_cors_max_age_default
   api_disable_execute_endpoint_default = var.api_disable_execute_endpoint_default
