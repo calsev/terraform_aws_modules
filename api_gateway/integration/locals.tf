@@ -13,6 +13,7 @@ locals {
           passthrough_behavior = v_int.passthrough_behavior == null ? var.integration_passthrough_behavior_default : v_int.passthrough_behavior
           service              = v_int.service == null ? v_api.integration_service_default : v_int.service
           timeout_seconds      = v_int.timeout_seconds == null ? var.integration_timeout_seconds_default : v_int.timeout_seconds
+          type                 = v_int.type == null ? var.integration_type_default : v_int.type
           vpc_link_id          = v_int.vpc_link_id == null ? var.integration_vpc_link_id_default : v_int.vpc_link_id
         },
       )
