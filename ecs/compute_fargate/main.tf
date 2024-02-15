@@ -1,5 +1,5 @@
 module "log_group" {
-  source = "../../log_group"
+  source = "../../cw/log_group"
   log_map = {
     for k, v in local.compute_map : v.k_log => v
   }

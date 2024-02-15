@@ -8,7 +8,7 @@ module "com_lib" {
 }
 
 module "s3" {
-  source = "path/to/modules/s3"
+  source = "path/to/modules/s3/bucket"
   bucket_map = {
     (local.bucket_key) = {
       notification_enable_event_bridge = true
@@ -18,7 +18,7 @@ module "s3" {
 }
 
 module "batch" {
-  source = "path/to/modules/batch_compute"
+  source = "path/to/modules/batch/compute"
   compute_map = {
     (local.compute_name) = {}
   }
@@ -32,7 +32,7 @@ module "batch" {
 }
 
 module "job" {
-  source             = "path/to/modules/batch_job"
+  source             = "path/to/modules/batch/job"
   batch_cluster_data = module.batch.data
   iam_data           = data.terraform_remote_state.iam.outputs.data
   job_map = {
@@ -51,7 +51,7 @@ module "job" {
 }
 
 module "s3_trigger" {
-  source = "path/to/modules/event/trigger/s3"
+  source = "path/to/modules/event/trigger/s3/bucket"
   event_map = {
     task = {
       definition_arn            = module.job.data[local.job_name].job_definition_arn

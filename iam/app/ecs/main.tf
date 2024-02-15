@@ -7,7 +7,7 @@ module "managed_policies" {
 }
 
 module "ecs_instance_role" {
-  source      = "../../../iam/role/ecs_instance"
+  source      = "../../../iam/role/ecs/instance"
   name_prefix = var.name_prefix
   policy_attach_arn_map = {
     read_ssm_cw_config_cpu = var.monitor_data.ecs_ssm_param_map.cpu.iam_policy_arn_map["read"]

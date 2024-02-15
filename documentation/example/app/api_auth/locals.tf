@@ -5,6 +5,7 @@ locals {
   client_app_name         = "gen_pop"
   lambda_name_auth        = "auth"
   lambda_name_integration = "integration"
+  lambda_name_options     = "options"
   output_data = {
     api    = module.api.data
     lambda = module.lambda.data

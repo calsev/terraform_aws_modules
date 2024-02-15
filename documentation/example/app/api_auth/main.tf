@@ -25,28 +25,31 @@ module "user_pool" {
 }
 
 module "stage_log" {
-  source  = "path/to/modules/log_group"
+  source  = "path/to/modules/cw/log_group"
   log_map = local.stage_map
   std_map = module.com_lib.std_map
 }
 
 module "lambda" {
-  source = "path/to/modules/lambda_function"
+  source = "path/to/modules/lambda/function"
   function_map = {
     (local.lambda_name_auth) = {
-      source_package_directory_local_path = "app/auth"
+      source_package_handler = "auth.main"
     }
     (local.lambda_name_integration) = {
-      source_package_directory_local_path = "app/integration"
+      source_package_handler = "post.main"
+    }
+    (local.lambda_name_options) = {
+      source_package_handler = "options.main"
     }
   }
-  function_architecture_list_default         = ["arm64"]
-  function_ephemeral_storage_mib_default     = 512
-  function_dead_letter_queue_enabled_default = false
-  function_source_package_handler_default    = "function.main"
-  function_source_package_runtime_default    = "python3.11"
-  iam_data                                   = data.terraform_remote_state.iam.outputs.data
-  std_map                                    = module.com_lib.std_map
+  function_architecture_list_default                   = ["arm64"]
+  function_ephemeral_storage_mib_default               = 512
+  function_dead_letter_queue_enabled_default           = false
+  function_source_package_directory_local_path_default = "app/src"
+  function_source_package_runtime_default              = "python3.11"
+  iam_data                                             = data.terraform_remote_state.iam.outputs.data
+  std_map                                              = module.com_lib.std_map
 }
 
 module "api" {
@@ -66,7 +69,6 @@ module "api" {
       integration_iam_role_arn_default  = module.api_role.data.iam_role_arn
       integration_map = {
         lambda = {
-          target_uri = module.lambda.data[local.lambda_name_integration].invoke_arn
           route_map = {
             "POST /anon" = {
             }
@@ -77,6 +79,16 @@ module "api" {
               auth_key = local.auth_key_lambda
             }
           }
+          target_uri = module.lambda.data[local.lambda_name_integration].invoke_arn
+        }
+        options = {
+          route_map = {
+            "OPTIONS /auth-cognito" = {
+            }
+            "OPTIONS /auth-lambda" = {
+            }
+          }
+          target_uri = module.lambda.data[local.lambda_name_options].invoke_arn
         }
       }
       integration_service_default = "lambda"

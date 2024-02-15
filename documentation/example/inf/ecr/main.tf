@@ -8,7 +8,7 @@ module "com_lib" {
 }
 
 module "repo" {
-  source = "path/to/modules/ecr_repo"
+  source = "path/to/modules/ecr/repo"
   repo_map = {
     ubuntu = {
       # These tags are for ecr-mirror

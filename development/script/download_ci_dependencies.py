@@ -48,9 +48,9 @@ def parse_args(
 
 @typechecked
 def get_bin_versions() -> Tuple[str, str]:
-    with open("development/tf_ver") as f:
+    with open("development/ver_tf") as f:
         tf_ver = f.read()
-    with open("development/tflint_ver") as f:
+    with open("development/ver_tflint") as f:
         tflint_ver = f.read()
     return tf_ver, tflint_ver
 

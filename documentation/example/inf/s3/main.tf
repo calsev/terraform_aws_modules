@@ -23,7 +23,7 @@ module "milan_lib" {
 }
 
 module "oregon_bucket" {
-  source = "path/to/modules/s3"
+  source = "path/to/modules/s3/bucket"
 
   bucket_map                = local.bucket_map
   bucket_name_infix_default = false
@@ -31,7 +31,7 @@ module "oregon_bucket" {
 }
 
 module "milan_bucket" {
-  source = "path/to/modules/s3"
+  source = "path/to/modules/s3/bucket"
   providers = {
     aws = aws.milan
   }
@@ -49,7 +49,7 @@ module "milan_bucket" {
 }
 
 module "oregon_ap" {
-  source = "path/to/modules/s3_access_point"
+  source = "path/to/modules/s3/access_point"
   ap_map = {
     example-data-ap = {
       bucket_name_effective = module.oregon_bucket.data["example-data"].name_effective
@@ -65,7 +65,7 @@ module "oregon_ap" {
 }
 
 module "tf_lock" {
-  source  = "path/to/modules/dynamodb_terraform_lock"
+  source  = "path/to/modules/dynamodb/terraform_lock"
   std_map = module.com_lib.std_map
 }
 

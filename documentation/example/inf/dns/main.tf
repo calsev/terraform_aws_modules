@@ -14,7 +14,7 @@ module "oregon_lib" {
 }
 
 module "dns_zone" {
-  source = "path/to/modules/dns_zone"
+  source = "path/to/modules/dns/zone"
   providers = {
     aws = aws.oregon
   }
@@ -22,7 +22,7 @@ module "dns_zone" {
 }
 
 module "sd_zone_public" {
-  source = "path/to/modules/dns_sd_public"
+  source = "path/to/modules/dns/sd_public"
   providers = {
     aws = aws.oregon
   }

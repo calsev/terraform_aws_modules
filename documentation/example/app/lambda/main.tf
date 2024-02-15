@@ -8,7 +8,7 @@ module "com_lib" {
 }
 
 module "lambda" {
-  source                                 = "path/to/modules/lambda_function"
+  source                                 = "path/to/modules/lambda/function"
   ecr_data                               = data.terraform_remote_state.ecr.outputs.data
   function_ephemeral_storage_mib_default = 512
   function_map = {

@@ -1,6 +1,6 @@
 module "bucket_policy" {
   for_each    = local.bucket_policy_map
-  source      = "../../iam/policy/identity/s3"
+  source      = "../../iam/policy/identity/s3/bucket"
   name        = "build_bucket_${each.key}"
   name_prefix = var.policy_name_prefix
   sid_map = {
@@ -13,7 +13,7 @@ module "bucket_policy" {
 }
 
 module "net_policy" {
-  source  = "../../iam/policy/identity/code_build_net"
+  source  = "../../iam/policy/identity/code_build/net"
   name    = "vpc_net"
   std_map = var.std_map
 }

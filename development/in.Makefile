@@ -25,7 +25,7 @@ LINT := tflint
 VALIDATE := $(TF) validate
 
 # https://github.com/terraform-linters/tflint/releases
-TFLINT_VER := $(shell cat tflint_ver)
+TFLINT_VER := $(shell cat ver_tflint)
 
 ci-deps:
 	$(PY) cd .. && python -m development.script.download_ci_dependencies

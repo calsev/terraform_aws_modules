@@ -1,5 +1,5 @@
 module "cdn_origin_bucket" {
-  source = "../s3"
+  source = "../s3/bucket"
 
   bucket_policy_create_default = false
   bucket_map                   = local.bucket_map
@@ -10,7 +10,7 @@ module "cdn_origin_bucket" {
 
 module "bucket_policy" {
   for_each     = local.bucket_policy_map
-  source       = "../iam/policy/resource/s3"
+  source       = "../iam/policy/resource/s3/bucket"
   allow_public = each.value.allow_public
   bucket_name  = module.cdn_origin_bucket.data[each.key].name_effective
   sid_map      = each.value.sid_map

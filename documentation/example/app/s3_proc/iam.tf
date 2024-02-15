@@ -1,5 +1,5 @@
 module "source_bucket_policy" {
-  source = "path/to/modules/iam/policy/identity/s3"
+  source = "path/to/modules/iam/policy/identity/s3/bucket"
   sid_map = {
     TriggerSource = {
       access           = "read"
