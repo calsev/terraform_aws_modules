@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.0
+
+General
+
+* Fully namespace modules by service
+
 ## 0.11.1
 
 General

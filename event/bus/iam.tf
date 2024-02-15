@@ -1,5 +1,5 @@
 module "bus_policy" {
-  source         = "../../iam/policy/identity/event_bus"
+  source         = "../../iam/policy/identity/event/bus"
   for_each       = local.create_policy_map
   access_list    = each.value.policy_access_list
   event_bus_name = each.value.event_bus_arn

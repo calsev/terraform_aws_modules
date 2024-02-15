@@ -1,5 +1,5 @@
 module "machine_policy" {
-  source       = "../iam/policy/identity/step_function_machine"
+  source       = "../iam/policy/identity/step_function/machine"
   for_each     = local.machine_map
   machine_name = each.value.name_effective
   name         = each.value.policy_name

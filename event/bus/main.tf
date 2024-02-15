@@ -1,5 +1,5 @@
 module "log_group" {
-  source  = "../../log_group"
+  source  = "../../cw/log_group"
   log_map = local.log_map
   std_map = var.std_map
 }

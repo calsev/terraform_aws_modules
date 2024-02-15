@@ -3,8 +3,8 @@ set -ex
 
 sys='linux'
 arch=$(dpkg-architecture -q DEB_BUILD_ARCH)
-tf_ver=$(cat tf_ver)
-tflint_ver=$(cat tflint_ver)
+tf_ver=$(cat ver_tf)
+tflint_ver=$(cat ver_tflint)
 
 if [ -x "$(command -v terraform)" ] && [[ "$(terraform --version)" =~ $tf_ver ]]; then
   echo Terraform installed, skipping
@@ -23,7 +23,7 @@ fi
 terraform --version
 tflint --version
 
-tflint_aws_ver=0.28.0 #TODO: Sync with .tflint.hcl or find better way
+tflint_aws_ver=0.30.0 #TODO: Sync with .tflint.hcl or find better way
 tflint_tf_ver=0.5.0 #TODO: Sync with .tflint.hcl or find better way
 tflint_aws_bin="${HOME}/.tflint.d/plugins/github.com/terraform-linters/tflint-ruleset-aws/${tflint_aws_ver}/tflint-ruleset-aws"
 tflint_tf_bin="${HOME}/.tflint.d/plugins/github.com/terraform-linters/tflint-ruleset-terraform/${tflint_tf_ver}/tflint-ruleset-terraform"

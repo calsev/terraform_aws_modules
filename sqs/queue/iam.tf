@@ -1,5 +1,5 @@
 module "queue_policy" {
-  source      = "../../iam/policy/identity/sqs_queue"
+  source      = "../../iam/policy/identity/sqs/queue"
   for_each    = local.queue_map
   name        = each.value.policy_name
   name_infix  = each.value.policy_name_infix

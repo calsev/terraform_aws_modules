@@ -16,7 +16,7 @@ module "assume_role_policy" {
 
 module "s3_log_policy" {
   for_each = var.log_bucket_name == null ? {} : { this = {} }
-  source   = "../../../iam/policy/identity/s3"
+  source   = "../../../iam/policy/identity/s3/bucket"
   sid_map = {
     Log = {
       access           = "write"

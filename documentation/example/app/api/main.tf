@@ -8,7 +8,7 @@ module "com_lib" {
 }
 
 module "stage_log" {
-  source  = "path/to/modules/log_group"
+  source  = "path/to/modules/cw/log_group"
   log_map = local.stage_map
   std_map = module.com_lib.std_map
 }
@@ -35,7 +35,7 @@ module "step_function" {
 }
 
 module "lambda" {
-  source = "path/to/modules/lambda_function"
+  source = "path/to/modules/lambda/function"
   function_map = {
     (local.lambda_name) = {}
   }
