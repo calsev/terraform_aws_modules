@@ -6,6 +6,18 @@ variable "config_data_map" {
   description = "Must be provided if any domain uses a default config"
 }
 
+variable "dns_data" {
+  type = object({
+    domain_to_dns_zone_map = map(object({
+      dns_zone_id = string
+    }))
+    ttl_map = object({
+      cname = number
+      mx    = number
+    })
+  })
+}
+
 variable "domain_map" {
   type = map(object({
     configuration_set_key       = optional(string)
@@ -49,18 +61,6 @@ variable "domain_name_default" {
 variable "domain_mail_from_subdomain_default" {
   type    = string
   default = "mail"
-}
-
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-    ttl_map = object({
-      cname = number
-      mx    = number
-    })
-  })
 }
 
 variable "std_map" {

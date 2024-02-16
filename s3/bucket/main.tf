@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "this_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "this_bucket_acl" {
-  for_each              = local.bucket_map
+  for_each              = local.bucket_acl_map
   acl                   = "private" # The ACL is either private or will be disabled
   bucket                = aws_s3_bucket.this_bucket[each.key].id
   expected_bucket_owner = var.std_map.aws_account_id
@@ -37,7 +37,7 @@ resource "aws_s3_bucket_versioning" "this_bucket_versioning" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "this_bucket_ownership" {
-  for_each = local.bucket_map
+  for_each = local.bucket_owner_map
   bucket   = aws_s3_bucket.this_bucket[each.key].id
   # This will disable creation of the ACL
   depends_on = [
