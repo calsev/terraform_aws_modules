@@ -10,6 +10,7 @@ variable "bucket_map" {
     encryption_algorithm              = optional(string)
     encryption_disabled               = optional(bool)
     encryption_kms_master_key_id      = optional(string)
+    enforce_object_ownership          = optional(bool)
     lifecycle_expiration_days         = optional(number)
     lifecycle_upload_expiration_days  = optional(number)
     lifecycle_version_count           = optional(number)
@@ -86,6 +87,11 @@ variable "bucket_encryption_disabled_default" {
 variable "bucket_encryption_kms_master_key_id_default" {
   type    = string
   default = null
+}
+
+variable "bucket_enforce_object_ownership_default" {
+  type    = bool
+  default = true
 }
 
 variable "bucket_lifecycle_expiration_days_default" {

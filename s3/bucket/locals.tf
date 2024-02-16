@@ -11,11 +11,17 @@ locals {
   bucket_accelerate_map = {
     for k, v in local.bucket_map : k => v if v.acceleration_enabled
   }
+  bucket_acl_map = {
+    for k, v in local.bucket_map : k => v if !v.enforce_object_ownership
+  }
   bucket_domain_map = {
     for k, v in local.bucket_map : k => v if v.domain_name_enabled
   }
   bucket_map = {
     for k, v in var.bucket_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+  }
+  bucket_owner_map = {
+    for k, v in local.bucket_map : k => v if v.enforce_object_ownership
   }
   bucket_policy_map = {
     for k, v in local.bucket_map : k => v if v.policy_create
@@ -36,6 +42,7 @@ locals {
       encryption_algorithm                 = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm
       encryption_kms_master_key_id         = v.encryption_kms_master_key_id == null ? var.bucket_encryption_kms_master_key_id_default : v.encryption_kms_master_key_id
       encryption_disabled                  = v.encryption_disabled == null ? var.bucket_encryption_disabled_default : v.encryption_disabled
+      enforce_object_ownership             = v.enforce_object_ownership == null ? var.bucket_enforce_object_ownership_default : v.enforce_object_ownership
       domain_name_enabled                  = v.website_fqdn != null
       lifecycle_expiration_days            = v.lifecycle_expiration_days == null ? var.bucket_lifecycle_expiration_days_default : v.lifecycle_expiration_days
       lifecycle_upload_expiration_days     = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days

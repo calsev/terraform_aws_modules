@@ -1,8 +1,14 @@
 # Changelog
 
+## 0.12.1
+
+### Bugfix
+
+* Fix conflict between S3 object ownership and ACL
+
 ## 0.12.0
 
-General
+### General
 
 * Fully namespace modules by service
 
