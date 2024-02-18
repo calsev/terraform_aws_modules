@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.13.0
+
+### New modules
+
+* Role for CodePipeline
+* Random password
+* Secret initialization map
+* Secret with random initialization
+
+### General
+
+* Update default CodePipeline to V2
+* Added secret for CodePipe webhook
+* Collated CDN output by key
+* Moved secret/data from secret
+
+### Bugfix
+
+* Fixed dirty plan for empty CDN CORS header lists
+
 ## 0.12.1
 
 ### Bugfix
@@ -14,7 +34,7 @@
 
 ## 0.11.1
 
-General
+### General
 
 * Fix API auth for preflight requests
 

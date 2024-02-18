@@ -1,5 +1,5 @@
 module "password_secret" {
-  source         = "../../secret"
+  source         = "../../secret/data"
   for_each       = local.db_map
   ssm_param_name = each.value.password_ssm_param_name
   sm_secret_name = each.value.password_sm_secret_name
@@ -8,7 +8,7 @@ module "password_secret" {
 }
 
 module "username_secret" {
-  source         = "../../secret"
+  source         = "../../secret/data"
   for_each       = local.db_map
   sm_secret_name = each.value.username_sm_secret_name
   sm_secret_key  = each.value.username_sm_secret_key

@@ -13,8 +13,10 @@ variable "ci_cd_account_data" {
 
 variable "pipe_map" {
   type = map(object({
-    iam_role_arn = optional(string)
-    name_infix   = optional(bool)
+    iam_role_arn    = optional(string)
+    name_infix      = optional(bool)
+    pipeline_type   = optional(string)
+    secret_is_param = optional(bool)
     # There is always a source stage, that uses namespace "SourceSource" and produces zip artifact "SourceArtifact"
     source_branch          = optional(string)
     source_connection_name = optional(string)
@@ -40,6 +42,8 @@ variable "pipe_map" {
       }))
       name = string
     }))
+    variable_map       = optional(map(string))
+    webhook_event_list = optional(list(string))
   }))
 }
 
@@ -51,6 +55,17 @@ variable "pipe_iam_role_arn_default" {
 variable "pipe_name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "pipe_pipeline_type_default" {
+  type    = string
+  default = "V2"
+}
+
+variable "pipe_secret_is_param_default" {
+  type        = bool
+  default     = false
+  description = "If true, an SSM param will be created, otherwise a SM secret"
 }
 
 variable "pipe_source_branch_default" {
@@ -103,12 +118,28 @@ variable "pipe_stage_version_default" {
   default = "1"
 }
 
+variable "pipe_variable_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of variable name to variable value"
+}
+
+variable "pipe_webhook_event_list_default" {
+  type        = list(string)
+  default     = ["push"]
+  description = "See https://docs.github.com/en/webhooks/webhook-events-and-payloads#push"
+}
+
 variable "std_map" {
   type = object({
-    aws_region_name      = string
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }

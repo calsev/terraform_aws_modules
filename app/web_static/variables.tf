@@ -44,7 +44,7 @@ variable "ci_cd_account_data" {
   })
 }
 
-variable "code_star_connection_name" {
+variable "code_star_connection_key" {
   type = string
 }
 
@@ -72,14 +72,16 @@ variable "site_map" {
       name                 = string
       output_artifact_list = optional(list(string))
     }))
-    cdn_invalidation_path = optional(string)
-    domain_name           = optional(string)
+    cdn_invalidation_path                  = optional(string)
+    ci_cd_pipeline_webhook_secret_is_param = optional(bool)
+    domain_name                            = optional(string)
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
-    iam_policy_arn_attach_map   = optional(map(string))
-    iam_policy_json_inline_map  = optional(map(string))
-    iam_policy_name_managed_map = optional(map(string))
-    source_branch               = optional(string)
-    source_repository_id        = string
+    policy_attach_arn_map   = optional(map(string))
+    policy_create_json_map  = optional(map(string))
+    policy_inline_json_map  = optional(map(string))
+    policy_managed_name_map = optional(map(string))
+    source_branch           = optional(string)
+    source_repository_id    = string
   }))
 }
 
@@ -97,6 +99,11 @@ variable "site_build_artifact_sync_path_default" {
 variable "site_cdn_invalidation_path_default" {
   type    = string
   default = "/index.html" # Only invalidate the index file
+}
+
+variable "site_ci_cd_pipeline_webhook_secret_is_param_default" {
+  type    = bool
+  default = false
 }
 
 variable "site_domain_name_default" {

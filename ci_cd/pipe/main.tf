@@ -1,12 +1,14 @@
 resource "aws_codepipeline" "this_pipeline" {
-  for_each = local.pipe_map
+  for_each = local.lx_map
   artifact_store {
     # encryption_key # TODO: default
     location = var.ci_cd_account_data.bucket.name_effective
+    region   = null # Only supported for cross-region
     type     = "S3"
   }
-  role_arn = each.value.iam_role_arn
-  name     = each.value.name_effective
+  role_arn      = each.value.iam_role_arn
+  name          = each.value.name_effective
+  pipeline_type = each.value.pipeline_type
   stage {
     action {
       category = "Source"
@@ -55,4 +57,51 @@ resource "aws_codepipeline" "this_pipeline" {
     }
   }
   tags = each.value.tags
+  dynamic "variable" {
+    for_each = each.value.variable_map
+    content {
+      name          = each.key
+      default_value = each.value
+    }
+  }
 }
+
+module "webhook_secret" {
+  source                  = "../../secret/random"
+  secret_is_param_default = var.pipe_secret_is_param_default
+  secret_map              = local.lx_map
+  std_map                 = var.std_map
+}
+
+# resource "aws_codepipeline_webhook" "this_pipe_webhook" {
+#   for_each       = local.github_hook_map # TODO
+#   authentication = "GITHUB_HMAC"
+#   authentication_configuration {
+#     allowed_ip_range = null
+#     secret_token     = each.value.webhook_secret # TODO
+#   }
+#   dynamic "filter" {
+#     for_each = each.value.webhook_filter_map
+#     content {
+#       json_path    = null # TODO
+#       match_equals = null # TODO
+#     }
+#   }
+#   name            = each.value.name_effective
+#   tags            = each.value.tags
+#   target_action   = "Source"
+#   target_pipeline = aws_codepipeline.this_pipeline[each.key].name
+# }
+
+# resource "github_repository_webhook" "this_githhub_webhook" {
+#   for_each = local.github_hook_map
+#   active   = true
+#   configuration {
+#     content_type = "json"
+#     insecure_ssl = false
+#     secret       = each.value.webhook_secret
+#     url          = aws_codepipeline_webhook.this_pipe_webhook[each.key].url
+#   }
+#   repository = each.value.source_repository_id
+#   events     = each.webhook_event_list
+# }

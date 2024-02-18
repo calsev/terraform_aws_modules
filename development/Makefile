@@ -199,6 +199,7 @@ tf-lint: tflint-install
 	cd ../iam/role/api_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/code_build && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/code_pipe && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/task && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -215,6 +216,8 @@ tf-lint: tflint-install
 	cd ../pinpoint/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../pinpoint/email_channel && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../pinpoint/sms_channel && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../random && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../random/password && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/subnet_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -222,6 +225,9 @@ tf-lint: tflint-install
 	cd ../s3/access_point && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../secret/data && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../secret/init_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../secret/random && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/configuration_set && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/domain_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -255,4 +261,4 @@ tf-lint: tflint-install
 	cd ../waf && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 
 tflint-install:
-	./script/install_tf_and_tflint.sh
+	./script/install_tf_and_tflint.sh 2> /dev/null

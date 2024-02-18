@@ -3,6 +3,7 @@ This script imports the several resources that comprise an S3 bucket.
 Example
 python script/s3_import.py stack/inf/s3 gobble
 """
+
 import argparse
 import os
 import shlex

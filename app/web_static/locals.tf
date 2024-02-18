@@ -10,8 +10,8 @@ locals {
           iam_role_arn        = module.code_build_role[k].data.iam_role_arn
           input_artifact_list = [local.artifact_name_map[k]]
           source_build_spec = templatefile("${path.module}/deploy_spec.yml", {
-            bucket_name           = module.cdn.data.bucket[k].name_effective
-            cdn_distribution_id   = module.cdn.data.cdn[k].id
+            bucket_name           = module.cdn.data[k].bucket.name_effective
+            cdn_distribution_id   = module.cdn.data[k].cdn_id
             cdn_invalidation_path = v.cdn_invalidation_path == null ? var.site_cdn_invalidation_path_default : v.cdn_invalidation_path
             local_sync_path       = v.build_artifact_sync_path == null ? var.site_build_artifact_sync_path_default : v.build_artifact_sync_path
           })
@@ -33,12 +33,25 @@ locals {
       origin_fqdn   = v.bucket_fqdn
     }
   }
-  output_data = merge(module.cdn.data, {
-    build = module.code_build.data
-  })
+  output_data = {
+    for k, v in var.site_map : k => {
+      cdn        = module.cdn.data[k],
+      code_build = module.code_build.data["web-${k}"]
+      code_pipe  = module.code_pipe.data["${k}_deploy_${var.std_map.env}"]
+      policy = {
+        cdn_invalidate = module.cdn_invalidate[k].data
+        site_deploy    = module.site_deploy[k].data
+      }
+      role = {
+        code_build = module.code_build_role[k].data
+        code_pipe  = module.code_pipe_role[k].data
+      }
+    }
+  }
   pipe_map = {
     for k, v in var.site_map : "${k}_deploy_${var.std_map.env}" => {
       iam_role_arn         = module.code_pipe_role[k].data.iam_role_arn
+      secret_is_param      = v.ci_cd_pipeline_webhook_secret_is_param
       source_branch        = v.source_branch
       source_repository_id = v.source_repository_id
       stage_list = concat(
@@ -65,17 +78,6 @@ locals {
           },
         ]
       )
-    }
-  }
-  site_policy_map = {
-    for k, v in var.site_map : k => {
-      policy_attach_arn_map = merge(v.iam_policy_arn_attach_map == null ? {} : v.iam_policy_arn_attach_map, {
-        build_start     = module.start_build[k].data.iam_policy_arn_map.read_write
-        code_connection = var.ci_cd_account_data.code_star.connection[var.code_star_connection_name].iam_policy_arn_map.read_write
-        source_write    = var.ci_cd_account_data.bucket.iam_policy_arn_map.write
-      })
-      policy_inline_json_map  = v.iam_policy_json_inline_map
-      policy_managed_name_map = v.iam_policy_name_managed_map
     }
   }
 }

@@ -1,3 +1,3 @@
 output "data" {
-  value = local.pipe_map
+  value = local.output_data
 }

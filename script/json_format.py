@@ -2,6 +2,7 @@
 This script formats all JSON in a directory recursively.
 It is used to format generated config files automatically after apply.
 """
+
 import json
 import os
 import shutil

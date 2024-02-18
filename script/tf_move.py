@@ -4,6 +4,7 @@ This script provides an interactive shell that does the hard parts:
 * Copying long resource names
 * Escaping quotes
 """
+
 import argparse
 import itertools
 import os

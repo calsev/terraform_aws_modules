@@ -1,21 +1,35 @@
 variable "param_map" {
   type = map(object({
-    kms_key_id          = optional(string)
-    policy_access_list  = optional(list(string))
-    policy_create       = optional(bool)
-    policy_name         = optional(string)
-    policy_name_append  = optional(string)
-    policy_name_infix   = optional(bool)
-    policy_name_prefix  = optional(string)
-    policy_name_prepend = optional(string)
-    policy_name_suffix  = optional(string)
-    tier                = optional(string)
+    kms_key_id             = optional(string)
+    policy_access_list     = optional(list(string))
+    policy_create          = optional(bool)
+    policy_name            = optional(string)
+    policy_name_append     = optional(string)
+    policy_name_infix      = optional(bool)
+    policy_name_prefix     = optional(string)
+    policy_name_prepend    = optional(string)
+    policy_name_suffix     = optional(string)
+    secret_random_init_key = optional(string)
+    secret_random_init_map = optional(map(string))
+    tier                   = optional(string)
   }))
 }
 
 variable "param_kms_key_id_default" {
   type    = string
   default = "alias/aws/ssm"
+}
+
+variable "param_secret_random_init_key_default" {
+  type        = string
+  default     = null
+  description = "If provided, the initial value with be a map with the random secret at this key, otherwise the initial value will be the secret itself"
+}
+
+variable "param_secret_random_init_map_default" {
+  type        = map(string)
+  default     = null
+  description = "If provided, will be merged with the secret key, if provided"
 }
 
 variable "param_tier_default" {

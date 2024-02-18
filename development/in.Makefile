@@ -83,4 +83,4 @@ tf-lint: tflint-install
 	cd {{ mod_dir }} && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl{% endfor %}
 
 tflint-install:
-	./script/install_tf_and_tflint.sh
+	./script/install_tf_and_tflint.sh 2> /dev/null
