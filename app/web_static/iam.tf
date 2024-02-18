@@ -1,12 +1,3 @@
-module "start_build" {
-  for_each                = local.build_name_list_map
-  source                  = "../../iam/policy/identity/code_build/project"
-  access_list             = ["read_write"]
-  build_project_name_list = each.value
-  name                    = "${each.key}_start_build"
-  std_map                 = var.std_map
-}
-
 module "site_deploy" {
   for_each = var.site_map
   source   = "../../iam/policy/identity/s3/bucket"
@@ -23,7 +14,7 @@ module "site_deploy" {
 module "cdn_invalidate" {
   for_each = var.site_map
   source   = "../../iam/policy/identity/cdn"
-  cdn_arn  = module.cdn.data.cdn[each.key].arn
+  cdn_arn  = module.cdn.data[each.key].cdn_arn
   name     = "${each.key}_cdn_invalidate"
   std_map  = var.std_map
 }
@@ -41,11 +32,14 @@ module "code_build_role" {
 }
 
 module "code_pipe_role" {
-  for_each                 = local.site_policy_map
-  source                   = "../../iam/role/base"
-  assume_role_service_list = ["codepipeline"]
+  source                   = "../../iam/role/code_pipe"
+  for_each                 = var.site_map
+  build_name_list          = local.build_name_list_map[each.key]
+  ci_cd_account_data       = var.ci_cd_account_data
+  code_star_connection_key = var.code_star_connection_key
   name                     = "${each.key}-code-pipe"
   policy_attach_arn_map    = each.value.policy_attach_arn_map
+  policy_create_json_map   = each.value.policy_create_json_map
   policy_inline_json_map   = each.value.policy_inline_json_map
   policy_managed_name_map  = each.value.policy_managed_name_map
   std_map                  = var.std_map

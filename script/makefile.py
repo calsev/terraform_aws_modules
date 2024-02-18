@@ -1,4 +1,5 @@
 """Generate a Makefile with targets for each stack because they are very repetitive"""
+
 import argparse
 import json
 import os

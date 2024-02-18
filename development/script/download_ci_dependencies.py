@@ -3,6 +3,7 @@ This script syncs CI dependencies to CDN because rate limits cause issues.
 Example
 python -m development.script.download_ci_dependencies
 """
+
 import argparse
 import json
 import os
@@ -64,19 +65,19 @@ def get_linters(system: str, arch: str) -> Dict:
     for linter in linter_list:
         linter_map.update(**linter)
     for linter_name, linter_data in linter_map.items():
-        linter_data[
-            "archive_name"
-        ] = f"tflint_ruleset_{linter_name}_{system}_{arch}_{linter_data['version']}.zip"
+        linter_data["archive_name"] = (
+            f"tflint_ruleset_{linter_name}_{system}_{arch}_{linter_data['version']}.zip"
+        )
         linter_data["bin_name"] = f"tflint-ruleset-{linter_name}"
-        linter_data[
-            "download_url"
-        ] = "{}/tflint-ruleset-{}/releases/download/v{}/tflint-ruleset-{}_{}_{}.zip".format(
-            "https://github.com/terraform-linters",
-            linter_name,
-            linter_data["version"],
-            linter_name,
-            system,
-            arch,
+        linter_data["download_url"] = (
+            "{}/tflint-ruleset-{}/releases/download/v{}/tflint-ruleset-{}_{}_{}.zip".format(
+                "https://github.com/terraform-linters",
+                linter_name,
+                linter_data["version"],
+                linter_name,
+                system,
+                arch,
+            )
         )
     return linter_map
 

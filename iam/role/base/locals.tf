@@ -1,22 +1,22 @@
 locals {
   l1_map = {
     assume_role_service_list = var.assume_role_service_list
-    enable_assume_role       = var.assume_role_service_list == null ? false : true
+    enable_assume_role       = var.assume_role_service_list == null ? false : length(var.assume_role_service_list) == 0 ? false : true
     create_instance_profile  = var.create_instance_profile
     max_session_duration_m   = var.max_session_duration_m
     name                     = replace(var.name, var.std_map.name_replace_regex, "-")
     name_prefix_sanitized    = trim(replace(var.name_prefix, var.std_map.name_replace_regex, "-"), "-")
-    policy_attach_arn_map = {
+    policy_attach_arn_map = var.policy_attach_arn_map == null ? {} : {
       for name, arn in var.policy_attach_arn_map : "2-attached-${name}" => arn
     }
-    policy_create_doc_map = {
+    policy_create_doc_map = var.policy_create_json_map == null ? {} : {
       for k, v in var.policy_create_json_map : k => jsondecode(v)
     }
-    policy_inline_doc_map = var.policy_inline_json_map == null ? null : {
+    policy_inline_doc_map = var.policy_inline_json_map == null ? {} : {
       for k, v in var.policy_inline_json_map : k => jsondecode(v)
     }
-    policy_managed_arn_map = {
-      for name, policy in var.policy_managed_name_map == null ? {} : var.policy_managed_name_map : "1-managed-${name}" => "arn:${var.std_map.iam_partition}:iam::aws:policy/${policy}"
+    policy_managed_arn_map = var.policy_managed_name_map == null ? {} : {
+      for name, policy in var.policy_managed_name_map : "1-managed-${name}" => "arn:${var.std_map.iam_partition}:iam::aws:policy/${policy}"
     }
     role_path = var.role_path == null ? null : "/${trim(var.role_path, "/")}/"
   }
@@ -47,7 +47,7 @@ locals {
   }
   l4_map = {
     policy_create_arn_map = {
-      for name, _ in var.policy_create_json_map : "3-created-${name}" => aws_iam_policy.this_created_policy[name].arn
+      for name, _ in local.l1_map.policy_create_doc_map : "3-created-${name}" => aws_iam_policy.this_created_policy[name].arn
     }
   }
   l5_map = {

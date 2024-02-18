@@ -1,20 +1,23 @@
+variable "build_name_list" {
+  type = list(string)
+}
+
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
       iam_policy_arn_map = map(string)
     })
-    log = object({
-      iam_policy_arn_map = map(string)
-    })
-    log_public = optional(object({ # Must be provided if log public access is enabled
-      iam_policy_arn_map = map(string)
-    }))
-    policy = object({
-      vpc_net = object({
-        iam_policy_arn = string
-      })
+    code_star = object({
+      connection = map(object({
+        arn                = string
+        iam_policy_arn_map = map(string)
+      }))
     })
   })
+}
+
+variable "code_star_connection_key" {
+  type = string
 }
 
 variable "max_session_duration_m" {
@@ -36,18 +39,6 @@ variable "name_prefix" {
   type        = string
   default     = ""
   description = "If provided, will be put in front of the standard prefix for the role name."
-}
-
-variable "log_public_access" {
-  type        = bool
-  default     = false
-  description = "If true, this role will add permissions for the public log"
-}
-
-variable "log_bucket_name" {
-  type        = string
-  default     = null
-  description = "If provided, write permissions for the bucket will be added"
 }
 
 variable "policy_attach_arn_map" {
@@ -81,6 +72,7 @@ variable "std_map" {
   type = object({
     access_title_map               = map(string)
     aws_account_id                 = string
+    aws_region_name                = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string
@@ -88,15 +80,4 @@ variable "std_map" {
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
   })
-}
-
-variable "tag" {
-  type    = bool
-  default = true
-}
-
-variable "vpc_access" {
-  type        = bool
-  default     = false
-  description = "If true, this role will add permissions for VPC networking"
 }

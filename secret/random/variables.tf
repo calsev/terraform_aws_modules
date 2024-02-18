@@ -35,8 +35,6 @@ variable "policy_name_suffix_default" {
 
 variable "secret_map" {
   type = map(object({
-    force_overwrite        = optional(bool)
-    kms_key_id             = optional(string)
     policy_access_list     = optional(list(string))
     policy_create          = optional(bool)
     policy_name            = optional(string)
@@ -45,28 +43,15 @@ variable "secret_map" {
     policy_name_prefix     = optional(string)
     policy_name_prepend    = optional(string)
     policy_name_suffix     = optional(string)
-    recovery_window_days   = optional(string)
-    resource_policy_json   = optional(string)
-    secret_random_init     = optional(bool)
+    secret_is_param        = optional(bool)
     secret_random_init_key = optional(string)
     secret_random_init_map = optional(map(string))
   }))
 }
 
-variable "secret_force_overwrite_default" {
+variable "secret_is_param_default" {
   type    = bool
   default = false
-}
-
-variable "secret_kms_key_id_default" {
-  type    = string
-  default = null
-}
-
-variable "secret_random_init_default" {
-  type        = bool
-  default     = false
-  description = "This is false for backwards compatibility. See module secret/random for an initialized wrapper."
 }
 
 variable "secret_random_init_key_default" {
@@ -79,17 +64,6 @@ variable "secret_random_init_map_default" {
   type        = map(string)
   default     = null
   description = "If provided, will be merged with the secret key, if provided"
-}
-
-variable "secret_recovery_window_days_default" {
-  type        = number
-  default     = 30
-  description = "Set to 0 to force delete"
-}
-
-variable "secret_resource_policy_json_default" {
-  type    = string
-  default = "{}"
 }
 
 variable "std_map" {

@@ -19,8 +19,11 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
     access_control_allow_origins {
       items = each.value.response_cors_allowed_origin_list_all
     }
-    access_control_expose_headers {
-      items = each.value.response_cors_expose_header_list
+    dynamic "access_control_expose_headers" {
+      for_each = length(each.value.response_cors_expose_header_list) == 0 ? {} : { this = {} }
+      content {
+        items = each.value.response_cors_expose_header_list
+      }
     }
     access_control_max_age_sec = each.value.response_cors_max_age_seconds
     origin_override            = each.value.response_cors_origin_override
@@ -39,11 +42,14 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
     }
   }
   name = each.value.name_effective
-  remove_headers_config {
-    dynamic "items" {
-      for_each = each.value.response_remove_header_list
-      content {
-        header = each.value
+  dynamic "remove_headers_config" {
+    for_each = length(each.value.response_remove_header_list) == 0 ? {} : { this = {} }
+    content {
+      dynamic "items" {
+        for_each = each.value.response_remove_header_list
+        content {
+          header = each.value
+        }
       }
     }
   }

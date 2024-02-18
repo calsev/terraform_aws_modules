@@ -79,4 +79,19 @@ locals {
   lx_map = {
     for k, v in var.domain_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      v,
+      {
+        bucket = merge(
+          module.cdn_origin_bucket.data[v.origin_fqdn],
+          {
+            bucket_policy_doc = module.bucket_policy[v.origin_fqdn].iam_policy_doc
+          },
+        )
+        cdn_arn = aws_cloudfront_distribution.this_distribution[k].arn
+        cdn_id  = aws_cloudfront_distribution.this_distribution[k].id
+      }
+    )
+  }
 }
