@@ -1,11 +1,20 @@
 variable "group_map" {
   type = map(object({
-    name_infix      = optional(bool)
-    name_is_prefix  = optional(bool)
-    vpc_az_key_list = optional(list(string))
-    vpc_key         = optional(string)
-    vpc_segment_key = optional(string)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_is_prefix          = optional(bool)
+    name_prefix             = optional(string)
+    name_suffix             = optional(string)
+    vpc_az_key_list         = optional(list(string))
+    vpc_key                 = optional(string)
+    vpc_segment_key         = optional(string)
   }))
+}
+
+variable "group_name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "It is assumed the DB transcends app organization"
 }
 
 variable "group_name_infix_default" {
@@ -17,6 +26,17 @@ variable "group_name_is_prefix_default" {
   type        = bool
   default     = false
   description = "If true, name will be used as a prefix"
+}
+
+variable "group_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "group_name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "std_map" {

@@ -1,16 +1,19 @@
 module "name_map" {
-  source             = "../../name_map"
-  name_infix_default = var.db_name_infix_default
-  name_map           = var.db_map
-  std_map            = var.std_map
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.db_name_include_app_fields_default
+  name_infix_default              = var.db_name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.db_name_prefix_default
+  name_suffix_default             = var.db_name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {
-  db_map = {
-    for k, v in var.db_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+  l0_map = {
+    for k, v in var.db_map : k => v
   }
   l1_map = {
-    for k, v in var.db_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       active_directory_domain                   = v.active_directory_domain == null ? var.db_active_directory_domain_default : v.active_directory_domain
       allocated_storage_gib                     = v.allocated_storage_gib == null ? var.db_allocated_storage_gib_default : v.allocated_storage_gib
       allocated_storage_max_gib                 = v.allocated_storage_max_gib == null ? var.db_allocated_storage_max_gib_default : v.allocated_storage_max_gib
@@ -25,7 +28,7 @@ locals {
       character_set_name                        = v.character_set_name == null ? var.db_character_set_name_default : v.character_set_name
       cloudwatch_log_export_list                = v.cloudwatch_log_export_list == null ? var.db_cloudwatch_log_export_list_default : v.cloudwatch_log_export_list
       copy_tags_to_snapshot                     = v.copy_tags_to_snapshot == null ? var.db_copy_tags_to_snapshot_default : v.copy_tags_to_snapshot
-      db_name_initial                           = v.db_name_initial == null ? var.db_name_initial_default : v.db_name_initial
+      db_initial_name                           = v.db_initial_name == null ? var.db_initial_name_default : v.db_initial_name
       delete_automated_backups                  = v.delete_automated_backups == null ? var.db_delete_automated_backups_default : v.delete_automated_backups
       deletion_protection                       = v.deletion_protection == null ? var.db_deletion_protection_default : v.deletion_protection
       engine                                    = v.engine == null ? var.db_engine_default : v.engine
@@ -45,9 +48,6 @@ locals {
       network_type                              = v.network_type == null ? var.db_network_type_default : v.network_type
       option_group_name                         = v.option_group_name == null ? var.db_option_group_name_default : v.option_group_name
       parameter_group_name                      = v.parameter_group_name == null ? var.db_parameter_group_name_default : v.parameter_group_name
-      password_ssm_param_name                   = v.password_ssm_param_name == null ? var.db_password_ssm_param_name_default : v.password_ssm_param_name
-      password_sm_secret_name                   = v.password_sm_secret_name == null ? var.db_password_sm_secret_name_default : v.password_sm_secret_name
-      password_sm_secret_key                    = v.password_sm_secret_key == null ? var.db_password_sm_secret_key_default : v.password_sm_secret_key
       performance_insights_kms_key_arn          = v.performance_insights_kms_key_arn == null ? var.db_performance_insights_kms_key_arn_default : v.performance_insights_kms_key_arn
       performance_insights_retention_period_day = v.performance_insights_retention_period_day == null ? var.db_performance_insights_retention_period_day_default : v.performance_insights_retention_period_day
       port                                      = v.port == null ? var.db_port_default : v.port
@@ -61,11 +61,10 @@ locals {
       subnet_group_key                          = v.subnet_group_key == null ? var.db_subnet_group_key_default : v.subnet_group_key
       timezone_for_ms_sql                       = v.timezone_for_ms_sql == null ? var.db_timezone_for_ms_sql_default : v.timezone_for_ms_sql
       username                                  = v.username == null ? var.db_username_default : v.username
-      username_sm_secret_key                    = v.username_sm_secret_key == null ? var.db_username_sm_secret_key_default : v.username_sm_secret_key
     })
   }
   l2_map = {
-    for k, v in var.db_map : k => {
+    for k, v in local.l0_map : k => {
       final_snapshot_identifier = v.final_snapshot_identifier == null ? local.l1_map[k].name_effective : v.final_snapshot_identifier
       #      ignore_change_map = merge(
       #        {
@@ -74,14 +73,17 @@ locals {
       #        local.l1_map[k].allow_major_version_upgrade || local.l1_map[k].auto_minor_version_upgrade ? { engine_version = null } : {}
       #      )
       performance_insights_enabled = local.l1_map[k].performance_insights_kms_key_arn != null || !contains([0, null], local.l1_map[k].performance_insights_retention_period_day)
-      storage_type                 = local.l1_map[k].provisioned_iops == null ? v.storage_type == null ? var.db_storage_type_default : v.storage_type : "io1"
-      subnet_group_name            = var.subnet_group_map[local.l1_map[k].subnet_group_key].name_effective
-      username_sm_secret_name      = v.username_sm_secret_name == null ? var.db_username_sm_secret_name_default == null ? local.l1_map[k].password_sm_secret_name : var.db_username_sm_secret_name_default : v.username_sm_secret_name
-      vpc_key                      = var.subnet_group_map[local.l1_map[k].subnet_group_key].vpc_key
+      secret_random_init_map = {
+        password = null
+        username = local.l1_map[k].username
+      }
+      storage_type      = local.l1_map[k].provisioned_iops == null ? v.storage_type == null ? var.db_storage_type_default : v.storage_type : "io1"
+      subnet_group_name = var.subnet_group_map[local.l1_map[k].subnet_group_key].name_effective
+      vpc_key           = var.subnet_group_map[local.l1_map[k].subnet_group_key].vpc_key
     }
   }
   l3_map = {
-    for k, v in var.db_map : k => {
+    for k, v in local.l0_map : k => {
       iam_role_arn_monitoring = local.l2_map[k].performance_insights_enabled ? var.iam_data.iam_role_arn_rds_monitor : null
       #ignore_change_list = [
       #  for k_attrib, _ in local.l2_map[k].ignore_change_map : k_attrib
@@ -91,11 +93,18 @@ locals {
       ])
     }
   }
+  lx_map = {
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+  }
   output_data = {
-    for k, v in local.db_map : k => merge(v, {
-      db_domain_name = aws_db_instance.this_db[k].address
-      db_arn         = aws_db_instance.this_db[k].arn
-      db_id          = aws_db_instance.this_db[k].id
-    })
+    for k, v in local.lx_map : k => merge(
+      v,
+      module.password_secret.data[k],
+      {
+        db_domain_name = aws_db_instance.this_db[k].address
+        db_arn         = aws_db_instance.this_db[k].arn
+        db_id          = aws_db_instance.this_db[k].id
+      },
+    )
   }
 }

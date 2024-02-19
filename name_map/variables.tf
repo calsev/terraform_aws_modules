@@ -1,10 +1,17 @@
 variable "name_map" {
   type = map(object({
-    name_infix  = optional(bool)
-    name_prefix = optional(string)
-    name_suffix = optional(string)
-    tags        = optional(map(string))
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_prefix             = optional(string)
+    name_suffix             = optional(string)
+    tags                    = optional(map(string))
   }))
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
 }
 
 variable "name_infix_default" {

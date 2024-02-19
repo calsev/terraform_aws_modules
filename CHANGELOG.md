@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.14.0
+
+### New modules
+
+* Cache policy for CDN
+* Origin request policy for CDN
+* CI/CD remote host
+* CI/CD remote connection
+
+### General
+
+* Added support for removing app context from names
+* Moved cdn/distribution from cdn
+* Moved iam/policy/managed from iam/policy_managed
+* Moved iam/policy/map from iam/policy_map
+* Moved iam/policy/name_map from iam/policy_name_map
+* Removed obsolete iam/assume_role_map
+* RDS instance now embeds a random password secret
+
 ## 0.13.0
 
 ### New modules

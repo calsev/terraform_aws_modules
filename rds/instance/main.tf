@@ -1,28 +1,24 @@
 module "password_secret" {
-  source         = "../../secret/data"
-  for_each       = local.db_map
-  ssm_param_name = each.value.password_ssm_param_name
-  sm_secret_name = each.value.password_sm_secret_name
-  sm_secret_key  = each.value.password_sm_secret_key
-  std_map        = var.std_map
-}
-
-module "username_secret" {
-  source         = "../../secret/data"
-  for_each       = local.db_map
-  sm_secret_name = each.value.username_sm_secret_name
-  sm_secret_key  = each.value.username_sm_secret_key
-  std_map        = var.std_map
+  source                                 = "../../secret/random"
+  secret_is_param_default                = var.db_secret_is_param_default
+  secret_map                             = local.lx_map
+  secret_name_include_app_fields_default = var.db_name_include_app_fields_default
+  secret_name_infix_default              = var.db_name_infix_default
+  secret_name_prefix_default             = var.db_name_prefix_default
+  secret_name_suffix_default             = var.db_name_suffix_default
+  secret_random_init_key_default         = "password"
+  std_map                                = var.std_map
 }
 
 resource "aws_db_instance" "this_db" {
-  for_each                    = local.db_map
+  for_each                    = local.lx_map
   allocated_storage           = each.value.allocated_storage_gib
   allow_major_version_upgrade = each.value.allow_major_version_upgrade
   apply_immediately           = each.value.apply_immediately
   auto_minor_version_upgrade  = each.value.auto_minor_version_upgrade
   availability_zone           = each.value.availability_zone
   backup_retention_period     = each.value.backup_retention_period_day
+  backup_target               = "region" # Other option is outpost
   backup_window               = each.value.backup_window_utc
   blue_green_update {
     enabled = each.value.blue_green_update_enabled
@@ -32,7 +28,7 @@ resource "aws_db_instance" "this_db" {
   copy_tags_to_snapshot = each.value.copy_tags_to_snapshot
   # TODO: customer_owned_ip_enabled
   custom_iam_instance_profile         = each.value.iam_instance_profile_arn_custom
-  db_name                             = each.value.db_name_initial
+  db_name                             = each.value.db_initial_name
   db_subnet_group_name                = each.value.subnet_group_name
   delete_automated_backups            = each.value.delete_automated_backups
   deletion_protection                 = each.value.deletion_protection
@@ -56,8 +52,9 @@ resource "aws_db_instance" "this_db" {
       password,       # Dirty because it is usually sensitive
     ]
   }
-  maintenance_window                    = each.value.maintenance_window_utc
-  manage_master_user_password           = null # False conflicts with password # TODO
+  maintenance_window          = each.value.maintenance_window_utc
+  manage_master_user_password = false # conflicts with password
+  # master_user_secret # For RDS-managed
   max_allocated_storage                 = each.value.allocated_storage_max_gib
   monitoring_interval                   = each.value.monitoring_interval_s
   monitoring_role_arn                   = each.value.iam_role_arn_monitoring
@@ -66,7 +63,7 @@ resource "aws_db_instance" "this_db" {
   network_type                          = each.value.network_type
   option_group_name                     = each.value.option_group_name
   parameter_group_name                  = each.value.parameter_group_name
-  password                              = module.password_secret[each.key].secret
+  password                              = module.password_secret.secret_map[each.key]
   performance_insights_enabled          = each.value.performance_insights_enabled
   performance_insights_kms_key_id       = each.value.performance_insights_kms_key_arn
   performance_insights_retention_period = each.value.performance_insights_retention_period_day
@@ -83,6 +80,6 @@ resource "aws_db_instance" "this_db" {
   storage_type           = each.value.storage_type
   tags                   = each.value.tags
   timezone               = each.value.timezone_for_ms_sql
-  username               = each.value.username == null ? module.username_secret[each.key].secret : each.value.username
+  username               = each.value.username
   vpc_security_group_ids = each.value.security_group_id_list
 }

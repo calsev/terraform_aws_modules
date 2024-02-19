@@ -1,5 +1,5 @@
 module "name_map" {
-  source             = "../name_map"
+  source             = "../../name_map"
   name_infix_default = var.domain_name_infix_default
   name_map           = local.l0_map
   std_map            = var.std_map
@@ -40,8 +40,10 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       acm_certificate_arn                                   = var.cdn_global_data.domain_cert_map[k].arn
+      cache_policy_key                                      = v.cache_policy_key == null ? var.domain_cache_policy_key_default : v.cache_policy_key
       domain_name                                           = v.domain_name == null ? var.domain_name_default : v.domain_name
       origin_path                                           = v.origin_path == null ? var.domain_origin_path_default : v.origin_path
+      origin_request_policy_key                             = v.origin_request_policy_key == null ? var.domain_origin_request_policy_key_default : v.origin_request_policy_key
       response_cors_allow_credentials                       = v.response_cors_allow_credentials == null ? var.domain_response_cors_allow_credentials_default : v.response_cors_allow_credentials
       response_cors_allowed_header_list                     = v.response_cors_allowed_header_list == null ? var.domain_response_cors_allowed_header_list_default : v.response_cors_allowed_header_list
       response_cors_allowed_method_list                     = v.response_cors_allowed_method_list == null ? var.domain_response_cors_allowed_method_list_default : v.response_cors_allowed_method_list
@@ -68,6 +70,8 @@ locals {
   }
   l2_map = {
     for k, v in var.domain_map : k => {
+      cache_policy_id                       = var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
+      origin_request_policy_id              = var.cdn_global_data.origin_request_policy_map[local.l1_map[k].origin_request_policy_key].policy_id
       response_cors_allowed_origin_list_all = concat(local.l1_map[k].domain_name == null ? [] : ["https://${local.l1_map[k].domain_name}"], local.l1_map[k].response_cors_allowed_origin_list)
       response_custom_header_map = {
         for k_head, v_head in local.l1_map[k].response_custom_header_map : k_head => merge(v_head, {

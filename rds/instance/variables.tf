@@ -29,7 +29,7 @@ variable "db_map" {
     character_set_name                    = optional(string)       # For Oracle and Microsoft SQL
     cloudwatch_log_export_list            = optional(list(string)) # See per-engine value here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance#enabled_db_enabled_cloudwatch_log_export_defaults
     copy_tags_to_snapshot                 = optional(bool)
-    db_name_initial                       = optional(string)
+    db_initial_name                       = optional(string)
     delete_automated_backups              = optional(bool)
     deletion_protection                   = optional(bool)
     engine                                = optional(string) # Do not spec for replica
@@ -47,14 +47,14 @@ variable "db_map" {
     maintenance_window_utc                    = optional(string)
     monitoring_interval_s                     = optional(number)
     multi_az                                  = optional(bool)
+    name_include_app_fields                   = optional(bool)
     name_infix                                = optional(bool)
-    nchar_character_set_name                  = optional(string) # Oracle only
+    name_prefix                               = optional(string)
+    name_suffix                               = optional(string)
+    nchar_character_set_name                  = optional(string) # Oracle and MSSQL only
     network_type                              = optional(string)
     option_group_name                         = optional(string)
     parameter_group_name                      = optional(string)
-    password_ssm_param_name                   = optional(string)
-    password_sm_secret_name                   = optional(string)
-    password_sm_secret_key                    = optional(string)
     performance_insights_kms_key_arn          = optional(string)
     performance_insights_retention_period_day = optional(number)
     port                                      = optional(number)
@@ -68,9 +68,8 @@ variable "db_map" {
     storage_type                              = optional(string)
     subnet_group_key                          = optional(string) # For read replica, only if writer in different region
     timezone_for_ms_sql                       = optional(string)
+    secret_is_param                           = optional(bool)
     username                                  = optional(string)
-    username_sm_secret_key                    = optional(string)
-    username_sm_secret_name                   = optional(string)
   }))
 }
 
@@ -120,12 +119,13 @@ variable "db_backup_retention_period_day_default" {
     condition     = 0 <= var.db_backup_retention_period_day_default && var.db_backup_retention_period_day_default <= 35
     error_message = "Invalid retention period"
   }
-  description = "Must be greater than zero for is a replication source"
+  description = "Must be greater than zero for a replication source"
 }
 
 variable "db_backup_window_utc_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = "06:00-07:00"
+  description = "Backup and maintenance windows cannot overlap"
 }
 
 variable "db_blue_green_update_enabled_default" {
@@ -155,7 +155,7 @@ variable "db_copy_tags_to_snapshot_default" {
 
 variable "db_delete_automated_backups_default" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "db_deletion_protection_default" {
@@ -188,10 +188,10 @@ variable "db_iam_role_name_active_directory_domain_default" {
   default = null
 }
 
-#variable "db_ignore_change_list_default" {
-#  type    = list(string)
-#  default = []
-#}
+variable "db_initial_name_default" {
+  type    = string
+  default = null
+}
 
 variable "db_instance_class_default" {
   type    = string
@@ -214,8 +214,9 @@ variable "db_license_model_default" {
 }
 
 variable "db_maintenance_window_utc_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = "Sun:07:00-Sun:08:00"
+  description = "Backup and maintenance windows cannot overlap"
 }
 
 variable "db_monitoring_interval_s_default" {
@@ -233,14 +234,26 @@ variable "db_multi_az_default" {
   default = false
 }
 
+variable "db_name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "It is assumed the DB transcends app organization"
+}
+
 variable "db_name_infix_default" {
   type    = bool
   default = true
 }
 
-variable "db_name_initial_default" {
+variable "db_name_prefix_default" {
   type    = string
-  default = null
+  default = ""
+}
+
+variable "db_name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "db_nchar_character_set_name_default" {
@@ -265,21 +278,6 @@ variable "db_option_group_name_default" {
 variable "db_parameter_group_name_default" {
   type    = string
   default = null
-}
-
-variable "db_password_ssm_param_name_default" {
-  type    = string
-  default = null
-}
-
-variable "db_password_sm_secret_name_default" {
-  type    = string
-  default = null
-}
-
-variable "db_password_sm_secret_key_default" {
-  type    = string
-  default = "password"
 }
 
 variable "db_performance_insights_kms_key_arn_default" {
@@ -364,21 +362,15 @@ variable "db_timezone_for_ms_sql_default" {
   default = null
 }
 
+variable "db_secret_is_param_default" {
+  type        = bool
+  default     = false
+  description = "If true, an SSM param will be created, otherwise a SM secret"
+}
+
 variable "db_username_default" {
   type    = string
   default = null
-}
-
-variable "db_username_sm_secret_key_default" {
-  type        = string
-  default     = "username"
-  description = "Ignored if a username is provided"
-}
-
-variable "db_username_sm_secret_name_default" {
-  type        = string
-  default     = null
-  description = "Defaults to the secret for password"
 }
 
 variable "iam_data" {
@@ -404,12 +396,14 @@ variable "vpc_data_map" {
 
 variable "std_map" {
   type = object({
-    aws_account_id       = string
-    aws_region_name      = string
-    iam_partition        = string
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }

@@ -1,14 +1,14 @@
 variable "cdn_global_data" {
   type = object({
-    cache_policy_id_map = object({
-      max_cache = string
-    })
+    cache_policy_map = map(object({
+      policy_id = string
+    }))
     domain_cert_map = map(object({
       arn = string
     }))
-    origin_request_policy_id_map = object({
-      max_cache = string
-    })
+    origin_request_policy_map = map(object({
+      policy_id = string
+    }))
     web_acl_arn = string
   })
 }
@@ -28,11 +28,13 @@ variable "dns_data" {
 variable "domain_map" {
   type = map(object({
     bucket_allow_public               = optional(bool)
+    cache_policy_key                  = optional(string)
     domain_name                       = optional(string)
     name_infix                        = optional(bool)
     origin_domain                     = string
     origin_fqdn                       = string
     origin_path                       = optional(string)
+    origin_request_policy_key         = optional(string)
     response_cors_allow_credentials   = optional(bool)
     response_cors_allowed_header_list = optional(list(string))
     response_cors_allowed_method_list = optional(list(string))
@@ -77,6 +79,11 @@ variable "domain_bucket_allow_public_default" {
   default = false
 }
 
+variable "domain_cache_policy_key_default" {
+  type    = string
+  default = "max_cache"
+}
+
 variable "domain_name_default" {
   type    = string
   default = null
@@ -90,6 +97,11 @@ variable "domain_name_infix_default" {
 variable "domain_origin_path_default" {
   type    = string
   default = ""
+}
+
+variable "domain_origin_request_policy_key_default" {
+  type    = string
+  default = "max_cache"
 }
 
 variable "domain_response_cors_allow_credentials_default" {

@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   default_cache_behavior {
     allowed_methods           = each.value.response_cors_allowed_method_list
     cached_methods            = each.value.response_cors_allowed_method_list
-    cache_policy_id           = var.cdn_global_data.cache_policy_id_map.max_cache # TODO
+    cache_policy_id           = each.value.cache_policy_id
     compress                  = true
     default_ttl               = null
     field_level_encryption_id = null
@@ -97,7 +97,7 @@ resource "aws_cloudfront_distribution" "this_distribution" {
     #lambda_function_association
     max_ttl                    = null
     min_ttl                    = null
-    origin_request_policy_id   = var.cdn_global_data.origin_request_policy_id_map.max_cache
+    origin_request_policy_id   = each.value.origin_request_policy_id
     realtime_log_config_arn    = null
     response_headers_policy_id = aws_cloudfront_response_headers_policy.header_policy[each.key].id
     smooth_streaming           = false # TODO

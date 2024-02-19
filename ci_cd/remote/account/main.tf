@@ -1,0 +1,25 @@
+module "host" {
+  source                              = "../../../ci_cd/remote/host"
+  host_map                            = var.host_map
+  host_provider_type_default          = var.host_provider_type_default
+  host_vpc_tls_certificate_default    = var.host_vpc_tls_certificate_default
+  std_map                             = var.std_map
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_data_map                        = var.vpc_data_map
+  vpc_key_default                     = var.vpc_key_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
+}
+
+module "connection" {
+  source                           = "../../../ci_cd/remote/connection"
+  connection_map                   = var.connection_map
+  connection_host_key_default      = var.connection_host_key_default
+  connection_provider_type_default = var.connection_provider_type_default
+  host_data_map                    = module.host.data
+  policy_create                    = var.policy_create
+  policy_name                      = var.policy_name
+  policy_name_infix                = var.policy_name_infix
+  policy_name_prefix               = var.policy_name_prefix
+  std_map                          = var.std_map
+}

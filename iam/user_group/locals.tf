@@ -13,13 +13,13 @@ module "user_name_map" {
 }
 
 module "group_policy_map" {
-  source     = "../../iam/policy_map"
+  source     = "../../iam/policy/map"
   policy_map = var.group_map
   std_map    = var.std_map
 }
 
 module "user_policy_map" {
-  source     = "../../iam/policy_map"
+  source     = "../../iam/policy/map"
   policy_map = var.user_map
   std_map    = var.std_map
 }

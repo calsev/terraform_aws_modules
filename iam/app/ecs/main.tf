@@ -1,5 +1,5 @@
 module "managed_policies" {
-  source = "../../../iam/policy_managed"
+  source = "../../../iam/policy/managed"
   policy_map = {
     ecs_task_execution = "service-role/AmazonECSTaskExecutionRolePolicy"
   }
