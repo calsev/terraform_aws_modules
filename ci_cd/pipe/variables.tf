@@ -5,7 +5,7 @@ variable "ci_cd_account_data" {
     })
     code_star = object({
       connection = map(object({
-        arn = string
+        connection_arn = string
       }))
     })
   })

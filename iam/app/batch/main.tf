@@ -1,5 +1,5 @@
 module "managed_policies" {
-  source = "../../../iam/policy_managed"
+  source = "../../../iam/policy/managed"
   policy_map = {
     batch_service    = "service-role/AWSBatchServiceRole"
     batch_spot_fleet = "service-role/AmazonEC2SpotFleetTaggingRole"

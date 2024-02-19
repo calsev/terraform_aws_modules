@@ -15,7 +15,7 @@ resource "aws_codepipeline" "this_pipeline" {
       name     = "Source"
       configuration = {
         BranchName           = each.value.source_branch
-        ConnectionArn        = var.ci_cd_account_data.code_star.connection[each.value.source_connection_name].arn
+        ConnectionArn        = var.ci_cd_account_data.code_star.connection[each.value.source_connection_name].connection_arn
         DetectChanges        = each.value.source_detect_changes
         FullRepositoryId     = each.value.source_repository_id
         OutputArtifactFormat = "CODE_ZIP"

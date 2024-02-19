@@ -5,7 +5,7 @@ module "name_map" {
 }
 
 module "policy_map" {
-  source                      = "../../iam/policy_name_map"
+  source                      = "../../iam/policy/name_map"
   name_map                    = var.bus_map
   policy_access_list_default  = var.policy_access_list_default
   policy_create_default       = var.policy_create_default

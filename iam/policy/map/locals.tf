@@ -1,5 +1,5 @@
 module "create_name_map" {
-  source              = "../../name_map"
+  source              = "../../../name_map"
   name_infix_default  = var.policy_name_infix_default
   name_map            = local.policy_create_flattened_map
   name_prefix_default = var.policy_name_prefix_default

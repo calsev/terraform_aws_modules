@@ -13,7 +13,7 @@ module "site_deploy" {
 
 module "cdn_invalidate" {
   for_each = var.site_map
-  source   = "../../iam/policy/identity/cdn"
+  source   = "../../iam/policy/identity/cdn/distribution"
   cdn_arn  = module.cdn.data[each.key].cdn_arn
   name     = "${each.key}_cdn_invalidate"
   std_map  = var.std_map

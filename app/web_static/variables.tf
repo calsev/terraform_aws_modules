@@ -1,14 +1,14 @@
 variable "cdn_global_data" {
   type = object({
-    cache_policy_id_map = object({
-      max_cache = string
-    })
+    cache_policy_map = map(object({
+      policy_id = string
+    }))
     domain_cert_map = map(object({
       arn = string
     }))
-    origin_request_policy_id_map = object({
-      max_cache = string
-    })
+    origin_request_policy_map = map(object({
+      policy_id = string
+    }))
     web_acl_arn = string
   })
 }
@@ -21,7 +21,7 @@ variable "ci_cd_account_data" {
     })
     code_star = object({
       connection = map(object({
-        arn                = string
+        connection_arn     = string
         iam_policy_arn_map = map(string)
       }))
     })

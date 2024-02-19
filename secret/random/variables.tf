@@ -35,23 +35,47 @@ variable "policy_name_suffix_default" {
 
 variable "secret_map" {
   type = map(object({
-    policy_access_list     = optional(list(string))
-    policy_create          = optional(bool)
-    policy_name            = optional(string)
-    policy_name_append     = optional(string)
-    policy_name_infix      = optional(bool)
-    policy_name_prefix     = optional(string)
-    policy_name_prepend    = optional(string)
-    policy_name_suffix     = optional(string)
-    secret_is_param        = optional(bool)
-    secret_random_init_key = optional(string)
-    secret_random_init_map = optional(map(string))
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_prefix             = optional(string)
+    name_suffix             = optional(string)
+    policy_access_list      = optional(list(string))
+    policy_create           = optional(bool)
+    policy_name             = optional(string)
+    policy_name_append      = optional(string)
+    policy_name_infix       = optional(bool)
+    policy_name_prefix      = optional(string)
+    policy_name_prepend     = optional(string)
+    policy_name_suffix      = optional(string)
+    secret_is_param         = optional(bool)
+    secret_random_init_key  = optional(string)
+    secret_random_init_map  = optional(map(string))
   }))
 }
 
 variable "secret_is_param_default" {
   type    = bool
   default = false
+}
+
+variable "secret_name_include_app_fields_default" {
+  type    = bool
+  default = true
+}
+
+variable "secret_name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "secret_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "secret_name_suffix_default" {
+  type    = string
+  default = ""
 }
 
 variable "secret_random_init_key_default" {

@@ -1,11 +1,15 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = local.l0_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.param_name_include_app_fields_default
+  name_infix_default              = var.param_name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.param_name_prefix_default
+  name_suffix_default             = var.param_name_suffix_default
+  std_map                         = var.std_map
 }
 
 module "policy_map" {
-  source                      = "../../iam/policy_name_map"
+  source                      = "../../iam/policy/name_map"
   name_map                    = local.l0_map
   policy_access_list_default  = var.policy_access_list_default
   policy_create_default       = var.policy_create_default
