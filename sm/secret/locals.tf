@@ -22,15 +22,16 @@ module "policy_map" {
 }
 
 module "init_map" {
-  source                         = "../../secret/init_map"
-  secret_map                     = local.l0_map
-  secret_random_init_default     = var.secret_random_init_default
-  secret_random_init_key_default = var.secret_random_init_key_default
-  secret_random_init_map_default = var.secret_random_init_map_default
+  source                          = "../../secret/init_map"
+  secret_map                      = local.l0_map
+  secret_random_init_key_default  = var.secret_random_init_key_default
+  secret_random_init_map_default  = var.secret_random_init_map_default
+  secret_random_init_type_default = var.secret_random_init_type_default
+  secret_random_init_value_map    = var.secret_random_init_value_map
 }
 
 locals {
-  init_value_map = {
+  create_init_value_map = {
     for k, v in local.lx_map : k => v if v.secret_random_init
   }
   l0_map = {
@@ -56,9 +57,9 @@ locals {
       {
         for k_secret, v_secret in v : k_secret => v_secret if !contains(["resource_policy_json"], k_secret)
       },
-      module.this_policy[k].data,
-      v.secret_random_init ? module.initial_value.data[k] : null,
       {
+        init_value = v.secret_random_init ? module.initial_value.data[k] : null
+        policy     = module.this_policy[k].data
         secret_arn = aws_secretsmanager_secret.this_secret[k].arn
         secret_id  = aws_secretsmanager_secret.this_secret[k].id
       },

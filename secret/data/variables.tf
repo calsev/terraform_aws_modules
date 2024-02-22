@@ -1,4 +1,4 @@
-variable "ssm_param_name" {
+variable "secret_key" {
   type    = string
   default = null
 }
@@ -8,7 +8,7 @@ variable "sm_secret_name" {
   default = null
 }
 
-variable "sm_secret_key" {
+variable "ssm_param_name" {
   type    = string
   default = null
 }

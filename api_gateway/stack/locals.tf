@@ -55,7 +55,7 @@ locals {
   stage_map = {
     for k_api, v_api in local.route_map : k_api => merge(v_api, {
       deployment_id = aws_apigatewayv2_deployment.this_deployment[k_api].id
-      domain_id     = module.domain.data[k_api].domain_id
+      domain_id     = v_api.enable_dns_mapping ? module.domain.data[k_api].domain_id : null
       integration_map = {
         for k_int, v_int in v_api.integration_map : k_int => merge(v_int, {
           route_map = module.route.data[k_api].integration_map[k_int].route_map

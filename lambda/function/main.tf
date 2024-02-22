@@ -82,8 +82,9 @@ resource "aws_lambda_function" "this_function" {
     }
   }
   vpc_config {
-    security_group_ids = each.value.vpc_security_group_id_list
-    subnet_ids         = each.value.vpc_subnet_id_list
+    ipv6_allowed_for_dual_stack = each.value.vpc_ipv6_allowed
+    security_group_ids          = each.value.vpc_security_group_id_list
+    subnet_ids                  = each.value.vpc_subnet_id_list
   }
 }
 

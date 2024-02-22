@@ -9,7 +9,9 @@ variable "cdn_global_data" {
     origin_request_policy_map = map(object({
       policy_id = string
     }))
-    web_acl_arn = string
+    web_acl_map = map(object({
+      waf_arn = string
+    }))
   })
 }
 
@@ -71,6 +73,8 @@ variable "domain_map" {
       identifier_type = optional(string)
       object_key_list = optional(list(string))
     })))
+    trusted_key_group_key_list = optional(list(string))
+    web_acl_key                = optional(string)
   }))
 }
 
@@ -230,6 +234,24 @@ variable "domain_response_server_timing_enabled_default" {
 variable "domain_response_server_timing_sampling_rate_default" {
   type    = number
   default = 0
+}
+
+variable "domain_trusted_key_group_key_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "domain_web_acl_key_default" {
+  type    = string
+  default = "basic_rate_limit"
+}
+
+variable "key_group_data_map" {
+  type = map(object({
+    group_id = string
+  }))
+  default     = {}
+  description = "Must be provided if any distribution has a trusted key group"
 }
 
 variable "std_map" {

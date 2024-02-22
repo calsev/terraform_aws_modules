@@ -9,7 +9,9 @@ variable "cdn_global_data" {
     origin_request_policy_map = map(object({
       policy_id = string
     }))
-    web_acl_arn = string
+    web_acl_map = map(object({
+      waf_arn = string
+    }))
   })
 }
 

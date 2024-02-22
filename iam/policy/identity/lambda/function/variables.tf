@@ -4,7 +4,14 @@ variable "access_list" {
 }
 
 variable "function_name" {
-  type = string
+  type        = string
+  default     = null
+  description = "Will be concatenated with function_name_list, if provided"
+}
+
+variable "function_name_list" {
+  type    = list(string)
+  default = []
 }
 
 variable "name" {

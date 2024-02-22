@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.15.0
+
+### New modules
+
+* CDN public key
+* CDN public key group
+* Random TLS key
+
+### General
+
+* Added trusted keys to CDN
+* Added support for JSON params in SSM
+* Fix Cognito pool without custom domain
+* Add support for initial value in secret
+
 ## 0.14.0
 
 ### New modules

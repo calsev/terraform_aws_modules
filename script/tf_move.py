@@ -46,7 +46,14 @@ def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
         resource_name.split(".") for resource_name in all_resources
     ]
     resource_name_splits_aws = [
-        [split for split in splits if split.startswith("aws_")]
+        [
+            split
+            for split in splits
+            if split.startswith("aws_")
+            or any(
+                split == resource for resource in ["random_password", "tls_private_key"]
+            )
+        ]
         for splits in resource_name_splits_raw
     ]
     if any(len(splits) != 1 for splits in resource_name_splits_aws):

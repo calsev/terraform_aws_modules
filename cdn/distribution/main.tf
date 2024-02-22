@@ -102,7 +102,7 @@ resource "aws_cloudfront_distribution" "this_distribution" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.header_policy[each.key].id
     smooth_streaming           = false # TODO
     target_origin_id           = each.value.origin_fqdn
-    trusted_key_groups         = []                  # TODO
+    trusted_key_groups         = each.value.trusted_key_group_id_list
     trusted_signers            = []                  # TODO
     viewer_protocol_policy     = "redirect-to-https" # TODO
   }
@@ -128,7 +128,7 @@ resource "aws_cloudfront_distribution" "this_distribution" {
     minimum_protocol_version = "TLSv1.2_2021"
     ssl_support_method       = "sni-only"
   }
-  web_acl_id = var.cdn_global_data.web_acl_arn
+  web_acl_id = each.value.web_acl_arn
 }
 
 resource "aws_route53_record" "this_dns_alias" {

@@ -65,14 +65,14 @@ resource "aws_cognito_user_pool" "this_pool" {
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
-  for_each        = local.lx_map
+  for_each        = local.domain_map
   certificate_arn = each.value.acm_certificate_arn
   domain          = each.value.dns_fqdn
   user_pool_id    = aws_cognito_user_pool.this_pool[each.key].id
 }
 
 resource "aws_route53_record" "domain_alias" {
-  for_each = local.lx_map
+  for_each = local.domain_map
   alias {
     evaluate_target_health = false
     name                   = aws_cognito_user_pool_domain.domain[each.key].cloudfront_distribution
