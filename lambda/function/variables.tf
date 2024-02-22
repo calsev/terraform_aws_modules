@@ -54,6 +54,7 @@ variable "function_map" {
     timeout_seconds                       = optional(number)
     tracing_mode                          = optional(string)
     vpc_az_key_list                       = optional(list(string))
+    vpc_ipv6_allowed                      = optional(bool)
     vpc_key                               = optional(string)
     vpc_security_group_key_list           = optional(list(string))
     vpc_segment_key                       = optional(string)
@@ -203,6 +204,12 @@ variable "function_timeout_seconds_default" {
 variable "function_tracing_mode_default" {
   type    = string
   default = null
+}
+
+variable "function_vpc_ipv6_allowed_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for functions not in VPC"
 }
 
 variable "iam_data" {

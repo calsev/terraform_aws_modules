@@ -22,10 +22,12 @@ module "policy_map" {
 }
 
 module "init_map" {
-  source                         = "../../secret/init_map"
-  secret_map                     = local.l0_map
-  secret_random_init_key_default = var.param_secret_random_init_key_default
-  secret_random_init_map_default = var.param_secret_random_init_map_default
+  source                          = "../../secret/init_map"
+  secret_map                      = local.l0_map
+  secret_random_init_key_default  = var.param_secret_random_init_key_default
+  secret_random_init_map_default  = var.param_secret_random_init_map_default
+  secret_random_init_type_default = var.param_secret_random_init_type_default
+  secret_random_init_value_map    = var.secret_random_init_value_map
 }
 
 locals {
@@ -41,9 +43,9 @@ locals {
   output_data = {
     for k, v in local.param_map : k => merge(
       v,
-      module.this_policy[k].data,
-      module.initial_value.data[k],
       {
+        init_value = module.initial_value.data[k]
+        policy     = module.this_policy[k].data
         secret_arn = aws_ssm_parameter.this_param[k].arn
         secret_id  = aws_ssm_parameter.this_param[k].id
       },

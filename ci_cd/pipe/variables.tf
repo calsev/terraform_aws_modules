@@ -18,10 +18,11 @@ variable "pipe_map" {
     pipeline_type   = optional(string)
     secret_is_param = optional(bool)
     # There is always a source stage, that uses namespace "SourceSource" and produces zip artifact "SourceArtifact"
-    source_branch          = optional(string)
-    source_connection_name = optional(string)
-    source_detect_changes  = optional(bool)
-    source_repository_id   = optional(string) # e.g. user-name/repo-name
+    source_artifact_encryption_key = optional(string)
+    source_branch                  = optional(string)
+    source_connection_name         = optional(string)
+    source_detect_changes          = optional(bool)
+    source_repository_id           = optional(string) # e.g. user-name/repo-name
     stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -43,7 +44,12 @@ variable "pipe_map" {
       name = string
     }))
     variable_map       = optional(map(string))
+    webhook_enabled    = optional(bool)
     webhook_event_list = optional(list(string))
+    webhook_filter_map = optional(map(object({ # This will be merged over the filter for branch at source_branch
+      json_path    = string
+      match_equals = string
+    })))
   }))
 }
 
@@ -66,6 +72,11 @@ variable "pipe_secret_is_param_default" {
   type        = bool
   default     = false
   description = "If true, an SSM param will be created, otherwise a SM secret"
+}
+
+variable "pipe_source_artifact_encryption_key_default" {
+  type    = string
+  default = "alias/aws/s3"
 }
 
 variable "pipe_source_branch_default" {
@@ -124,10 +135,24 @@ variable "pipe_variable_map_default" {
   description = "A mapping of variable name to variable value"
 }
 
+variable "pipe_webhook_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "pipe_webhook_event_list_default" {
   type        = list(string)
   default     = ["push"]
   description = "See https://docs.github.com/en/webhooks/webhook-events-and-payloads#push"
+}
+
+variable "pipe_webhook_filter_map_default" {
+  type = map(object({
+    json_path    = string
+    match_equals = string
+  }))
+  default     = {}
+  description = "This will be merged over the filter for branch at source_branch"
 }
 
 variable "std_map" {

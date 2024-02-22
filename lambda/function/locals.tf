@@ -70,6 +70,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      is_in_vpc                       = length(local.l1_map[k].vpc_subnet_id_list) != 0
       source_is_image                 = local.l1_map[k].source_image_repo_key != null
       source_package_s3_path_provided = local.l1_map[k].source_package_s3_bucket_name != null && local.l1_map[k].source_package_s3_object_key != null ? true : false
     }
@@ -82,6 +83,7 @@ locals {
       source_package_handler           = local.l2_map[k].source_is_image ? null : v.source_package_handler == null ? var.function_source_package_handler_default : v.source_package_handler
       source_package_type              = local.l2_map[k].source_is_image ? "Image" : "Zip"
       source_package_runtime           = local.l2_map[k].source_is_image ? null : v.source_package_runtime == null ? var.function_source_package_runtime_default : v.source_package_runtime
+      vpc_ipv6_allowed                 = local.l2_map[k].is_in_vpc ? v.vpc_ipv6_allowed == null ? var.function_vpc_ipv6_allowed_default : v.vpc_ipv6_allowed : false
     }
   }
   l4_map = {

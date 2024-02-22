@@ -66,6 +66,8 @@ locals {
       response_security_header_transport_preload            = v.response_security_header_transport_preload == null ? var.domain_response_security_header_transport_preload_default : v.response_security_header_transport_preload
       response_server_timing_enabled                        = v.response_server_timing_enabled == null ? var.domain_response_server_timing_enabled_default : v.response_server_timing_enabled
       response_server_timing_sampling_rate                  = v.response_server_timing_sampling_rate == null ? var.domain_response_server_timing_sampling_rate_default : v.response_server_timing_sampling_rate
+      trusted_key_group_key_list                            = v.trusted_key_group_key_list == null ? var.domain_trusted_key_group_key_list_default : v.trusted_key_group_key_list
+      web_acl_key                                           = v.web_acl_key == null ? var.domain_web_acl_key_default : v.web_acl_key
     })
   }
   l2_map = {
@@ -78,6 +80,10 @@ locals {
           override = v_head.override == null ? var.domain_response_custom_header_override_default : v.override
         })
       }
+      trusted_key_group_id_list = [
+        for k_group in local.l1_map[k].trusted_key_group_key_list : var.key_group_data_map[k_group].group_id
+      ]
+      web_acl_arn = var.cdn_global_data.web_acl_map[local.l1_map[k].web_acl_key].waf_arn
     }
   }
   lx_map = {

@@ -101,6 +101,8 @@ tf-lint: tflint-install
 	cd ../cdn/cache_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cdn/distribution && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cdn/origin_request_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cdn/public_key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cdn/public_key_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cert && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -225,6 +227,7 @@ tf-lint: tflint-install
 	cd ../pinpoint/sms_channel && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../random && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../random/password && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../random/tls_key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/subnet_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -234,6 +237,7 @@ tf-lint: tflint-install
 	cd ../secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/data && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/init_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../secret/init_value && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/random && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/configuration_set && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

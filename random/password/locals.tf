@@ -1,15 +1,9 @@
-module "name_map" {
-  source   = "../../name_map"
-  name_map = local.l0_map
-  std_map  = var.std_map
-}
-
 locals {
   l0_map = {
     for k, v in var.random_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, {
       random_keeper_map  = v.random_keeper_map == null ? var.random_keeper_map_default : v.random_keeper_map
       random_length      = v.random_length == null ? var.random_length_default : v.random_length
       random_min_lower   = v.random_min_lower == null ? var.random_min_lower_default : v.random_min_lower

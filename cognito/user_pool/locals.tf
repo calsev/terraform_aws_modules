@@ -10,6 +10,9 @@ locals {
       user_pool_id = aws_cognito_user_pool.this_pool[k_pool].id
     })
   }
+  domain_map = {
+    for k, v in local.lx_map : k => v if v.dns_fqdn != null
+  }
   l1_map = {
     for k, v in var.pool_map : k => merge(v, module.name_map.data[k], {
       account_recovery_admin_priority                   = v.account_recovery_admin_priority == null ? var.pool_account_recovery_admin_priority_default : v.account_recovery_admin_priority
@@ -59,13 +62,13 @@ locals {
           verified_phone_number = local.l1_map[k].account_recovery_phone_priority
         },
       )
-      dns_fqdn    = "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_domain}"
-      dns_zone_id = var.dns_data.domain_to_dns_zone_map[local.l1_map[k].dns_domain].dns_zone_id
+      dns_fqdn    = local.l1_map[k].dns_domain == null ? null : "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_domain}"
+      dns_zone_id = local.l1_map[k].dns_domain == null ? null : var.dns_data.domain_to_dns_zone_map[local.l1_map[k].dns_domain].dns_zone_id
     }
   }
   l3_map = {
     for k, v in var.pool_map : k => {
-      acm_certificate_arn = var.cdn_global_data.domain_cert_map[local.l2_map[k].dns_fqdn].arn
+      acm_certificate_arn = local.l2_map[k].dns_fqdn == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].dns_fqdn].arn
     }
   }
   lx_map = {

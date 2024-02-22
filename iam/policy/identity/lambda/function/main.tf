@@ -5,7 +5,7 @@ module "this_policy" {
   name_infix  = var.name_infix
   name_prefix = var.name_prefix
   resource_map = {
-    function = [local.function_arn]
+    function = local.function_arn_list
   }
   service_name = "lambda"
   std_map      = var.std_map

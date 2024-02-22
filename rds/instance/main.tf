@@ -53,7 +53,7 @@ resource "aws_db_instance" "this_db" {
     ]
   }
   maintenance_window          = each.value.maintenance_window_utc
-  manage_master_user_password = false # conflicts with password
+  manage_master_user_password = null # Conflicts with password
   # master_user_secret # For RDS-managed
   max_allocated_storage                 = each.value.allocated_storage_max_gib
   monitoring_interval                   = each.value.monitoring_interval_s
