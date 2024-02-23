@@ -1,15 +1,13 @@
 """
 This script imports the several resources that comprise an S3 bucket.
 Example
-python script/s3_import.py stack/inf/s3 gobble
+python script/s3_import.py stack/inf/s3 aws-profile-name
 """
 
 import argparse
 import os
 import shlex
 from typing import Dict, List, Optional
-
-from typeguard import typechecked
 
 from .plan import get_plan_resources, resource_regex, run_command_as_process
 
@@ -41,7 +39,6 @@ resource_type_priority_regex_map = {
 }
 
 
-@typechecked
 def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument(
@@ -53,7 +50,6 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     return parsed_args
 
 
-@typechecked
 def build_bucket_map(
     resource_list: List[str],
 ) -> Dict[str, List]:
@@ -76,7 +72,6 @@ def build_bucket_map(
     return bucket_map
 
 
-@typechecked
 def map_resources(
     rel_path: str,
     var_file: Optional[str],
@@ -93,7 +88,6 @@ def map_resources(
     return bucket_map
 
 
-@typechecked
 def import_one_resource(
     rel_path: str, var_file: Optional[str], bucket_name: str, resource_name: str
 ) -> None:
@@ -106,7 +100,6 @@ def import_one_resource(
         print(f"Could not import {resource_name}:\n{e}")
 
 
-@typechecked
 def import_all_resources(
     rel_path: str, var_file: Optional[str], bucket_map: Dict[str, List[str]]
 ) -> None:
@@ -116,7 +109,6 @@ def import_all_resources(
             import_one_resource(rel_path, var_file, bucket_name, resource_name)
 
 
-@typechecked
 def import_buckets(
     rel_path: str, aws_profile: str, var_file: Optional[str] = None
 ) -> None:
@@ -127,7 +119,6 @@ def import_buckets(
     import_all_resources(rel_path, var_file, bucket_map)
 
 
-@typechecked
 def main(args_in: Optional[List[str]] = None) -> None:
     args = parse_args(args_in)
     import_buckets(args.path, args.profile, args.var_file)

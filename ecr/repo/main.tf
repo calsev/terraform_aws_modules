@@ -18,25 +18,24 @@ resource "aws_ecr_lifecycle_policy" "this_lifecycle" {
   repository = aws_ecr_repository.this_repo[each.key].id
 }
 
-data "aws_iam_policy_document" "empty_policy" {
+data "aws_iam_policy_document" "base_policy" {
+  for_each                  = local.repo_map
+  override_policy_documents = each.value.iam_policy_json == null ? [] : [each.value.iam_policy_json]
   statement {
-    actions = ["*"]
-    condition {
-      test     = "IpAddress"
-      values   = ["0.0.0.0"]
-      variable = "aws:SourceIp"
-    }
-    effect = "Deny"
+    actions = [
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
+    ]
     principals {
-      identifiers = ["*"]
-      type        = "*"
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
     }
-    sid = "EmptyPolicy"
+    sid = "LambdaGetImage"
   }
 }
 
 resource "aws_ecr_repository_policy" "repo_policy" {
   for_each   = local.repo_map
-  policy     = each.value.iam_policy_json == null ? data.aws_iam_policy_document.empty_policy.json : each.value.iam_policy_json
+  policy     = each.value.iam_policy_json == null ? data.aws_iam_policy_document.base_policy[each.key].json : each.value.iam_policy_json
   repository = aws_ecr_repository.this_repo[each.key].id
 }

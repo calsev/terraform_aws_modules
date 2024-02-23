@@ -1,5 +1,5 @@
 locals {
-  api_name                = "auth-api.example.com"
+  api_name                = "auth_api.example.com"
   auth_key_cognito        = "cognito"
   auth_key_lambda         = "lambda"
   client_app_name         = "gen_pop"

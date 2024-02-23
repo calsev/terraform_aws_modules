@@ -11,7 +11,7 @@ locals {
   email_flattened_list = flatten([
     for k, v in local.app_map : [
       for k_email, v_email in v.email_channel_map : merge(v_email, {
-        k_app_email             = "${k}-${k_email}"
+        k_app_email             = "${k}_${k_email}"
         pinpoint_application_id = aws_pinpoint_app.this_app[k].application_id
       })
     ]
@@ -51,10 +51,10 @@ locals {
         application_id = aws_pinpoint_app.this_app[k].application_id
         arn            = aws_pinpoint_app.this_app[k].arn
         email_channel_map = {
-          for k_email, _ in v.email_channel_map : k_email => module.email_channel.data["${k}-${k_email}"]
+          for k_email, _ in v.email_channel_map : k_email => module.email_channel.data["${k}_${k_email}"]
         }
         sms_channel_map = {
-          for k_sms, _ in v.sms_channel_map : k_sms => module.sms_channel.data["${k}-${k_sms}"]
+          for k_sms, _ in v.sms_channel_map : k_sms => module.sms_channel.data["${k}_${k_sms}"]
         }
       },
     )
@@ -62,7 +62,7 @@ locals {
   sms_flattened_list = flatten([
     for k, v in local.app_map : [
       for k_sms, v_sms in v.sms_channel_map : merge(v_sms, {
-        k_app_sms               = "${k}-${k_sms}"
+        k_app_sms               = "${k}_${k_sms}"
         pinpoint_application_id = aws_pinpoint_app.this_app[k].application_id
       })
     ]

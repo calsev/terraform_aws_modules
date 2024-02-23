@@ -1,6 +1,6 @@
 resource "aws_apigatewayv2_domain_name" "this_domain" {
   for_each    = local.domain_map
-  domain_name = each.key
+  domain_name = each.value.name_simple
   domain_name_configuration {
     certificate_arn                        = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][each.key].arn
     endpoint_type                          = "REGIONAL"
@@ -18,7 +18,7 @@ resource "aws_route53_record" "this_dns_alias" {
     name                   = aws_apigatewayv2_domain_name.this_domain[each.key].domain_name_configuration[0].target_domain_name
     zone_id                = aws_apigatewayv2_domain_name.this_domain[each.key].domain_name_configuration[0].hosted_zone_id
   }
-  name    = "${each.key}."
+  name    = "${each.value.name_simple}."
   type    = "A"
   zone_id = var.dns_data.domain_to_dns_zone_map[each.value.validation_domain].dns_zone_id
 }

@@ -60,10 +60,10 @@ locals {
     ]
   ])
   lx_map = {
-    for k, v in local.lx_map_flattened : k => merge(v, module.name_map.data["${v.k_api}-${v.k_auth}"])
+    for k, v in local.lx_map_flattened : k => merge(v, module.name_map.data["${v.k_api}_${v.k_auth}"])
   }
   lx_map_flattened = {
-    for v in local.lx_list_flattened : "${v.k_api}-${v.k_auth}" => v
+    for v in local.lx_list_flattened : "${v.k_api}_${v.k_auth}" => v
   }
   output_data = {
     for k_api, v_api in local.l4_map : k_api => merge(
@@ -72,10 +72,10 @@ locals {
         auth_map = {
           for k_auth, v_auth in v_api.auth_map : k_auth => merge(
             {
-              for k_all, v_all in local.lx_map["${k_api}-${k_auth}"] : k_all => v_all if !contains(["k_api", "k_auth"], k_all)
+              for k_all, v_all in local.lx_map["${k_api}_${k_auth}"] : k_all => v_all if !contains(["k_api", "k_auth"], k_all)
             },
             {
-              authorizer_id = aws_apigatewayv2_authorizer.this_auth["${k_api}-${k_auth}"].id
+              authorizer_id = aws_apigatewayv2_authorizer.this_auth["${k_api}_${k_auth}"].id
             },
           )
         }

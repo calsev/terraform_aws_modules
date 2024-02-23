@@ -1,6 +1,5 @@
 module "cdn_origin_bucket" {
-  source = "../../s3/bucket"
-
+  source                       = "../../s3/bucket"
   bucket_policy_create_default = false
   bucket_map                   = local.bucket_map
   dns_data                     = var.dns_data

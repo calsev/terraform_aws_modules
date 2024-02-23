@@ -15,6 +15,7 @@ variable "bucket_map" {
     lifecycle_upload_expiration_days  = optional(number)
     lifecycle_version_count           = optional(number)
     lifecycle_version_expiration_days = optional(number) # Defaults to lifecycle_expiration_days
+    name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     notification_enable_event_bridge  = optional(bool)
     policy_create                     = optional(bool)
@@ -112,6 +113,11 @@ variable "bucket_lifecycle_version_count_default" {
 variable "bucket_lifecycle_version_expiration_days_default" {
   type    = number
   default = null
+}
+
+variable "bucket_name_include_app_fields_default" {
+  type    = bool
+  default = true
 }
 
 variable "bucket_name_infix_default" {

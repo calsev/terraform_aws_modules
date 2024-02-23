@@ -5,17 +5,13 @@ import shlex
 import subprocess
 from typing import Dict, List, Optional, Tuple, Union
 
-from typeguard import typechecked
 
-
-@typechecked
 def resource_regex(resource_type: str) -> re.Pattern:
     return re.compile(rf"(?:^|[\s\.]){resource_type}[\.\[]")
 
 
-@typechecked
 def run_command_as_process(
-    command: str,
+    command: Union[str, list[str]],
     cwd: Optional[str] = None,
     expected_return_code: Optional[int] = 0,
     expected_stdout: Union[str, re.Pattern, List[Union[str, re.Pattern]], None] = None,
@@ -31,9 +27,13 @@ def run_command_as_process(
     @param env: A dictionary of environment variables to add to the inherited environment
     @return: The process object
     """
-    print(f"Running '{command}'")
-    command = json.dumps(command)[1:-1]  # Escape characters
-    arg_list = shlex.split(command)  # So we do not have to use shell form
+    # So we do not have to use shell form
+    if isinstance(command, str):
+        command = json.dumps(command)[1:-1]  # Escape characters
+        arg_list = shlex.split(command)
+    else:
+        arg_list = command
+    print(f"Running {json.dumps(arg_list, indent='  ')}")
     if env:
         env = {**os.environ, **env}
     result = subprocess.run(
@@ -69,7 +69,6 @@ def run_command_as_process(
     return result
 
 
-@typechecked
 def process_change_type(
     line: str,
     change_type: str,
@@ -77,7 +76,7 @@ def process_change_type(
     resource_type_ignore_regex_map: Dict,
     resource_ignore_list: List,
 ) -> None:
-    splits = line.split(" ")
+    splits = [p for p in re.split(r"([^\s\"]+(?:\".+?\"\S+)*|\s+)", line) if p.strip()]
     print(splits)
     resource_name = splits[1]
     if any(
@@ -90,7 +89,6 @@ def process_change_type(
         resources[change_type].append(resource_name)
 
 
-@typechecked
 def process_plan_line(
     line: str,
     resources: Dict,
@@ -109,7 +107,6 @@ def process_plan_line(
             )
 
 
-@typechecked
 def get_plan_resources(
     rel_path: str,
     var_file: Optional[str],
@@ -134,5 +131,4 @@ def get_plan_resources(
             resource_type_ignore_regex_map,
             resource_ignore_list,
         )
-    print(change_to_resource_list)
     return change_to_resource_list, result.stdout

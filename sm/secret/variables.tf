@@ -104,7 +104,7 @@ variable "secret_random_init_type_default" {
   default     = null
   description = "This is false for backwards compatibility. See module secret/random for an initialized wrapper."
   validation {
-    condition     = contains([null, "password", "tls_key"], var.secret_random_init_type_default)
+    condition     = var.secret_random_init_type_default == null ? true : contains(["password", "tls_key"], var.secret_random_init_type_default)
     error_message = "Invalid random init type"
   }
 }

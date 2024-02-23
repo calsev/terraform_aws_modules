@@ -49,5 +49,5 @@ locals {
       }
     }
   }
-  public_name = "${local.base_name}-public"
+  public_name = "${local.base_name}_public"
 }

@@ -110,7 +110,7 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
   origin {
-    domain_name              = module.cdn_origin_bucket.data[each.value.origin_fqdn].bucket_domain_name
+    domain_name              = module.cdn_origin_bucket.data[each.value.bucket_key].bucket_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.this_origin_control[each.key].id
     origin_id                = each.value.origin_fqdn
     origin_path              = each.value.origin_path

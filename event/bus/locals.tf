@@ -46,7 +46,7 @@ locals {
   }
   l2_map = {
     for k, v in var.bus_map : k => {
-      log_name = "bus-${local.l1_map[k].name_simple}"
+      log_name = "bus_${k}"
     }
   }
   lx_map = {

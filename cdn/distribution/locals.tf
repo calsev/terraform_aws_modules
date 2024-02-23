@@ -7,14 +7,14 @@ module "name_map" {
 
 locals {
   bucket_map = {
-    for k, v in var.domain_map : v.origin_fqdn => {
+    for k, v in local.lx_map : v.bucket_key => {
       allow_public   = v.bucket_allow_public == null ? var.domain_bucket_allow_public_default : v.bucket_allow_public
       website_domain = v.origin_domain
       website_fqdn   = v.origin_fqdn
     }
   }
   bucket_policy_map = {
-    for k, v in var.domain_map : v.origin_fqdn => merge(local.bucket_map[v.origin_fqdn], {
+    for k, v in local.lx_map : v.bucket_key => merge(local.bucket_map[v.bucket_key], {
       sid_map = merge(
         v.sid_map,
         {
@@ -40,6 +40,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       acm_certificate_arn                                   = var.cdn_global_data.domain_cert_map[k].arn
+      bucket_key                                            = replace(v.origin_fqdn, "-", "_")
       cache_policy_key                                      = v.cache_policy_key == null ? var.domain_cache_policy_key_default : v.cache_policy_key
       domain_name                                           = v.domain_name == null ? var.domain_name_default : v.domain_name
       origin_path                                           = v.origin_path == null ? var.domain_origin_path_default : v.origin_path
@@ -94,9 +95,9 @@ locals {
       v,
       {
         bucket = merge(
-          module.cdn_origin_bucket.data[v.origin_fqdn],
+          module.cdn_origin_bucket.data[v.bucket_key],
           {
-            bucket_policy_doc = module.bucket_policy[v.origin_fqdn].iam_policy_doc
+            bucket_policy_doc = module.bucket_policy[v.bucket_key].iam_policy_doc
           },
         )
         cdn_arn = aws_cloudfront_distribution.this_distribution[k].arn

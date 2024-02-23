@@ -1,6 +1,6 @@
 variable "name_append" {
   type        = string
-  default     = "dead-letter"
+  default     = "dead_letter"
   description = "Set null to not append a name"
 }
 

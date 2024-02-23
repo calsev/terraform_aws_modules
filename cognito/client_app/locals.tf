@@ -23,7 +23,7 @@ locals {
           generate_secret                               = v_app.generate_secret == null ? var.client_generate_secret_default : v_app.generate_secret
           id_token_validity_minutes                     = v_app.id_token_validity_minutes == null ? var.client_id_token_validity_minutes_default : v_app.id_token_validity_minutes
           k_app                                         = k_app
-          k_all                                         = "${k_pool}-${k_app}"
+          k_all                                         = "${k_pool}_${k_app}"
           k_pool                                        = k_pool
           logout_url_list                               = v_app.logout_url_list == null ? var.client_logout_url_list_default : v_app.logout_url_list
           oath_flow_allowed_list                        = v_app.oath_flow_allowed_list == null ? var.client_oath_flow_allowed_list_default : v_app.oath_flow_allowed_list
