@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.16.0
+
+### General
+
+* Enforce snake case for resource keys
+* Add default lambda policy for ECR repos
+
+### Bugfix
+
+* Move script now supports spaces in resource names
+
 ## 0.15.0
 
 ### New modules

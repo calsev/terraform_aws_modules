@@ -1,3 +1,2 @@
 InquirerPy
 Jinja2
-typeguard

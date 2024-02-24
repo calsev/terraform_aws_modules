@@ -22,7 +22,7 @@ locals {
       is_enabled = local.l1_map[k].alert_enabled # For the target
     }
   }
-  name_append = var.name_append == null ? "" : "-${var.name_append}"
+  name_append = var.name_append == null ? "" : "_${var.name_append}"
   output_data = {
     for k, v in var.alert_map : k => module.alert_trigger.data["${k}${local.name_append}"]
   }

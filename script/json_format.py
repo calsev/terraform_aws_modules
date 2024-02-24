@@ -7,10 +7,7 @@ import json
 import os
 import shutil
 
-from typeguard import typechecked
 
-
-@typechecked
 def format_json(file_path: str) -> None:
     try:
         with open(file_path) as f:
@@ -22,7 +19,6 @@ def format_json(file_path: str) -> None:
         print(f"Error formatting {file_path}:\n{e}")
 
 
-@typechecked
 def format_dir(dir_path: str) -> None:
     file_names = sorted(os.listdir(dir_path))
     for file_name in file_names:

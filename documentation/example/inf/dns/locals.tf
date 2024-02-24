@@ -19,7 +19,7 @@ locals {
     us-west-2 = {
       cert_map = {
         "api.example.com"      = {}
-        "auth-api.example.com" = {}
+        "auth_api.example.com" = {}
       }
     }
   }

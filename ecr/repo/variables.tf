@@ -65,8 +65,9 @@ variable "repo_map" {
 }
 
 variable "repo_iam_policy_json_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "This policy will override the base policy with SIDs: LambdaGetImage"
 }
 
 variable "repo_image_tag_list_default" {

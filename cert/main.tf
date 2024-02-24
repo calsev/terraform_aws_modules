@@ -1,6 +1,6 @@
 resource "aws_acm_certificate" "this_cert" {
   for_each      = local.domain_map
-  domain_name   = each.key
+  domain_name   = each.value.name_simple
   key_algorithm = null # TODO
   lifecycle {
     create_before_destroy = true
@@ -12,7 +12,7 @@ resource "aws_acm_certificate" "this_cert" {
   tags                      = each.value.tags
   validation_method         = "DNS"
   validation_option {
-    domain_name       = each.key
+    domain_name       = each.value.name_simple
     validation_domain = each.value.validation_domain
   }
 }

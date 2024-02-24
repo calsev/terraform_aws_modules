@@ -20,7 +20,7 @@ locals {
       policy_create = local.l1_map[k].dead_letter_queue_enabled ? v.dead_letter_policy_create == null ? var.policy_create_default : v.dead_letter_policy_create : false
     }
   }
-  name_append = var.name_append == null ? "" : "-${var.name_append}"
+  name_append = var.name_append == null ? "" : "_${var.name_append}"
   output_data = {
     for k, v in var.queue_map : k => merge(
       local.queue_map["${k}${local.name_append}"],

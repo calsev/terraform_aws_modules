@@ -11,7 +11,6 @@ import os
 from typing import Dict, List, Optional, Tuple
 
 from InquirerPy.inquirer import confirm, rawlist  # type: ignore
-from typeguard import typechecked
 
 from .plan import get_plan_resources, resource_regex, run_command_as_process
 
@@ -25,7 +24,6 @@ resource_type_ignore_regex_map = {
 }
 
 
-@typechecked
 def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument("path", type=str)
@@ -35,7 +33,6 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     return parsed_args
 
 
-@typechecked
 def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
     all_resources = list(
         itertools.chain.from_iterable(
@@ -51,7 +48,12 @@ def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
             for split in splits
             if split.startswith("aws_")
             or any(
-                split == resource for resource in ["random_password", "tls_private_key"]
+                split == resource
+                for resource in [
+                    "local_sensitive_file",
+                    "random_password",
+                    "tls_private_key",
+                ]
             )
         ]
         for splits in resource_name_splits_raw
@@ -67,7 +69,6 @@ def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
     return sorted(resource_types)
 
 
-@typechecked
 def map_resource_change_type(
     resource_type: str,
     change_type: str,
@@ -81,7 +82,6 @@ def map_resource_change_type(
     resources[resource_type][change_type].append(resource_name)
 
 
-@typechecked
 def map_change_resource(
     change_type: str,
     resource_type_list: List,
@@ -100,7 +100,6 @@ def map_change_resource(
         raise ValueError(f"Resource type not handled: {resource_name}")
 
 
-@typechecked
 def map_resources(
     rel_path: str,
     var_file: Optional[str],
@@ -116,11 +115,9 @@ def map_resources(
             map_change_resource(
                 change_type, resource_type_list, resource_name, resources
             )
-    print(resources)
     return resource_type_list, resources, plan_out
 
 
-@typechecked
 def prompt_user(resource_to_destroy: str, create_options: List[str]) -> int:
     create_options = create_options[:7]  # Max length of rawlist is 9
     choices = [
@@ -145,15 +142,15 @@ def prompt_user(resource_to_destroy: str, create_options: List[str]) -> int:
     return i_choice
 
 
-@typechecked
 def move_resource(
     rel_path: str, resource_to_destroy: str, resource_to_create: str
 ) -> None:
-    cmd = f"terraform state mv {resource_to_destroy} {resource_to_create}"
-    run_command_as_process(cmd, cwd=rel_path)
+    run_command_as_process(
+        ["terraform", "state", "mv", resource_to_destroy, resource_to_create],
+        cwd=rel_path,
+    )
 
 
-@typechecked
 def change_one_resource_type(
     rel_path: str,
     resource_type: str,
@@ -186,7 +183,6 @@ def change_one_resource_type(
     return moved_one
 
 
-@typechecked
 def change_all_resource_types(
     rel_path: str,
     resource_type_list: List[str],
@@ -204,13 +200,11 @@ def change_all_resource_types(
     return False
 
 
-@typechecked
 def print_final_plan(plan_out: str) -> None:
     print("No resources to change, exiting")
     print(plan_out)
 
 
-@typechecked
 def change_one_resource(
     rel_path: str, var_file: Optional[str], resource_ignore_list: List[str]
 ) -> bool:
@@ -225,7 +219,6 @@ def change_one_resource(
     return moved_one or False
 
 
-@typechecked
 def move_resources(
     rel_path: str, aws_profile: str, var_file: Optional[str] = None
 ) -> None:
@@ -237,7 +230,6 @@ def move_resources(
         pass
 
 
-@typechecked
 def main(args_in: Optional[List[str]] = None) -> None:
     args = parse_args(args_in)
     move_resources(args.path, args.profile, args.var_file)

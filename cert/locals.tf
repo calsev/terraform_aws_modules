@@ -1,7 +1,8 @@
 module "name_map" {
-  source   = "../name_map"
-  name_map = var.domain_map
-  std_map  = var.std_map
+  source                = "../name_map"
+  name_map              = var.domain_map
+  name_regex_allow_list = ["."]
+  std_map               = var.std_map
 }
 
 locals {

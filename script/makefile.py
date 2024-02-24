@@ -7,13 +7,11 @@ import shutil
 from typing import Any, Dict, List, Optional
 
 import jinja2
-from typeguard import typechecked
 
 jinja_loader = jinja2.FileSystemLoader(searchpath=".")
 jinja_env = jinja2.Environment(loader=jinja_loader)
 
 
-@typechecked
 def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument(
@@ -89,13 +87,11 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     return parsed_args
 
 
-@typechecked
 def ensure_env_file(env_template: str, env_file: str) -> None:
     if env_file and not os.path.exists(env_file):
         shutil.copy(env_template, env_file)
 
 
-@typechecked
 def get_child_dirs(rel_path: str) -> List[str]:
     child_dirs = sorted(
         [
@@ -107,7 +103,6 @@ def get_child_dirs(rel_path: str) -> List[str]:
     return child_dirs
 
 
-@typechecked
 def get_app_dir_conf(
     tf_root: str, provisioning_dir: str, dir_data: Dict, app_dirs: Dict
 ) -> None:
@@ -123,7 +118,6 @@ def get_app_dir_conf(
         }
 
 
-@typechecked
 def get_mod_dirs(
     parent_dir: str,
     curr_dir: str,
@@ -142,7 +136,6 @@ def get_mod_dirs(
     all_mod_dirs.extend(child_mods)
 
 
-@typechecked
 def render_makefile(
     template: str, makefile: str, app_dir_to_conf_data: Dict, all_mod_dirs: List
 ) -> None:
@@ -155,7 +148,6 @@ def render_makefile(
         f.write(makefile_content)
 
 
-@typechecked
 def render_makefile_and_env(
     template: str,
     makefile: str,
@@ -176,7 +168,6 @@ def render_makefile_and_env(
     render_makefile(template, makefile, app_dir_to_conf_data, all_mod_dirs)
 
 
-@typechecked
 def main(args_in: Optional[List[str]] = None) -> None:
     args = parse_args(args_in)
     render_makefile_and_env(**vars(args))

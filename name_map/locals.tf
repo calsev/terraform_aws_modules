@@ -1,11 +1,12 @@
 locals {
   l1_map = {
     for k, v in var.name_map : k => merge(v, {
-      name_include_app_fields = v.name_include_app_fields == null ? var.name_include_app_fields_default : v.name_include_app_fields
-      name_infix              = v.name_infix == null ? var.name_infix_default : v.name_infix
-      name_prefix             = replace(replace(v.name_prefix == null ? var.name_prefix_default : v.name_prefix, local.name_regex_prefix, "-"), "--", "-")
-      name_simple             = replace(replace(k, local.name_regex_root, "-"), "--", "-")
-      name_suffix             = replace(replace(v.name_suffix == null ? var.name_suffix_default : v.name_suffix, local.name_regex_suffix, "-"), "--", "-")
+      name_include_app_fields         = v.name_include_app_fields == null ? var.name_include_app_fields_default : v.name_include_app_fields
+      name_infix                      = v.name_infix == null ? var.name_infix_default : v.name_infix
+      name_prefix                     = replace(replace(v.name_prefix == null ? var.name_prefix_default : v.name_prefix, local.name_regex_prefix, "-"), "--", "-")
+      name_simple                     = replace(replace(k, local.name_regex_root, "-"), "--", "-")
+      name_suffix                     = replace(replace(v.name_suffix == null ? var.name_suffix_default : v.name_suffix, local.name_regex_suffix, "-"), "--", "-")
+      temp_name_convention_underscore = length(split("-", k)) > 1 ? file("Key ${k} should be in snake case") : null
     })
   }
   l2_map = {
