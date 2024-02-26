@@ -131,14 +131,10 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   web_acl_id = each.value.web_acl_arn
 }
 
-resource "aws_route53_record" "this_dns_alias" {
-  for_each = local.lx_map
-  alias {
-    evaluate_target_health = false
-    name                   = aws_cloudfront_distribution.this_distribution[each.key].domain_name
-    zone_id                = aws_cloudfront_distribution.this_distribution[each.key].hosted_zone_id
-  }
-  name    = "${each.key}."
-  type    = "A"
-  zone_id = var.dns_data.domain_to_dns_zone_map[each.value.domain_name].dns_zone_id
+module "this_dns_alias" {
+  source                           = "../../dns/record"
+  dns_data                         = var.dns_data
+  record_dns_from_zone_key_default = var.domain_dns_from_zone_key_default
+  record_map                       = local.create_alias_map
+  std_map                          = var.std_map
 }

@@ -1,61 +1,47 @@
 variable "compute_map" {
   type = map(object({
-    auto_scaling_instance_warmup_period_s       = optional(number)
-    auto_scaling_managed_scaling_enabled        = optional(bool)
-    auto_scaling_managed_termination_protection = optional(bool)
-    auto_scaling_maximum_scaling_step_size      = optional(number)
-    auto_scaling_minimum_scaling_step_size      = optional(number)
-    auto_scaling_target_capacity                = optional(number)
-    image_id                                    = optional(string)
-    instance_allocation_type                    = optional(string)
-    instance_storage_gib                        = optional(number)
-    instance_type                               = optional(string)
-    key_name                                    = optional(string)
-    log_retention_days                          = optional(number)
-    max_instances                               = optional(number)
-    min_instances                               = optional(number)
-    vpc_az_key_list                             = optional(list(string))
-    vpc_key                                     = optional(string)
-    vpc_security_group_key_list                 = optional(list(string))
-    vpc_segment_key                             = optional(string)
-    user_data_commands                          = optional(list(string))
+    auto_scaling_iam_role_arn_service_linked = optional(string)
+    auto_scaling_num_instances_max           = optional(number)
+    auto_scaling_num_instances_min           = optional(number)
+    auto_scaling_protect_from_scale_in       = optional(bool)
+    image_id                                 = optional(string)
+    instance_allocation_type                 = optional(string)
+    instance_storage_gib                     = optional(number)
+    instance_type                            = optional(string)
+    key_name                                 = optional(string)
+    log_retention_days                       = optional(number)
+    provider_instance_warmup_period_s        = optional(number)
+    provider_managed_scaling_enabled         = optional(bool)
+    provider_managed_termination_protection  = optional(bool)
+    provider_step_size_max                   = optional(number)
+    provider_step_size_min                   = optional(number)
+    provider_target_capacity                 = optional(number)
+    vpc_az_key_list                          = optional(list(string))
+    vpc_key                                  = optional(string)
+    vpc_security_group_key_list              = optional(list(string))
+    vpc_segment_key                          = optional(string)
+    user_data_commands                       = optional(list(string))
   }))
 }
 
-variable "compute_auto_scaling_instance_warmup_period_s_default" {
-  type        = number
-  default     = 300
-  description = "Ignored for Fargate capacity type"
+variable "compute_auto_scaling_iam_role_arn_service_linked_default" {
+  type    = string
+  default = null
 }
 
-variable "compute_auto_scaling_managed_scaling_enabled_default" {
-  type        = bool
-  default     = true
-  description = "Ignored for Fargate capacity type"
+variable "compute_auto_scaling_num_instances_max_default" {
+  type    = number
+  default = 1
 }
 
-variable "compute_auto_scaling_managed_termination_protection_default" {
-  type        = bool
-  default     = true
-  description = "Ignored for Fargate capacity type"
+variable "compute_auto_scaling_num_instances_min_default" {
+  type    = number
+  default = 0
 }
 
-variable "compute_auto_scaling_maximum_scaling_step_size_default" {
-  type        = number
-  default     = 1
-  description = "Ignored for Fargate capacity type"
-}
-
-variable "compute_auto_scaling_minimum_scaling_step_size_default" {
-  type        = number
-  default     = 1
-  description = "Ignored for Fargate capacity type"
-}
-
-variable "compute_auto_scaling_target_capacity_default" {
-  type        = number
-  default     = 100
-  description = "Ignored for Fargate capacity type"
+variable "compute_auto_scaling_protect_from_scale_in_default" {
+  type    = bool
+  default = false
 }
 
 variable "compute_image_id_default" {
@@ -92,14 +78,40 @@ variable "compute_log_retention_days_default" {
   default = 7
 }
 
-variable "compute_max_instances_default" {
-  type    = number
-  default = 1
+variable "compute_provider_instance_warmup_period_s_default" {
+  type        = number
+  default     = 300
+  description = "Ignored for Fargate capacity type"
 }
 
-variable "compute_min_instances_default" {
-  type    = number
-  default = 0
+variable "compute_provider_managed_scaling_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_provider_managed_termination_protection_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_provider_step_size_max_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_provider_step_size_min_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_provider_target_capacity_default" {
+  type        = number
+  default     = 100
+  description = "Ignored for Fargate capacity type"
 }
 
 variable "compute_user_data_commands_default" {

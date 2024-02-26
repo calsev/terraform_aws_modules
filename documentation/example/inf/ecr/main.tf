@@ -21,6 +21,19 @@ module "repo" {
   std_map = module.com_lib.std_map
 }
 
+module "dns_alias" {
+  source                           = "path/to/modules/dns/record"
+  dns_data                         = data.terraform_remote_state.dns.outputs.data
+  record_dns_from_zone_key_default = "example.com"
+  record_dns_type_default          = "CNAME"
+  record_map = {
+    "ecr.example.com" = {
+      dns_record_list = ["${module.com_lib.std_map.aws_account_id}.dkr.ecr.${module.com_lib.std_map.aws_region_name}.amazonaws.com"]
+    }
+  }
+  std_map = module.com_lib.std_map
+}
+
 module "local_config" {
   source  = "path/to/modules/local_config"
   content = local.output_data

@@ -4,7 +4,7 @@ variable "cdn_global_data" {
       policy_id = string
     }))
     domain_cert_map = map(object({
-      arn = string
+      certificate_arn = string
     }))
     origin_request_policy_map = map(object({
       policy_id = string
@@ -55,17 +55,11 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = object({
-      alias     = number
-      challenge = number
-    })
   })
 }
 
 variable "site_map" {
   type = map(object({
-    bucket_domain            = string
-    bucket_fqdn              = string
     build_artifact_name      = optional(string)
     build_artifact_sync_path = optional(string) # The local root path to sync to S3 bucket root
     build_list = list(object({                  # Map of name to stage data. The deploy stage is provided by this module, so typically test and build
@@ -76,7 +70,9 @@ variable "site_map" {
     }))
     cdn_invalidation_path                  = optional(string)
     ci_cd_pipeline_webhook_secret_is_param = optional(bool)
-    domain_name                            = optional(string)
+    dns_from_zone_key                      = optional(string)
+    origin_dns_enabled                     = optional(bool)
+    origin_fqdn                            = string
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
     policy_attach_arn_map   = optional(map(string))
     policy_create_json_map  = optional(map(string))
@@ -108,9 +104,14 @@ variable "site_ci_cd_pipeline_webhook_secret_is_param_default" {
   default = false
 }
 
-variable "site_domain_name_default" {
+variable "site_dns_from_zone_key_default" {
   type    = string
   default = null
+}
+
+variable "site_origin_dns_enabled_default" {
+  type    = bool
+  default = false
 }
 
 variable "std_map" {

@@ -65,26 +65,22 @@ resource "aws_cognito_user_pool" "this_pool" {
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
-  for_each        = local.domain_map
+  for_each        = local.create_domain_map
   certificate_arn = each.value.acm_certificate_arn
-  domain          = each.value.dns_fqdn
+  domain          = each.value.dns_from_fqdn
   user_pool_id    = aws_cognito_user_pool.this_pool[each.key].id
 }
 
-resource "aws_route53_record" "domain_alias" {
-  for_each = local.domain_map
-  alias {
-    evaluate_target_health = false
-    name                   = aws_cognito_user_pool_domain.domain[each.key].cloudfront_distribution
-    zone_id                = aws_cognito_user_pool_domain.domain[each.key].cloudfront_distribution_zone_id
-  }
-  name    = aws_cognito_user_pool_domain.domain[each.key].domain
-  type    = "A"
-  zone_id = each.value.dns_zone_id
+module "domain_alias" {
+  source                           = "../../dns/record"
+  dns_data                         = var.dns_data
+  record_dns_from_zone_key_default = var.pool_dns_from_zone_key_default
+  record_map                       = local.create_alias_map
+  std_map                          = var.std_map
 }
 
 module "pool_client" {
   source   = "../../cognito/client_app"
-  pool_map = local.client_map
+  pool_map = local.create_client_map
   std_map  = var.std_map
 }

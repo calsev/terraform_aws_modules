@@ -1,9 +1,11 @@
 module "cdn" {
-  source          = "../../cdn/distribution"
-  cdn_global_data = var.cdn_global_data
-  domain_map      = local.domain_object
-  dns_data        = var.dns_data
-  std_map         = var.std_map
+  source                            = "../../cdn/distribution"
+  cdn_global_data                   = var.cdn_global_data
+  domain_dns_from_zone_key_default  = var.site_dns_from_zone_key_default
+  domain_map                        = local.create_cdn_map
+  domain_origin_dns_enabled_default = var.site_origin_dns_enabled_default
+  dns_data                          = var.dns_data
+  std_map                           = var.std_map
 }
 
 module "code_build" {

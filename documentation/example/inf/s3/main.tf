@@ -39,24 +39,24 @@ module "milan_bucket" {
   bucket_map = {
     "download.milan.example.com" = {
       allow_public = true
+      dns_enabled  = true
       name_infix   = false
-      website_fqdn = "download.milan.example.com"
     }
   }
-  bucket_website_domain_default = "example.com"
-  dns_data                      = data.terraform_remote_state.dns.outputs.data
-  std_map                       = module.milan_lib.std_map
+  bucket_dns_from_zone_key_default = "example.com"
+  dns_data                         = data.terraform_remote_state.dns.outputs.data
+  std_map                          = module.milan_lib.std_map
 }
 
 module "oregon_ap" {
   source = "path/to/modules/s3/access_point"
   ap_map = {
-    example-data-ap = {
-      bucket_name_effective = module.oregon_bucket.data["example-data"].name_effective
+    example_data_ap = {
+      bucket_name_effective = module.oregon_bucket.data["example_data"].name_effective
       vpc_key               = "main"
     }
-    example-deploy-ap = {
-      bucket_name_effective = module.oregon_bucket.data["example-deploy"].name_effective
+    example_deploy_ap = {
+      bucket_name_effective = module.oregon_bucket.data["example_deploy"].name_effective
     }
   }
   ap_name_infix_default = false

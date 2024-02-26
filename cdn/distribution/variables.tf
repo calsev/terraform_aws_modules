@@ -4,7 +4,7 @@ variable "cdn_global_data" {
       policy_id = string
     }))
     domain_cert_map = map(object({
-      arn = string
+      certificate_arn = string
     }))
     origin_request_policy_map = map(object({
       policy_id = string
@@ -20,20 +20,16 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = object({
-      alias     = number
-      challenge = number
-    })
   })
 }
 
 variable "domain_map" {
   type = map(object({
-    bucket_allow_public               = optional(bool)
     cache_policy_key                  = optional(string)
-    domain_name                       = optional(string)
+    dns_from_zone_key                 = optional(string)
     name_infix                        = optional(bool)
-    origin_domain                     = string
+    origin_allow_public               = optional(bool)
+    origin_dns_enabled                = optional(bool)
     origin_fqdn                       = string
     origin_path                       = optional(string)
     origin_request_policy_key         = optional(string)
@@ -78,22 +74,27 @@ variable "domain_map" {
   }))
 }
 
-variable "domain_bucket_allow_public_default" {
-  type    = bool
-  default = false
-}
-
 variable "domain_cache_policy_key_default" {
   type    = string
   default = "max_cache"
 }
 
-variable "domain_name_default" {
+variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
 }
 
 variable "domain_name_infix_default" {
+  type    = bool
+  default = false
+}
+
+variable "domain_origin_allow_public_default" {
+  type    = bool
+  default = false
+}
+
+variable "domain_origin_dns_enabled_default" {
   type    = bool
   default = false
 }

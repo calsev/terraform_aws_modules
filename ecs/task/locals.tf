@@ -111,8 +111,8 @@ locals {
           root_directory = volume_data.authorization_access_point_id != null ? "/" : volume_data.root_directory == null ? var.task_efs_root_directory_default : volume_data.root_directory
         })
       }
-      resource_memory_host_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : 13 / 32 + var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_memory_gib / 64
-      resource_num_vcpu_default        = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_num_vcpu
+      resource_memory_host_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : 13 / 32 + var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_template.instance_type_memory_gib / 64
+      resource_num_vcpu_default        = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_template.instance_type_num_vcpu
     }
   }
   t4_map = {
@@ -123,7 +123,7 @@ locals {
   }
   t5_map = {
     for k, v in var.task_map : k => {
-      resource_memory_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_type_memory_gib - local.t4_map[k].resource_memory_host_gib
+      resource_memory_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_template.instance_type_memory_gib - local.t4_map[k].resource_memory_host_gib
     }
   }
   t6_map = {

@@ -93,6 +93,7 @@ tf-lint: tflint-install
 	cd ../app/ecr_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_mirror/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_mirror/requirements && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/web_static && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/compute && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -120,13 +121,17 @@ tf-lint: tflint-install
 	cd ../cw/config_ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../dns/record && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/sd_public && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/zone && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dynamodb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dynamodb/table && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dynamodb/terraform_lock && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ec2/auto_scaling_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ec2/elastic_ip && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/instance_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ec2/network_interface && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr/repo && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr/repo_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

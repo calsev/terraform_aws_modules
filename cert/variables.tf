@@ -1,7 +1,8 @@
 variable "domain_map" {
   type = map(object({
     enable_transparency_logging = optional(bool)
-    validation_domain           = optional(string)
+    dns_from_zone_key           = optional(string)
+    key_algorithm               = optional(string)
   }))
 }
 
@@ -10,9 +11,15 @@ variable "domain_enable_transparency_logging_default" {
   default = true
 }
 
-variable "domain_validation_domain_default" {
+variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
+}
+
+variable "domain_key_algorithm_default" {
+  type        = string
+  default     = "RSA_2048"
+  description = "See https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms"
 }
 
 variable "dns_data" {
@@ -20,9 +27,6 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = object({
-      challenge = number
-    })
   })
 }
 

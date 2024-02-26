@@ -1,15 +1,15 @@
 resource "aws_ecs_capacity_provider" "this_capacity_provider" {
-  for_each = local.compute_map
+  for_each = local.create_cp_map
   auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.this_asg[each.key].arn
+    auto_scaling_group_arn = each.value.auto_scaling_group_arn
     managed_scaling {
-      instance_warmup_period    = each.value.auto_scaling_instance_warmup_period_s
-      maximum_scaling_step_size = each.value.auto_scaling_maximum_scaling_step_size
-      minimum_scaling_step_size = each.value.auto_scaling_minimum_scaling_step_size
-      status                    = each.value.auto_scaling_managed_scaling_enabled ? "ENABLED" : "DISABLED"
-      target_capacity           = each.value.auto_scaling_target_capacity
+      instance_warmup_period    = each.value.provider_instance_warmup_period_s
+      maximum_scaling_step_size = each.value.provider_step_size_max
+      minimum_scaling_step_size = each.value.provider_step_size_min
+      status                    = each.value.provider_managed_scaling_enabled ? "ENABLED" : "DISABLED"
+      target_capacity           = each.value.provider_target_capacity
     }
-    managed_termination_protection = each.value.auto_scaling_managed_termination_protection ? "ENABLED" : "DISABLED"
+    managed_termination_protection = each.value.provider_managed_termination_protection ? "ENABLED" : "DISABLED"
   }
   name = each.value.name_effective
   tags = each.value.tags
@@ -18,14 +18,14 @@ resource "aws_ecs_capacity_provider" "this_capacity_provider" {
 module "log_group" {
   source = "../../cw/log_group"
   log_map = {
-    for k, v in local.compute_map : v.k_log => v
+    for k, v in local.lx_map : v.k_log => v
   }
   policy_create_default = false
   std_map               = var.std_map
 }
 
 resource "aws_ecs_cluster" "this_ecs_cluster" {
-  for_each = local.compute_map
+  for_each = local.lx_map
   configuration {
     execute_command_configuration {
       #      kms_key_id = aws_kms_key.this_kms_key.arn
@@ -49,7 +49,7 @@ resource "aws_ecs_cluster" "this_ecs_cluster" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "this_capacity_provider" {
-  for_each = local.compute_map
+  for_each = local.lx_map
   capacity_providers = [
     aws_ecs_capacity_provider.this_capacity_provider[each.key].name
   ]

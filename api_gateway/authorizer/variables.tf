@@ -65,9 +65,11 @@ variable "auth_request_simple_response_enabled_default" {
 
 variable "cognito_data_map" {
   type = map(object({
-    client_app_map = map(object({
-      client_app_id = string
-    }))
+    user_pool_client = object({
+      client_app_map = map(object({
+        client_app_id = string
+      }))
+    })
     user_pool_endpoint = string
   }))
   default     = {}

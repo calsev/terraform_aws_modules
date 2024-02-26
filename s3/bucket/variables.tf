@@ -6,6 +6,8 @@ variable "bucket_map" {
     cors_allowed_methods              = optional(list(string))
     cors_allowed_origins              = optional(list(string))
     cors_expose_headers               = optional(list(string))
+    dns_enabled                       = optional(string)
+    dns_from_zone_key                 = optional(string)
     enable_acceleration               = optional(bool)
     encryption_algorithm              = optional(string)
     encryption_disabled               = optional(bool)
@@ -33,9 +35,7 @@ variable "bucket_map" {
     })))
     tags               = optional(map(string))
     versioning_enabled = optional(bool)
-    website_domain     = optional(string)
     website_enabled    = optional(bool)
-    website_fqdn       = optional(string)
   }))
 }
 
@@ -66,6 +66,16 @@ variable "bucket_cors_allowed_origins_default" {
 variable "bucket_cors_expose_headers_default" {
   type    = list(string)
   default = []
+}
+
+variable "bucket_dns_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "bucket_dns_from_zone_key_default" {
+  type    = string
+  default = null
 }
 
 variable "bucket_enable_acceleration_default" {
@@ -172,11 +182,6 @@ variable "bucket_tags_default" {
 variable "bucket_versioning_enabled_default" {
   type    = bool
   default = false
-}
-
-variable "bucket_website_domain_default" {
-  type    = string
-  default = null
 }
 
 variable "bucket_website_enabled_default" {

@@ -1,7 +1,7 @@
 resource "aws_acm_certificate" "this_cert" {
-  for_each      = local.domain_map
+  for_each      = local.lx_map
   domain_name   = each.value.name_simple
-  key_algorithm = null # TODO
+  key_algorithm = each.value.key_algorithm
   lifecycle {
     create_before_destroy = true
   }
@@ -13,21 +13,20 @@ resource "aws_acm_certificate" "this_cert" {
   validation_method         = "DNS"
   validation_option {
     domain_name       = each.value.name_simple
-    validation_domain = each.value.validation_domain
+    validation_domain = each.value.dns_from_zone_key
   }
 }
 
-resource "aws_route53_record" "this_dns" {
-  for_each = local.validation_map
-  name     = each.value.name
-  records  = [each.value.record]
-  ttl      = var.dns_data.ttl_map.challenge
-  type     = each.value.type
-  zone_id  = var.dns_data.domain_to_dns_zone_map[each.value.validation_domain].dns_zone_id
+module "dns_challenge" {
+  source                           = "../dns/record"
+  dns_data                         = var.dns_data
+  record_dns_from_zone_key_default = var.domain_dns_from_zone_key_default
+  record_map                       = local.create_validation_x_map
+  std_map                          = var.std_map
 }
 
 resource "aws_acm_certificate_validation" "this_validation" {
-  for_each                = local.validation_map
-  certificate_arn         = aws_acm_certificate.this_cert[each.value.key].arn
-  validation_record_fqdns = [aws_route53_record.this_dns[each.key].fqdn]
+  for_each                = local.create_validation_x_map
+  certificate_arn         = aws_acm_certificate.this_cert[each.value.k].arn
+  validation_record_fqdns = [each.value.dns_from_fqdn]
 }

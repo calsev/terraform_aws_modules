@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_cors_configuration" "this_cors" {
-  for_each = local.bucket_map
+  for_each = local.lx_map
   bucket   = aws_s3_bucket.this_bucket[each.key].bucket
   cors_rule {
     allowed_headers = each.value.cors_allowed_headers
@@ -12,7 +12,7 @@ resource "aws_s3_bucket_cors_configuration" "this_cors" {
 }
 
 resource "aws_s3_bucket_website_configuration" "this_web_config" {
-  for_each = local.bucket_web_map
+  for_each = local.create_web_map
   bucket   = aws_s3_bucket.this_bucket[each.key].bucket
   error_document {
     key = "error.html"
@@ -23,14 +23,10 @@ resource "aws_s3_bucket_website_configuration" "this_web_config" {
   }
 }
 
-resource "aws_route53_record" "this_dns_alias" {
-  for_each = local.bucket_domain_map
-  alias {
-    evaluate_target_health = false
-    name                   = aws_s3_bucket.this_bucket[each.key].website_domain # The s3 website uses the endpoint, but the alias uses the domain and sni
-    zone_id                = aws_s3_bucket.this_bucket[each.key].hosted_zone_id
-  }
-  name    = "${each.value.website_fqdn}."
-  type    = "A"
-  zone_id = var.dns_data.domain_to_dns_zone_map[each.value.website_domain].dns_zone_id
+module "dns_alias" {
+  source                           = "../../dns/record"
+  dns_data                         = var.dns_data
+  record_dns_from_zone_key_default = var.bucket_dns_from_zone_key_default
+  record_map                       = local.create_alias_map
+  std_map                          = var.std_map
 }

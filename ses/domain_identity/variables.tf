@@ -11,10 +11,6 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = object({
-      cname = number
-      mx    = number
-    })
   })
 }
 
@@ -22,7 +18,7 @@ variable "domain_map" {
   type = map(object({
     configuration_set_key       = optional(string)
     dkim_signing_key_length     = optional(string)
-    domain_name                 = optional(string)
+    dns_from_zone_key           = optional(string)
     email_forwarding_enabled    = optional(bool)
     fallback_to_ses_send_domain = optional(bool)
     mail_from_subdomain         = optional(string)
@@ -43,6 +39,11 @@ variable "domain_dkim_signing_key_length_default" {
   }
 }
 
+variable "domain_dns_from_zone_key_default" {
+  type    = string
+  default = null
+}
+
 variable "domain_email_forwarding_enabled_default" {
   type    = bool
   default = true
@@ -51,11 +52,6 @@ variable "domain_email_forwarding_enabled_default" {
 variable "domain_fallback_to_ses_send_domain_default" {
   type    = bool
   default = true
-}
-
-variable "domain_name_default" {
-  type    = string
-  default = null
 }
 
 variable "domain_mail_from_subdomain_default" {

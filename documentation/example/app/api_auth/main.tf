@@ -14,9 +14,9 @@ module "user_pool" {
       callback_url_list = ["https://auth-app.example.com"]
     }
   }
-  cdn_global_data         = data.terraform_remote_state.cdn_global.outputs.data
-  dns_data                = data.terraform_remote_state.dns.outputs.data
-  pool_dns_domain_default = "example.com"
+  cdn_global_data                = data.terraform_remote_state.cdn_global.outputs.data
+  dns_data                       = data.terraform_remote_state.dns.outputs.data
+  pool_dns_from_zone_key_default = "example.com"
   pool_map = {
     (local.pool_name) = {}
   }
@@ -105,7 +105,7 @@ module "api" {
   domain_map = {
     (local.api_name) = {}
   }
-  domain_validation_domain_default = "example.com"
+  domain_dns_from_zone_key_default = "example.com"
   lambda_data_map                  = module.lambda.data
   std_map                          = module.com_lib.std_map
 }

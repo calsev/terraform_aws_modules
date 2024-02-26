@@ -10,10 +10,12 @@ variable "alert_level_default" {
 
 variable "ecs_cluster_data" {
   type = map(object({
-    capability_type          = string
-    instance_type_memory_gib = optional(number)
-    instance_type_num_vcpu   = optional(number)
-    ecs_cluster_arn          = string
+    capability_type = string
+    instance_template = optional(object({
+      instance_type_memory_gib = number
+      instance_type_num_vcpu   = number
+    }))
+    ecs_cluster_arn = string
   }))
   description = "Instance values must be provided for EC2 capacity type"
 }

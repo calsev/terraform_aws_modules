@@ -18,7 +18,18 @@ module "dns_zone" {
   providers = {
     aws = aws.oregon
   }
-  domain_to_dns_zone_map = local.domain_to_dns_zone_map
+  domain_mx_url_list_default = [
+    "5 gmr-smtp-in.l.google.com",
+    "10 alt1.gmr-smtp-in.l.google.com",
+    "20 alt2.gmr-smtp-in.l.google.com",
+    "30 alt3.gmr-smtp-in.l.google.com",
+    "40 alt4.gmr-smtp-in.l.google.com",
+  ]
+  domain_to_dns_zone_map = {
+    "example.com" : {},
+    "example2.net" : {},
+    "example3.com" : {},
+  }
 }
 
 module "sd_zone_public" {
@@ -26,9 +37,13 @@ module "sd_zone_public" {
   providers = {
     aws = aws.oregon
   }
-  std_map   = module.oregon_lib.std_map
-  ttl_map   = local.ttl_map
-  zone_list = local.sd_zone_list
+  dns_data = local.o1_map
+  std_map  = module.oregon_lib.std_map
+  zone_map = {
+    "io.example.com" = {
+      dns_from_zone_key = "example.com"
+    }
+  }
 }
 
 module "cert_oregon" {
@@ -36,9 +51,12 @@ module "cert_oregon" {
   providers = {
     aws = aws.oregon
   }
-  dns_data                         = local.o1_map
-  domain_map                       = local.region_map[module.oregon_lib.std_map.aws_region_name].cert_map
-  domain_validation_domain_default = "example.com"
+  dns_data = local.o1_map
+  domain_map = {
+    "api.example.com"      = {}
+    "auth_api.example.com" = {}
+  }
+  domain_dns_from_zone_key_default = "example.com"
   std_map                          = module.oregon_lib.std_map
 }
 

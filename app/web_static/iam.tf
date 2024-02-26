@@ -4,7 +4,7 @@ module "site_deploy" {
   sid_map = {
     Artifact = {
       access           = "write"
-      bucket_name_list = [each.value.bucket_fqdn]
+      bucket_name_list = [each.value.origin_fqdn]
     }
   }
   name    = "${each.key}_site_deploy"

@@ -6,15 +6,14 @@ module "name_map" {
 }
 
 locals {
-  bucket_map = {
+  create_bucket_map = {
     for k, v in local.lx_map : v.bucket_key => {
-      allow_public   = v.bucket_allow_public == null ? var.domain_bucket_allow_public_default : v.bucket_allow_public
-      website_domain = v.origin_domain
-      website_fqdn   = v.origin_fqdn
+      dns_enabled  = v.origin_dns_enabled
+      allow_public = v.origin_allow_public
     }
   }
-  bucket_policy_map = {
-    for k, v in local.lx_map : v.bucket_key => merge(local.bucket_map[v.bucket_key], {
+  create_bucket_policy_map = {
+    for k, v in local.lx_map : v.bucket_key => merge(local.create_bucket_map[v.bucket_key], {
       sid_map = merge(
         v.sid_map,
         {
@@ -34,15 +33,23 @@ locals {
       )
     })
   }
+  create_alias_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      dns_alias_name    = aws_cloudfront_distribution.this_distribution[k].domain_name
+      dns_alias_zone_id = aws_cloudfront_distribution.this_distribution[k].hosted_zone_id
+    })
+  }
   l0_map = {
     for k, v in var.domain_map : k => v
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      acm_certificate_arn                                   = var.cdn_global_data.domain_cert_map[k].arn
+      acm_certificate_arn                                   = var.cdn_global_data.domain_cert_map[k].certificate_arn
       bucket_key                                            = replace(v.origin_fqdn, "-", "_")
       cache_policy_key                                      = v.cache_policy_key == null ? var.domain_cache_policy_key_default : v.cache_policy_key
-      domain_name                                           = v.domain_name == null ? var.domain_name_default : v.domain_name
+      dns_from_zone_key                                     = v.dns_from_zone_key == null ? var.domain_dns_from_zone_key_default : v.dns_from_zone_key
+      origin_allow_public                                   = v.origin_allow_public == null ? var.domain_origin_allow_public_default : v.origin_allow_public
+      origin_dns_enabled                                    = v.origin_dns_enabled == null ? var.domain_origin_dns_enabled_default : v.origin_dns_enabled
       origin_path                                           = v.origin_path == null ? var.domain_origin_path_default : v.origin_path
       origin_request_policy_key                             = v.origin_request_policy_key == null ? var.domain_origin_request_policy_key_default : v.origin_request_policy_key
       response_cors_allow_credentials                       = v.response_cors_allow_credentials == null ? var.domain_response_cors_allow_credentials_default : v.response_cors_allow_credentials
@@ -75,7 +82,7 @@ locals {
     for k, v in var.domain_map : k => {
       cache_policy_id                       = var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
       origin_request_policy_id              = var.cdn_global_data.origin_request_policy_map[local.l1_map[k].origin_request_policy_key].policy_id
-      response_cors_allowed_origin_list_all = concat(local.l1_map[k].domain_name == null ? [] : ["https://${local.l1_map[k].domain_name}"], local.l1_map[k].response_cors_allowed_origin_list)
+      response_cors_allowed_origin_list_all = concat(["https://${local.l1_map[k].dns_from_zone_key}"], local.l1_map[k].response_cors_allowed_origin_list)
       response_custom_header_map = {
         for k_head, v_head in local.l1_map[k].response_custom_header_map : k_head => merge(v_head, {
           override = v_head.override == null ? var.domain_response_custom_header_override_default : v.override
@@ -100,8 +107,9 @@ locals {
             bucket_policy_doc = module.bucket_policy[v.bucket_key].iam_policy_doc
           },
         )
-        cdn_arn = aws_cloudfront_distribution.this_distribution[k].arn
-        cdn_id  = aws_cloudfront_distribution.this_distribution[k].id
+        cdn_arn   = aws_cloudfront_distribution.this_distribution[k].arn
+        cdn_id    = aws_cloudfront_distribution.this_distribution[k].id
+        dns_alias = module.this_dns_alias.data[k]
       }
     )
   }

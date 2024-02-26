@@ -58,7 +58,7 @@ module "api" {
   domain_map = {
     (local.api_name) = {}
   }
-  domain_validation_domain_default = "example.com"
+  domain_dns_from_zone_key_default = "example.com"
   std_map                          = module.com_lib.std_map
 }
 
