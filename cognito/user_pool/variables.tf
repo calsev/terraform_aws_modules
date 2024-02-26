@@ -1,7 +1,7 @@
 variable "cdn_global_data" {
   type = object({
     domain_cert_map = map(object({
-      arn = string
+      certificate_arn = string
     }))
   })
 }
@@ -11,9 +11,6 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
-    ttl_map = object({
-      alias = number
-    })
   })
 }
 
@@ -47,7 +44,7 @@ variable "pool_map" {
     deletion_protection                   = optional(bool)
     device_challenge_required_on_new      = optional(bool)
     device_only_remembered_on_user_prompt = optional(bool)
-    dns_domain                            = optional(string)
+    dns_from_zone_key                     = optional(string)
     dns_subdomain                         = optional(string)
     invite_email_message_template         = optional(string)
     invite_email_subject                  = optional(string)
@@ -142,7 +139,7 @@ variable "pool_device_only_remembered_on_user_prompt_default" {
   default = true
 }
 
-variable "pool_dns_domain_default" {
+variable "pool_dns_from_zone_key_default" {
   type    = string
   default = null
 }

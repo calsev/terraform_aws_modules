@@ -5,13 +5,19 @@ module "name_map" {
 }
 
 locals {
-  client_map = {
+  create_alias_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      dns_alias_name    = aws_cognito_user_pool_domain.domain[k].cloudfront_distribution
+      dns_alias_zone_id = aws_cognito_user_pool_domain.domain[k].cloudfront_distribution_zone_id
+    }) if v.dns_from_fqdn != null
+  }
+  create_client_map = {
     for k_pool, v_pool in local.lx_map : k_pool => merge(v_pool, {
       user_pool_id = aws_cognito_user_pool.this_pool[k_pool].id
     })
   }
-  domain_map = {
-    for k, v in local.lx_map : k => v if v.dns_fqdn != null
+  create_domain_map = {
+    for k, v in local.lx_map : k => v if v.dns_from_fqdn != null
   }
   l1_map = {
     for k, v in var.pool_map : k => merge(v, module.name_map.data[k], {
@@ -44,7 +50,7 @@ locals {
       verify_email_message_by_code_subject              = v.verify_email_message_by_code_subject == null ? var.pool_verify_email_message_by_code_subject_default : v.verify_email_message_by_code_subject
       verify_email_message_by_link_subject              = v.verify_email_message_by_link_subject == null ? var.pool_verify_email_message_by_link_subject_default : v.verify_email_message_by_link_subject
       verify_sms_message_template                       = v.verify_sms_message_template == null ? var.pool_verify_sms_message_template_default : v.verify_sms_message_template
-      dns_domain                                        = v.dns_domain == null ? var.pool_dns_domain_default : v.dns_domain
+      dns_from_zone_key                                 = v.dns_from_zone_key == null ? var.pool_dns_from_zone_key_default : v.dns_from_zone_key
       dns_subdomain                                     = v.dns_subdomain == null ? var.pool_dns_subdomain_default : v.dns_subdomain
     })
   }
@@ -62,13 +68,12 @@ locals {
           verified_phone_number = local.l1_map[k].account_recovery_phone_priority
         },
       )
-      dns_fqdn    = local.l1_map[k].dns_domain == null ? null : "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_domain}"
-      dns_zone_id = local.l1_map[k].dns_domain == null ? null : var.dns_data.domain_to_dns_zone_map[local.l1_map[k].dns_domain].dns_zone_id
+      dns_from_fqdn = local.l1_map[k].dns_from_zone_key == null ? null : "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_from_zone_key}"
     }
   }
   l3_map = {
     for k, v in var.pool_map : k => {
-      acm_certificate_arn = local.l2_map[k].dns_fqdn == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].dns_fqdn].arn
+      acm_certificate_arn = local.l2_map[k].dns_from_fqdn == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].dns_from_fqdn].certificate_arn
     }
   }
   lx_map = {
@@ -80,9 +85,10 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr
         if !contains([], k_attr)
       },
-      module.pool_client.data[k],
       {
+        dns_alias          = v.dns_from_fqdn == null ? null : module.domain_alias.data[k]
         user_pool_arn      = aws_cognito_user_pool.this_pool[k].arn
+        user_pool_client   = module.pool_client.data[k]
         user_pool_endpoint = aws_cognito_user_pool.this_pool[k].endpoint
       }
     )

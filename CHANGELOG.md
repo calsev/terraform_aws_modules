@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.17.0
+
+### New modules
+
+* DNS record
+* EC2 auto scaling group
+* EC2 elastic IP
+* EC2 network interface
+
+### General
+
+* Enforce resource key case convention
+* Standardized DNS usage
+
 ## 0.16.0
 
 ### General

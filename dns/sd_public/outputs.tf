@@ -1,3 +1,3 @@
 output "zone_map" {
-  value = local.zone_object
+  value = local.output_data
 }

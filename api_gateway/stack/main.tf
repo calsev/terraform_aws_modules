@@ -50,7 +50,7 @@ module "domain" {
   source                           = "../../api_gateway/domain"
   dns_data                         = var.dns_data
   domain_map                       = var.domain_map
-  domain_validation_domain_default = var.domain_validation_domain_default
+  domain_dns_from_zone_key_default = var.domain_dns_from_zone_key_default
   std_map                          = var.std_map
 }
 

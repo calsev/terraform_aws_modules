@@ -4,11 +4,8 @@ variable "dns_data" {
       dns_zone_id = string
     }))
     region_domain_cert_map = map(map(object({
-      arn = string
+      certificate_arn = string
     })))
-    ttl_map = object({
-      challenge = number
-    })
   })
   default     = null
   description = "Must be provided if any stage has a DNS mapping"
@@ -16,12 +13,12 @@ variable "dns_data" {
 
 variable "domain_map" {
   type = map(object({
-    validation_domain = optional(string)
+    dns_from_zone_key = optional(string)
   }))
   default = {}
 }
 
-variable "domain_validation_domain_default" {
+variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
 }

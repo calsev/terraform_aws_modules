@@ -1,13 +1,3 @@
-module "vpc_map" {
-  source                              = "../../vpc/id_map"
-  vpc_map                             = var.compute_map
-  vpc_az_key_list_default             = var.vpc_az_key_list_default
-  vpc_key_default                     = var.vpc_key_default
-  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
-  vpc_segment_key_default             = var.vpc_segment_key_default
-  vpc_data_map                        = var.vpc_data_map
-}
-
 data "aws_ec2_instance_type" "this_instance_type" {
   for_each      = local.l1_map # NOT compute_map: we use the output very early
   instance_type = each.value.instance_type
@@ -68,8 +58,11 @@ resource "aws_launch_template" "this_launch_template" {
     cpu_credits = each.value.cpu_credit_specification
   }
   # This role must have a policy to access the kms_key_id used to encrypt the EBS volume
-  iam_instance_profile {
-    arn = each.value.iam_instance_profile_arn
+  dynamic "iam_instance_profile" {
+    for_each = each.value.iam_instance_profile_arn == null ? {} : { this = {} }
+    content {
+      arn = each.value.iam_instance_profile_arn
+    }
   }
   image_id      = each.value.image_id
   instance_type = each.value.instance_type
@@ -101,6 +94,7 @@ resource "aws_launch_template" "this_launch_template" {
 }
 
 resource "local_file" "user_data" {
+  # Not sensitive because it is useful to see the diff of the rendered template
   for_each = local.compute_map
   content  = local.user_data_map[each.key]
   filename = "${path.root}/user_data/${replace(each.value.name_simple, "/-/", "_")}_${var.std_map.config_name}.txt"

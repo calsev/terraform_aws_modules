@@ -1,6 +1,7 @@
 locals {
   output_data = {
-    repo_map = module.repo.data
+    dns_alias = module.dns_alias.data
+    repo_map  = module.repo.data
   }
   std_var = {
     app             = "inf-ecr"

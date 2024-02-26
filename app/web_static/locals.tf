@@ -26,12 +26,9 @@ locals {
       [module.code_build.data["web-${k}"].deploy.name],
     )
   }
-  domain_object = {
-    for k, v in var.site_map : k => {
-      domain_name   = v.domain_name == null ? var.site_domain_name_default : v.domain_name
-      origin_domain = v.bucket_domain
-      origin_fqdn   = v.bucket_fqdn
-    }
+  create_cdn_map = {
+    for k, v in var.site_map : k => merge(v, {
+    })
   }
   output_data = {
     for k, v in var.site_map : k => {

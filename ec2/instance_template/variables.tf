@@ -9,6 +9,8 @@ variable "compute_map" {
     instance_type                   = optional(string)
     key_name                        = optional(string)
     monitoring_advanced_enabled     = optional(bool)
+    name_include_app_fields         = optional(bool)
+    name_infix                      = optional(bool)
     placement_partition_count       = optional(number)
     placement_spread_level          = optional(string)
     placement_strategy              = optional(string)
@@ -65,6 +67,17 @@ variable "compute_key_name_default" {
 }
 
 variable "compute_monitoring_advanced_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "compute_name_infix_default" {
   type    = bool
   default = true
 }

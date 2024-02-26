@@ -39,7 +39,7 @@ locals {
       auth_map = {
         for k_auth, v_auth in v_api.auth_map : k_auth => merge(v_auth, {
           authorization_type              = v_auth.uses_jwt ? "JWT" : v_auth.uses_request ? "REQUEST" : file("ERROR: Must provide Cognito or Lambda key")
-          jwt_audience_list               = v_auth.uses_jwt ? [var.cognito_data_map[v_auth.cognito_pool_key].client_app_map[v_auth.cognito_client_app_key].client_app_id] : null
+          jwt_audience_list               = v_auth.uses_jwt ? [var.cognito_data_map[v_auth.cognito_pool_key].user_pool_client.client_app_map[v_auth.cognito_client_app_key].client_app_id] : null
           jwt_issuer                      = v_auth.uses_jwt ? "https://${var.cognito_data_map[v_auth.cognito_pool_key].user_pool_endpoint}" : null
           request_authorizer_uri          = v_auth.uses_request ? var.lambda_data_map[v_auth.lambda_key].invoke_arn : null
           request_cache_ttl_s             = v_auth.uses_request ? v_auth.request_cache_ttl_s == null ? var.auth_request_cache_ttl_s_default : v_auth.request_cache_ttl_s : 0

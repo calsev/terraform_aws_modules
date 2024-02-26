@@ -3,9 +3,6 @@ variable "dns_data" {
     domain_to_sd_zone_map = map(object({
       id = string
     }))
-    ttl_map = object({
-      alias = number
-    })
   })
   default     = null
   description = "Must be provided is service discovery is enabled for any service"

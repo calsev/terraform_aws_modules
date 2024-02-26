@@ -1,7 +1,19 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = var.compute_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.compute_name_include_app_fields_default
+  name_infix_default              = var.compute_name_infix_default
+  name_map                        = var.compute_map
+  std_map                         = var.std_map
+}
+
+module "vpc_map" {
+  source                              = "../../vpc/id_map"
+  vpc_map                             = var.compute_map
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_key_default                     = var.vpc_key_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
+  vpc_data_map                        = var.vpc_data_map
 }
 
 locals {
@@ -32,8 +44,9 @@ locals {
   }
   l2_map = {
     for k, v in var.compute_map : k => {
-      image_search_tag = local.l1_map[k].image_search_for_ecs ? "amazon" : v.image_search_tag == null ? var.compute_image_search_tag_default : v.image_search_tag
-      instance_family  = split(".", local.l1_map[k].instance_type)[0]
+      image_search_tag     = local.l1_map[k].image_search_for_ecs ? "amazon" : v.image_search_tag == null ? var.compute_image_search_tag_default : v.image_search_tag
+      instance_family      = split(".", local.l1_map[k].instance_type)[0]
+      resource_name_prefix = "${local.l1_map[k].name_effective}-"
     }
   }
   l3_map = {
@@ -45,7 +58,6 @@ locals {
       instance_type_supported_architectures        = data.aws_ec2_instance_type.this_instance_type[k].supported_architectures
       instance_type_supported_root_device_types    = data.aws_ec2_instance_type.this_instance_type[k].supported_root_device_types
       instance_type_supported_virtualization_types = data.aws_ec2_instance_type.this_instance_type[k].supported_virtualization_types
-      resource_name_prefix                         = "${local.l1_map[k].name_context}-"
     }
   }
   l4_map = {
