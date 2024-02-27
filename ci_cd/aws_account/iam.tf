@@ -23,6 +23,9 @@ module "basic_build_role" {
   ci_cd_account_data = {
     # We emulate this here of course :)
     bucket = local.bucket_data
+    code_star = {
+      connection = {}
+    }
     log    = module.build_log.data[local.base_name]
     policy = null
   }
@@ -36,7 +39,7 @@ module "public_log_access_role" {
   source                   = "../../iam/role/base"
   assume_role_service_list = ["codebuild"]
   name                     = "log_access_public"
-  policy_attach_arn_map = {
+  role_policy_attach_arn_map_default = {
     log = module.build_log.data[local.public_name].iam_policy_arn_map.public_read
   }
   std_map = var.std_map

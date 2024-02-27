@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.0
+
+### General
+
+* Add policy mapping to base role
+
 ## 0.17.0
 
 ### New modules

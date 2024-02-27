@@ -14,15 +14,37 @@ module "this_role" {
   source                   = "../../../iam/role/base"
   assume_role_service_list = ["codebuild"]
   create_instance_profile  = false
-  max_session_duration_m   = var.max_session_duration_m
-  name                     = var.name
-  name_prefix              = var.name_prefix
-  name_infix               = var.name_infix
-  policy_attach_arn_map    = local.attach_policy_arn_map_2
-  policy_create_json_map   = var.policy_create_json_map
-  policy_inline_json_map   = local.policy_inline_json_map
-  policy_managed_name_map  = var.policy_managed_name_map
-  role_path                = var.role_path
-  std_map                  = var.std_map
-  tag                      = var.tag
+  embedded_role_policy_attach_arn_map = {
+    artifact_read_write = {
+      policy = var.ci_cd_account_data.bucket.iam_policy_arn_map.read_write
+    }
+    code_connection = {
+      condition = var.code_star_connection_key != null
+      policy    = var.code_star_connection_key == null ? null : var.ci_cd_account_data.code_star.connection[var.code_star_connection_key].iam_policy_arn_map.read_write
+    }
+    log_write = {
+      policy = var.log_public_access ? var.ci_cd_account_data.log_public.iam_policy_arn_map.write : var.ci_cd_account_data.log.iam_policy_arn_map.write
+    }
+    vpc_net = {
+      condition = var.vpc_access
+      policy    = var.vpc_access ? var.ci_cd_account_data.policy.vpc_net.iam_policy_arn : null
+    }
+  }
+  embedded_role_policy_inline_json_map = {
+    log_s3_write = {
+      condition = var.log_bucket_name != null
+      policy    = var.log_bucket_name == null ? null : jsonencode(module.s3_log_policy["this"].data.iam_policy_doc)
+    }
+  }
+  max_session_duration_m               = var.max_session_duration_m
+  name                                 = var.name
+  name_prefix                          = var.name_prefix
+  name_infix                           = var.name_infix
+  role_policy_attach_arn_map_default   = var.policy_attach_arn_map
+  role_policy_create_json_map_default  = var.policy_create_json_map
+  role_policy_inline_json_map_default  = var.policy_inline_json_map
+  role_policy_managed_name_map_default = var.policy_managed_name_map
+  role_path                            = var.role_path
+  std_map                              = var.std_map
+  tag                                  = var.tag
 }

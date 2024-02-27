@@ -1,3 +1,23 @@
+module "role_policy_map" {
+  source = "../../../iam/role/policy_map"
+  role_map = {
+    (var.name) = {
+      embedded_role_policy_attach_arn_map   = var.embedded_role_policy_attach_arn_map
+      embedded_role_policy_create_json_map  = var.embedded_role_policy_create_json_map
+      embedded_role_policy_inline_json_map  = var.embedded_role_policy_inline_json_map
+      embedded_role_policy_managed_name_map = var.embedded_role_policy_managed_name_map
+      role_policy_attach_arn_map            = var.map_policy == null ? null : var.map_policy.role_policy_attach_arn_map
+      role_policy_create_json_map           = var.map_policy == null ? null : var.map_policy.role_policy_create_json_map
+      role_policy_inline_json_map           = var.map_policy == null ? null : var.map_policy.role_policy_inline_json_map
+      role_policy_managed_name_map          = var.map_policy == null ? null : var.map_policy.role_policy_managed_name_map
+    }
+  }
+  role_policy_attach_arn_map_default   = var.role_policy_attach_arn_map_default
+  role_policy_create_json_map_default  = var.role_policy_create_json_map_default
+  role_policy_inline_json_map_default  = var.role_policy_inline_json_map_default
+  role_policy_managed_name_map_default = var.role_policy_managed_name_map_default
+}
+
 locals {
   l1_map = {
     assume_role_service_list = var.assume_role_service_list
@@ -6,17 +26,17 @@ locals {
     max_session_duration_m   = var.max_session_duration_m
     name                     = replace(var.name, var.std_map.name_replace_regex, "-")
     name_prefix_sanitized    = trim(replace(var.name_prefix, var.std_map.name_replace_regex, "-"), "-")
-    policy_attach_arn_map = var.policy_attach_arn_map == null ? {} : {
-      for name, arn in var.policy_attach_arn_map : "2-attached-${name}" => arn
+    policy_attach_arn_map = {
+      for name, arn in module.role_policy_map.data[var.name].role_policy_attach_arn_map : "2-attached-${name}" => arn
     }
-    policy_create_doc_map = var.policy_create_json_map == null ? {} : {
-      for k, v in var.policy_create_json_map : k => jsondecode(v)
+    policy_create_doc_map = {
+      for k, v in module.role_policy_map.data[var.name].role_policy_create_json_map : k => jsondecode(v)
     }
-    policy_inline_doc_map = var.policy_inline_json_map == null ? {} : {
-      for k, v in var.policy_inline_json_map : k => jsondecode(v)
+    policy_inline_doc_map = {
+      for k, v in module.role_policy_map.data[var.name].role_policy_inline_json_map : k => jsondecode(v)
     }
-    policy_managed_arn_map = var.policy_managed_name_map == null ? {} : {
-      for name, policy in var.policy_managed_name_map : "1-managed-${name}" => "arn:${var.std_map.iam_partition}:iam::aws:policy/${policy}"
+    policy_managed_arn_map = {
+      for name, policy in module.role_policy_map.data[var.name].role_policy_managed_name_map : "1-managed-${name}" => "arn:${var.std_map.iam_partition}:iam::aws:policy/${policy}"
     }
     role_path = var.role_path == null ? null : "/${trim(var.role_path, "/")}/"
   }
@@ -51,7 +71,11 @@ locals {
     }
   }
   l5_map = {
-    policy_all_attached_arn_map = merge(local.l1_map.policy_managed_arn_map, local.l1_map.policy_attach_arn_map, local.l4_map.policy_create_arn_map)
+    policy_all_attached_arn_map = merge(
+      local.l1_map.policy_managed_arn_map,
+      local.l1_map.policy_attach_arn_map,
+      local.l4_map.policy_create_arn_map,
+    )
   }
   # tflint-ignore: terraform_unused_declarations
   mutual_exclusion_assume_role = var.assume_role_json == null && var.assume_role_service_list != null || var.assume_role_json != null && var.assume_role_service_list == null ? null : file("ERROR: Exactly one specification of assuming the role is required")

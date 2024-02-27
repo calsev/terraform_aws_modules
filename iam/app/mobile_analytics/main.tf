@@ -7,7 +7,7 @@ module "mobile_analytics_policy" {
 module "mobile_analytics_role" {
   source                   = "../../../iam/role/base"
   assume_role_service_list = ["pinpoint"]
-  policy_attach_arn_map = {
+  role_policy_attach_arn_map_default = {
     batch_service = module.mobile_analytics_policy.data.iam_policy_arn_map["write"]
   }
   name        = "mobile_analytics"

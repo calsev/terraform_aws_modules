@@ -30,6 +30,12 @@ variable "policy_inline_json_map" {
   default = {}
 }
 
+variable "policy_managed_name_map" {
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
+}
+
 variable "role_path" {
   type    = string
   default = null
