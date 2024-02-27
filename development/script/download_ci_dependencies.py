@@ -12,14 +12,12 @@ from typing import Dict, List, Optional, Tuple
 
 import hcl2
 import s3path
-from typeguard import typechecked
 
 from script.plan import run_command_as_process  # type:ignore
 
 BUCKET = "cdn-bucket.calsev.com"
 
 
-@typechecked
 def parse_args(
     args_in: Optional[List[str]] = None,
 ) -> argparse.Namespace:
@@ -47,7 +45,6 @@ def parse_args(
     return parsed_args
 
 
-@typechecked
 def get_bin_versions() -> Tuple[str, str]:
     with open("development/ver_tf") as f:
         tf_ver = f.read()
@@ -56,7 +53,6 @@ def get_bin_versions() -> Tuple[str, str]:
     return tf_ver, tflint_ver
 
 
-@typechecked
 def get_linters(system: str, arch: str) -> Dict:
     with open("development/.tflint.hcl") as f:
         linter_data = hcl2.load(f)  # type: ignore
@@ -82,7 +78,6 @@ def get_linters(system: str, arch: str) -> Dict:
     return linter_map
 
 
-@typechecked
 def get_release_info_for_repo(repo: str) -> Dict:
     """This can be used to get release info, including browser_download_url"""
     api_ver = "-H 'X-GitHub-Api-Version: 2022-11-28'"
@@ -94,25 +89,21 @@ def get_release_info_for_repo(repo: str) -> Dict:
     return release_data
 
 
-@typechecked
 def download_asset_by_url(url: str, out_file: str) -> None:
     command = f"wget {url} -O {out_file}"
     run_command_as_process(command, expect_empty_stderr=False)
 
 
-@typechecked
 def asset_exists(out_file: str) -> bool:
     return s3path.S3Path(f"/{BUCKET}/installer/{out_file}").is_file()
 
 
-@typechecked
 def move_asset(out_file: str) -> None:
     command = f"aws s3 cp {out_file} s3://{BUCKET}/installer/{out_file}"
     run_command_as_process(command)
     os.remove(out_file)
 
 
-@typechecked
 def unzip_remove_and_upload_content(
     versioned_archive: str, versioned_file: str, bin_file: str
 ) -> None:
@@ -124,7 +115,6 @@ def unzip_remove_and_upload_content(
     move_asset(versioned_file)
 
 
-@typechecked
 def transfer_binary_archive(
     bin_name: str, system: str, arch: str, version: str, url: str
 ) -> None:
@@ -140,7 +130,6 @@ def transfer_binary_archive(
     unzip_remove_and_upload_content(versioned_archive, versioned_file, bin_name)
 
 
-@typechecked
 def download_linters(arch: str, system: str) -> None:
     for repo_data in get_linters(system, arch).values():
         transfer_binary_archive(
@@ -152,7 +141,6 @@ def download_linters(arch: str, system: str) -> None:
         )
 
 
-@typechecked
 def download_ci_dependencies(
     profile: str,
     arch: str,
@@ -177,7 +165,6 @@ def download_ci_dependencies(
     )
 
 
-@typechecked
 def main(
     args_in: Optional[List[str]] = None,
 ) -> None:

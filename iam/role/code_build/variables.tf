@@ -3,6 +3,11 @@ variable "ci_cd_account_data" {
     bucket = object({
       iam_policy_arn_map = map(string)
     })
+    code_star = object({
+      connection = map(object({
+        iam_policy_arn_map = map(string)
+      }))
+    })
     log = object({
       iam_policy_arn_map = map(string)
     })
@@ -15,6 +20,12 @@ variable "ci_cd_account_data" {
       })
     })
   })
+}
+
+variable "code_star_connection_key" {
+  type        = string
+  default     = null
+  description = "If provided, permission to use the connection will be attached"
 }
 
 variable "max_session_duration_m" {

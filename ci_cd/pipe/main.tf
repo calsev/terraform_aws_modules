@@ -21,7 +21,7 @@ resource "aws_codepipeline" "this_pipeline" {
         ConnectionArn        = var.ci_cd_account_data.code_star.connection[each.value.source_connection_name].connection_arn
         DetectChanges        = each.value.source_detect_changes
         FullRepositoryId     = each.value.source_repository_id
-        OutputArtifactFormat = "CODE_ZIP"
+        OutputArtifactFormat = each.value.source_artifact_format
       }
       input_artifacts = []
       output_artifacts = [
@@ -90,6 +90,12 @@ resource "aws_codepipeline_webhook" "this_pipe_webhook" {
       match_equals = filter.value.match_equals
     }
   }
+  lifecycle {
+    ignore_changes = [
+      authentication_configuration[0].secret_token, # This is causing re-creation on every update
+      tags,                                         # These disappear
+    ]
+  }
   name            = each.value.name_effective
   tags            = each.value.tags
   target_action   = "Source"
@@ -97,13 +103,19 @@ resource "aws_codepipeline_webhook" "this_pipe_webhook" {
 }
 
 resource "github_repository_webhook" "this_githhub_webhook" {
-  for_each = local.create_webhook_map
-  active   = true
+  for_each   = local.create_github_map
+  depends_on = [aws_codepipeline_webhook.this_pipe_webhook]
+  active     = true
   configuration {
     content_type = "json"
     insecure_ssl = false
     secret       = module.webhook_secret.secret_map[each.key]
     url          = aws_codepipeline_webhook.this_pipe_webhook[each.key].url
+  }
+  lifecycle {
+    ignore_changes = [
+      configuration[0].secret # This is causing re-creation on every update
+    ]
   }
   repository = each.value.source_repository_name
   events     = each.value.webhook_event_list

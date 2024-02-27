@@ -19,6 +19,7 @@ variable "pipe_map" {
     secret_is_param = optional(bool)
     # There is always a source stage, that uses namespace "SourceSource" and produces zip artifact "SourceArtifact"
     source_artifact_encryption_key = optional(string)
+    source_artifact_format         = optional(string)
     source_branch                  = optional(string)
     source_connection_name         = optional(string)
     source_detect_changes          = optional(bool)
@@ -43,9 +44,10 @@ variable "pipe_map" {
       }))
       name = string
     }))
-    variable_map       = optional(map(string))
-    webhook_enabled    = optional(bool)
-    webhook_event_list = optional(list(string))
+    variable_map               = optional(map(string))
+    webhook_enabled            = optional(bool)
+    webhook_enable_github_hook = optional(bool)
+    webhook_event_list         = optional(list(string))
     webhook_filter_map = optional(map(object({ # This will be merged over the filter for branch at source_branch
       json_path    = string
       match_equals = string
@@ -77,6 +79,15 @@ variable "pipe_secret_is_param_default" {
 variable "pipe_source_artifact_encryption_key_default" {
   type    = string
   default = "alias/aws/s3"
+}
+
+variable "pipe_source_artifact_format_default" {
+  type    = string
+  default = "CODE_ZIP"
+  validation {
+    condition     = contains(["CODEBUILD_CLONE_REF", "CODE_ZIP"], var.pipe_source_artifact_format_default)
+    error_message = "Invalid artifact format"
+  }
 }
 
 variable "pipe_source_branch_default" {
@@ -138,6 +149,12 @@ variable "pipe_variable_map_default" {
 variable "pipe_webhook_enabled_default" {
   type    = bool
   default = true
+}
+
+variable "pipe_webhook_enable_github_hook_default" {
+  type        = bool
+  default     = true
+  description = "Ignored if webhook is not enabled"
 }
 
 variable "pipe_webhook_event_list_default" {
