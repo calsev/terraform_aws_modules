@@ -64,6 +64,12 @@ variable "name" {
   type = string
 }
 
+variable "name_include_app_fields" {
+  type        = bool
+  default     = true
+  description = "If true, standard resource prefix will be applied to the role"
+}
+
 variable "name_infix" {
   type        = bool
   default     = true
@@ -110,9 +116,4 @@ variable "std_map" {
     resource_name_suffix = string
     tags                 = map(string)
   })
-}
-
-variable "tag" {
-  type    = bool
-  default = true
 }

@@ -34,7 +34,7 @@ module "function_role" {
     }
   }
   map_policy                           = each.value
-  name                                 = "lambda-${each.key}"
+  name                                 = "lambda_${each.key}"
   role_policy_attach_arn_map_default   = var.role_policy_attach_arn_map_default
   role_policy_create_json_map_default  = var.role_policy_create_json_map_default
   role_policy_inline_json_map_default  = var.role_policy_inline_json_map_default

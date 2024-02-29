@@ -6,9 +6,9 @@ module "assume_role_policy" {
 
 resource "aws_iam_policy" "this_created_policy" {
   for_each = local.l1_map.policy_create_doc_map
-  name     = local.l2_map.policy_create_name_map[each.key]
+  name     = module.name_map.data[each.key].name_effective
   policy   = jsonencode(each.value)
-  tags     = local.l3_map.policy_create_tag_map[each.key]
+  tags     = module.name_map.data[each.key].tags
 }
 
 resource "aws_iam_role" "this_iam_role" {
@@ -26,15 +26,15 @@ resource "aws_iam_role" "this_iam_role" {
     for_each = local.l1_map.policy_inline_doc_map == null ? { this = {} } : length(local.l1_map.policy_inline_doc_map) == 0 ? { this = {} } : {}
     content {}
   }
-  managed_policy_arns = [for _, arn in local.l5_map.policy_all_attached_arn_map : arn]
-  name                = local.l3_map.role_name
+  managed_policy_arns = [for _, arn in local.l4_map.policy_all_attached_arn_map : arn]
+  name                = local.l1_map.name_effective
   path                = local.l1_map.role_path
-  tags                = local.l3_map.tags
+  tags                = local.l1_map.tags
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
   for_each = local.l1_map.create_instance_profile ? { this = {} } : {}
-  name     = local.l3_map.role_name
+  name     = local.l1_map.name_effective
   role     = aws_iam_role.this_iam_role.id
-  tags     = local.l3_map.tags
+  tags     = local.l1_map.tags
 }

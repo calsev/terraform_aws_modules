@@ -20,5 +20,4 @@ module "this_role" {
   role_policy_managed_name_map_default = var.policy_managed_name_map
   role_path                            = var.role_path
   std_map                              = var.std_map
-  tag                                  = var.tag
 }

@@ -17,6 +17,7 @@ variable "compute_map" {
     storage_volume_type             = optional(string)
     update_default_template_version = optional(bool)
     user_data_commands              = optional(list(string))
+    user_data_suppress_generation   = optional(bool)
     vpc_az_key_list                 = optional(list(string))
     vpc_key                         = optional(string)
     vpc_security_group_key_list     = optional(list(string))
@@ -121,6 +122,11 @@ variable "compute_update_default_template_version_default" {
 variable "compute_user_data_commands_default" {
   type    = list(string)
   default = null
+}
+
+variable "compute_user_data_suppress_generation_default" {
+  type    = bool
+  default = false
 }
 
 variable "image_search_ecs_gpu_tag_name" {

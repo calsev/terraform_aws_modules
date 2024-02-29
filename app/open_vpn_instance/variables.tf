@@ -1,11 +1,28 @@
+variable "dns_data" {
+  type = object({
+    domain_to_dns_zone_map = map(object({
+      dns_zone_id = string
+    }))
+  })
+}
+
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_ec2_associate_eip    = string
+    iam_policy_arn_ec2_modify_attribute = string
+  })
+}
+
 variable "instance_map" {
   type = map(object({
     auto_scaling_num_instances_min     = optional(number)
     auto_scaling_protect_from_scale_in = optional(bool)
+    dns_from_zone_key                  = optional(string)
     instance_type                      = optional(string)
     key_name                           = optional(string)
     name_include_app_fields            = optional(bool)
     name_infix                         = optional(bool)
+    secret_is_param                    = optional(bool)
   }))
 }
 
@@ -17,6 +34,11 @@ variable "instance_auto_scaling_num_instances_min_default" {
 variable "instance_auto_scaling_protect_from_scale_in_default" {
   type    = bool
   default = false
+}
+
+variable "instance_dns_from_zone_key_default" {
+  type    = string
+  default = null
 }
 
 variable "instance_key_name_default" {
@@ -33,6 +55,11 @@ variable "instance_name_include_app_fields_default" {
 variable "instance_name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "instance_secret_is_param_default" {
+  type    = bool
+  default = false
 }
 
 variable "image_search_ecs_gpu_tag_name" {
@@ -87,13 +114,19 @@ variable "monitor_data" {
 
 variable "std_map" {
   type = object({
-    config_name          = string
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
+
 
 variable "vpc_az_key_list_default" {
   type    = list(string)

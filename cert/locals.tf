@@ -6,14 +6,19 @@ module "name_map" {
 }
 
 locals {
+  create_validation_0_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      dvo_list = tolist(aws_acm_certificate.this_cert[k].domain_validation_options)
+    })
+  }
   create_validation_1_map = {
-    for k, v in local.lx_map : k => [
-      for dvo in aws_acm_certificate.this_cert[k].domain_validation_options : merge(v, {
-        dns_from_fqdn   = dvo.resource_record_name
-        dns_record_list = [dvo.resource_record_value]
-        dns_type        = dvo.resource_record_type
+    for k, v in local.create_validation_0_map : k => [
+      for index in range(length(v.dvo_list)) : merge(v, {
+        dns_from_fqdn   = v.dvo_list[index].resource_record_name
+        dns_record_list = [v.dvo_list[index].resource_record_value]
+        dns_type        = v.dvo_list[index].resource_record_type
         k               = k
-        k_validation    = replace("${k}${dvo.resource_record_name}", "-", "_")
+        k_validation    = "${k}_${index}"
       })
     ]
   }

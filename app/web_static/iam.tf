@@ -37,7 +37,7 @@ module "code_pipe_role" {
   build_name_list          = local.build_name_list_map[each.key]
   ci_cd_account_data       = var.ci_cd_account_data
   code_star_connection_key = var.code_star_connection_key
-  name                     = "${each.key}-code-pipe"
+  name                     = "${each.key}_code_pipe"
   policy_attach_arn_map    = each.value.policy_attach_arn_map
   policy_create_json_map   = each.value.policy_create_json_map
   policy_inline_json_map   = each.value.policy_inline_json_map

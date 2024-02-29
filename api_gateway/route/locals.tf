@@ -43,7 +43,7 @@ locals {
     })
   ]
   lx_map = {
-    for route in local.l3_list : "${route.k_api}-${route.k_int}-${route.k_route}" => route
+    for route in local.l3_list : "${route.k_api}_${route.k_int}_${route.k_route}" => route
   }
   output_data = {
     for k_api, v_api in local.l1_map : k_api => merge(v_api, {
@@ -53,10 +53,10 @@ locals {
             for k_route, v_route in v_int.route_map : k_route => merge(
               v_route,
               {
-                for k, v in local.lx_map["${k_api}-${k_int}-${k_route}"] : k => v if !contains(["k_api", "k_int", "k_route"], k)
+                for k, v in local.lx_map["${k_api}_${k_int}_${k_route}"] : k => v if !contains(["k_api", "k_int", "k_route"], k)
               },
               {
-                route_id = aws_apigatewayv2_route.this_route["${k_api}-${k_int}-${k_route}"].id
+                route_id = aws_apigatewayv2_route.this_route["${k_api}_${k_int}_${k_route}"].id
               },
             )
           }

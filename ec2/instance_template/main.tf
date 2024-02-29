@@ -36,7 +36,7 @@ data "aws_ami" "this_ami" {
 }
 
 resource "aws_placement_group" "this_placement_group" {
-  for_each        = local.compute_map
+  for_each        = local.lx_map
   name            = each.value.name_effective
   partition_count = each.value.placement_strategy == "partition" ? each.value.placement_partition_count : null
   spread_level    = each.value.placement_strategy == "spread" ? each.value.placement_spread_level : null
@@ -45,7 +45,7 @@ resource "aws_placement_group" "this_placement_group" {
 }
 
 resource "aws_launch_template" "this_launch_template" {
-  for_each = local.compute_map
+  for_each = local.lx_map
   block_device_mappings {
     device_name = each.value.storage_root_device_name
     ebs {
@@ -95,7 +95,7 @@ resource "aws_launch_template" "this_launch_template" {
 
 resource "local_file" "user_data" {
   # Not sensitive because it is useful to see the diff of the rendered template
-  for_each = local.compute_map
+  for_each = local.create_user_data_map
   content  = local.user_data_map[each.key]
   filename = "${path.root}/user_data/${replace(each.value.name_simple, "/-/", "_")}_${var.std_map.config_name}.txt"
 }

@@ -29,7 +29,7 @@ locals {
         Region                 = var.std_map.aws_region_name
         } : v.service == "states" ? {
         Input = "$request.body"
-        #Name            = replace("${k_api}-${k_int}", var.std_map.name_replace_regex, "-")
+        #Name            = replace("${k_api}_${k_int}", var.std_map.name_replace_regex, "-")
         Region          = var.std_map.aws_region_name
         StateMachineArn = v.target_arn
         } : {
@@ -45,7 +45,7 @@ locals {
     })
   ]
   integration_map = {
-    for integration in local.integration_list : "${integration.k_api}-${integration.k_int}" => integration
+    for integration in local.integration_list : "${integration.k_api}_${integration.k_int}" => integration
   }
   output_data = {
     for k_api, v_api in var.api_map : k_api => merge(v_api, {
@@ -53,10 +53,10 @@ locals {
         for k_int, v_int in v_api.integration_map : k_int => merge(
           v_int,
           {
-            for k, v in local.integration_map["${k_api}-${k_int}"] : k => v if !contains(["k_api", "k_int"], k)
+            for k, v in local.integration_map["${k_api}_${k_int}"] : k => v if !contains(["k_api", "k_int"], k)
           },
           {
-            integration_id = aws_apigatewayv2_integration.this_integration["${k_api}-${k_int}"].id
+            integration_id = aws_apigatewayv2_integration.this_integration["${k_api}_${k_int}"].id
           },
         )
       }
