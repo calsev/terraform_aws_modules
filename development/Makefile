@@ -158,6 +158,7 @@ tf-lint: tflint-install
 	cd ../iam && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/app/ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

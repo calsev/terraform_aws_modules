@@ -1,7 +1,9 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = local.l0_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.ip_name_include_app_fields_default
+  name_infix_default              = var.ip_name_infix_default
+  name_map                        = local.l0_map
+  std_map                         = var.std_map
 }
 
 locals {
@@ -25,7 +27,10 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        eip_id = aws_eip.this_eip[k].id
+        eip_allocation_id = aws_eip.this_eip[k].allocation_id
+        eip_id            = aws_eip.this_eip[k].id
+        eip_public_dns    = aws_eip.this_eip[k].public_dns
+        eip_public_ip     = aws_eip.this_eip[k].public_ip
       }
     )
   }

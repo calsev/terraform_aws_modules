@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.18.1
+
+### New modules
+
+* IAM app for EC2
+
+### General
+
+* Support suppressing sensitive user data in outputs
+* Regularize name handling for roles
+
+### Bugfix
+
+* Fixed some kebob-case keys
+* Fixed cert challenge keys depending on post-apply values
+
 ## 0.18.0
 
 ### General

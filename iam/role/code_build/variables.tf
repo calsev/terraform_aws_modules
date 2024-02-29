@@ -101,11 +101,6 @@ variable "std_map" {
   })
 }
 
-variable "tag" {
-  type    = bool
-  default = true
-}
-
 variable "vpc_access" {
   type        = bool
   default     = false

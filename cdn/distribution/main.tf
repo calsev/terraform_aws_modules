@@ -1,5 +1,5 @@
 resource "aws_cloudfront_origin_access_control" "this_origin_control" {
-  for_each                          = var.domain_map
+  for_each                          = local.lx_map
   name                              = each.key
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"

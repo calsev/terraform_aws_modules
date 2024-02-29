@@ -31,12 +31,12 @@ locals {
           enable_default_route     = v_stage.enable_default_route == null ? var.stage_enable_default_route_default : v_stage.enable_default_route
           k_api                    = k_api
           k_stage                  = k_stage
-          name                     = replace("${k_api}-${k_stage}", var.std_map.name_replace_regex, "-")
+          name                     = replace("${k_api}_${k_stage}", var.std_map.name_replace_regex, "-")
           route_map                = local.route_map[k_api]
           tags = merge(
             var.std_map.tags,
             {
-              Name = "${var.std_map.resource_name_prefix}${replace("${k_api}-${k_stage}", var.std_map.name_replace_regex, "-")}${var.std_map.resource_name_suffix}"
+              Name = "${var.std_map.resource_name_prefix}${replace("${k_api}_${k_stage}", var.std_map.name_replace_regex, "-")}${var.std_map.resource_name_suffix}"
             }
           )
           throttling_burst_limit = v_stage.throttling_burst_limit == null ? var.stage_throttling_burst_limit_default : v_stage.throttling_burst_limit
@@ -46,7 +46,7 @@ locals {
     ]
   ])
   stage_map = {
-    for stage in local.stage_list : "${stage.k_api}-${stage.k_stage}" => stage
+    for stage in local.stage_list : "${stage.k_api}_${stage.k_stage}" => stage
   }
   output_data = {
     for k_api, v_api in var.api_map : k_api => merge(v_api, {
@@ -54,10 +54,10 @@ locals {
         for k_stage, v_stage in v_api.stage_map : k_stage => merge(
           v_stage,
           {
-            for k, v in local.stage_map["${k_api}-${k_stage}"] : k => v if !contains(["k_api", "k_stage"], k)
+            for k, v in local.stage_map["${k_api}_${k_stage}"] : k => v if !contains(["k_api", "k_stage"], k)
           },
           {
-            stage_id = aws_apigatewayv2_stage.this_stage["${k_api}-${k_stage}"].id
+            stage_id = aws_apigatewayv2_stage.this_stage["${k_api}_${k_stage}"].id
           },
         )
       }

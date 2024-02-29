@@ -50,8 +50,3 @@ variable "std_map" {
     tags                 = map(string)
   })
 }
-
-variable "tag" {
-  type    = bool
-  default = true
-}
