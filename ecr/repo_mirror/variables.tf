@@ -10,6 +10,9 @@ variable "iam_data" {
     iam_policy_arn_ecr_get_token    = string
     iam_policy_arn_ecs_start_task   = string
     iam_role_arn_ecs_task_execution = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
   })
 }
 

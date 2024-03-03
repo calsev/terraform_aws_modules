@@ -19,6 +19,7 @@ module "security_group" {
 
 module "vpc_net" {
   source                   = "../../vpc/networking"
+  iam_data                 = var.iam_data
   monitor_data             = var.monitor_data
   std_map                  = var.std_map
   vpc_map                  = local.vpc_net_map

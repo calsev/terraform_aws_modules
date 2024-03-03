@@ -4,6 +4,7 @@ variable "secret_map" {
     secret_random_init_key              = string
     secret_random_init_map              = map(string)
     secret_random_init_type_is_password = bool
+    secret_random_init_type_is_ssh_key  = bool
     secret_random_init_type_is_tls_key  = bool
   }))
 }

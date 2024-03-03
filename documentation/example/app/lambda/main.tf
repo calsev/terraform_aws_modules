@@ -26,13 +26,13 @@ module "lambda" {
       source_package_s3_bucket_name       = "example-deploy"
       vpc_key                             = "main"
     }
-    image = {
-      source_image_command           = ["Hello beautiful world!"] # TODO
-      source_image_entry_point       = ["echo"]
-      source_image_repo_key          = "ubuntu"
-      source_image_working_directory = "/"
-      vpc_key                        = "main"
-    }
+    # image = {
+    #   source_image_command           = ["Hello beautiful world!"] # TODO
+    #   source_image_entry_point       = ["echo"]
+    #   source_image_repo_key          = "ubuntu"
+    #   source_image_working_directory = "/"
+    #   vpc_key                        = "main"
+    # }
     local_existing_archive_no_s3 = {
       source_package_archive_local_path = "app.zip"
     }

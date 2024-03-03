@@ -4,7 +4,7 @@ variable "compute_map" {
     instance_allocation_type    = optional(string)
     instance_storage_gib        = optional(number)
     instance_type               = optional(string)
-    key_name                    = optional(string)
+    key_pair_key                = optional(string)
     max_instances               = optional(number)
     min_instances               = optional(number)
     vpc_az_key_list             = optional(list(string))
@@ -35,7 +35,7 @@ variable "compute_instance_type_default" {
   default = null
 }
 
-variable "compute_key_name_default" {
+variable "compute_key_pair_key_default" {
   type    = string
   default = null
 }
@@ -60,6 +60,9 @@ variable "iam_data" {
     iam_instance_profile_arn_ecs  = string
     iam_role_arn_batch_service    = string
     iam_role_arn_batch_spot_fleet = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
   })
 }
 

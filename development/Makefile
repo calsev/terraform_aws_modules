@@ -131,6 +131,7 @@ tf-lint: tflint-install
 	cd ../ec2/auto_scaling_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/elastic_ip && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/instance_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ec2/key_pair && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/network_interface && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr/repo && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

@@ -54,11 +54,12 @@ module "instance_role" {
 
 module "instance_template" {
   source                           = "../../ec2/instance_template"
+  iam_data                         = var.iam_data
   image_search_ecs_gpu_tag_name    = var.image_search_ecs_gpu_tag_name
   image_search_tag_owner           = var.image_search_tag_owner
   compute_image_search_tag_default = "open_vpn"
   compute_instance_type_default    = var.instance_type_default
-  compute_key_name_default         = var.instance_key_name_default
+  compute_key_pair_key_default     = var.instance_key_pair_key_default
   compute_map = {
     for k, v in local.create_template_map : k => merge(v, {
       user_data_command_list = [

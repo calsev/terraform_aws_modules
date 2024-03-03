@@ -35,7 +35,7 @@ locals {
       instance_allocation_type        = v.instance_allocation_type == null ? var.compute_instance_allocation_type_default : v.instance_allocation_type
       instance_storage_gib            = v.instance_storage_gib == null ? var.compute_instance_storage_gib_default : v.instance_storage_gib
       instance_type                   = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
-      key_name                        = v.key_name == null ? var.compute_key_name_default : v.key_name
+      key_pair_key                    = v.key_pair_key == null ? var.compute_key_pair_key_default : v.key_pair_key
       monitoring_advanced_enabled     = v.monitoring_advanced_enabled == null ? var.compute_monitoring_advanced_enabled_default : v.monitoring_advanced_enabled
       placement_partition_count       = v.placement_partition_count == null ? var.compute_placement_partition_count_default : v.placement_partition_count
       placement_spread_level          = v.placement_spread_level == null ? var.compute_placement_spread_level_default : v.placement_spread_level
@@ -51,6 +51,7 @@ locals {
     for k, v in local.l0_map : k => {
       image_search_tag     = local.l1_map[k].image_search_for_ecs ? "amazon" : v.image_search_tag == null ? var.compute_image_search_tag_default : v.image_search_tag
       instance_family      = split(".", local.l1_map[k].instance_type)[0]
+      key_pair_name        = local.l1_map[k].key_pair_key == null ? null : var.iam_data.key_pair_map[local.l1_map[k].key_pair_key].key_pair_name
       resource_name_prefix = "${local.l1_map[k].name_effective}-"
     }
   }

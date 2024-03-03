@@ -1,3 +1,11 @@
+variable "iam_data" {
+  type = object({
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
+  })
+}
+
 variable "monitor_data" {
   type = object({
     ecs_ssm_param_map = object({
