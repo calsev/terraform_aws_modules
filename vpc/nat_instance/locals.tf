@@ -11,7 +11,7 @@ locals {
       vpc_key                     = v.k_vpc
       vpc_security_group_key_list = [] # All security groups are applied to the ENI
       vpc_segment_key             = v.vpc_segment_key == null ? var.vpc_segment_key_default : v.vpc_segment_key
-      user_data_commands          = [] # TODO
+      user_data_command_list      = [] # TODO
       # These are for the ENI
       nat_vpc_security_group_key_list = v.vpc_security_group_key_list == null ? var.vpc_security_group_key_list_default : v.vpc_security_group_key_list
       subnet_id                       = var.vpc_data_map[v.k_vpc].segment_map[v.k_seg].subnet_id_map[v.k_az]

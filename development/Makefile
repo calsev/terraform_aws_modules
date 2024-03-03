@@ -215,6 +215,8 @@ tf-lint: tflint-install
 	cd ../iam/role/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/code_build && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/code_pipe && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/ec2/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/task && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

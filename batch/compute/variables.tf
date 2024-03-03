@@ -11,7 +11,7 @@ variable "compute_map" {
     vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
-    user_data_commands          = optional(list(string))
+    user_data_command_list      = optional(list(string))
   }))
 }
 
@@ -50,7 +50,7 @@ variable "compute_min_instances_default" {
   default = 0
 }
 
-variable "compute_user_data_commands_default" {
+variable "compute_user_data_command_list_default" {
   type    = list(string)
   default = null
 }
@@ -78,6 +78,7 @@ variable "monitor_data" {
 
 variable "std_map" {
   type = object({
+    aws_region_name      = string
     config_name          = string
     name_replace_regex   = string
     resource_name_prefix = string

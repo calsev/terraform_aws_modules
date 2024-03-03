@@ -1,6 +1,6 @@
 resource "aws_apigatewayv2_domain_name" "this_domain" {
   for_each    = local.lx_map
-  domain_name = each.value.name_simple
+  domain_name = each.value.dns_from_fqdn
   domain_name_configuration {
     certificate_arn                        = each.value.certificate_arn
     endpoint_type                          = "REGIONAL"

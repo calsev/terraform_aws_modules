@@ -50,6 +50,7 @@ variable "nat_key_name_default" {
 
 variable "std_map" {
   type = object({
+    aws_region_name      = string
     config_name          = string
     name_replace_regex   = string
     resource_name_prefix = string

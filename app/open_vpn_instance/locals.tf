@@ -35,17 +35,23 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      dns_from_zone_key = v.dns_from_zone_key == null ? var.instance_dns_from_zone_key_default : v.dns_from_zone_key
-      k_license_secret  = "${k}_open_vpn_license"
-      k_password_secret = "${k}_open_vpn_admin_password"
+      cert_contact_email = v.cert_contact_email == null ? var.instance_cert_contact_email_default : v.cert_contact_email
+      dns_from_zone_key  = v.dns_from_zone_key == null ? var.instance_dns_from_zone_key_default : v.dns_from_zone_key
+      k_license_secret   = "${k}_open_vpn_license"
+      k_password_secret  = "${k}_open_vpn_admin_password"
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      dns_from_fqdn = v.dns_from_fqdn == null ? "vpn.${local.l1_map[k].dns_from_zone_key}" : v.dns_from_fqdn
+    }
+  }
+  l3_map = {
+    for k, v in local.l0_map : k => {
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

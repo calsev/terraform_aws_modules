@@ -9,13 +9,12 @@ locals {
   output_data = {
     api    = module.api.data
     lambda = module.lambda.data
-    log    = module.stage_log.data
     pool   = module.user_pool.data
     role   = module.api_role.data
   }
   pool_name = "app"
   stage_map = {
-    prod = {}
+    prd = {}
   }
   std_var = {
     app             = "app-auth"

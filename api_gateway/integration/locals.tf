@@ -21,7 +21,7 @@ locals {
   ])
   i2_list = [
     for v in local.i1_list : merge(v, {
-      request_parameters = v.request_parameters != null ? v.request_parameters : v.service == "sqs" ? {
+      request_parameters = v.request_parameters != null ? v.request_parameters : v.service == null ? {} : v.service == "sqs" ? {
         MessageBody            = "$request.body"
         MessageDeduplicationId = "$context.requestId"
         MessageGroupId         = "$context.requestId"
@@ -35,7 +35,7 @@ locals {
         } : {
         # TODO: Other services
       }
-      subtype = v.subtype == null ? lookup(var.integration_subtype_map_default, v.service, null) : v.subtype
+      subtype = v.service == null ? null : v.subtype == null ? lookup(var.integration_subtype_map_default, v.service, null) : v.subtype
     })
   ]
   integration_list = [

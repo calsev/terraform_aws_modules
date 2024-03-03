@@ -17,12 +17,15 @@ variable "instance_map" {
   type = map(object({
     auto_scaling_num_instances_min     = optional(number)
     auto_scaling_protect_from_scale_in = optional(bool)
+    cert_contact_email                 = optional(string)
+    dns_from_fqdn                      = optional(string) # Defaults to vpn.${from_zone_key}
     dns_from_zone_key                  = optional(string)
     instance_type                      = optional(string)
     key_name                           = optional(string)
     name_include_app_fields            = optional(bool)
     name_infix                         = optional(bool)
     secret_is_param                    = optional(bool)
+    user_data_suppress_generation      = optional(bool)
   }))
 }
 
@@ -34,6 +37,11 @@ variable "instance_auto_scaling_num_instances_min_default" {
 variable "instance_auto_scaling_protect_from_scale_in_default" {
   type    = bool
   default = false
+}
+
+variable "instance_cert_contact_email_default" {
+  type    = string
+  default = null
 }
 
 variable "instance_dns_from_zone_key_default" {
@@ -60,6 +68,11 @@ variable "instance_name_infix_default" {
 variable "instance_secret_is_param_default" {
   type    = bool
   default = false
+}
+
+variable "instance_user_data_suppress_generation_default" {
+  type    = bool
+  default = true
 }
 
 variable "image_search_ecs_gpu_tag_name" {
@@ -103,10 +116,12 @@ variable "monitor_data" {
   type = object({
     ecs_ssm_param_map = object({
       cpu = object({
-        name_effective = string
+        iam_policy_arn_map = map(string)
+        name_effective     = string
       })
       gpu = object({
-        name_effective = string
+        iam_policy_arn_map = map(string)
+        name_effective     = string
       })
     })
   })

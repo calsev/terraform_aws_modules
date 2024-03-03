@@ -9,6 +9,7 @@ module "api" {
   api_cors_max_age_default             = var.api_cors_max_age_default
   api_disable_execute_endpoint_default = var.api_disable_execute_endpoint_default
   api_map                              = local.lx_map
+  api_name_include_app_fields_default  = var.api_name_include_app_fields_default
   api_name_infix_default               = var.api_name_infix_default
   api_version_default                  = var.api_version_default
   std_map                              = var.std_map
@@ -24,9 +25,10 @@ module "auth" {
 }
 
 module "integration" {
-  source  = "../../api_gateway/integration"
-  api_map = local.integration_map
-  std_map = var.std_map
+  source                   = "../../api_gateway/integration"
+  api_map                  = local.integration_map
+  integration_type_default = var.api_integration_type_default
+  std_map                  = var.std_map
 }
 
 module "route" {

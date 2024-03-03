@@ -7,13 +7,10 @@ module "managed_policies" {
 }
 
 module "ecs_instance_role" {
-  source      = "../../../iam/role/ecs/instance"
-  name_prefix = var.name_prefix
-  policy_attach_arn_map = {
-    read_ssm_cw_config_cpu = var.monitor_data.ecs_ssm_param_map.cpu.iam_policy_arn_map["read"]
-    read_ssm_cw_config_gpu = var.monitor_data.ecs_ssm_param_map.gpu.iam_policy_arn_map["read"]
-  }
-  std_map = var.std_map
+  source       = "../../../iam/role/ecs/instance"
+  monitor_data = var.monitor_data
+  name_prefix  = var.name_prefix
+  std_map      = var.std_map
 }
 
 module "ecs_task_execution_role" {

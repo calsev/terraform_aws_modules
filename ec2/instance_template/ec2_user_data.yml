@@ -8,19 +8,13 @@ Content-Type: text/cloud-config; charset="us-ascii"
 repo_update: true
 repo_upgrade: all
 
-packages:
-  - amazon-cloudwatch-agent
-  - parted
-  - yum-cron
-
 runcmd:
-  - /usr/local/bin/disk-mount.sh
-  - yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  - yum install -y collectd
+  - /usr/local/bin/install_basics.sh
+  - /usr/local/bin/disk_mount.sh
   - amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:${ssm_param_name_cw_config} -s
   # The config should be created before the service starts and appends other info, but make sure we do not blow it away
   - cat /etc/ecs/ecs.config
-%{ for cmd in user_data_commands ~}
+%{ for cmd in user_data_command_list ~}
   - ${cmd}
 %{ endfor ~}
   - echo Done!
@@ -35,6 +29,7 @@ write_files:
     permissions: '0644'
   - content: |
       #!/bin/bash
+      set -ex
 
       lsblk
       if [ -b /dev/nvme1n1 ] ; then
@@ -53,6 +48,49 @@ write_files:
           chmod 1777 /mnt/ephemeral
           lsblk
       fi
-    path: /usr/local/bin/disk-mount.sh
+    path: /usr/local/bin/disk_mount.sh
     permissions: '0744'
+  - content: |
+      #!/bin/bash
+      set -ex
+
+      MACH=`uname -m`
+      if [ -f /etc/debian_version ]; then
+        DISTRO_BASE='debian'
+        INST='apt-get -yqq install'
+        DPKG='dpkg -i'
+        apt-get -qq update
+      else
+        DISTRO_BASE='rhel'
+        INST='yum -y install'
+        DPKG='rpm -Uvh'
+      fi
+
+      $INST collectd
+      $INST parted
+      $INST unzip
+
+      if [ -x "$(command -v amazon-cloudwatch-agent-ctl)" ]; then
+        echo AWS CLI installed, skipping
+      else
+        wget -q --secure-protocol=TLSv1_2 --timeout=20 https://amazoncloudwatch-agent-${aws_region_name}.s3.${aws_region_name}.amazonaws.com/ubuntu/${arch == "x86_64" ? "amd64" : "arm64"}/latest/amazon-cloudwatch-agent.deb
+        $DPKG ./amazon-cloudwatch-agent.deb
+      fi
+
+      if [ -x "$(command -v aws)" ]; then
+        echo AWS CLI installed, skipping
+      else
+        curl -s "https://awscli.amazonaws.com/awscli-exe-linux-${arch == "x86_64" ? "x86_64" : "aarch64"}.zip" -o "awscliv2.zip"
+        unzip -q awscliv2.zip
+        ./aws/install
+      fi
+      aws --version
+    path: /usr/local/bin/install_basics.sh
+    permissions: '0744'
+%{ for path, file_data in user_data_file_map ~}
+  - content: |
+${file_data.content}
+    path: ${path}
+    permissions: '${file_data.permissions}'
+%{ endfor ~}
 --==MYBOUNDARY==--

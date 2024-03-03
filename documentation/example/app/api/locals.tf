@@ -1,37 +1,4 @@
 locals {
-  api_map = {
-    (local.api_name) = {
-      integration_iam_role_arn_default = module.api_role.data.iam_role_arn
-      integration_map = {
-        lambda = {
-          service    = "lambda"
-          target_uri = module.lambda.data[local.lambda_name].invoke_arn
-        }
-        sqs = {
-          service    = "sqs"
-          target_uri = module.sqs.data[local.queue_name].url
-        }
-        states = {
-          route_map = {
-            "POST /states-anon" = {
-            }
-            "POST /states-auth" = {
-              authorization_type = "AWS_IAM"
-            }
-          }
-          service    = "states"
-          target_arn = module.step_function.data[local.machine_name].arn
-        }
-      }
-      integration_route_method_default = "POST"
-      name_infix                       = false
-      stage_map = {
-        for k, v in local.stage_map : k => merge(v, {
-          log_group_arn = module.stage_log.data[k].log_group_arn
-        })
-      }
-    }
-  }
   api_name     = "api.example.com"
   lambda_name  = "func"
   machine_name = "pipeline"
@@ -50,12 +17,12 @@ locals {
   stage_map = {
     dev = {
     }
-    prod = {
+    prd = {
     }
   }
   std_var = {
     app             = "app-api"
     aws_region_name = "us-west-2"
-    env             = "prod"
+    env             = "com"
   }
 }

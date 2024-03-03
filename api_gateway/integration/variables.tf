@@ -33,6 +33,10 @@ variable "integration_iam_role_arn_default" {
 variable "integration_passthrough_behavior_default" {
   type    = string
   default = "WHEN_NO_MATCH"
+  validation {
+    condition     = contains(["NEVER", "WHEN_NO_MATCH", "WHEN_NO_TEMPLATES"], var.integration_passthrough_behavior_default)
+    error_message = "Invalid passthrough behavior"
+  }
 }
 
 variable "integration_subtype_map_default" {
