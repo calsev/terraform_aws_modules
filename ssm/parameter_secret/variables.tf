@@ -61,7 +61,7 @@ variable "param_secret_random_init_type_default" {
   type    = string
   default = "password"
   validation {
-    condition     = contains([null, "password", "tls_key"], var.param_secret_random_init_type_default)
+    condition     = contains([null, "password", "ssh_key", "tls_key"], var.param_secret_random_init_type_default)
     error_message = "Invalid random init type"
   }
 }

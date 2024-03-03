@@ -8,7 +8,7 @@ variable "compute_map" {
     instance_allocation_type                 = optional(string)
     instance_storage_gib                     = optional(number)
     instance_type                            = optional(string)
-    key_name                                 = optional(string)
+    key_pair_key                             = optional(string)
     log_retention_days                       = optional(number)
     provider_instance_warmup_period_s        = optional(number)
     provider_managed_scaling_enabled         = optional(bool)
@@ -68,7 +68,7 @@ variable "compute_instance_type_default" {
   default = "t4g.nano"
 }
 
-variable "compute_key_name_default" {
+variable "compute_key_pair_key_default" {
   type    = string
   default = null
 }
@@ -122,6 +122,9 @@ variable "compute_user_data_command_list_default" {
 variable "iam_data" {
   type = object({
     iam_instance_profile_arn_ecs = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
   })
 }
 

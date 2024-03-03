@@ -22,7 +22,8 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        key_public_pem = tls_private_key.this_key[k].public_key_pem
+        key_public_openssh = tls_private_key.this_key[k].public_key_openssh
+        key_public_pem     = tls_private_key.this_key[k].public_key_pem
       }
     )
   }

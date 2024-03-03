@@ -10,6 +10,9 @@ variable "iam_data" {
   type = object({
     iam_policy_arn_ec2_associate_eip    = string
     iam_policy_arn_ec2_modify_attribute = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
   })
 }
 
@@ -21,7 +24,7 @@ variable "instance_map" {
     dns_from_fqdn                      = optional(string) # Defaults to vpn.${from_zone_key}
     dns_from_zone_key                  = optional(string)
     instance_type                      = optional(string)
-    key_name                           = optional(string)
+    key_pair_key                       = optional(string)
     name_include_app_fields            = optional(bool)
     name_infix                         = optional(bool)
     secret_is_param                    = optional(bool)
@@ -49,7 +52,7 @@ variable "instance_dns_from_zone_key_default" {
   default = null
 }
 
-variable "instance_key_name_default" {
+variable "instance_key_pair_key_default" {
   type    = string
   default = null
 }

@@ -88,6 +88,7 @@ module "nat_gateway" {
 
 module "nat_instance" {
   source       = "../../vpc/nat_instance"
+  iam_data     = var.iam_data
   monitor_data = var.monitor_data
   nat_map      = local.nat_instance_flattened_map
   std_map      = var.std_map

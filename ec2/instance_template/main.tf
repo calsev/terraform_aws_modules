@@ -66,7 +66,7 @@ resource "aws_launch_template" "this_launch_template" {
   }
   image_id      = each.value.image_id
   instance_type = each.value.instance_type
-  key_name      = each.value.key_name
+  key_name      = each.value.key_pair_name
   monitoring {
     enabled = each.value.monitoring_advanced_enabled
   }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.20.0
+
+### New modules
+
+* EC2 key pair
+
 ## 0.19.0
 
 ### New modules

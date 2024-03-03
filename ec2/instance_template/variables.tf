@@ -7,7 +7,7 @@ variable "compute_map" {
     instance_allocation_type        = optional(string)
     instance_storage_gib            = optional(number)
     instance_type                   = optional(string)
-    key_name                        = optional(string)
+    key_pair_key                    = optional(string)
     monitoring_advanced_enabled     = optional(bool)
     name_include_app_fields         = optional(bool)
     name_infix                      = optional(bool)
@@ -66,7 +66,7 @@ variable "compute_instance_type_default" {
   default = null
 }
 
-variable "compute_key_name_default" {
+variable "compute_key_pair_key_default" {
   type    = string
   default = null
 }
@@ -139,6 +139,14 @@ variable "compute_user_data_file_map_default" {
 variable "compute_user_data_suppress_generation_default" {
   type    = bool
   default = false
+}
+
+variable "iam_data" {
+  type = object({
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
+  })
 }
 
 variable "image_search_ecs_gpu_tag_name" {

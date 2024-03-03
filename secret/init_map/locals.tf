@@ -14,6 +14,7 @@ locals {
     for k, v in local.l0_map : k => {
       secret_random_init                  = local.l1_map[k].secret_random_init_type != null
       secret_random_init_type_is_password = local.l1_map[k].secret_random_init_type == null ? false : local.l1_map[k].secret_random_init_type == "password"
+      secret_random_init_type_is_ssh_key  = local.l1_map[k].secret_random_init_type == null ? false : local.l1_map[k].secret_random_init_type == "ssh_key"
       secret_random_init_type_is_tls_key  = local.l1_map[k].secret_random_init_type == null ? false : local.l1_map[k].secret_random_init_type == "tls_key"
     }
   }
