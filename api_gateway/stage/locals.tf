@@ -33,6 +33,7 @@ locals {
           k_stage                  = k_stage
           name                     = replace("${k_api}_${k_stage}", var.std_map.name_replace_regex, "-")
           route_map                = local.route_map[k_api]
+          stage_path               = v_stage.stage_path == null ? k_stage == "$default" ? "" : k_stage : v_stage.stage_path
           tags = merge(
             var.std_map.tags,
             {
@@ -58,6 +59,7 @@ locals {
           },
           {
             stage_id = aws_apigatewayv2_stage.this_stage["${k_api}_${k_stage}"].id
+            log      = module.stage_log.data["${k_api}_${k_stage}"]
           },
         )
       }

@@ -8,7 +8,7 @@ module "compute_common" {
   compute_instance_type_default            = var.compute_instance_type_default
   compute_key_name_default                 = var.compute_key_name_default
   compute_map                              = var.compute_map
-  compute_user_data_commands_default       = var.compute_user_data_commands_default
+  compute_user_data_command_list_default   = var.compute_user_data_command_list_default
   monitor_data                             = var.monitor_data
   set_ecs_cluster_in_user_data             = false
   std_map                                  = var.std_map

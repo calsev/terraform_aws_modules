@@ -1,12 +1,3 @@
-variable "log_data" {
-  type = object({
-    iam_policy_arn_map = object({
-      read  = string
-      write = string
-    })
-  })
-}
-
 variable "max_session_duration_m" {
   type    = number
   default = null
@@ -31,7 +22,7 @@ variable "name_prefix" {
 variable "policy_attach_arn_map" {
   type        = map(string)
   default     = {}
-  description = "The special sauce for the role; log write and artifact read/write come free"
+  description = "The special sauce for the role; tracing comes free"
 }
 
 variable "policy_create_json_map" {

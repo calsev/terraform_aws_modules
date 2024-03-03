@@ -1,7 +1,13 @@
+module "stage_log" {
+  source  = "../../cw/log_group"
+  log_map = local.stage_map
+  std_map = var.std_map
+}
+
 resource "aws_apigatewayv2_stage" "this_stage" {
   for_each = local.stage_map
   access_log_settings {
-    destination_arn = each.value.log_group_arn
+    destination_arn = module.stage_log.data[each.key].log_group_arn
     format          = jsonencode(local.log_format_map)
   }
   api_id                = each.value.api_id
@@ -37,7 +43,7 @@ resource "aws_apigatewayv2_stage" "this_stage" {
 resource "aws_apigatewayv2_api_mapping" "this_mapping" {
   for_each        = local.mapping_map
   api_id          = each.value.api_id
-  api_mapping_key = each.value.k_stage
+  api_mapping_key = each.value.stage_path
   domain_name     = each.value.domain_id
   stage           = aws_apigatewayv2_stage.this_stage[each.key].id
 }

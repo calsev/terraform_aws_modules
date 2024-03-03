@@ -40,11 +40,12 @@ variable "api_map" {
     integration_route_auth_key_default = optional(string)
     integration_route_method_default   = optional(string) # Used only for default route maps
     integration_service_default        = optional(string)
+    name_include_app_fields            = optional(bool)
     name_infix                         = optional(bool)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
-      log_group_arn            = string
+      stage_path               = optional(string) # Defaults to "" if stage is $default, k_stage otherwise
       throttling_burst_limit   = optional(number)
       throttling_rate_limit    = optional(number)
     }))
@@ -102,6 +103,20 @@ variable "api_disable_execute_endpoint_default" {
   default = false
 }
 
+variable "api_integration_type_default" {
+  type    = string
+  default = "AWS_PROXY"
+  validation {
+    condition     = contains(["AWS_PROXY", "HTTP_PROXY"], var.api_integration_type_default)
+    error_message = "HTTP APIs support only proxy integrations"
+  }
+}
+
+variable "api_name_include_app_fields_default" {
+  type    = bool
+  default = true
+}
+
 variable "api_name_infix_default" {
   type    = bool
   default = true
@@ -140,6 +155,7 @@ variable "dns_data" {
 
 variable "domain_map" {
   type = map(object({
+    dns_from_fqdn     = optional(string) # Defaults to name_simple
     dns_from_zone_key = optional(string)
   }))
   default = {}

@@ -20,7 +20,7 @@ variable "compute_map" {
     vpc_key                                  = optional(string)
     vpc_security_group_key_list              = optional(list(string))
     vpc_segment_key                          = optional(string)
-    user_data_commands                       = optional(list(string))
+    user_data_command_list                   = optional(list(string))
   }))
 }
 
@@ -114,7 +114,7 @@ variable "compute_provider_target_capacity_default" {
   description = "Ignored for Fargate capacity type"
 }
 
-variable "compute_user_data_commands_default" {
+variable "compute_user_data_command_list_default" {
   type    = list(string)
   default = null
 }

@@ -8,6 +8,7 @@ variable "api_map" {
     cors_expose_headers      = optional(list(string))
     cors_max_age             = optional(number)
     disable_execute_endpoint = optional(bool)
+    name_include_app_fields  = optional(bool)
     name_infix               = optional(bool)
     version                  = optional(string)
   }))
@@ -52,6 +53,11 @@ variable "api_cors_max_age_default" {
 variable "api_disable_execute_endpoint_default" {
   type    = bool
   default = false
+}
+
+variable "api_name_include_app_fields_default" {
+  type    = bool
+  default = true
 }
 
 variable "api_name_infix_default" {

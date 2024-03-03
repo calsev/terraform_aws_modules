@@ -42,7 +42,8 @@ locals {
       placement_strategy              = v.placement_strategy == null ? var.compute_placement_strategy_default : v.placement_strategy
       storage_volume_type             = v.storage_volume_type == null ? var.compute_storage_volume_type_default : v.storage_volume_type
       update_default_template_version = v.update_default_template_version == null ? var.compute_update_default_template_version_default : v.update_default_template_version
-      user_data_commands              = v.user_data_commands == null ? var.compute_user_data_commands_default == null ? [] : var.compute_user_data_commands_default : v.user_data_commands
+      user_data_command_list          = v.user_data_command_list == null ? var.compute_user_data_command_list_default == null ? [] : var.compute_user_data_command_list_default : v.user_data_command_list
+      user_data_file_map              = v.user_data_file_map == null ? var.compute_user_data_file_map_default : v.user_data_file_map
       user_data_suppress_generation   = v.user_data_suppress_generation == null ? var.compute_user_data_suppress_generation_default : v.user_data_suppress_generation
     })
   }
@@ -91,7 +92,7 @@ locals {
   output_data = {
     for k, v in local.lx_map : k => merge(
       {
-        for k_attr, v_attr in v : k_attr => v_attr if !(v.user_data_suppress_generation && k_attr == "user_data_commands") # Commands are often sensitive
+        for k_attr, v_attr in v : k_attr => v_attr if !(v.user_data_suppress_generation && k_attr == "user_data_command_list") # Commands are often sensitive
       },
       {
         arch_image_default                 = data.aws_ami.this_default_ami[k].architecture
@@ -114,9 +115,11 @@ locals {
       "${path.module}/ec2_user_data.yml",
       {
         arch                     = v.arch
+        aws_region_name          = var.std_map.aws_region_name
         ecs_cluster_name         = var.set_ecs_cluster_in_user_data ? v.name_effective : ""
         ssm_param_name_cw_config = v.ssm_param_name_cw_config
-        user_data_commands       = v.user_data_commands
+        user_data_command_list   = v.user_data_command_list
+        user_data_file_map       = v.user_data_file_map
       }
     )
   }

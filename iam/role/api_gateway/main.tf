@@ -14,12 +14,6 @@ data "aws_iam_policy_document" "x_ray_trace" {
 module "this_role" {
   source                   = "../../../iam/role/base"
   assume_role_service_list = ["apigateway"]
-  create_instance_profile  = false
-  embedded_role_policy_attach_arn_map = {
-    log_write = {
-      policy = var.log_data.iam_policy_arn_map.write
-    }
-  }
   embedded_role_policy_inline_json_map = {
     trace_read_write = {
       policy = data.aws_iam_policy_document.x_ray_trace.json

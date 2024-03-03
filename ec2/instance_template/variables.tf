@@ -16,12 +16,16 @@ variable "compute_map" {
     placement_strategy              = optional(string)
     storage_volume_type             = optional(string)
     update_default_template_version = optional(bool)
-    user_data_commands              = optional(list(string))
-    user_data_suppress_generation   = optional(bool)
-    vpc_az_key_list                 = optional(list(string))
-    vpc_key                         = optional(string)
-    vpc_security_group_key_list     = optional(list(string))
-    vpc_segment_key                 = optional(string)
+    user_data_command_list          = optional(list(string))
+    user_data_file_map = optional(map(object({
+      content     = string
+      permissions = string
+    })))
+    user_data_suppress_generation = optional(bool)
+    vpc_az_key_list               = optional(list(string))
+    vpc_key                       = optional(string)
+    vpc_security_group_key_list   = optional(list(string))
+    vpc_segment_key               = optional(string)
   }))
 }
 
@@ -119,9 +123,17 @@ variable "compute_update_default_template_version_default" {
   default = true
 }
 
-variable "compute_user_data_commands_default" {
+variable "compute_user_data_command_list_default" {
   type    = list(string)
   default = null
+}
+
+variable "compute_user_data_file_map_default" {
+  type = map(object({
+    content     = string
+    permissions = string
+  }))
+  default = {}
 }
 
 variable "compute_user_data_suppress_generation_default" {
@@ -192,6 +204,7 @@ variable "set_ecs_cluster_in_user_data" {
 
 variable "std_map" {
   type = object({
+    aws_region_name      = string
     config_name          = string
     name_replace_regex   = string
     resource_name_prefix = string

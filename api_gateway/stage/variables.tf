@@ -11,7 +11,7 @@ variable "api_map" {
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       enable_default_route     = optional(bool)
-      log_group_arn            = string
+      stage_path               = optional(string) # Defaults to "" if stage is $default, k_stage otherwise
       throttling_burst_limit   = optional(number)
       throttling_rate_limit    = optional(number)
     }))

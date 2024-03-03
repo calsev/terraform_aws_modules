@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.19.0
+
+### New modules
+
+* Application for OpenVPN instance
+* IAM role for EC2 instance
+
+### General
+
+* Uplift stage logs into API Gateway Stage module
+* Update EC2 user data to AL2023
+* Remove unnecessary log policy from API Gateway role
+
 ## 0.18.1
 
 ### New modules

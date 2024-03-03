@@ -24,12 +24,6 @@ module "user_pool" {
   std_map                             = module.com_lib.std_map
 }
 
-module "stage_log" {
-  source  = "path/to/modules/cw/log_group"
-  log_map = local.stage_map
-  std_map = module.com_lib.std_map
-}
-
 module "lambda" {
   source = "path/to/modules/lambda/function"
   function_map = {
@@ -93,11 +87,7 @@ module "api" {
       }
       integration_service_default = "lambda"
       name_infix                  = false
-      stage_map = {
-        for k, v in local.stage_map : k => merge(v, {
-          log_group_arn = module.stage_log.data[k].log_group_arn
-        })
-      }
+      stage_map                   = local.stage_map
     }
   }
   cognito_data_map = module.user_pool.data

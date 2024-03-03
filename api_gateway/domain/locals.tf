@@ -18,15 +18,25 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      certificate_arn = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][k].certificate_arn
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      dns_from_fqdn = v.dns_from_fqdn == null ? local.l1_map[k].name_simple : v.dns_from_fqdn
+    }
+  }
+  l3_map = {
+    for k, v in local.l0_map : k => {
+      certificate_key = replace(local.l2_map[k].dns_from_fqdn, "-", "_")
+    }
+  }
+  l4_map = {
+    for k, v in local.l0_map : k => {
+      certificate_arn = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l3_map[k].certificate_key].certificate_arn
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

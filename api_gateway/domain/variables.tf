@@ -13,6 +13,7 @@ variable "dns_data" {
 
 variable "domain_map" {
   type = map(object({
+    dns_from_fqdn     = optional(string) # Defaults to name_simple
     dns_from_zone_key = optional(string)
   }))
   default = {}
