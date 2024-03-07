@@ -1,6 +1,7 @@
 variable "access_list" {
-  type    = list(string)
-  default = ["read", "read_write", "write"]
+  type        = list(string)
+  default     = ["read", "read_write"]
+  description = "Typically building the image will involve reading layers as well"
 }
 
 variable "repo_name" {

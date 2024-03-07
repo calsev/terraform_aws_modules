@@ -24,6 +24,7 @@ variable "table_map" {
     lsi_non_key_attribute_list     = optional(list(string))
     lsi_projection_type            = optional(string)
     lsi_range_key                  = optional(string)
+    name_include_app_fields        = optional(bool)
     name_infix                     = optional(bool)
     point_in_time_recovery_enabled = optional(bool)
     range_key                      = optional(string)
@@ -123,6 +124,11 @@ variable "table_lsi_projection_type_default" {
 variable "table_lsi_range_key_default" {
   type    = string
   default = null
+}
+
+variable "table_name_include_app_fields_default" {
+  type    = bool
+  default = true
 }
 
 variable "table_name_infix_default" {

@@ -38,8 +38,8 @@ locals {
         for k_secret, v_secret in v : k_secret => v_secret if !contains([], k_secret)
       },
       {
-        param  = v.secret_is_param ? module.this_param.data[k] : null,
-        secret = !v.secret_is_param ? module.this_secret.data[k] : null,
+        # Merge these: the whole point is to obscure the implementation
+        secret = v.secret_is_param ? module.this_param.data[k] : module.this_secret.data[k]
       },
     )
   }

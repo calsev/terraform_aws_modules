@@ -1,8 +1,9 @@
 module "name_map" {
-  source             = "../../name_map"
-  name_infix_default = var.table_name_infix_default
-  name_map           = var.table_map
-  std_map            = var.std_map
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.table_name_include_app_fields_default
+  name_infix_default              = var.table_name_infix_default
+  name_map                        = var.table_map
+  std_map                         = var.std_map
 }
 
 locals {
