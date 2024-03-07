@@ -63,7 +63,7 @@ resource "aws_db_instance" "this_db" {
   network_type                          = each.value.network_type
   option_group_name                     = each.value.option_group_name
   parameter_group_name                  = each.value.parameter_group_name
-  password                              = module.password_secret.secret_map[each.key]
+  password                              = jsondecode(module.password_secret.secret_map[each.key])["password"]
   performance_insights_enabled          = each.value.performance_insights_enabled
   performance_insights_kms_key_id       = each.value.performance_insights_kms_key_arn
   performance_insights_retention_period = each.value.performance_insights_retention_period_day

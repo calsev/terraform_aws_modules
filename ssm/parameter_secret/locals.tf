@@ -43,9 +43,9 @@ locals {
   output_data = {
     for k, v in local.param_map : k => merge(
       v,
+      module.this_policy[k].data, # This is just the iam maps
       {
         init_value = module.initial_value.data[k]
-        policy     = module.this_policy[k].data
         secret_arn = aws_ssm_parameter.this_param[k].arn
         secret_id  = aws_ssm_parameter.this_param[k].id
       },

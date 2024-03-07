@@ -1,6 +1,7 @@
 variable "policy_access_list_default" {
-  type    = list(string)
-  default = ["read", "write"]
+  type        = list(string)
+  default     = ["read", "read_write"]
+  description = "Typically building the image will involve reading layers as well"
 }
 
 variable "policy_create_default" {

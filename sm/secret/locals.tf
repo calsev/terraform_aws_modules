@@ -57,9 +57,9 @@ locals {
       {
         for k_secret, v_secret in v : k_secret => v_secret if !contains(["resource_policy_json"], k_secret)
       },
+      module.this_policy[k].data, # This is just the iam maps
       {
         init_value = v.secret_random_init ? module.initial_value.data[k] : null
-        policy     = module.this_policy[k].data
         secret_arn = aws_secretsmanager_secret.this_secret[k].arn
         secret_id  = aws_secretsmanager_secret.this_secret[k].id
       },

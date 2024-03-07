@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.0
+
+### General
+
+* Flatten secret data
+
 ## 0.20.0
 
 ### New modules
