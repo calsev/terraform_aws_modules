@@ -13,7 +13,7 @@ locals {
   }
   create_validation_1_map = {
     for k, v in local.create_validation_0_map : k => [
-      for index in range(length(v.dvo_list)) : merge(v, {
+      for index in range(length(v.subject_alternative_name_list) + 1) : merge(v, {
         dns_from_fqdn   = v.dvo_list[index].resource_record_name
         dns_record_list = [v.dvo_list[index].resource_record_value]
         dns_type        = v.dvo_list[index].resource_record_type

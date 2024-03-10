@@ -41,7 +41,7 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
       }
     }
   }
-  name = each.value.name_effective
+  name = replace(each.value.name_effective, ".", "-") # This cannot include dots
   dynamic "remove_headers_config" {
     for_each = length(each.value.response_remove_header_list) == 0 ? {} : { this = {} }
     content {
@@ -55,7 +55,7 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
   }
   security_headers_config {
     content_security_policy {
-      content_security_policy = each.value.response_security_header_content_policy
+      content_security_policy = each.value.response_security_header_content_policy_final
       override                = each.value.response_security_header_content_override
     }
     content_type_options {
@@ -85,7 +85,7 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
 
 resource "aws_cloudfront_distribution" "this_distribution" {
   for_each = local.lx_map
-  aliases  = [each.key]
+  aliases  = [each.value.name_simple]
   default_cache_behavior {
     allowed_methods           = each.value.response_cors_allowed_method_list
     cached_methods            = each.value.response_cors_allowed_method_list

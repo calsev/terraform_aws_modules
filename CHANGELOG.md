@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.22.0
+
+### General
+
+* Support subject alternate names for certs
+* Include AP policy for buckets by default
+
+### Bugfix
+
+* CDN FQDN now supports dashes
+* Re-create Codepipeline webhook on connection change
+
 ## 0.21.0
 
 ### General

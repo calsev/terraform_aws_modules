@@ -7,10 +7,12 @@ module "name_map" {
 
 locals {
   create_github_map = {
-    for k, v in local.lx_map : k => v if v.webhook_enable_github_hook
+    for k, v in local.create_webhook_map : k => v if v.webhook_enable_github_hook
   }
   create_webhook_map = {
-    for k, v in local.lx_map : k => v if v.webhook_enabled
+    for k, v in local.lx_map : "${k}_${v.source_repository_id}_${v.connection_arn}" => merge(v, {
+      k_pipe = k
+    }) if v.webhook_enabled
   }
   l0_map = {
     for k, v in var.pipe_map : k => v
@@ -52,6 +54,7 @@ locals {
           }
         })
       ]
+      source_bucket      = var.ci_cd_account_data.bucket.name_effective
       variable_map       = v.variable_map == null ? var.pipe_variable_map_default : v.variable_map
       webhook_enabled    = v.webhook_enabled == null ? var.pipe_webhook_enabled_default : v.webhook_enabled
       webhook_event_list = v.webhook_event_list == null ? var.pipe_webhook_event_list_default : v.webhook_event_list
@@ -66,6 +69,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      connection_arn             = var.ci_cd_account_data.code_star.connection[local.l1_map[k].source_connection_name].connection_arn
       webhook_enable_github_hook = local.l1_map[k].webhook_enabled ? v.webhook_enable_github_hook == null ? var.pipe_webhook_enable_github_hook_default : v.webhook_enable_github_hook : false
       webhook_filter_map_final   = merge(local.l1_map[k].webhook_filter_map_default, local.l1_map[k].webhook_filter_map)
       source_repository_name     = split("/", local.l1_map[k].source_repository_id)[1]
@@ -81,9 +85,9 @@ locals {
       },
       {
         code_pipe_arn      = aws_codepipeline.this_pipeline[k].arn
-        webhook_github_url = v.webhook_enable_github_hook ? github_repository_webhook.this_githhub_webhook[k].url : null
-        webhook_arn        = v.webhook_enabled ? aws_codepipeline_webhook.this_pipe_webhook[k].arn : null
-        webhook_url        = v.webhook_enabled ? aws_codepipeline_webhook.this_pipe_webhook[k].url : null
+        webhook_github_url = v.webhook_enable_github_hook ? github_repository_webhook.this_githhub_webhook["${k}_${v.source_repository_id}_${v.connection_arn}"].url : null
+        webhook_arn        = v.webhook_enabled ? aws_codepipeline_webhook.this_pipe_webhook["${k}_${v.source_repository_id}_${v.connection_arn}"].arn : null
+        webhook_url        = v.webhook_enabled ? aws_codepipeline_webhook.this_pipe_webhook["${k}_${v.source_repository_id}_${v.connection_arn}"].url : null
         webhook_secret     = module.webhook_secret.data[k]
       }
     )

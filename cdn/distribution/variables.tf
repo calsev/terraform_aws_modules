@@ -96,7 +96,7 @@ variable "domain_origin_allow_public_default" {
 
 variable "domain_origin_dns_enabled_default" {
   type    = bool
-  default = false
+  default = true
 }
 
 variable "domain_origin_path_default" {
@@ -171,8 +171,9 @@ variable "domain_response_remove_header_list_default" {
 }
 
 variable "domain_response_security_header_content_policy_default" {
-  type    = string
-  default = "default-src 'self'"
+  type        = string
+  default     = "default-src 'self'"
+  description = "Allowed origins will be appended to this value"
 }
 
 variable "domain_response_security_header_content_override_default" {

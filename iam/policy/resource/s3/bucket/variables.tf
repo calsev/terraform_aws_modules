@@ -1,3 +1,8 @@
+variable "allow_access_point" {
+  type    = bool
+  default = true
+}
+
 variable "allow_public" {
   type    = bool
   default = false
@@ -44,6 +49,7 @@ variable "sid_object_key_list_default" {
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
+    aws_account_id                 = string
     iam_partition                  = string
     service_resource_access_action = map(map(map(list(string))))
   })

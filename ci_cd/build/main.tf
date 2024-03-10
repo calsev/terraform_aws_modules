@@ -1,19 +1,8 @@
-module "vpc_map" {
-  source                              = "../../vpc/id_map"
-  vpc_map                             = local.build_flattened_map
-  vpc_az_key_list_default             = var.vpc_az_key_list_default
-  vpc_key_default                     = var.vpc_key_default
-  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
-  vpc_segment_key_default             = var.vpc_segment_key_default
-  vpc_data_map                        = var.vpc_data_map
-}
-
-
 # https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
 # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference.html
 
 resource "aws_codebuild_project" "this_build_project" {
-  for_each = local.build_map
+  for_each = local.lx_map
   artifacts {
     encryption_disabled = each.value.artifact_encryption_disabled
     location            = each.value.artifact_location
@@ -100,7 +89,7 @@ resource "aws_codebuild_project" "this_build_project" {
 }
 
 resource "aws_codebuild_webhook" "this_web_hook" {
-  for_each   = local.webhook_map
+  for_each   = local.create_webhook_map
   build_type = "BUILD"
   dynamic "filter_group" {
     for_each = each.value.webhook_filter_map

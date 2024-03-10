@@ -1,8 +1,9 @@
 variable "domain_map" {
   type = map(object({
-    enable_transparency_logging = optional(bool)
-    dns_from_zone_key           = optional(string)
-    key_algorithm               = optional(string)
+    enable_transparency_logging   = optional(bool)
+    dns_from_zone_key             = optional(string)
+    key_algorithm                 = optional(string)
+    subject_alternative_name_list = optional(list(string), [])
   }))
 }
 

@@ -8,7 +8,7 @@ resource "aws_acm_certificate" "this_cert" {
   options {
     certificate_transparency_logging_preference = each.value.enable_transparency_logging ? "ENABLED" : "DISABLED"
   }
-  subject_alternative_names = [] # TODO
+  subject_alternative_names = each.value.subject_alternative_name_list
   tags                      = each.value.tags
   validation_method         = "DNS"
   validation_option {

@@ -1,3 +1,13 @@
+module "vpc_map" {
+  source                              = "../../vpc/id_map"
+  vpc_map                             = local.build_flattened_map
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_key_default                     = var.vpc_key_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
+  vpc_data_map                        = var.vpc_data_map
+}
+
 locals {
   build_flattened_list = flatten([for k_repo, v_repo in var.repo_map :
     flatten([for k_build, v_build in v_repo.build_map : merge(
@@ -13,8 +23,9 @@ locals {
   build_flattened_map = {
     for b in local.build_flattened_list : b.k_map => b
   }
-  build_map = {
-    for k, v in local.build_flattened_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
+  create_webhook_map = {
+    # The webhook is not re-created if the source changes, so encode the source in the key
+    for k, v in local.lx_map : "${k}-${v.source_location}" => v if v.webhook_enabled
   }
   l1_map = {
     for k, v in local.build_flattened_map : k => merge(v, module.vpc_map.data[k], {
@@ -107,6 +118,9 @@ locals {
       webhook_enabled         = local.l3_map[k].source_location == null ? false : v.webhook_enabled == null ? var.build_webhook_enabled_default : v.webhook_enabled
     }
   }
+  lx_map = {
+    for k, v in local.build_flattened_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
+  }
   build_name_map = {
     for k_repo, v_repo in var.repo_map : k_repo => {
       for k_build, _ in v_repo.build_map : k_build => {
@@ -138,17 +152,13 @@ locals {
     for k_repo, v_repo in var.repo_map : k_repo => {
       for k_build, _ in v_repo.build_map : k_build => merge(
         {
-          for k, v in local.build_map[local.build_name_map[k_repo][k_build].k_map] : k => v if !contains(["k_map", "webhook_filter_map_raw"], k)
+          for k, v in local.lx_map[local.build_name_map[k_repo][k_build].k_map] : k => v if !contains(["k_map", "webhook_filter_map_raw"], k)
         },
         {
           arn               = aws_codebuild_project.this_build_project[local.build_name_map[k_repo][k_build].k_map].arn
-          source_build_spec = yamldecode(local.build_map[local.build_name_map[k_repo][k_build].k_map].source_build_spec)
+          source_build_spec = yamldecode(local.lx_map[local.build_name_map[k_repo][k_build].k_map].source_build_spec)
         }
       )
     }
-  }
-  webhook_map = {
-    # The webhook is not re-created if the source changes, so encode the source in the key
-    for k, v in local.build_map : "${k}-${v.source_location}" => v if v.webhook_enabled
   }
 }

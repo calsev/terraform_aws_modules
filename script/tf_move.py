@@ -46,7 +46,7 @@ def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
         [
             split
             for split in splits
-            if split.startswith("aws_")
+            if any(split.startswith(prefix) for prefix in ["github_", "aws_"])
             or any(
                 split == resource
                 for resource in [

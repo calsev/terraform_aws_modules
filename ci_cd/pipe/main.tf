@@ -5,7 +5,7 @@ resource "aws_codepipeline" "this_pipeline" {
       id   = each.value.source_artifact_encryption_key
       type = "KMS"
     }
-    location = var.ci_cd_account_data.bucket.name_effective
+    location = each.value.source_bucket
     region   = null # Only supported for cross-region
     type     = "S3"
   }
@@ -18,7 +18,7 @@ resource "aws_codepipeline" "this_pipeline" {
       name     = "Source"
       configuration = {
         BranchName           = each.value.source_branch
-        ConnectionArn        = var.ci_cd_account_data.code_star.connection[each.value.source_connection_name].connection_arn
+        ConnectionArn        = each.value.connection_arn
         DetectChanges        = each.value.source_detect_changes
         FullRepositoryId     = each.value.source_repository_id
         OutputArtifactFormat = each.value.source_artifact_format
@@ -81,7 +81,7 @@ resource "aws_codepipeline_webhook" "this_pipe_webhook" {
   authentication = "GITHUB_HMAC" # TODO: Other providers
   authentication_configuration {
     allowed_ip_range = null
-    secret_token     = module.webhook_secret.secret_map[each.key]
+    secret_token     = module.webhook_secret.secret_map[each.value.k_pipe]
   }
   dynamic "filter" {
     for_each = each.value.webhook_filter_map_final
@@ -99,7 +99,7 @@ resource "aws_codepipeline_webhook" "this_pipe_webhook" {
   name            = each.value.name_effective
   tags            = each.value.tags
   target_action   = "Source"
-  target_pipeline = aws_codepipeline.this_pipeline[each.key].name
+  target_pipeline = aws_codepipeline.this_pipeline[each.value.k_pipe].name
 }
 
 resource "github_repository_webhook" "this_githhub_webhook" {
@@ -109,7 +109,7 @@ resource "github_repository_webhook" "this_githhub_webhook" {
   configuration {
     content_type = "json"
     insecure_ssl = false
-    secret       = module.webhook_secret.secret_map[each.key]
+    secret       = module.webhook_secret.secret_map[each.value.k_pipe]
     url          = aws_codepipeline_webhook.this_pipe_webhook[each.key].url
   }
   lifecycle {
