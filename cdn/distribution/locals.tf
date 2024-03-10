@@ -1,8 +1,9 @@
 module "name_map" {
-  source             = "../../name_map"
-  name_infix_default = var.domain_name_infix_default
-  name_map           = local.l0_map
-  std_map            = var.std_map
+  source                = "../../name_map"
+  name_infix_default    = var.domain_name_infix_default
+  name_map              = local.l0_map
+  name_regex_allow_list = ["."]
+  std_map               = var.std_map
 }
 
 locals {
@@ -94,8 +95,13 @@ locals {
       web_acl_arn = var.cdn_global_data.web_acl_map[local.l1_map[k].web_acl_key].waf_arn
     }
   }
+  l3_map = {
+    for k, v in var.domain_map : k => {
+      response_security_header_content_policy_final = join(" ", concat([local.l1_map[k].response_security_header_content_policy], local.l2_map[k].response_cors_allowed_origin_list_all))
+    }
+  }
   lx_map = {
-    for k, v in var.domain_map : k => merge(local.l1_map[k], local.l2_map[k])
+    for k, v in var.domain_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

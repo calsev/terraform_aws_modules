@@ -20,13 +20,14 @@ resource "aws_s3_access_point" "this_ap" {
 }
 
 module "this_bucket_policy" {
-  for_each      = local.ap_policy_map
-  source        = "../../iam/policy/resource/s3/bucket"
-  allow_public  = each.value.allow_public
-  bucket_name   = aws_s3_access_point.this_ap[each.key].arn
-  policy_create = false
-  sid_map       = each.value.sid_map
-  std_map       = var.std_map
+  for_each           = local.ap_policy_map
+  source             = "../../iam/policy/resource/s3/bucket"
+  allow_access_point = false
+  allow_public       = each.value.allow_public
+  bucket_name        = aws_s3_access_point.this_ap[each.key].arn
+  policy_create      = false
+  sid_map            = each.value.sid_map
+  std_map            = var.std_map
 }
 
 resource "aws_s3control_access_point_policy" "this_policy" {

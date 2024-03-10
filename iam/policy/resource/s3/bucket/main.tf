@@ -8,7 +8,7 @@ module "this_policy" {
 
 # This is non-trivial as the AWS API actually checks absurd conditions very well
 data "aws_iam_policy_document" "empty_policy" {
-  for_each = local.has_policy ? {} : { this = {} }
+  for_each = local.has_policy || var.allow_access_point ? {} : { this = {} }
   statement {
     actions = ["*"]
     condition {
@@ -23,6 +23,28 @@ data "aws_iam_policy_document" "empty_policy" {
     }
     resources = [local.bucket_arn]
     sid       = "EmptyPolicy"
+  }
+}
+
+data "aws_iam_policy_document" "ap_policy" {
+  for_each                = var.allow_access_point ? { this = {} } : {}
+  source_policy_documents = local.has_policy ? [jsonencode(module.this_policy["this"].iam_policy_doc)] : []
+  statement {
+    actions = ["*"]
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "s3:DataAccessPointAccount"
+    }
+    principals {
+      identifiers = ["*"]
+      type        = "AWS"
+    }
+    resources = [
+      local.bucket_arn,
+      "${local.bucket_arn}/*"
+    ]
+    sid = "AccessPointDelegation"
   }
 }
 

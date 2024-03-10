@@ -104,11 +104,12 @@ resource "aws_s3_bucket_notification" "this_notification" {
 }
 
 module "this_bucket_policy" {
-  for_each     = local.create_policy_map
-  depends_on   = [aws_s3_bucket.this_bucket] # This fails on new buckets
-  source       = "../../iam/policy/resource/s3/bucket"
-  allow_public = each.value.allow_public
-  bucket_name  = each.value.name_effective
-  sid_map      = each.value.sid_map
-  std_map      = var.std_map
+  for_each           = local.create_policy_map
+  depends_on         = [aws_s3_bucket.this_bucket] # This fails on new buckets
+  source             = "../../iam/policy/resource/s3/bucket"
+  allow_access_point = each.value.allow_access_point
+  allow_public       = each.value.allow_public
+  bucket_name        = each.value.name_effective
+  sid_map            = each.value.sid_map
+  std_map            = var.std_map
 }
