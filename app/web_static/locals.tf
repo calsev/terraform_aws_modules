@@ -46,11 +46,9 @@ locals {
     }
   }
   pipe_map = {
-    for k, v in var.site_map : "${k}_deploy_${var.std_map.env}" => {
-      iam_role_arn         = module.code_pipe_role[k].data.iam_role_arn
-      secret_is_param      = v.ci_cd_pipeline_webhook_secret_is_param
-      source_branch        = v.source_branch
-      source_repository_id = v.source_repository_id
+    for k, v in var.site_map : "${k}_deploy_${var.std_map.env}" => merge(v, {
+      iam_role_arn    = module.code_pipe_role[k].data.iam_role_arn
+      secret_is_param = v.ci_cd_pipeline_webhook_secret_is_param
       stage_list = concat(
         [
           for project in v.build_list : {
@@ -75,6 +73,6 @@ locals {
           },
         ]
       )
-    }
+    })
   }
 }

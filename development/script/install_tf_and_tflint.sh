@@ -29,7 +29,7 @@ terraform --version
 tflint --version
 
 tflint_aws_ver=0.30.0 #TODO: Sync with .tflint.hcl or find better way
-tflint_tf_ver=0.5.0 #TODO: Sync with .tflint.hcl or find better way
+tflint_tf_ver=0.6.0 #TODO: Sync with .tflint.hcl or find better way
 tflint_aws_bin="${HOME}/.tflint.d/plugins/github.com/terraform-linters/tflint-ruleset-aws/${tflint_aws_ver}/tflint-ruleset-aws"
 tflint_tf_bin="${HOME}/.tflint.d/plugins/github.com/terraform-linters/tflint-ruleset-terraform/${tflint_tf_ver}/tflint-ruleset-terraform"
 
