@@ -74,12 +74,13 @@ variable "site_map" {
     origin_dns_enabled                     = optional(bool)
     origin_fqdn                            = string
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
-    policy_attach_arn_map   = optional(map(string))
-    policy_create_json_map  = optional(map(string))
-    policy_inline_json_map  = optional(map(string))
-    policy_managed_name_map = optional(map(string))
-    source_branch           = optional(string)
-    source_repository_id    = string
+    policy_attach_arn_map      = optional(map(string))
+    policy_create_json_map     = optional(map(string))
+    policy_inline_json_map     = optional(map(string))
+    policy_managed_name_map    = optional(map(string))
+    source_branch              = optional(string)
+    source_repository_id       = optional(string)
+    webhook_enable_github_hook = optional(bool)
   }))
 }
 
@@ -111,7 +112,18 @@ variable "site_dns_from_zone_key_default" {
 
 variable "site_origin_dns_enabled_default" {
   type    = bool
-  default = false
+  default = true
+}
+
+variable "site_source_repository_id_default" {
+  type    = string
+  default = null
+}
+
+variable "site_webhook_enable_github_hook_default" {
+  type        = bool
+  default     = true
+  description = "Ignored if webhook is not enabled"
 }
 
 variable "std_map" {

@@ -6,13 +6,13 @@ module "name_map" {
 }
 
 locals {
-  create_validation_0_map = {
+  create_challenge_0_map = {
     for k, v in local.lx_map : k => merge(v, {
       dvo_list = tolist(aws_acm_certificate.this_cert[k].domain_validation_options)
     })
   }
-  create_validation_1_map = {
-    for k, v in local.create_validation_0_map : k => [
+  create_challenge_1_map = {
+    for k, v in local.create_challenge_0_map : k => [
       for index in range(length(v.subject_alternative_name_list) + 1) : merge(v, {
         dns_from_fqdn   = v.dvo_list[index].resource_record_name
         dns_record_list = [v.dvo_list[index].resource_record_value]
@@ -22,13 +22,16 @@ locals {
       })
     ]
   }
-  create_validation_2_list = flatten([
-    for k, v in local.create_validation_1_map : [
+  create_challenge_2_list = flatten([
+    for k, v in local.create_challenge_1_map : [
       for v_validation in v : v_validation
     ]
   ])
+  create_challenge_x_map = {
+    for v in local.create_challenge_2_list : v.k_validation => v
+  }
   create_validation_x_map = {
-    for v in local.create_validation_2_list : v.k_validation => v
+    for v in local.create_challenge_2_list : v.k_validation => v if length(v.subject_alternative_name_list) == 0 # Validation is broken for sans
   }
   l0_map = {
     for k, v in var.domain_map : k => v
@@ -55,7 +58,7 @@ locals {
       {
         certificate_arn = aws_acm_certificate.this_cert[k].arn
         dns_challenge = [
-          for v_validation in local.create_validation_1_map[k] : module.dns_challenge.data[v_validation.k_validation]
+          for v_validation in local.create_challenge_1_map[k] : module.dns_challenge.data[v_validation.k_validation]
         ]
       }
     )

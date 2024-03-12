@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.1
+
+### Bugfix
+
+* Workaround for validations for certs with SANs
+
 ## 0.22.0
 
 ### General

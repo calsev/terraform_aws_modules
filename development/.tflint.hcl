@@ -7,7 +7,7 @@ plugin "terraform" {
   enabled = true
   preset  = "all"
   source  = "github.com/terraform-linters/tflint-ruleset-terraform"
-  version = "0.5.0" #TODO: Sync with spec files or find better way
+  version = "0.6.0" #TODO: Sync with spec files or find better way
 }
 rule "terraform_documented_outputs" {
   enabled = false
