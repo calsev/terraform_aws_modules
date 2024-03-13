@@ -8,15 +8,16 @@ module "com_lib" {
 }
 
 module "user_pool" {
-  source = "path/to/modules/cognito/user_pool"
+  source          = "path/to/modules/cognito/user_pool"
+  cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data
+  dns_data        = data.terraform_remote_state.dns.outputs.data
   pool_client_app_map_default = {
     (local.client_app_name) = {
       callback_url_list = ["https://auth-app.example.com"]
     }
   }
-  cdn_global_data                = data.terraform_remote_state.cdn_global.outputs.data
-  dns_data                       = data.terraform_remote_state.dns.outputs.data
-  pool_dns_from_zone_key_default = "example.com"
+  pool_dns_from_zone_key_default      = "example.com"
+  pool_lambda_arn_pre_sign_up_default = module.lambda.data[local.lambda_name_trigger].lambda_arn
   pool_map = {
     (local.pool_name) = {}
   }
@@ -35,6 +36,9 @@ module "lambda" {
     }
     (local.lambda_name_options) = {
       source_package_handler = "options.main"
+    }
+    (local.lambda_name_trigger) = {
+      source_package_handler = "trigger.main"
     }
   }
   function_architecture_list_default                   = ["arm64"]

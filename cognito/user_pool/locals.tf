@@ -19,6 +19,31 @@ locals {
   create_domain_map = {
     for k, v in local.lx_map : k => v if v.dns_from_fqdn != null
   }
+  create_lambda_permission_1_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      name_prefix = "cognito_${k}_"
+      permission_map = {
+        create_auth_challenge          = v.lambda_arn_create_auth_challenge
+        custom_message                 = v.lambda_arn_custom_message
+        define_auth_challenge          = v.lambda_arn_define_auth_challenge
+        pre_authentication             = v.lambda_arn_pre_authentication
+        pre_sign_up                    = v.lambda_arn_pre_sign_up
+        pre_token_generation           = v.lambda_arn_pre_token_generation
+        post_authentication            = v.lambda_arn_post_authentication
+        post_confirmation              = v.lambda_arn_post_confirmation
+        user_migration                 = v.lambda_arn_user_migration
+        verify_auth_challenge_response = v.lambda_arn_verify_auth_challenge_response
+      }
+      source_arn = aws_cognito_user_pool.this_pool[k].arn
+    })
+  }
+  create_lambda_permission_x_map = {
+    for k, v in local.create_lambda_permission_1_map : k => {
+      for k_perm, arn_perm in v.permission_map : k_perm => merge(v, {
+        lambda_arn = arn_perm
+      })
+    }
+  }
   l1_map = {
     for k, v in var.pool_map : k => merge(v, module.name_map.data[k], {
       account_recovery_admin_priority                   = v.account_recovery_admin_priority == null ? var.pool_account_recovery_admin_priority_default : v.account_recovery_admin_priority
@@ -34,6 +59,17 @@ locals {
       invite_email_message_template                     = v.invite_email_message_template == null ? var.pool_invite_email_message_template_default : v.invite_email_message_template
       invite_email_subject                              = v.invite_email_subject == null ? var.pool_invite_email_subject_default : v.invite_email_subject
       invite_sms_message_template                       = v.invite_sms_message_template == null ? var.pool_invite_sms_message_template_default : v.invite_sms_message_template
+      lambda_arn_create_auth_challenge                  = v.lambda_arn_create_auth_challenge == null ? var.pool_lambda_arn_create_auth_challenge_default : v.lambda_arn_create_auth_challenge
+      lambda_arn_custom_message                         = v.lambda_arn_custom_message == null ? var.pool_lambda_arn_custom_message_default : v.lambda_arn_custom_message
+      lambda_arn_define_auth_challenge                  = v.lambda_arn_define_auth_challenge == null ? var.pool_lambda_arn_define_auth_challenge_default : v.lambda_arn_define_auth_challenge
+      lambda_arn_pre_authentication                     = v.lambda_arn_pre_authentication == null ? var.pool_lambda_arn_pre_authentication_default : v.lambda_arn_pre_authentication
+      lambda_arn_pre_sign_up                            = v.lambda_arn_pre_sign_up == null ? var.pool_lambda_arn_pre_sign_up_default : v.lambda_arn_pre_sign_up
+      lambda_arn_pre_token_generation                   = v.lambda_arn_pre_token_generation == null ? var.pool_lambda_arn_pre_token_generation_default : v.lambda_arn_pre_token_generation
+      lambda_arn_post_authentication                    = v.lambda_arn_post_authentication == null ? var.pool_lambda_arn_post_authentication_default : v.lambda_arn_post_authentication
+      lambda_arn_post_confirmation                      = v.lambda_arn_post_confirmation == null ? var.pool_lambda_arn_post_confirmation_default : v.lambda_arn_post_confirmation
+      lambda_arn_user_migration                         = v.lambda_arn_user_migration == null ? var.pool_lambda_arn_user_migration_default : v.lambda_arn_user_migration
+      lambda_arn_verify_auth_challenge_response         = v.lambda_arn_verify_auth_challenge_response == null ? var.pool_lambda_arn_verify_auth_challenge_response_default : v.lambda_arn_verify_auth_challenge_response
+      lambda_kms_key_id                                 = v.lambda_kms_key_id == null ? var.pool_lambda_kms_key_id_default : v.lambda_kms_key_id
       only_admin_create_user                            = v.only_admin_create_user == null ? var.pool_only_admin_create_user_default : v.only_admin_create_user
       password_minimum_length                           = v.password_minimum_length == null ? var.pool_password_minimum_length_default : v.password_minimum_length
       password_require_lowercase                        = v.password_require_lowercase == null ? var.pool_password_require_lowercase_default : v.password_require_lowercase
@@ -69,6 +105,27 @@ locals {
         },
       )
       dns_from_fqdn = local.l1_map[k].dns_from_zone_key == null ? null : "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_from_zone_key}"
+      lambda_has_config = local.l1_map[k].lambda_arn_create_auth_challenge != null || (
+        local.l1_map[k].lambda_arn_custom_message != null || (
+          local.l1_map[k].lambda_arn_define_auth_challenge != null || (
+            local.l1_map[k].lambda_arn_pre_authentication != null || (
+              local.l1_map[k].lambda_arn_pre_sign_up != null || (
+                local.l1_map[k].lambda_arn_pre_token_generation != null || (
+                  local.l1_map[k].lambda_arn_post_authentication != null || (
+                    local.l1_map[k].lambda_arn_post_confirmation != null || (
+                      local.l1_map[k].lambda_arn_user_migration != null || (
+                        local.l1_map[k].lambda_arn_verify_auth_challenge_response != null || (
+                          local.l1_map[k].lambda_kms_key_id != null
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
     }
   }
   l3_map = {
@@ -87,6 +144,7 @@ locals {
       },
       {
         dns_alias          = v.dns_from_fqdn == null ? null : module.domain_alias.data[k]
+        lambda_permission  = module.lambda_permission[k].data
         user_pool_arn      = aws_cognito_user_pool.this_pool[k].arn
         user_pool_client   = module.pool_client.data[k]
         user_pool_endpoint = aws_cognito_user_pool.this_pool[k].endpoint

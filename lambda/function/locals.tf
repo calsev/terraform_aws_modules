@@ -127,9 +127,9 @@ locals {
       },
       module.function_policy[k].data,
       {
-        arn                 = aws_lambda_function.this_function[k].arn
         dead_letter_queue   = module.dead_letter_queue.data[k]
         invoke_arn          = aws_lambda_function.this_function[k].invoke_arn
+        lambda_arn          = aws_lambda_function.this_function[k].arn
         role                = module.function_role[k].data
         source_package_hash = local.create_hash_map[k]
       },

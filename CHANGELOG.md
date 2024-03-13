@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.23.0
+
+### New modules
+
+* Lambda permission
+
+### General
+
+* Add lambda triggers for Cognito user pool
+
 ## 0.22.1
 
 ### Bugfix

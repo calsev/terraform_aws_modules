@@ -27,7 +27,24 @@ resource "aws_cognito_user_pool" "this_pool" {
   # email_configuration # TODO
   email_verification_message = null # Conflicts with verification_message_template
   email_verification_subject = null # Conflicts with verification_message_template
-  # lambda_config # TODO
+  dynamic "lambda_config" {
+    for_each = each.value.lambda_has_config ? { this = {} } : {}
+    content {
+      create_auth_challenge = each.value.lambda_arn_create_auth_challenge
+      # custom_email_sender # TODO
+      custom_message = each.value.lambda_arn_custom_message
+      # custom_sms_sender # TODO
+      define_auth_challenge          = each.value.lambda_arn_define_auth_challenge
+      kms_key_id                     = each.value.lambda_kms_key_id
+      pre_authentication             = each.value.lambda_arn_pre_authentication
+      pre_sign_up                    = each.value.lambda_arn_pre_sign_up
+      pre_token_generation           = each.value.lambda_arn_pre_token_generation
+      post_authentication            = each.value.lambda_arn_post_authentication
+      post_confirmation              = each.value.lambda_arn_post_confirmation
+      user_migration                 = each.value.lambda_arn_user_migration
+      verify_auth_challenge_response = each.value.lambda_arn_verify_auth_challenge_response
+    }
+  }
   # mfa_configuration # TODO
   name = each.value.name_effective
   password_policy {
@@ -62,6 +79,14 @@ resource "aws_cognito_user_pool" "this_pool" {
     email_subject_by_link = each.value.verify_email_message_by_link_subject
     sms_message           = each.value.verify_sms_message_template
   }
+}
+
+module "lambda_permission" {
+  source                       = "../../lambda/permission"
+  for_each                     = local.create_lambda_permission_x_map
+  permission_map               = each.value
+  permission_principal_default = "cognito-idp.amazonaws.com"
+  std_map                      = var.std_map
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {

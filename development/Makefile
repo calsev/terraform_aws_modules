@@ -227,6 +227,7 @@ tf-lint: tflint-install
 	cd ../iam/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../lambda/permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../local_config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../module_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../name_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

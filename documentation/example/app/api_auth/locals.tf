@@ -6,6 +6,7 @@ locals {
   lambda_name_auth        = "auth"
   lambda_name_integration = "integration"
   lambda_name_options     = "options"
+  lambda_name_trigger     = "trigger"
   output_data = {
     api    = module.api.data
     lambda = module.lambda.data
