@@ -5,7 +5,7 @@ def return_value(is_authorized: bool) -> dict:
     return {"isAuthorized": is_authorized}
 
 
-def main(event, context):
+def main(event: dict, context: dict) -> dict:
     headers = event.get("headers", {})
     if not headers:
         print(f"Invalid event, no headers:\n{json.dumps(event, indent='')}")

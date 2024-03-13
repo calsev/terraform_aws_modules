@@ -41,30 +41,41 @@ variable "pool_map" {
       supported_identity_provider_list              = optional(list(string))
       write_attribute_list                          = optional(list(string))
     })))
-    deletion_protection                   = optional(bool)
-    device_challenge_required_on_new      = optional(bool)
-    device_only_remembered_on_user_prompt = optional(bool)
-    dns_from_zone_key                     = optional(string)
-    dns_subdomain                         = optional(string)
-    invite_email_message_template         = optional(string)
-    invite_email_subject                  = optional(string)
-    invite_sms_message_template           = optional(string)
-    only_admin_create_user                = optional(bool)
-    password_minimum_length               = optional(number)
-    password_require_lowercase            = optional(bool)
-    password_require_numbers              = optional(bool)
-    password_require_symbols              = optional(bool)
-    password_require_uppercase            = optional(bool)
-    password_temporary_validity_days      = optional(number)
-    username_attribute_list               = optional(list(string))
-    username_alias_attribute_list         = optional(list(string))
-    username_case_sensitive               = optional(bool)
-    verify_confirm_with_link              = optional(bool)
-    verify_email_message_by_code_template = optional(string)
-    verify_email_message_by_link_template = optional(string)
-    verify_email_message_by_code_subject  = optional(string)
-    verify_email_message_by_link_subject  = optional(string)
-    verify_sms_message_template           = optional(string)
+    deletion_protection                       = optional(bool)
+    device_challenge_required_on_new          = optional(bool)
+    device_only_remembered_on_user_prompt     = optional(bool)
+    dns_from_zone_key                         = optional(string)
+    dns_subdomain                             = optional(string)
+    invite_email_message_template             = optional(string)
+    invite_email_subject                      = optional(string)
+    invite_sms_message_template               = optional(string)
+    lambda_arn_create_auth_challenge          = optional(string)
+    lambda_arn_custom_message                 = optional(string)
+    lambda_arn_define_auth_challenge          = optional(string)
+    lambda_arn_pre_authentication             = optional(string)
+    lambda_arn_pre_sign_up                    = optional(string)
+    lambda_arn_pre_token_generation           = optional(string)
+    lambda_arn_post_authentication            = optional(string)
+    lambda_arn_post_confirmation              = optional(string)
+    lambda_arn_user_migration                 = optional(string)
+    lambda_arn_verify_auth_challenge_response = optional(string)
+    lambda_kms_key_id                         = optional(string)
+    only_admin_create_user                    = optional(bool)
+    password_minimum_length                   = optional(number)
+    password_require_lowercase                = optional(bool)
+    password_require_numbers                  = optional(bool)
+    password_require_symbols                  = optional(bool)
+    password_require_uppercase                = optional(bool)
+    password_temporary_validity_days          = optional(number)
+    username_attribute_list                   = optional(list(string))
+    username_alias_attribute_list             = optional(list(string))
+    username_case_sensitive                   = optional(bool)
+    verify_confirm_with_link                  = optional(bool)
+    verify_email_message_by_code_template     = optional(string)
+    verify_email_message_by_link_template     = optional(string)
+    verify_email_message_by_code_subject      = optional(string)
+    verify_email_message_by_link_subject      = optional(string)
+    verify_sms_message_template               = optional(string)
   }))
 }
 
@@ -172,6 +183,62 @@ variable "pool_invite_sms_message_template_default" {
   }
 }
 
+variable "pool_lambda_arn_create_auth_challenge_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_custom_message_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_define_auth_challenge_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_post_authentication_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_post_confirmation_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_pre_authentication_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_pre_sign_up_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_pre_token_generation_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_user_migration_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_verify_auth_challenge_response_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_kms_key_id_default" {
+  type    = string
+  default = null
+}
+
+
 variable "pool_only_admin_create_user_default" {
   type    = bool
   default = true
@@ -266,6 +333,7 @@ variable "pool_verify_sms_message_template_default" {
 
 variable "std_map" {
   type = object({
+    aws_account_id       = string
     aws_region_name      = string
     name_replace_regex   = string
     resource_name_prefix = string
