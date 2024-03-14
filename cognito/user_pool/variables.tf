@@ -67,15 +67,25 @@ variable "pool_map" {
     password_require_symbols                  = optional(bool)
     password_require_uppercase                = optional(bool)
     password_temporary_validity_days          = optional(number)
-    username_attribute_list                   = optional(list(string))
-    username_alias_attribute_list             = optional(list(string))
-    username_case_sensitive                   = optional(bool)
-    verify_confirm_with_link                  = optional(bool)
-    verify_email_message_by_code_template     = optional(string)
-    verify_email_message_by_link_template     = optional(string)
-    verify_email_message_by_code_subject      = optional(string)
-    verify_email_message_by_link_subject      = optional(string)
-    verify_sms_message_template               = optional(string)
+    schema_map = optional(map(object({
+      data_type         = optional(string)
+      is_developer_only = optional(bool)
+      is_mutable        = optional(bool)
+      is_required       = optional(bool)
+      number_value_max  = optional(number)
+      number_value_min  = optional(number)
+      string_length_max = optional(number)
+      string_length_min = optional(number)
+    })))
+    username_attribute_list               = optional(list(string))
+    username_alias_attribute_list         = optional(list(string))
+    username_case_sensitive               = optional(bool)
+    verify_confirm_with_link              = optional(bool)
+    verify_email_message_by_code_template = optional(string)
+    verify_email_message_by_link_template = optional(string)
+    verify_email_message_by_code_subject  = optional(string)
+    verify_email_message_by_link_subject  = optional(string)
+    verify_sms_message_template           = optional(string)
   }))
 }
 
@@ -238,7 +248,6 @@ variable "pool_lambda_kms_key_id_default" {
   default = null
 }
 
-
 variable "pool_only_admin_create_user_default" {
   type    = bool
   default = true
@@ -272,6 +281,65 @@ variable "pool_password_require_uppercase_default" {
 variable "pool_password_temporary_validity_days_default" {
   type    = number
   default = 7
+}
+
+variable "pool_schema_map_default" {
+  type = map(object({
+    data_type         = optional(string)
+    is_developer_only = optional(bool)
+    is_mutable        = optional(bool)
+    is_required       = optional(bool)
+    number_value_max  = optional(number)
+    number_value_min  = optional(number)
+    string_length_max = optional(number)
+    string_length_min = optional(number)
+  }))
+  default = {}
+}
+
+variable "pool_schema_data_type_default" {
+  type    = string
+  default = "String"
+  validation {
+    condition     = contains(["Boolean", "DateTime", "Number", "String"], var.pool_schema_data_type_default)
+    error_message = "Invalid schema data type"
+  }
+}
+
+variable "pool_schema_is_developer_only_default" {
+  type    = bool
+  default = false
+}
+
+variable "pool_schema_is_mutable_default" {
+  type    = bool
+  default = true
+}
+
+variable "pool_schema_is_required_default" {
+  type        = bool
+  default     = false
+  description = "Supported only for standard attributes"
+}
+
+variable "pool_schema_number_value_max_default" {
+  type    = number
+  default = null
+}
+
+variable "pool_schema_number_value_min_default" {
+  type    = number
+  default = null
+}
+
+variable "pool_schema_string_length_max_default" {
+  type    = number
+  default = null
+}
+
+variable "pool_schema_string_length_min_default" {
+  type    = number
+  default = null
 }
 
 variable "pool_username_alias_attribute_list_default" {

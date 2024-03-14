@@ -67,9 +67,10 @@ resource "aws_batch_compute_environment" "this_compute_env" {
 
 resource "aws_batch_job_queue" "this_job_queue" {
   for_each = local.compute_map
-  compute_environments = [
-    aws_batch_compute_environment.this_compute_env[each.key].arn
-  ]
+  compute_environment_order {
+    compute_environment = aws_batch_compute_environment.this_compute_env[each.key].arn
+    order               = 1
+  }
   name     = each.value.name_effective
   priority = 1
   state    = "ENABLED"
