@@ -77,6 +77,7 @@ locals {
       password_require_symbols                          = v.password_require_symbols == null ? var.pool_password_require_symbols_default : v.password_require_symbols
       password_require_uppercase                        = v.password_require_uppercase == null ? var.pool_password_require_uppercase_default : v.password_require_uppercase
       password_temporary_validity_days                  = v.password_temporary_validity_days == null ? var.pool_password_temporary_validity_days_default : v.password_temporary_validity_days
+      schema_map                                        = v.schema_map == null ? var.pool_schema_map_default : v.schema_map
       username_alias_attribute_list                     = v.username_alias_attribute_list == null ? var.pool_username_alias_attribute_list_default : v.username_alias_attribute_list
       username_attribute_list                           = v.username_attribute_list == null ? var.pool_username_attribute_list_default : v.username_attribute_list
       username_case_sensitive                           = v.username_case_sensitive == null ? var.pool_username_case_sensitive_default : v.username_case_sensitive
@@ -126,6 +127,18 @@ locals {
           )
         )
       )
+      schema_map = {
+        for k_schema, v_schema in local.l1_map[k].schema_map : k_schema => {
+          data_type         = v_schema.data_type == null ? var.pool_schema_data_type_default : v_schema.data_type
+          is_developer_only = v_schema.is_developer_only == null ? var.pool_schema_is_developer_only_default : v_schema.is_developer_only
+          is_mutable        = v_schema.is_mutable == null ? var.pool_schema_is_mutable_default : v_schema.is_mutable
+          is_required       = v_schema.is_required == null ? var.pool_schema_is_required_default : v_schema.is_required
+          number_value_max  = v_schema.number_value_max == null ? var.pool_schema_number_value_max_default : v_schema.number_value_max
+          number_value_min  = v_schema.number_value_min == null ? var.pool_schema_number_value_min_default : v_schema.number_value_min
+          string_length_max = v_schema.string_length_max == null ? var.pool_schema_string_length_max_default : v_schema.string_length_max
+          string_length_min = v_schema.string_length_min == null ? var.pool_schema_string_length_min_default : v_schema.string_length_min
+        }
+      }
     }
   }
   l3_map = {

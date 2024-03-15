@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.24.0
+
+### General
+
+* Update Batch compute for obsolete attribute
+* Add schema for Cognito
+
 ## 0.23.0
 
 ### New modules

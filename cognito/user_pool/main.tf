@@ -55,7 +55,30 @@ resource "aws_cognito_user_pool" "this_pool" {
     require_uppercase                = each.value.password_require_uppercase
     temporary_password_validity_days = each.value.password_temporary_validity_days
   }
-  # schema # TODO
+  dynamic "schema" {
+    for_each = each.value.schema_map
+    content {
+      attribute_data_type      = schema.value.data_type
+      developer_only_attribute = schema.value.is_developer_only
+      mutable                  = schema.value.is_mutable
+      name                     = schema.key
+      dynamic "number_attribute_constraints" {
+        for_each = schema.value.data_type == "Number" ? { this = {} } : {}
+        content {
+          max_value = schema.value.number_value_max
+          min_value = schema.value.number_value_min
+        }
+      }
+      required = schema.value.is_required
+      dynamic "string_attribute_constraints" {
+        for_each = schema.value.data_type == "String" ? { this = {} } : {}
+        content {
+          max_length = schema.value.string_length_max
+          min_length = schema.value.string_length_min
+        }
+      }
+    }
+  }
   sms_authentication_message = null # TODO
   # sms_configuration # TODO
   sms_verification_message = null # Conflicts with verification_message_template
