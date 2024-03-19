@@ -18,6 +18,7 @@ module "code_build" {
 module "code_pipe" {
   source                                  = "../../ci_cd/pipe"
   ci_cd_account_data                      = var.ci_cd_account_data
+  pipe_iam_role_arn_default               = var.site_build_iam_role_arn_default
   pipe_map                                = local.pipe_map
   pipe_secret_is_param_default            = var.site_ci_cd_pipeline_webhook_secret_is_param_default
   pipe_source_connection_name_default     = var.code_star_connection_key

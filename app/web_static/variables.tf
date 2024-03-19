@@ -62,11 +62,25 @@ variable "site_map" {
   type = map(object({
     build_artifact_name      = optional(string)
     build_artifact_sync_path = optional(string) # The local root path to sync to S3 bucket root
-    build_list = list(object({                  # Map of name to stage data. The deploy stage is provided by this module, so typically test and build
-      build_project_name = string
-      # iam_role_arn         = optional(string) # The build role must be able to start the next build, and some of those are internal
-      name                 = string
-      output_artifact_list = optional(list(string))
+    build_stage_list = list(object({
+      action_map = map(object({
+        category      = optional(string)
+        configuration = optional(map(string)) # If a config is provided all other config vars are ignored
+        configuration_environment_map = optional(map(object({
+          type  = string
+          value = string
+        })))
+        configuration_project_name = optional(string) # Must provide a config or project name
+        iam_role_arn               = optional(string)
+        input_artifact_list        = optional(list(string))
+        # namespace is always StageNameActionKey
+        output_artifact      = optional(string) # simply combined with list below
+        output_artifact_list = optional(list(string))
+        owner                = optional(string)
+        provider             = optional(string)
+        version              = optional(string)
+      }))
+      name = string
     }))
     cdn_invalidation_path                  = optional(string)
     ci_cd_pipeline_webhook_secret_is_param = optional(bool)
@@ -93,6 +107,11 @@ variable "site_build_artifact_name_default" {
 variable "site_build_artifact_sync_path_default" {
   type    = string
   default = "."
+}
+
+variable "site_build_iam_role_arn_default" {
+  type    = string
+  default = null
 }
 
 variable "site_cdn_invalidation_path_default" {

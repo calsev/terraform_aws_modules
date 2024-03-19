@@ -22,7 +22,11 @@ locals {
   }
   build_name_list_map = {
     for k, v_site in var.site_map : k => concat(
-      [for v_build in v_site.build_list : v_build.build_project_name],
+      flatten([
+        for v_stage in v_site.build_stage_list : [
+          for _, v_action in v_stage.action_map : v_action.configuration_project_name
+        ]
+      ]),
       [module.code_build.data["web-${k}"].deploy.name],
     )
   }
@@ -34,7 +38,7 @@ locals {
     for k, v in var.site_map : k => {
       cdn        = module.cdn.data[k],
       code_build = module.code_build.data["web-${k}"]
-      code_pipe  = module.code_pipe.data["${k}_deploy_${var.std_map.env}"]
+      code_pipe  = module.code_pipe.data[k]
       policy = {
         cdn_invalidate = module.cdn_invalidate[k].data
         site_deploy    = module.site_deploy[k].data
@@ -46,21 +50,11 @@ locals {
     }
   }
   pipe_map = {
-    for k, v in var.site_map : "${k}_deploy_${var.std_map.env}" => merge(v, {
+    for k, v in var.site_map : k => merge(v, {
       iam_role_arn    = module.code_pipe_role[k].data.iam_role_arn
       secret_is_param = v.ci_cd_pipeline_webhook_secret_is_param
       stage_list = concat(
-        [
-          for project in v.build_list : {
-            action_map = {
-              (project.name) = {
-                configuration_project_name = project.build_project_name
-                output_artifact_list       = project.output_artifact_list
-              }
-            }
-            name = project.name
-          }
-        ],
+        v.build_stage_list,
         [
           {
             action_map = {

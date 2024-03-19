@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.25.0
+
+### General
+
+* Support parallel stages for web app
+
 ## 0.24.0
 
 ### General
