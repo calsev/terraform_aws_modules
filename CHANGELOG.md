@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.26.0
+
+### New modules
+
+* RDS proxy
+
 ## 0.25.0
 
 ### General

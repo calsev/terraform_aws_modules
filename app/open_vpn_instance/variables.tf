@@ -145,7 +145,6 @@ variable "std_map" {
   })
 }
 
-
 variable "vpc_az_key_list_default" {
   type    = list(string)
   default = ["a", "b"]
