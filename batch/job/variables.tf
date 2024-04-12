@@ -30,6 +30,7 @@ variable "job_map" {
     alert_level                = optional(string)
     batch_cluster_key          = optional(string)
     command_list               = optional(list(string))
+    entry_point                = optional(list(string))
     environment_map            = optional(map(string))
     iam_role_arn_job_container = optional(string)
     iam_role_arn_job_execution = optional(string)
@@ -61,7 +62,13 @@ variable "job_batch_cluster_key_default" {
 
 variable "job_command_list_default" {
   type    = list(string)
-  default = ["echo", "Hello World!"]
+  default = ["echo Hello World!"]
+}
+
+variable "job_entry_point_default" {
+  type        = list(string)
+  default     = ["/bin/bash", "-cex"]
+  description = "The entry point of the container"
 }
 
 variable "job_environment_map_default" {

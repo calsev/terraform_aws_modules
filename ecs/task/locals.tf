@@ -102,6 +102,7 @@ locals {
           transit_encryption_port       = volume_data.transit_encryption_port == null ? var.task_efs_transit_encryption_port_default : volume_data.transit_encryption_port
         })
       }
+      resource_instance_type_memory_gib = var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_template.instance_type_memory_gib
     }
   }
   t3_map = {
@@ -111,7 +112,8 @@ locals {
           root_directory = volume_data.authorization_access_point_id != null ? "/" : volume_data.root_directory == null ? var.task_efs_root_directory_default : volume_data.root_directory
         })
       }
-      resource_memory_host_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : 13 / 32 + var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_template.instance_type_memory_gib / 64
+      # This is fit on max(host memory for t4g and t3a) for all instance sizes 0.5 - 32 GiB with a slack of 48 MiB
+      resource_memory_host_gib_default = local.t2_map[k].capability_type == "FARGATE" ? null : ceil(151 + 0.0341 * local.t2_map[k].resource_instance_type_memory_gib * 1024 + -0.00000013 * pow(local.t2_map[k].resource_instance_type_memory_gib * 1024, 2)) / 1024
       resource_num_vcpu_default        = local.t2_map[k].capability_type == "FARGATE" ? null : var.ecs_cluster_data[local.t1_map[k].ecs_cluster_key].instance_template.instance_type_num_vcpu
     }
   }

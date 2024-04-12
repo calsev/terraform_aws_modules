@@ -55,6 +55,26 @@ variable "sg_map_internal" {
         }
       }
     }
+    http_in = {
+      rule_map = {
+        http = {
+          cidr_blocks      = null
+          from_port        = 80
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        https = {
+          cidr_blocks      = null
+          from_port        = 443
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     mongodb_in = {
       rule_map = {
         mongodb = {

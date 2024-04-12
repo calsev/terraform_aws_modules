@@ -22,6 +22,7 @@ locals {
       EOT
       batch_cluster_key     = v.batch_cluster_key == null ? var.job_batch_cluster_key_default == null ? k : var.job_batch_cluster_key_default : v.batch_cluster_key
       command_list          = v.command_list == null ? var.job_command_list_default : v.command_list
+      entry_point           = v.entry_point == null ? var.job_entry_point_default : v.entry_point
       environment_map = merge(
         {
           AWS_DEFAULT_REGION = var.std_map.aws_region_name

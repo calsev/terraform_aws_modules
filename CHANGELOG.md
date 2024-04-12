@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.27.0
+
+### New modules
+
+* Config AWS account
+* Password policy
+
+### General
+
+* Add entry point for Batch job
+* Add environment variables for CI/Cd build
+* Add email and MFA config for COgnito user pool
+* Expand parameterization for log group
+* Add script for generating variables and locals for new module
+* Tighten host memory default for ECS tasks
+* Support ELB logging in S3 policy
+* Add DMARC for SES identity
+* Add internal HTTP to default security groups
+
 ## 0.26.0
 
 ### New modules

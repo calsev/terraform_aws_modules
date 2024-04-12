@@ -4,7 +4,7 @@ import argparse
 import json
 import os
 import shutil
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import jinja2
 
@@ -12,7 +12,7 @@ jinja_loader = jinja2.FileSystemLoader(searchpath=".")
 jinja_env = jinja2.Environment(loader=jinja_loader)
 
 
-def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
+def parse_args(args_in: Optional[list[str]] = None) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument(
         "--template",
@@ -92,7 +92,7 @@ def ensure_env_file(env_template: str, env_file: str) -> None:
         shutil.copy(env_template, env_file)
 
 
-def get_child_dirs(rel_path: str) -> List[str]:
+def get_child_dirs(rel_path: str) -> list[str]:
     child_dirs = sorted(
         [
             child_dir
@@ -104,7 +104,10 @@ def get_child_dirs(rel_path: str) -> List[str]:
 
 
 def get_app_dir_conf(
-    tf_root: str, provisioning_dir: str, dir_data: Dict, app_dirs: Dict
+    tf_root: str,
+    provisioning_dir: str,
+    dir_data: dict[str, Any],
+    app_dirs: dict[str, Any],
 ) -> None:
     app_conf = dir_data.get("app", {})
     skip_dirs = dir_data.get("skip_plan", [])
@@ -121,8 +124,8 @@ def get_app_dir_conf(
 def get_mod_dirs(
     parent_dir: str,
     curr_dir: str,
-    module_ignore_postfixes: List[str],
-    all_mod_dirs: List[str],
+    module_ignore_postfixes: list[str],
+    all_mod_dirs: list[str],
 ) -> None:
     """Recursively search for module directories"""
     if any(curr_dir.endswith(postfix) for postfix in module_ignore_postfixes):
@@ -130,14 +133,17 @@ def get_mod_dirs(
     rel_dir = os.path.join(parent_dir, curr_dir)
     all_mod_dirs.append(rel_dir)
     child_dirs = get_child_dirs(rel_dir)
-    child_mods = []
+    child_mods: list[str] = []
     for child_dir in child_dirs:
         get_mod_dirs(rel_dir, child_dir, module_ignore_postfixes, child_mods)
     all_mod_dirs.extend(child_mods)
 
 
 def render_makefile(
-    template: str, makefile: str, app_dir_to_conf_data: Dict, all_mod_dirs: List
+    template: str,
+    makefile: str,
+    app_dir_to_conf_data: dict[str, Any],
+    all_mod_dirs: list[str],
 ) -> None:
     make_template = jinja_env.get_template(template)
     makefile_content = make_template.render(
@@ -152,23 +158,23 @@ def render_makefile_and_env(
     template: str,
     makefile: str,
     module_root: str,
-    module_ignore_postfixes: List[str],
+    module_ignore_postfixes: list[str],
     tf_root: str,
     env_template: str,
     env_file: str,
     provisioning_directories: str,
 ) -> None:
-    provisioning_dirs: Dict[str, Any] = json.loads(provisioning_directories)
+    provisioning_dirs: dict[str, Any] = json.loads(provisioning_directories)
     ensure_env_file(env_template, env_file)
-    app_dir_to_conf_data = {}
+    app_dir_to_conf_data: dict[str, Any] = {}
     for provisioning_dir, dir_data in provisioning_dirs.items():
         get_app_dir_conf(tf_root, provisioning_dir, dir_data, app_dir_to_conf_data)
-    all_mod_dirs = []
+    all_mod_dirs: list[str] = []
     get_mod_dirs("", module_root, module_ignore_postfixes, all_mod_dirs)
     render_makefile(template, makefile, app_dir_to_conf_data, all_mod_dirs)
 
 
-def main(args_in: Optional[List[str]] = None) -> None:
+def main(args_in: Optional[list[str]] = None) -> None:
     args = parse_args(args_in)
     render_makefile_and_env(**vars(args))
 

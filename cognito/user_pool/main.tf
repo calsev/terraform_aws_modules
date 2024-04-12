@@ -24,7 +24,13 @@ resource "aws_cognito_user_pool" "this_pool" {
     challenge_required_on_new_device      = each.value.device_challenge_required_on_new
     device_only_remembered_on_user_prompt = each.value.device_only_remembered_on_user_prompt
   }
-  # email_configuration # TODO
+  email_configuration {
+    configuration_set      = each.value.email_ses_configuration_set_name
+    email_sending_account  = each.value.email_ses_key == null ? "COGNITO_DEFAULT" : "DEVELOPER"
+    from_email_address     = each.value.email_from_full
+    reply_to_email_address = each.value.email_reply_to_address
+    source_arn             = each.value.email_ses_identity_arn
+  }
   email_verification_message = null # Conflicts with verification_message_template
   email_verification_subject = null # Conflicts with verification_message_template
   dynamic "lambda_config" {
@@ -45,8 +51,8 @@ resource "aws_cognito_user_pool" "this_pool" {
       verify_auth_challenge_response = each.value.lambda_arn_verify_auth_challenge_response
     }
   }
-  # mfa_configuration # TODO
-  name = each.value.name_effective
+  mfa_configuration = each.value.mfa_configuration
+  name              = each.value.name_effective
   password_policy {
     minimum_length                   = each.value.password_minimum_length
     require_lowercase                = each.value.password_require_lowercase
@@ -82,7 +88,9 @@ resource "aws_cognito_user_pool" "this_pool" {
   sms_authentication_message = null # TODO
   # sms_configuration # TODO
   sms_verification_message = null # Conflicts with verification_message_template
-  # software_token_mfa_configuration # TODO
+  software_token_mfa_configuration {
+    enabled = each.value.mfa_software_token_enabled
+  }
   tags                = each.value.tags
   username_attributes = each.value.username_attribute_list
   user_attribute_update_settings {

@@ -3,21 +3,26 @@ import os
 import re
 import shlex
 import subprocess
-from typing import Dict, List, Optional, Tuple, Union
+import typing
 
 
-def resource_regex(resource_type: str) -> re.Pattern:
+def resource_regex(resource_type: str) -> re.Pattern[typing.Any]:
     return re.compile(rf"(?:^|[\s\.]){resource_type}[\.\[]")
 
 
 def run_command_as_process(
-    command: Union[str, list[str]],
-    cwd: Optional[str] = None,
-    expected_return_code: Optional[int] = 0,
-    expected_stdout: Union[str, re.Pattern, List[Union[str, re.Pattern]], None] = None,
+    command: typing.Union[str, list[str]],
+    cwd: typing.Optional[str] = None,
+    expected_return_code: typing.Optional[int] = 0,
+    expected_stdout: typing.Union[
+        str,
+        re.Pattern[typing.Any],
+        list[typing.Union[str, re.Pattern[typing.Any]]],
+        None,
+    ] = None,
     expect_empty_stderr: bool = True,
-    env: Optional[Dict[str, str]] = None,
-) -> subprocess.CompletedProcess:
+    env: typing.Optional[dict[str, str]] = None,
+) -> subprocess.CompletedProcess[typing.Any]:
     """
     @param command: The command string to execute
     @param cwd: The working directory, if not the current directory
@@ -39,9 +44,8 @@ def run_command_as_process(
     result = subprocess.run(
         arg_list,
         cwd=cwd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
+        capture_output=True,
+        text=True,
         env=env,
     )
     return_matches = (
@@ -72,9 +76,9 @@ def run_command_as_process(
 def process_change_type(
     line: str,
     change_type: str,
-    resources: Dict,
-    resource_type_ignore_regex_map: Dict,
-    resource_ignore_list: List,
+    resources: dict[str, list[str]],
+    resource_type_ignore_regex_map: dict[str, re.Pattern[typing.Any]],
+    resource_ignore_list: list[str],
 ) -> None:
     splits = [p for p in re.split(r"([^\s\"]+(?:\".+?\"\S+)*|\s+)", line) if p.strip()]
     print(splits)
@@ -91,9 +95,9 @@ def process_change_type(
 
 def process_plan_line(
     line: str,
-    resources: Dict,
-    resource_type_ignore_regex_map: Dict,
-    resource_ignore_list: List,
+    resources: dict[str, list[str]],
+    resource_type_ignore_regex_map: dict[str, re.Pattern[typing.Any]],
+    resource_ignore_list: list[str],
 ) -> None:
     line = line.strip()
     for change_type in resources:
@@ -109,16 +113,16 @@ def process_plan_line(
 
 def get_plan_resources(
     rel_path: str,
-    var_file: Optional[str],
-    resource_type_ignore_regex_map: Dict,
-    resource_ignore_list: List[str],
-) -> Tuple[Dict[str, List[str]], str]:
+    var_file: typing.Optional[str],
+    resource_type_ignore_regex_map: dict[str, re.Pattern[typing.Any]],
+    resource_ignore_list: list[str],
+) -> tuple[dict[str, list[str]], str]:
     print("Fetching current plan ...")
     var_file = f"--var-file {var_file}.tfvars" if var_file else ""
     result = run_command_as_process(
         f"terraform plan{var_file} -out plan.tfplan -no-color", cwd=rel_path
     )
-    change_to_resource_list = {
+    change_to_resource_list: dict[str, list[str]] = {
         "created": [],
         "destroyed": [],
     }

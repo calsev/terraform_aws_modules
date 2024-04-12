@@ -47,3 +47,12 @@ module "dns_dkim" {
   record_map                       = local.create_dns_dkim_map
   std_map                          = var.std_map
 }
+
+module "dns_dmarc" {
+  source                           = "../../dns/record"
+  dns_data                         = var.dns_data
+  record_dns_from_zone_key_default = var.domain_dns_from_zone_key_default
+  record_dns_type_default          = "TXT"
+  record_map                       = local.create_dns_dmarc_map
+  std_map                          = var.std_map
+}

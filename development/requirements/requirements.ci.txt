@@ -1,8 +1,8 @@
 -r requirements.txt
 
-black
-flake8
-isort
-pyright
-python-hcl2
-s3path
+black>=24.3.0
+flake8>=7.0.0
+isort>=5.13.2
+pyright>=1.1.357
+python-hcl2>=4.3.3
+s3path>=0.5.2

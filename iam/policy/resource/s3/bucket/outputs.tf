@@ -1,3 +1,3 @@
 output "iam_policy_doc" {
-  value = jsondecode(local.policy_json)
+  value = jsondecode(local.final_policy_json)
 }
