@@ -21,7 +21,7 @@ variable "vpc_key_default" {
 variable "vpc_map" {
   type = map(object({
     vpc_az_key_list             = optional(list(string))
-    vpc_key                     = string
+    vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
   }))

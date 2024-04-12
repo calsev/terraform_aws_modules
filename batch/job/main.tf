@@ -2,7 +2,8 @@ resource "aws_batch_job_definition" "this_job" {
   for_each = local.job_map
   name     = each.value.name_effective
   container_properties = jsonencode({
-    command = each.value.command_list
+    # args does not work as advertised
+    command = concat(each.value.entry_point, each.value.command_list)
     environment = [
       for k, v in each.value.environment_map :
       {

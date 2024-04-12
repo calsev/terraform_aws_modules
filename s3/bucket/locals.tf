@@ -36,6 +36,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       allow_access_point                   = v.allow_access_point == null ? var.bucket_allow_access_point_default : v.allow_access_point
+      allow_elb_logging                    = v.allow_elb_logging == null ? var.bucket_allow_elb_logging_default : v.allow_elb_logging
       acceleration_enabled                 = length(split(".", k)) == 1 # TODO: Why not dot buckets?
       allow_public                         = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
       cloudfront_origin_access_identity    = v.cloudfront_origin_access_identity

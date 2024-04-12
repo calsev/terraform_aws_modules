@@ -1,6 +1,8 @@
 variable "log_map" {
   type = map(object({
     allow_public_read   = optional(bool)
+    kms_key_id          = optional(string)
+    log_group_class     = optional(string)
     log_retention_days  = optional(number)
     name_prefix         = optional(string)
     policy_access_list  = optional(list(string))
@@ -11,12 +13,27 @@ variable "log_map" {
     policy_name_prefix  = optional(string)
     policy_name_prepend = optional(string)
     policy_name_suffix  = optional(string)
+    skip_destroy        = optional(bool)
   }))
 }
 
 variable "log_allow_public_read_default" {
   type    = bool
   default = false
+}
+
+variable "log_group_class_default" {
+  type    = string
+  default = "STANDARD"
+  validation {
+    condition     = contains(["INFREQUENT_ACCESS", "STANDARD"], var.log_group_class_default)
+    error_message = "Invalid log group class"
+  }
+}
+
+variable "log_kms_key_id_default" {
+  type    = string
+  default = null
 }
 
 variable "log_retention_days_default" {
@@ -31,6 +48,11 @@ variable "log_retention_days_default" {
 variable "log_name_prefix_default" {
   type    = string
   default = ""
+}
+
+variable "log_skip_destroy_default" {
+  type    = bool
+  default = false
 }
 
 variable "policy_access_list_default" {

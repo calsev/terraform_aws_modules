@@ -1,2 +1,2 @@
-InquirerPy
-Jinja2
+InquirerPy>=0.3.4
+Jinja2>=3.1.3

@@ -6,6 +6,17 @@ variable "cdn_global_data" {
   })
 }
 
+variable "comms_data" {
+  type = object({
+    ses_email_map = map(object({
+      configuration_set_name = string
+      identity_arn           = string
+    }))
+  })
+  default     = null
+  description = "Must be provided if any pool uses SES email"
+}
+
 variable "dns_data" {
   type = object({
     domain_to_dns_zone_map = map(object({
@@ -46,6 +57,9 @@ variable "pool_map" {
     device_only_remembered_on_user_prompt     = optional(bool)
     dns_from_zone_key                         = optional(string)
     dns_subdomain                             = optional(string)
+    email_from_username                       = optional(string)
+    email_reply_to_address                    = optional(string)
+    email_ses_key                             = optional(string)
     invite_email_message_template             = optional(string)
     invite_email_subject                      = optional(string)
     invite_sms_message_template               = optional(string)
@@ -60,6 +74,8 @@ variable "pool_map" {
     lambda_arn_user_migration                 = optional(string)
     lambda_arn_verify_auth_challenge_response = optional(string)
     lambda_kms_key_id                         = optional(string)
+    mfa_configuration                         = optional(string)
+    mfa_software_token_enabled                = optional(bool)
     only_admin_create_user                    = optional(bool)
     password_minimum_length                   = optional(number)
     password_require_lowercase                = optional(bool)
@@ -170,6 +186,21 @@ variable "pool_dns_subdomain_default" {
   default = "cognito"
 }
 
+variable "pool_email_from_username_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_email_reply_to_address_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_email_ses_key_default" {
+  type    = string
+  default = null
+}
+
 variable "pool_invite_email_message_template_default" {
   type    = string
   default = "Username is '{username}' and temporary password is {####}"
@@ -246,6 +277,21 @@ variable "pool_lambda_arn_verify_auth_challenge_response_default" {
 variable "pool_lambda_kms_key_id_default" {
   type    = string
   default = null
+}
+
+variable "pool_mfa_configuration_default" {
+  type        = string
+  default     = "OPTIONAL"
+  description = "Requires an MFA method to be configured"
+  validation {
+    condition     = contains(["OFF", "ON", "OPTIONAL"], var.pool_mfa_configuration_default)
+    error_message = "Invalid MFA configuration"
+  }
+}
+
+variable "pool_mfa_software_token_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "pool_only_admin_create_user_default" {

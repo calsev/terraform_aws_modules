@@ -161,6 +161,14 @@ variable "build_environment_type_default" {
   default = "cpu-amd-ubuntu-small"
 }
 
+variable "build_environment_variable_map_default" {
+  type = map(object({
+    type  = string
+    value = string
+  }))
+  default = {}
+}
+
 variable "build_file_system_location_dns_default" {
   type    = string
   default = null

@@ -109,6 +109,7 @@ module "this_bucket_policy" {
   source             = "../../iam/policy/resource/s3/bucket"
   allow_access_point = each.value.allow_access_point
   allow_public       = each.value.allow_public
+  allow_elb_logging  = each.value.allow_elb_logging
   bucket_name        = each.value.name_effective
   sid_map            = each.value.sid_map
   std_map            = var.std_map

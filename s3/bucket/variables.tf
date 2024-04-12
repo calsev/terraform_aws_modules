@@ -1,6 +1,7 @@
 variable "bucket_map" {
   type = map(object({
     allow_access_point                = optional(bool)
+    allow_elb_logging                 = optional(bool)
     allow_public                      = optional(bool)
     cloudfront_origin_access_identity = optional(string)
     cors_allowed_headers              = optional(list(string))
@@ -43,6 +44,11 @@ variable "bucket_map" {
 variable "bucket_allow_access_point_default" {
   type    = bool
   default = true
+}
+
+variable "bucket_allow_elb_logging_default" {
+  type    = bool
+  default = false
 }
 
 variable "bucket_allow_public_default" {

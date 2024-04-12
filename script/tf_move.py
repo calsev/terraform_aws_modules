@@ -8,7 +8,7 @@ This script provides an interactive shell that does the hard parts:
 import argparse
 import itertools
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple
 
 from InquirerPy.inquirer import confirm, rawlist  # type: ignore
 
@@ -24,7 +24,7 @@ resource_type_ignore_regex_map = {
 }
 
 
-def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
+def parse_args(args_in: Optional[list[str]] = None) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument("path", type=str)
     args.add_argument("profile", type=str)
@@ -33,7 +33,7 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
     return parsed_args
 
 
-def get_resource_types(change_to_resources: Dict[str, List]) -> List[str]:
+def get_resource_types(change_to_resources: dict[str, list[str]]) -> list[str]:
     all_resources = list(
         itertools.chain.from_iterable(
             resource_list for resource_list in change_to_resources.values()
@@ -73,7 +73,7 @@ def map_resource_change_type(
     resource_type: str,
     change_type: str,
     resource_name: str,
-    resources: Dict,
+    resources: dict[str, dict[str, list[str]]],
 ) -> None:
     if resource_type not in resources:
         resources[resource_type] = {}
@@ -84,9 +84,9 @@ def map_resource_change_type(
 
 def map_change_resource(
     change_type: str,
-    resource_type_list: List,
+    resource_type_list: list[str],
     resource_name: str,
-    resources: Dict,
+    resources: dict[str, dict[str, list[str]]],
 ) -> None:
     found = False
     for resource_type in resource_type_list:
@@ -103,13 +103,13 @@ def map_change_resource(
 def map_resources(
     rel_path: str,
     var_file: Optional[str],
-    resource_ignore_list: List,
-) -> Tuple[List[str], Dict[str, Dict[str, List[str]]], str]:
+    resource_ignore_list: list[str],
+) -> Tuple[list[str], dict[str, dict[str, list[str]]], str]:
     change_to_resource_list, plan_out = get_plan_resources(
         rel_path, var_file, resource_type_ignore_regex_map, resource_ignore_list
     )
     resource_type_list = get_resource_types(change_to_resource_list)
-    resources = {}
+    resources: dict[str, dict[str, list[str]]] = {}
     for change_type, resource_list in change_to_resource_list.items():
         for resource_name in resource_list:
             map_change_resource(
@@ -118,7 +118,7 @@ def map_resources(
     return resource_type_list, resources, plan_out
 
 
-def prompt_user(resource_to_destroy: str, create_options: List[str]) -> int:
+def prompt_user(resource_to_destroy: str, create_options: list[str]) -> int:
     create_options = create_options[:7]  # Max length of rawlist is 9
     choices = [
         *[f"Alias - {create_option}" for create_option in create_options],
@@ -154,8 +154,8 @@ def move_resource(
 def change_one_resource_type(
     rel_path: str,
     resource_type: str,
-    change_to_resources: Dict,
-    resource_ignore_list: List,
+    change_to_resources: dict[str, dict[str, list[str]]],
+    resource_ignore_list: list[str],
 ) -> Optional[bool]:
     """Returns True if one resource was modified, or None to quit"""
     change_to_resource_list = change_to_resources[resource_type]
@@ -185,9 +185,9 @@ def change_one_resource_type(
 
 def change_all_resource_types(
     rel_path: str,
-    resource_type_list: List[str],
-    change_to_resources: Dict,
-    resource_ignore_list: List[str],
+    resource_type_list: list[str],
+    change_to_resources: dict[str, dict[str, list[str]]],
+    resource_ignore_list: list[str],
 ) -> Optional[bool]:
     for resource_type in resource_type_list:
         if resource_type not in change_to_resources:
@@ -206,7 +206,7 @@ def print_final_plan(plan_out: str) -> None:
 
 
 def change_one_resource(
-    rel_path: str, var_file: Optional[str], resource_ignore_list: List[str]
+    rel_path: str, var_file: Optional[str], resource_ignore_list: list[str]
 ) -> bool:
     resource_type_list, change_to_resources, plan_out = map_resources(
         rel_path, var_file, resource_ignore_list
@@ -225,12 +225,12 @@ def move_resources(
     os.environ["AWS_PROFILE"] = aws_profile
     module_name = rel_path.split("/")[-1]
     print(f"Moving state for path {rel_path}, module {module_name}")
-    resource_ignore_list = []
+    resource_ignore_list: list[str] = []
     while change_one_resource(rel_path, var_file, resource_ignore_list):
         pass
 
 
-def main(args_in: Optional[List[str]] = None) -> None:
+def main(args_in: Optional[list[str]] = None) -> None:
     args = parse_args(args_in)
     move_resources(args.path, args.profile, args.var_file)
 

@@ -20,6 +20,13 @@ locals {
   create_dns_dkim_map = {
     for v in local.create_dns_dkim_list : "${v.k}_${v.index}" => v
   }
+  create_dns_dmarc_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      # See AWs console for verified identities > DMARC > "Publish DNS records"
+      dns_from_fqdn   = "_dmarc.${v.name_simple}"
+      dns_record_list = ["v=DMARC1; p=none;"]
+    })
+  }
   create_dns_mx_map = {
     for k, v in local.lx_map : k => merge(v, {
       # See AWs console for verified identities > "Custom MAIL FROM domain" > "Publish DNS records"
@@ -64,6 +71,7 @@ locals {
         dns_dkim = [
           for index in range(3) : module.dns_dkim.data["${k}_${index}"]
         ]
+        dns_dmarc        = module.dns_dmarc.data[k]
         dns_mx           = module.dns_mx.data[k]
         dns_txt          = module.dns_txt.data[k]
         identity_arn     = aws_sesv2_email_identity.this_domain[k].arn

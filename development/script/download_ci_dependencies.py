@@ -8,10 +8,10 @@ import argparse
 import json
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Optional, Tuple, cast
 
 import hcl2
-import s3path
+import s3path  # type: ignore
 
 from script.plan import run_command_as_process  # type:ignore
 
@@ -19,7 +19,7 @@ BUCKET = "cdn-bucket.calsev.com"
 
 
 def parse_args(
-    args_in: Optional[List[str]] = None,
+    args_in: Optional[list[str]] = None,
 ) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument(
@@ -53,11 +53,14 @@ def get_bin_versions() -> Tuple[str, str]:
     return tf_ver, tflint_ver
 
 
-def get_linters(system: str, arch: str) -> Dict:
+def get_linters(system: str, arch: str) -> dict[str, dict[str, str]]:
     with open("development/.tflint.hcl") as f:
-        linter_data = hcl2.load(f)  # type: ignore
-    linter_list = linter_data["plugin"]
-    linter_map = {}
+        linter_data = cast(
+            dict[str, list[dict[str, dict[str, str]]]],
+            hcl2.load(f),  # type: ignore
+        )
+    linter_list: list[dict[str, dict[str, str]]] = linter_data["plugin"]
+    linter_map: dict[str, dict[str, str]] = {}
     for linter in linter_list:
         linter_map.update(**linter)
     for linter_name, linter_data in linter_map.items():
@@ -78,7 +81,7 @@ def get_linters(system: str, arch: str) -> Dict:
     return linter_map
 
 
-def get_release_info_for_repo(repo: str) -> Dict:
+def get_release_info_for_repo(repo: str) -> dict[Any, Any]:
     """This can be used to get release info, including browser_download_url"""
     api_ver = "-H 'X-GitHub-Api-Version: 2022-11-28'"
     accept = "-H 'Accept: application/vnd.github+json'"
@@ -166,7 +169,7 @@ def download_ci_dependencies(
 
 
 def main(
-    args_in: Optional[List[str]] = None,
+    args_in: Optional[list[str]] = None,
 ) -> None:
     args = parse_args(args_in)
     download_ci_dependencies(**vars(args))

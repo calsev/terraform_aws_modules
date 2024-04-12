@@ -37,8 +37,16 @@ locals {
       concurrent_build_limit       = v.concurrent_build_limit == null ? var.build_concurrent_limit_default : v.concurrent_build_limit
       encryption_key               = "arn:${var.std_map.iam_partition}:kms:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:alias/aws/s3" # This is just the default S3 key, but keeps diffs clean
       environment_image_custom     = v.environment_image_custom == null ? var.build_environment_image_custom_default : v.environment_image_custom
-      environment_variable_map     = v.environment_variable_map == null ? {} : v.environment_variable_map
-      environment_type             = v.environment_type == null ? var.build_environment_type_default : v.environment_type
+      environment_variable_map = merge(
+        {
+          AWS_DEFAULT_REGION = {
+            type  = "PLAINTEXT"
+            value = var.std_map.aws_region_name
+          }
+        },
+        v.environment_variable_map == null ? var.build_environment_variable_map_default : v.environment_variable_map,
+      )
+      environment_type = v.environment_type == null ? var.build_environment_type_default : v.environment_type
       file_system_map = v.file_system_map == null ? {} : {
         for k_fs, v_fs in v.file_system_map : k_fs => merge(v_fs, {
           location_dns  = v_fs.location_dns == null ? var.build_file_system_location_dns_default : v_fs.location_dns

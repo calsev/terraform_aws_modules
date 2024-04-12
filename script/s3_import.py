@@ -7,7 +7,7 @@ python script/s3_import.py stack/inf/s3 aws-profile-name
 import argparse
 import os
 import shlex
-from typing import Dict, List, Optional
+from typing import Optional
 
 from .plan import get_plan_resources, resource_regex, run_command_as_process
 
@@ -39,7 +39,7 @@ resource_type_priority_regex_map = {
 }
 
 
-def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
+def parse_args(args_in: Optional[list[str]] = None) -> argparse.Namespace:
     args = argparse.ArgumentParser()
     args.add_argument(
         "path", type=str, help="The relative path to the app, e.g. stack/inf/s3"
@@ -51,9 +51,9 @@ def parse_args(args_in: Optional[List[str]] = None) -> argparse.Namespace:
 
 
 def build_bucket_map(
-    resource_list: List[str],
-) -> Dict[str, List]:
-    bucket_map = {}
+    resource_list: list[str],
+) -> dict[str, list[str]]:
+    bucket_map: dict[str, list[str]] = {}
     for resource_name in resource_list:
         if "aws_s3_bucket.this_bucket" in resource_name:
             parser = shlex.shlex(resource_name)
@@ -75,7 +75,7 @@ def build_bucket_map(
 def map_resources(
     rel_path: str,
     var_file: Optional[str],
-) -> Dict[str, List[str]]:
+) -> dict[str, list[str]]:
     change_to_resource_list, _ = get_plan_resources(rel_path, var_file, {}, [])
     resource_list = change_to_resource_list["created"]
     bucket_map = build_bucket_map(resource_list)
@@ -101,7 +101,7 @@ def import_one_resource(
 
 
 def import_all_resources(
-    rel_path: str, var_file: Optional[str], bucket_map: Dict[str, List[str]]
+    rel_path: str, var_file: Optional[str], bucket_map: dict[str, list[str]]
 ) -> None:
     var_file = f"--var-file {var_file}.tfvars" if var_file else ""
     for bucket_name, resource_list in bucket_map.items():
@@ -119,7 +119,7 @@ def import_buckets(
     import_all_resources(rel_path, var_file, bucket_map)
 
 
-def main(args_in: Optional[List[str]] = None) -> None:
+def main(args_in: Optional[list[str]] = None) -> None:
     args = parse_args(args_in)
     import_buckets(args.path, args.profile, args.var_file)
 

@@ -1,12 +1,9 @@
 locals {
-  bucket_arn = startswith(var.bucket_name, "arn:") ? var.bucket_name : "arn:${var.std_map.iam_partition}:${local.service_name}:::${var.bucket_name}"
-  has_policy = length(local.sid_list_single) != 0
-  policy_json = var.allow_access_point ? data.aws_iam_policy_document.ap_policy["this"].json : (
-    local.has_policy ? jsonencode(module.this_policy["this"].iam_policy_doc) : (
-      data.aws_iam_policy_document.empty_policy["this"].json
-    )
-  )
-  service_name = "s3"
+  bucket_arn        = startswith(var.bucket_name, "arn:") ? var.bucket_name : "arn:${var.std_map.iam_partition}:${local.service_name}:::${var.bucket_name}"
+  final_policy_json = data.aws_iam_policy_document.final_policy.json
+  has_custom_policy = length(local.sid_list_single) != 0
+  has_empty_policy  = !var.allow_access_point && !var.allow_elb_logging && !local.has_custom_policy
+  service_name      = "s3"
   sid_list_expanded = flatten([
     for v_sid in local.sid_list_single : [
       merge(v_sid, {

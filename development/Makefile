@@ -117,6 +117,8 @@ tf-lint: tflint-install
 	cd ../cognito/client_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/user_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../common && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../config/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/config_ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -224,6 +226,8 @@ tf-lint: tflint-install
 	cd ../iam/role/policy_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/rds_monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/user && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/user/password_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

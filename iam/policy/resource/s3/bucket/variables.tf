@@ -3,6 +3,11 @@ variable "allow_access_point" {
   default = true
 }
 
+variable "allow_elb_logging" {
+  type    = bool
+  default = false
+}
+
 variable "allow_public" {
   type    = bool
   default = false
