@@ -29,5 +29,10 @@ locals {
       vpc_cidr_block      = "10.0.16.0/20"
     }
   }
-  output_data = module.vpc_stack.data
+  output_data = merge(
+    module.vpc_stack.data,
+    {
+      elb_map = module.load_balancer.data
+    }
+  )
 }

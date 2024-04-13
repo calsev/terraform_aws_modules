@@ -1,17 +1,29 @@
+variable "elb_target_data_map" {
+  type = map(object({
+    target_group_arn = string
+  }))
+  default     = null
+  description = "Must be provided if any ASG has an attached ELB"
+}
+
 variable "group_map" {
   type = map(object({
-    auto_scaling_iam_role_arn_service_linked = optional(string)
-    auto_scaling_num_instances_max           = optional(number)
-    auto_scaling_num_instances_min           = optional(number)
-    auto_scaling_protect_from_scale_in       = optional(bool)
-    launch_template_id                       = optional(string)
-    name_include_app_fields                  = optional(bool)
-    name_infix                               = optional(bool)
-    placement_group_id                       = optional(string)
-    vpc_az_key_list                          = optional(list(string))
-    vpc_key                                  = optional(string)
-    vpc_security_group_key_list              = optional(list(string))
-    vpc_segment_key                          = optional(string)
+    auto_scaling_iam_role_arn_service_linked    = optional(string)
+    auto_scaling_num_instances_max              = optional(number)
+    auto_scaling_num_instances_min              = optional(number)
+    auto_scaling_protect_from_scale_in          = optional(bool)
+    elb_target_group_key_list                   = optional(list(string))
+    health_check_type                           = optional(string)
+    instance_maintenance_max_healthy_percentage = optional(number)
+    instance_maintenance_min_healthy_percentage = optional(number)
+    launch_template_id                          = optional(string)
+    name_include_app_fields                     = optional(bool)
+    name_infix                                  = optional(bool)
+    placement_group_id                          = optional(string)
+    vpc_az_key_list                             = optional(list(string))
+    vpc_key                                     = optional(string)
+    vpc_security_group_key_list                 = optional(list(string))
+    vpc_segment_key                             = optional(string)
   }))
 }
 
@@ -31,8 +43,34 @@ variable "group_auto_scaling_num_instances_min_default" {
 }
 
 variable "group_auto_scaling_protect_from_scale_in_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = true
+  description = "This is required for managed termination protection in ECS"
+}
+
+variable "group_elb_target_group_key_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "group_health_check_type_default" {
+  type        = string
+  default     = null
+  description = "Defaults to EC2 if no ELB is attached, otherwise ELB"
+  validation {
+    condition     = var.group_health_check_type_default == null ? true : contains(["EC2", "ELB"], var.group_health_check_type_default)
+    error_message = "Invalid health check type"
+  }
+}
+
+variable "group_instance_maintenance_max_healthy_percentage_default" {
+  type    = number
+  default = 200
+}
+
+variable "group_instance_maintenance_min_healthy_percentage_default" {
+  type    = number
+  default = 100
 }
 
 variable "group_launch_template_id_default" {

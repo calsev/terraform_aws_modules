@@ -16,13 +16,18 @@ module "user_pool" {
       callback_url_list = ["https://auth-app.example.com"]
     }
   }
-  pool_dns_from_zone_key_default      = "example.com"
-  pool_lambda_arn_pre_sign_up_default = module.lambda.data[local.lambda_name_trigger].lambda_arn
+  pool_dns_from_zone_key_default            = "example.com"
+  pool_lambda_arn_pre_sign_up_default       = module.lambda.data[local.lambda_name_trigger].lambda_arn
+  pool_lambda_arn_post_confirmation_default = module.lambda.data[local.lambda_name_trigger].lambda_arn
   pool_map = {
     (local.pool_name) = {}
   }
   pool_only_admin_create_user_default = false
-  std_map                             = module.com_lib.std_map
+  pool_schema_map_default = {
+    super_special = {}
+  }
+  pool_username_attribute_list_default = ["email"]
+  std_map                              = module.com_lib.std_map
 }
 
 module "lambda" {

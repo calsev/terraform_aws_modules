@@ -40,7 +40,7 @@ module "job" {
       batch_cluster_key = local.compute_name
     }
   }
-  job_command_list_default               = ["echo", "Ref::bucket_name", "/", "Ref::object_key"]
+  job_command_list_default               = ["echo Ref::bucket_name/Ref::object_key"]
   job_iam_role_arn_job_container_default = module.job_role.data.iam_role_arn
   job_parameter_map_default = {
     bucket_name = "unknown-bucket"

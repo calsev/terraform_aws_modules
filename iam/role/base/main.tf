@@ -5,7 +5,7 @@ module "assume_role_policy" {
 }
 
 resource "aws_iam_policy" "this_created_policy" {
-  for_each = local.l1_map.policy_create_doc_map
+  for_each = local.l1_map.role_policy_create_doc_map
   name     = module.name_map.data[each.key].name_effective
   policy   = jsonencode(each.value)
   tags     = module.name_map.data[each.key].tags
@@ -15,7 +15,7 @@ resource "aws_iam_role" "this_iam_role" {
   assume_role_policy   = jsonencode(local.l2_map.assume_role_doc)
   max_session_duration = local.l1_map.max_session_duration_m == null ? null : local.l1_map.max_session_duration_m * 60
   dynamic "inline_policy" {
-    for_each = local.l1_map.policy_inline_doc_map == null ? {} : local.l1_map.policy_inline_doc_map
+    for_each = local.l1_map.role_policy_inline_doc_map == null ? {} : local.l1_map.role_policy_inline_doc_map
     content {
       name   = inline_policy.key
       policy = jsonencode(inline_policy.value)
@@ -23,10 +23,10 @@ resource "aws_iam_role" "this_iam_role" {
   }
   dynamic "inline_policy" {
     # This ensures an empty policy
-    for_each = local.l1_map.policy_inline_doc_map == null ? { this = {} } : length(local.l1_map.policy_inline_doc_map) == 0 ? { this = {} } : {}
+    for_each = local.l1_map.role_policy_inline_doc_map == null ? { this = {} } : length(local.l1_map.role_policy_inline_doc_map) == 0 ? { this = {} } : {}
     content {}
   }
-  managed_policy_arns = [for _, arn in local.l4_map.policy_all_attached_arn_map : arn]
+  managed_policy_arns = [for _, arn in local.l4_map.role_policy_all_attached_arn_map : arn]
   name                = local.l1_map.name_effective
   path                = local.l1_map.role_path
   tags                = local.l1_map.tags

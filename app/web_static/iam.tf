@@ -24,7 +24,7 @@ module "code_build_role" {
   source             = "../../iam/role/code_build"
   ci_cd_account_data = var.ci_cd_account_data
   name               = "${each.key}_deploy"
-  policy_attach_arn_map = {
+  role_policy_attach_arn_map_default = {
     cdn_invalidate = module.cdn_invalidate[each.key].data.iam_policy_arn_map.read_write
     site_deploy    = module.site_deploy[each.key].data.iam_policy_arn
   }
@@ -38,9 +38,6 @@ module "code_pipe_role" {
   ci_cd_account_data       = var.ci_cd_account_data
   code_star_connection_key = var.code_star_connection_key
   name                     = "${each.key}_code_pipe"
-  policy_attach_arn_map    = each.value.policy_attach_arn_map
-  policy_create_json_map   = each.value.policy_create_json_map
-  policy_inline_json_map   = each.value.policy_inline_json_map
-  policy_managed_name_map  = each.value.policy_managed_name_map
+  map_policy               = each.value
   std_map                  = var.std_map
 }

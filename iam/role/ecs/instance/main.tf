@@ -5,7 +5,7 @@ module "this_role" {
   name                   = "ecs_instance"
   name_prefix            = var.name_prefix
   name_infix             = var.name_infix
-  policy_managed_name_map = {
+  role_policy_managed_name_map_default = {
     ecs_service = "service-role/AmazonEC2ContainerServiceforEC2Role"
   }
   role_path = var.role_path

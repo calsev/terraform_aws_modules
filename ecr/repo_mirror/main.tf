@@ -24,14 +24,6 @@ module "computation" {
   vpc_segment_key_default             = var.vpc_segment_key
 }
 
-module "ecr_mirror_log" {
-  source = "../../cw/log_group"
-  log_map = {
-    (var.task_name) = {}
-  }
-  std_map = var.std_map
-}
-
 module "ecr_mirror_task" {
   source           = "../../ecs/task"
   ecs_cluster_data = module.computation.data
@@ -43,8 +35,10 @@ module "ecr_mirror_task" {
       container_definition_list = local.mirror_container_definition_list
       schedule_expression       = var.schedule_expression
       ecs_cluster_arn           = module.computation.data[var.task_name].ecs_cluster_arn
-      iam_role_arn_task         = module.ecs_task_role.data.iam_role_arn
-      log_group_name            = module.ecr_mirror_log.data[var.task_name].log_group_name
+      role_policy_attach_arn_map = {
+        get_token        = var.iam_data.iam_policy_arn_ecr_get_token
+        image_read_write = module.ecr_mirror_policy.data.iam_policy_arn_map.read_write
+      }
     }
   }
 }

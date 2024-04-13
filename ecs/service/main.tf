@@ -1,37 +1,52 @@
-module "vpc_map" {
-  source                              = "../../vpc/id_map"
-  vpc_map                             = var.service_map
-  vpc_az_key_list_default             = var.vpc_az_key_list_default
-  vpc_key_default                     = var.vpc_key_default
-  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
-  vpc_segment_key_default             = var.vpc_segment_key_default
-  vpc_data_map                        = var.vpc_data_map
-}
-
 resource "aws_ecs_service" "this_service" {
-  for_each = local.service_map
-  capacity_provider_strategy {
+  for_each = local.lx_map
+  dynamic "alarms" {
+    for_each = {} # TODO
+    content {
+      alarm_names = alarms.value.alarm_name_list
+      enable      = alarms.enable
+      rollback    = alarms.rollback
+    }
+  }
+  capacity_provider_strategy { # Conflicts with launch_type
     base              = each.value.desired_count
     capacity_provider = each.value.capacity_provider_name
-    weight            = 100
+    weight            = 100 # We are always using 1 ASG per cluster
   }
   cluster = each.value.ecs_cluster_id
   deployment_circuit_breaker {
-    enable   = false
-    rollback = false
+    enable   = each.value.deployment_controller_circuit_breaker_enabled_effective
+    rollback = each.value.deployment_controller_circuit_breaker_rollback_effective
   }
   deployment_controller {
-    type = "ECS"
+    type = each.value.deployment_controller_type
   }
-  desired_count                     = each.value.desired_count
-  enable_ecs_managed_tags           = true
-  enable_execute_command            = true
-  health_check_grace_period_seconds = 0
-  name                              = each.value.name_effective
-  network_configuration {
-    assign_public_ip = each.value.assign_public_ip
-    subnets          = each.value.vpc_subnet_id_list
-    security_groups  = each.value.vpc_security_group_id_list
+  deployment_maximum_percent         = each.value.deployment_maximum_percent_effective
+  deployment_minimum_healthy_percent = each.value.deployment_minimum_healthy_percent_effective
+  desired_count                      = each.value.desired_count_effective
+  enable_ecs_managed_tags            = each.value.managed_tags_enabled
+  enable_execute_command             = each.value.execute_command_enabled
+  force_new_deployment               = each.value.force_new_deployment
+  health_check_grace_period_seconds  = each.value.elb_health_check_grace_period_seconds_effective
+  iam_role                           = each.value.iam_role_arn_elb_calls_effective
+  launch_type                        = null # Conflicts with capacity_provider_strategy
+  dynamic "load_balancer" {
+    for_each = toset(each.value.elb_target_group_arn_list)
+    content {
+      elb_name         = null # ELB classic
+      target_group_arn = load_balancer.key
+      container_name   = each.value.elb_container_name
+      container_port   = each.value.elb_container_port
+    }
+  }
+  name = each.value.name_effective
+  dynamic "network_configuration" {
+    for_each = each.value.network_mode == "awsvpc" ? { this = {} } : {}
+    content {
+      assign_public_ip = each.value.assign_public_ip
+      subnets          = each.value.vpc_subnet_id_list
+      security_groups  = each.value.vpc_security_group_id_list
+    }
   }
   dynamic "ordered_placement_strategy" {
     for_each = each.value.placement_constraint_list
@@ -40,7 +55,60 @@ resource "aws_ecs_service" "this_service" {
       type  = ordered_placement_strategy.value.type
     }
   }
-  propagate_tags = "SERVICE"
+  platform_version = null # Fargate
+  dynamic "placement_constraints" {
+    for_each = {} # TODO
+    content {
+      expression = placement_constraints.value.type
+      type       = placement_constraints.value.type
+    }
+  }
+  propagate_tags      = each.value.propagate_tag_source
+  scheduling_strategy = each.value.scheduling_strategy
+  dynamic "service_connect_configuration" {
+    for_each = {} # TODO
+    content {
+      enabled = service_connect_configuration.value.enabled
+      log_configuration {
+        log_driver = service_connect_configuration.value.log_driver
+        options    = service_connect_configuration.value.option_list
+        secret_option {
+          name       = service_connect_configuration.value.secret_name
+          value_from = service_connect_configuration.value.secret_arn
+        }
+      }
+      namespace = service_connect_configuration.value.namespace
+      dynamic "service" {
+        for_each = service_connect_configuration.service_map
+        content {
+          dynamic "client_alias" {
+            for_each = service.value.client_alias_port == null ? {} : { this = {} }
+            content {
+              dns_name = service.value.client_alias_fqdn
+              port     = service.value.client_alias_port
+            }
+          }
+          discovery_name        = service.value.discovery_name
+          ingress_port_override = service.value.ingress_port_override
+          port_name             = service.value.container_port_mapping_name
+          dynamic "timeout" {
+            for_each = service.value.timeout_map
+            content {
+              idle_timeout_seconds        = timeout.value.idle_timeout_seconds
+              per_request_timeout_seconds = timeout.value.per_request_timeout_seconds
+            }
+          }
+          tls {
+            issuer_cert_authority {
+              aws_pca_authority_arn = service.value.aws_pca_authority_arn
+            }
+            kms_key  = service.value.kms_key_name
+            role_arn = service.value.iam_role_arn
+          }
+        }
+      }
+    }
+  }
   dynamic "service_registries" {
     for_each = each.value.sd_hostname != null ? { this = {} } : {}
     content {
@@ -50,5 +118,27 @@ resource "aws_ecs_service" "this_service" {
       registry_arn   = aws_service_discovery_service.discovery[each.key].arn
     }
   }
-  task_definition = each.value.ecs_task_definition_arn
+  tags                  = each.value.tags
+  task_definition       = each.value.ecs_task_definition_arn
+  triggers              = {}    # TODO
+  wait_for_steady_state = false # Terraform wait
+}
+
+resource "aws_service_discovery_service" "discovery" {
+  for_each = local.create_sd_map
+  dns_config {
+    dns_records {
+      type = "A"
+      ttl  = 300 # TODO: DRY with dns/record
+    }
+    namespace_id   = each.value.sd_namespace_id
+    routing_policy = null
+  }
+  force_destroy = false
+  # health_check_config # TODO
+  # health_check_custom_config # TODO
+  name         = each.value.sd_hostname
+  namespace_id = each.value.sd_namespace_id
+  tags         = each.value.tags
+  type         = null
 }

@@ -1,7 +1,10 @@
 import json
+import typing
 
 
-def main(event: dict, context: dict) -> dict:
+def main(
+    event: dict[str, typing.Any], context: dict[str, typing.Any]
+) -> dict[str, typing.Any]:
     # See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html # noqa: E501
     request = event.get("request", {})
     if not request:

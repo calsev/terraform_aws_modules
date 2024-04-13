@@ -193,6 +193,8 @@ This app uses the [vpc_stack module](vpc_stack) to create multiple peered VPCs i
 This example will work for most AWS accounts for startups by modifying only the CIDR of the VPC.
 For finer-grained control and advanced usage, see the underlying [vpc_networking module](vpc_networking).
 
+In this example an ELB is also instantiated with standard HTTP and HTTPS listeners.
+
 Notably, this example app generates output that is suitable for usage as the `vpc_data_map` variable that is expected by many other modules.
 Specifically, the output of this example can be imported and passed as `vpc_data_map = data.terraform_remote_state.net.outputs.data.vpc_map`.
 

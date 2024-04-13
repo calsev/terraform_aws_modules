@@ -8,7 +8,7 @@ module "machine_role" {
 module "api_role" {
   source = "path/to/modules/iam/role/api_gateway"
   name   = "api.example.com_api"
-  policy_attach_arn_map = {
+  role_policy_attach_arn_map_default = {
     lambda_invoke = module.lambda.data[local.lambda_name].iam_policy_arn_map.write
     machine_start = module.step_function.data[local.machine_name].iam_policy_arn_map.write
     queue_push    = module.sqs.data[local.queue_name].iam_policy_arn_map.write

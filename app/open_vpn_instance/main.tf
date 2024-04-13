@@ -45,7 +45,7 @@ module "instance_role" {
   name_include_app_fields = each.value.name_include_app_fields
   name_infix              = each.value.name_infix
   name                    = each.key
-  policy_attach_arn_map = {
+  role_policy_attach_arn_map_default = {
     eip_associate    = var.iam_data.iam_policy_arn_ec2_associate_eip
     attribute_modify = var.iam_data.iam_policy_arn_ec2_modify_attribute
   }

@@ -1,9 +1,12 @@
 import json
+import typing
 
 import package.lib as lib
 
 
-def main(event, context):
+def main(
+    event: dict[str, typing.Any], context: dict[str, typing.Any]
+) -> dict[str, typing.Any]:
     lib.do_nothing()
     body = {
         "message": "Success",
