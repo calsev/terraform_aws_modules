@@ -147,6 +147,11 @@ tf-lint: tflint-install
 	cd ../ecs/service && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs/task && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../efs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elb/listener && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elb/listener_certificate && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elb/load_balancer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elb/target_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/alert && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

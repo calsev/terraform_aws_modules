@@ -88,13 +88,13 @@ variable "site_map" {
     origin_dns_enabled                     = optional(bool)
     origin_fqdn                            = string
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
-    policy_attach_arn_map      = optional(map(string))
-    policy_create_json_map     = optional(map(string))
-    policy_inline_json_map     = optional(map(string))
-    policy_managed_name_map    = optional(map(string))
-    source_branch              = optional(string)
-    source_repository_id       = optional(string)
-    webhook_enable_github_hook = optional(bool)
+    role_policy_attach_arn_map   = optional(map(string))
+    role_policy_create_json_map  = optional(map(string))
+    role_policy_inline_json_map  = optional(map(string))
+    role_policy_managed_name_map = optional(map(string))
+    source_branch                = optional(string)
+    source_repository_id         = optional(string)
+    webhook_enable_github_hook   = optional(bool)
   }))
 }
 

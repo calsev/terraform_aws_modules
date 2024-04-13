@@ -1,11 +1,11 @@
 import json
+import typing
 import urllib.parse
-from typing import Optional
 
 ORIGIN_DEFAULT = "https://auth-site.example.com"
 
 
-def extract_allowed_origin(event: dict) -> str:
+def extract_allowed_origin(event: dict[str, typing.Any]) -> str:
     headers = event.get("headers", {})
     if not headers:
         print(f"Invalid event, no headers:\n{json.dumps(event, indent='')}")
@@ -17,7 +17,9 @@ def extract_allowed_origin(event: dict) -> str:
         print(f"Invalid headers, no referer:\n{json.dumps(headers, indent='')}")
         return ORIGIN_DEFAULT
 
-    referrer_parsed = urllib.parse.urlparse(referrer)
+    referrer_parsed = typing.cast(
+        urllib.parse.ParseResult, urllib.parse.urlparse(referrer)
+    )
     if any(referrer_parsed.hostname == origin for origin in ["127.0.0.1", "localhost"]):
         # Echo allowed origin
         return f"{referrer_parsed.scheme}://{referrer_parsed.netloc}"
@@ -25,9 +27,9 @@ def extract_allowed_origin(event: dict) -> str:
 
 
 def basic_return_value(
-    event: dict,
-    body: Optional[dict] = None,
-) -> dict:
+    event: dict[str, typing.Any],
+    body: typing.Optional[dict[str, typing.Any]] = None,
+) -> dict[str, typing.Any]:
     value = {
         "statusCode": 200,
         "headers": {
@@ -44,9 +46,9 @@ def basic_return_value(
 
 def body_return_value(
     message: str,
-    event: dict,
-    body: Optional[dict] = None,
-) -> dict:
+    event: dict[str, typing.Any],
+    body: typing.Optional[dict[str, typing.Any]] = None,
+) -> dict[str, typing.Any]:
     body = {
         "message": message,
         "event": event,

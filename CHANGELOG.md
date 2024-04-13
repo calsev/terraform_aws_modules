@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.28.0
+
+### New modules
+
+* ELB listener
+* ELB Listener certificate
+* ELB load balancer
+* ELB target group
+
+### General
+
+* Retool role policy parameters
+* Add support for ELB to ASG and ECS cluster
+* Expand parameterization of ECS service
+* Embed role and log group in ECS task
+* Tighten default host memory for ECS task
+* Conform Python scripts to strict type checking
+
 ## 0.27.0
 
 ### New modules

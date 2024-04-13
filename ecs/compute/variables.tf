@@ -4,6 +4,7 @@ variable "compute_map" {
     auto_scaling_num_instances_max           = optional(number)
     auto_scaling_num_instances_min           = optional(number)
     auto_scaling_protect_from_scale_in       = optional(bool)
+    elb_target_group_key_list                = optional(list(string))
     image_id                                 = optional(string)
     instance_allocation_type                 = optional(string)
     instance_storage_gib                     = optional(number)
@@ -41,7 +42,12 @@ variable "compute_auto_scaling_num_instances_min_default" {
 
 variable "compute_auto_scaling_protect_from_scale_in_default" {
   type    = bool
-  default = false
+  default = true
+}
+
+variable "compute_elb_target_group_key_list_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "compute_image_id_default" {
@@ -59,8 +65,9 @@ variable "compute_instance_allocation_type_default" {
 }
 
 variable "compute_instance_storage_gib_default" {
-  type    = number
-  default = 30
+  type        = number
+  default     = 30
+  description = "This is the minimum allowed"
 }
 
 variable "compute_instance_type_default" {
@@ -93,7 +100,7 @@ variable "compute_provider_managed_scaling_enabled_default" {
 variable "compute_provider_managed_termination_protection_default" {
   type        = bool
   default     = true
-  description = "Ignored for Fargate capacity type"
+  description = "Ignored for Fargate capacity type. Requires auto_scaling_protect_from_scale_in."
 }
 
 variable "compute_provider_step_size_max_default" {
@@ -117,6 +124,14 @@ variable "compute_provider_target_capacity_default" {
 variable "compute_user_data_command_list_default" {
   type    = list(string)
   default = null
+}
+
+variable "elb_target_data_map" {
+  type = map(object({
+    target_group_arn = string
+  }))
+  default     = null
+  description = "Must be provided if any ASG has an attached ELB"
 }
 
 variable "iam_data" {

@@ -53,8 +53,11 @@ module "cert_oregon" {
   }
   dns_data = local.o1_map
   domain_map = {
+    "elb.example.com"      = {}
     "api.example.com"      = {}
     "auth_api.example.com" = {}
+    "web.example.com"      = {}
+    "web_dev.example.com"  = {}
   }
   domain_dns_from_zone_key_default = "example.com"
   std_map                          = module.oregon_lib.std_map

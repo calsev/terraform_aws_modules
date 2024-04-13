@@ -1,11 +1,14 @@
 import json
+import typing
 
 
-def return_value(is_authorized: bool) -> dict:
+def return_value(is_authorized: bool) -> dict[str, typing.Any]:
     return {"isAuthorized": is_authorized}
 
 
-def main(event: dict, context: dict) -> dict:
+def main(
+    event: dict[str, typing.Any], context: dict[str, typing.Any]
+) -> dict[str, typing.Any]:
     headers = event.get("headers", {})
     if not headers:
         print(f"Invalid event, no headers:\n{json.dumps(event, indent='')}")

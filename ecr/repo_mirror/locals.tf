@@ -5,11 +5,7 @@ locals {
       policy = {
         (var.task_name) = module.ecr_mirror_policy.data
       }
-      role = {
-        (var.task_name) = module.ecs_task_role.data
-      }
     }
-    log  = module.ecr_mirror_log.data
     repo = module.ecr_repo.data
     task = module.ecr_mirror_task.data
   }

@@ -6,14 +6,17 @@ resource "aws_autoscaling_group" "this_asg" {
   default_instance_warmup          = 0
   desired_capacity                 = each.value.auto_scaling_num_instances_min
   desired_capacity_type            = null # Default "units" causes a dirty plan
-  enabled_metrics                  = null # TODO
+  enabled_metrics                  = null # All by default
   force_delete                     = false
   force_delete_warm_pool           = false
   health_check_grace_period        = 300
-  health_check_type                = "EC2" # TODO: ELB
+  health_check_type                = each.value.health_check_type
   ignore_failed_scaling_activities = false
   # initial_lifecycle_hook # TODO
-  # instance_maintenance_policy # TODO
+  instance_maintenance_policy {
+    max_healthy_percentage = each.value.instance_maintenance_max_healthy_percentage
+    min_healthy_percentage = each.value.instance_maintenance_min_healthy_percentage
+  }
   instance_refresh {
     preferences {
       auto_rollback                = false
@@ -40,10 +43,10 @@ resource "aws_autoscaling_group" "this_asg" {
       tag, # This is where ECS adds tags for managed ASG
     ]
   }
-  load_balancers        = null # Obsolete
+  load_balancers        = null # Obsolete: classic load balancer
   max_instance_lifetime = 0
   metrics_granularity   = "1Minute"
-  min_elb_capacity      = null # TODO
+  min_elb_capacity      = null # TF Wait
   # mixed_instances_policy # Conflicts with launch_template
   name        = null                            # Conflicts with name_prefix
   name_prefix = each.value.resource_name_prefix # Name causes issues with replacing
@@ -63,10 +66,10 @@ resource "aws_autoscaling_group" "this_asg" {
     }
   }
   termination_policies = ["OldestLaunchConfiguration", "OldestInstance", "AllocationStrategy", "Default"]
-  # target_group_arns # TODO
+  target_group_arns    = each.value.elb_target_group_arn_list
   # traffic_source # TODO
   vpc_zone_identifier       = each.value.vpc_subnet_id_list
   wait_for_capacity_timeout = "10m"
-  wait_for_elb_capacity     = null # TODO
+  wait_for_elb_capacity     = null # TF Wait
   # warm_pool # TODO
 }

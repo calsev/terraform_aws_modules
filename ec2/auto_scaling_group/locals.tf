@@ -22,17 +22,25 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
-      auto_scaling_iam_role_arn_service_linked = v.auto_scaling_iam_role_arn_service_linked == null ? var.group_auto_scaling_iam_role_arn_service_linked_default : v.auto_scaling_iam_role_arn_service_linked
-      auto_scaling_num_instances_max           = v.auto_scaling_num_instances_max == null ? var.group_auto_scaling_num_instances_max_default : v.auto_scaling_num_instances_max
-      auto_scaling_num_instances_min           = v.auto_scaling_num_instances_min == null ? var.group_auto_scaling_num_instances_min_default : v.auto_scaling_num_instances_min
-      auto_scaling_protect_from_scale_in       = v.auto_scaling_protect_from_scale_in == null ? var.group_auto_scaling_protect_from_scale_in_default : v.auto_scaling_protect_from_scale_in
-      placement_group_id                       = v.placement_group_id == null ? var.group_placement_group_id_default : v.placement_group_id
-      launch_template_id                       = v.launch_template_id == null ? var.group_launch_template_id_default : v.launch_template_id
+      auto_scaling_iam_role_arn_service_linked    = v.auto_scaling_iam_role_arn_service_linked == null ? var.group_auto_scaling_iam_role_arn_service_linked_default : v.auto_scaling_iam_role_arn_service_linked
+      auto_scaling_num_instances_max              = v.auto_scaling_num_instances_max == null ? var.group_auto_scaling_num_instances_max_default : v.auto_scaling_num_instances_max
+      auto_scaling_num_instances_min              = v.auto_scaling_num_instances_min == null ? var.group_auto_scaling_num_instances_min_default : v.auto_scaling_num_instances_min
+      auto_scaling_protect_from_scale_in          = v.auto_scaling_protect_from_scale_in == null ? var.group_auto_scaling_protect_from_scale_in_default : v.auto_scaling_protect_from_scale_in
+      elb_target_group_key_list                   = v.elb_target_group_key_list == null ? var.group_elb_target_group_key_list_default : v.elb_target_group_key_list
+      health_check_type                           = v.health_check_type == null ? var.group_health_check_type_default : v.health_check_type
+      instance_maintenance_max_healthy_percentage = v.instance_maintenance_max_healthy_percentage == null ? var.group_instance_maintenance_max_healthy_percentage_default : v.instance_maintenance_max_healthy_percentage
+      instance_maintenance_min_healthy_percentage = v.instance_maintenance_min_healthy_percentage == null ? var.group_instance_maintenance_min_healthy_percentage_default : v.instance_maintenance_min_healthy_percentage
+      launch_template_id                          = v.launch_template_id == null ? var.group_launch_template_id_default : v.launch_template_id
+      placement_group_id                          = v.placement_group_id == null ? var.group_placement_group_id_default : v.placement_group_id
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      health_check_type    = local.l1_map[k].health_check_type == null ? length(local.l1_map[k].elb_target_group_key_list) == 0 ? "EC2" : "ELB" : local.l1_map[k].health_check_type
       resource_name_prefix = "${local.l1_map[k].name_effective}-"
+      elb_target_group_arn_list = [
+        for key in local.l1_map[k].elb_target_group_key_list : var.elb_target_data_map[key].target_group_arn
+      ]
     }
   }
   lx_map = {

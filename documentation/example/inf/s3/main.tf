@@ -24,8 +24,23 @@ module "milan_lib" {
 
 module "oregon_bucket" {
   source = "path/to/modules/s3/bucket"
-
-  bucket_map                = local.bucket_map
+  bucket_map = {
+    example_backup_cal    = {}
+    example_backup_marina = {}
+    example_cf_template   = {}
+    example_data          = {}
+    example_deploy        = {}
+    example_log = {
+      allow_elb_logging         = true
+      lifecycle_expiration_days = 30
+    }
+    example_log_public = {
+      allow_public              = true
+      encryption_disabled       = false # Use only website to access
+      lifecycle_expiration_days = 30
+    }
+    example_package = {}
+  }
   bucket_name_infix_default = false
   std_map                   = module.com_lib.std_map
 }
@@ -35,7 +50,6 @@ module "milan_bucket" {
   providers = {
     aws = aws.milan
   }
-
   bucket_map = {
     "download.milan.example.com" = {
       allow_public = true

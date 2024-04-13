@@ -1,11 +1,17 @@
 module "this_event_bus" {
   source  = "../../event/bus"
-  bus_map = local.bus_map
+  bus_map = local.create_bus_map
+  std_map = var.std_map
+}
+
+module "task_log" {
+  source  = "../../cw/log_group"
+  log_map = local.l0_map # This is used later
   std_map = var.std_map
 }
 
 resource "aws_ecs_task_definition" "this_task" {
-  for_each                 = local.task_map
+  for_each                 = local.lx_map
   container_definitions    = jsonencode(each.value.container_definition_list)
   cpu                      = each.value.resource_num_vcpu * 1024
   execution_role_arn       = each.value.iam_role_arn_execution
@@ -14,7 +20,7 @@ resource "aws_ecs_task_definition" "this_task" {
   network_mode             = each.value.network_mode
   requires_compatibilities = [each.value.capability_type]
   tags                     = each.value.tags
-  task_role_arn            = each.value.iam_role_arn_task
+  task_role_arn            = module.task_role[each.key].data.iam_role_arn
   dynamic "volume" {
     for_each = each.value.efs_volume_map
     content {
@@ -40,7 +46,7 @@ module "alert_trigger" {
   source                = "../../event/alert"
   alert_enabled_default = var.alert_enabled_default
   alert_level_default   = var.alert_level_default
-  alert_map             = local.task_map
+  alert_map             = local.lx_map
   monitor_data          = var.monitor_data
   std_map               = var.std_map
 }

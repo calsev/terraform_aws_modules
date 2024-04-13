@@ -38,6 +38,26 @@ variable "monitor_data" {
   })
 }
 
+variable "role_policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
+}
+
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
@@ -86,14 +106,16 @@ variable "task_map" {
       transit_encryption_enabled    = optional(bool)
       transit_encryption_port       = optional(string)
     })))
-    iam_role_arn_task        = optional(string)
-    iam_role_arn_execution   = optional(string)
-    log_group_name           = optional(string)
-    network_mode             = optional(string)
-    resource_memory_gib      = optional(number)
-    resource_memory_host_gib = optional(number)
-    resource_num_vcpu        = optional(string)
-    schedule_expression      = optional(string)
+    iam_role_arn_execution       = optional(string)
+    network_mode                 = optional(string)
+    resource_memory_gib          = optional(number)
+    resource_memory_host_gib     = optional(number)
+    resource_num_vcpu            = optional(string)
+    role_policy_attach_arn_map   = optional(map(string))
+    role_policy_create_json_map  = optional(map(string))
+    role_policy_inline_json_map  = optional(map(string))
+    role_policy_managed_name_map = optional(map(string))
+    schedule_expression          = optional(string)
   }))
 }
 
@@ -195,21 +217,10 @@ variable "task_efs_transit_encryption_port_default" {
   default = null
 }
 
-variable "task_iam_role_arn_task_default" {
-  type        = string
-  default     = null
-  description = "The role the task will assume"
-}
-
 variable "task_iam_role_arn_execution_default" {
   type        = string
   default     = null
   description = "By default, the task execution role is the basic role from IAM data. This overrides the default."
-}
-
-variable "task_log_group_name_default" {
-  type    = string
-  default = null
 }
 
 variable "task_network_mode_default" {

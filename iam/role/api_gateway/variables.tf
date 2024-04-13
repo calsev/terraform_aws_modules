@@ -1,3 +1,18 @@
+variable "map_policy" {
+  type = object({
+    role_policy_attach_arn_map   = optional(map(string))
+    role_policy_create_json_map  = optional(map(string))
+    role_policy_inline_json_map  = optional(map(string))
+    role_policy_managed_name_map = optional(map(string))
+  })
+  default = {
+    role_policy_attach_arn_map   = null
+    role_policy_create_json_map  = null
+    role_policy_inline_json_map  = null
+    role_policy_managed_name_map = null
+  }
+}
+
 variable "max_session_duration_m" {
   type    = number
   default = null
@@ -19,23 +34,23 @@ variable "name_prefix" {
   description = "If provided, will be put in front of the standard prefix for the role name."
 }
 
-variable "policy_attach_arn_map" {
+variable "role_policy_attach_arn_map_default" {
   type        = map(string)
   default     = {}
   description = "The special sauce for the role; tracing comes free"
 }
 
-variable "policy_create_json_map" {
+variable "role_policy_create_json_map_default" {
   type    = map(string)
   default = {}
 }
 
-variable "policy_inline_json_map" {
+variable "role_policy_inline_json_map_default" {
   type    = map(string)
   default = {}
 }
 
-variable "policy_managed_name_map" {
+variable "role_policy_managed_name_map_default" {
   type        = map(string)
   default     = {}
   description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"

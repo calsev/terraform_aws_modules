@@ -47,16 +47,16 @@ locals {
     enable_assume_role       = var.assume_role_service_list == null ? false : length(var.assume_role_service_list) == 0 ? false : true
     create_instance_profile  = var.create_instance_profile
     max_session_duration_m   = var.max_session_duration_m
-    policy_attach_arn_map = {
+    role_policy_attach_arn_map = {
       for name, arn in module.role_policy_map.data[var.name].role_policy_attach_arn_map : "2-attached-${name}" => arn
     }
-    policy_create_doc_map = {
+    role_policy_create_doc_map = {
       for k, v in module.role_policy_map.data[var.name].role_policy_create_json_map : k => jsondecode(v)
     }
-    policy_inline_doc_map = {
+    role_policy_inline_doc_map = {
       for k, v in module.role_policy_map.data[var.name].role_policy_inline_json_map : k => jsondecode(v)
     }
-    policy_managed_arn_map = {
+    role_policy_managed_arn_map = {
       for name, policy in module.role_policy_map.data[var.name].role_policy_managed_name_map : "1-managed-${name}" => "arn:${var.std_map.iam_partition}:iam::aws:policy/${policy}"
     }
     role_path = var.role_path == null ? null : "/${trim(var.role_path, "/")}/"
@@ -65,15 +65,15 @@ locals {
     assume_role_doc = var.assume_role_json == null ? module.assume_role_policy["this"].iam_policy_doc_assume_role : jsondecode(var.assume_role_json)
   }
   l3_map = {
-    policy_create_arn_map = {
-      for k, _ in local.l1_map.policy_create_doc_map : "3-created-${k}" => aws_iam_policy.this_created_policy[k].arn
+    role_policy_create_arn_map = {
+      for k, _ in local.l1_map.role_policy_create_doc_map : "3-created-${k}" => aws_iam_policy.this_created_policy[k].arn
     }
   }
   l4_map = {
-    policy_all_attached_arn_map = merge(
-      local.l1_map.policy_managed_arn_map,
-      local.l1_map.policy_attach_arn_map,
-      local.l3_map.policy_create_arn_map,
+    role_policy_all_attached_arn_map = merge(
+      local.l1_map.role_policy_managed_arn_map,
+      local.l1_map.role_policy_attach_arn_map,
+      local.l3_map.role_policy_create_arn_map,
     )
   }
   # tflint-ignore: terraform_unused_declarations
