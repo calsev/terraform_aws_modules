@@ -1,3 +1,20 @@
+variable "alarm_metric_name_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "alarm_monitoring_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless at least one alarm is specified"
+}
+
+variable "alarm_rollback_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless at least one alarm is specified"
+}
+
 variable "dns_data" {
   type = object({
     domain_to_sd_zone_map = map(object({
@@ -45,6 +62,9 @@ variable "name_infix_default" {
 
 variable "service_map" {
   type = map(object({
+    alarm_metric_name_list                         = optional(list(string))
+    alarm_monitoring_enabled                       = optional(bool)
+    alarm_rollback_enabled                         = optional(bool)
     assign_public_ip                               = optional(bool)
     deployment_controller_circuit_breaker_enabled  = optional(bool)
     deployment_controller_circuit_breaker_rollback = optional(bool)
@@ -122,13 +142,15 @@ variable "service_desired_count_default" {
 }
 
 variable "service_ecs_cluster_key_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Defaults to service key"
 }
 
 variable "service_ecs_task_definition_key_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Defaults to service key"
 }
 
 variable "service_elb_container_name_default" {
@@ -160,7 +182,7 @@ variable "service_execute_command_enabled_default" {
 variable "service_force_new_deployment_default" {
   type        = bool
   default     = true
-  description = "Avoids several configuration headaches"
+  description = "Avoids several configuration headaches. Ignored for CODE_DEPLOY controller."
 }
 
 variable "service_iam_role_arn_elb_calls_default" {
@@ -186,7 +208,7 @@ variable "service_propagate_tag_source_default" {
 variable "service_scheduling_strategy_default" {
   type        = string
   default     = "REPLICA"
-  description = "Compatible with only ECS deployment controller. Conflicts with desired count."
+  description = "DAEMON is compatible with only ECS deployment controller and conflicts with desired count."
   validation {
     condition     = contains(["DAEMON", "REPLICA"], var.service_scheduling_strategy_default)
     error_message = "Invalid scheduling strategy"

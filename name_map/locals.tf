@@ -3,9 +3,9 @@ locals {
     for k, v in var.name_map : k => merge(v, {
       name_include_app_fields         = v.name_include_app_fields == null ? var.name_include_app_fields_default : v.name_include_app_fields
       name_infix                      = v.name_infix == null ? var.name_infix_default : v.name_infix
-      name_prefix                     = replace(replace(v.name_prefix == null ? var.name_prefix_default : v.name_prefix, local.name_regex_prefix, "-"), "--", "-")
-      name_simple                     = replace(replace(k, local.name_regex_root, "-"), "--", "-")
-      name_suffix                     = replace(replace(v.name_suffix == null ? var.name_suffix_default : v.name_suffix, local.name_regex_suffix, "-"), "--", "-")
+      name_prefix                     = lower(replace(replace(v.name_prefix == null ? var.name_prefix_default : v.name_prefix, local.name_regex_prefix, "-"), "--", "-"))
+      name_simple                     = lower(replace(replace(k, local.name_regex_root, "-"), "--", "-"))
+      name_suffix                     = lower(replace(replace(v.name_suffix == null ? var.name_suffix_default : v.name_suffix, local.name_regex_suffix, "-"), "--", "-"))
       temp_name_convention_underscore = length(split("-", k)) > 1 ? file("Key ${k} should be in snake case") : null
     })
   }
@@ -25,8 +25,8 @@ locals {
     for k, _ in var.name_map : k => {
       # Always use full regex because infix makes no sense as anything else
       # Always do standard replace for name_context - use name_effective for DNS, etc.
-      name_context   = replace("${local.l1_map[k].name_prefix}${replace(local.l2_map[k].temp_root_full_context, var.std_map.name_replace_regex, "-")}${local.l1_map[k].name_suffix}", "--", "-")
-      name_effective = replace("${local.l1_map[k].name_prefix}${local.l3_map[k].temp_root_effective_context}${local.l1_map[k].name_suffix}", "--", "-")
+      name_context   = lower(replace("${local.l1_map[k].name_prefix}${replace(local.l2_map[k].temp_root_full_context, var.std_map.name_replace_regex, "-")}${local.l1_map[k].name_suffix}", "--", "-"))
+      name_effective = lower(replace("${local.l1_map[k].name_prefix}${local.l3_map[k].temp_root_effective_context}${local.l1_map[k].name_suffix}", "--", "-"))
     }
   }
   l5_map = {

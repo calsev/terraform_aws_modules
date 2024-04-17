@@ -1,11 +1,11 @@
 resource "aws_ecs_service" "this_service" {
   for_each = local.lx_map
   dynamic "alarms" {
-    for_each = {} # TODO
+    for_each = length(each.value.alarm_metric_name_list) == 0 ? {} : { this = {} }
     content {
-      alarm_names = alarms.value.alarm_name_list
-      enable      = alarms.enable
-      rollback    = alarms.rollback
+      alarm_names = each.value.alarm_metric_name_list
+      enable      = each.value.alarm_monitoring_enabled
+      rollback    = alarms.alarm_rollback_enabled
     }
   }
   capacity_provider_strategy { # Conflicts with launch_type
@@ -14,9 +14,12 @@ resource "aws_ecs_service" "this_service" {
     weight            = 100 # We are always using 1 ASG per cluster
   }
   cluster = each.value.ecs_cluster_id
-  deployment_circuit_breaker {
-    enable   = each.value.deployment_controller_circuit_breaker_enabled_effective
-    rollback = each.value.deployment_controller_circuit_breaker_rollback_effective
+  dynamic "deployment_circuit_breaker" {
+    for_each = each.value.deployment_controller_type == "ECS" ? { this = {} } : {}
+    content {
+      enable   = each.value.deployment_controller_circuit_breaker_enabled_effective
+      rollback = each.value.deployment_controller_circuit_breaker_rollback_effective
+    }
   }
   deployment_controller {
     type = each.value.deployment_controller_type
@@ -26,7 +29,7 @@ resource "aws_ecs_service" "this_service" {
   desired_count                      = each.value.desired_count_effective
   enable_ecs_managed_tags            = each.value.managed_tags_enabled
   enable_execute_command             = each.value.execute_command_enabled
-  force_new_deployment               = each.value.force_new_deployment
+  force_new_deployment               = each.value.force_new_deployment_effective
   health_check_grace_period_seconds  = each.value.elb_health_check_grace_period_seconds_effective
   iam_role                           = each.value.iam_role_arn_elb_calls_effective
   launch_type                        = null # Conflicts with capacity_provider_strategy

@@ -9,7 +9,7 @@ module "name_map" {
 locals {
   create_attachment_map = {
     for k, v in local.lx_map : k => merge(v, {
-      elb_listener_arn = v.is_listener ? aws_lb_listener.this_listener[k].arn : lookup(local.lx_map, v.rule_listener_key, null) == null ? var.elb_data_map[v.elb_key].protocol_to_listener_map[v.rule_listener_key].elb_listener_arn : aws_lb_listener.this_listener[v.rule_listener_key].arn
+      elb_listener_arn = v.is_listener ? aws_lb_listener.this_listener[k].arn : lookup(local.lx_map, v.rule_listener_key, null) == null ? var.elb_data_map[v.elb_key].protocol_to_port_to_listener_map[v.rule_listener_key][v.listen_port].elb_listener_arn : aws_lb_listener.this_listener[v.rule_listener_key].arn
     })
   }
   create_listener_map = {
@@ -23,7 +23,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      acm_certificate_fqdn                                   = v.acm_certificate_fqdn == null ? var.listener_acm_certificate_fqdn_default : v.acm_certificate_fqdn
+      acm_certificate_key                                    = v.acm_certificate_key == null ? var.listener_acm_certificate_key_default : v.acm_certificate_key
       alpn_policy                                            = v.alpn_policy == null ? var.listener_alpn_policy_default : v.alpn_policy
       action_map                                             = v.action_map == null ? var.listener_action_map_default : v.action_map
       elb_key                                                = v.elb_key == null ? var.listener_elb_key_default : v.elb_key
@@ -38,7 +38,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      acm_certificate_arn = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_fqdn].certificate_arn
+      acm_certificate_arn = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn
       action_map = {
         for k_act, v_act in local.l1_map[k].action_map : k_act => merge(v_act, {
           action_fixed_response_content_type          = v_act.action_fixed_response_content_type == null ? var.listener_action_fixed_response_content_type_default : v_act.action_fixed_response_content_type
@@ -113,9 +113,10 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        cert                  = module.certificate.data[k]
-        elb_listener_arn      = v.is_listener ? aws_lb_listener.this_listener[k].arn : null
-        elb_listener_rule_arn = v.is_listener ? null : aws_lb_listener_rule.this_rule[k].arn
+        cert                    = module.certificate.data[k]
+        elb_listener_arn        = v.is_listener ? aws_lb_listener.this_listener[k].arn : null
+        elb_listener_rule_arn   = v.is_listener ? null : aws_lb_listener_rule.this_rule[k].arn
+        elb_listener_target_arn = local.create_attachment_map[k].elb_listener_arn
       }
     )
   }

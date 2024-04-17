@@ -183,6 +183,26 @@ variable "sg_map_public" {
         }
       }
     }
+    http_alt_in = {
+      rule_map = {
+        http = {
+          cidr_blocks      = null
+          from_port        = 8080
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        https = {
+          cidr_blocks      = null
+          from_port        = 8443
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     icmp_in = {
       rule_map = {
         icmp = {

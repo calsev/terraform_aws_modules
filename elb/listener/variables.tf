@@ -5,6 +5,7 @@ variable "dns_data" {
     }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
+      name_simple     = string
     })))
   })
 }
@@ -14,9 +15,9 @@ variable "elb_data_map" {
     elb_arn         = string
     elb_dns_name    = string
     elb_dns_zone_id = string
-    protocol_to_listener_map = map(object({
+    protocol_to_port_to_listener_map = map(map(object({
       elb_listener_arn = string
-    }))
+    })))
   }))
 }
 
@@ -30,7 +31,7 @@ variable "elb_target_data_map" {
 
 variable "listener_map" {
   type = map(object({
-    acm_certificate_fqdn = optional(string)
+    acm_certificate_key = optional(string)
     action_map = optional(map(object({
       action_fixed_response_content_type         = optional(string)
       action_fixed_response_message_body         = optional(string)
@@ -94,7 +95,7 @@ variable "listener_map" {
   }))
 }
 
-variable "listener_acm_certificate_fqdn_default" {
+variable "listener_acm_certificate_key_default" {
   type        = string
   default     = null
   description = "Must be provided if a listener uses HTTPS. Ignored for other protocols."

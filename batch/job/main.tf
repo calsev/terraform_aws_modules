@@ -3,7 +3,7 @@ resource "aws_batch_job_definition" "this_job" {
   name     = each.value.name_effective
   container_properties = jsonencode({
     # args does not work as advertised
-    command = concat(each.value.entry_point, each.value.command_list)
+    command = concat(each.value.entry_point == null ? [] : each.value.entry_point, each.value.command_list)
     environment = [
       for k, v in each.value.environment_map :
       {
@@ -45,7 +45,7 @@ resource "aws_batch_job_definition" "this_job" {
     ]
   })
   parameters            = each.value.parameter_map
-  platform_capabilities = [] # TODO
+  platform_capabilities = ["EC2"] # TODO
   propagate_tags        = true
   tags                  = each.value.tags
   type                  = "container"

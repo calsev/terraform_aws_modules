@@ -19,16 +19,19 @@ module "vpc_map" {
 locals {
   create_listener_1_list = flatten([
     for k, v in local.lx_map : [
-      for k_listen, v_listen in v.protocol_to_listener_map : merge(v, v_listen, {
-        action_map = {
-          for k_act, v_act in v_listen.action_map : k_act => merge(v_act, {
-            acm_certificate_fqdn = v.acm_certificate_fqdn
-          })
-        }
-        k_all           = "${k}_${k_listen}"
-        elb_key         = k
-        listen_protocol = k_listen
-      })
+      for k_proto, v_proto in v.protocol_to_port_to_listener_map : [
+        for k_port, v_port in v_proto : merge(v, v_port, {
+          action_map = {
+            for k_act, v_act in v_port.action_map : k_act => merge(v_act, {
+              acm_certificate_key = v.acm_certificate_key
+            })
+          }
+          k_all           = "${k}_${k_proto}_${k_port}"
+          elb_key         = k
+          listen_port     = k_port
+          listen_protocol = k_proto
+        })
+      ]
     ]
   ])
   create_listener_x_map = {
@@ -36,10 +39,10 @@ locals {
   }
   elb_data_map_emulated = {
     for k, v in local.lx_map : k => {
-      elb_arn                  = aws_lb.this_lb[k].arn
-      elb_dns_name             = aws_lb.this_lb[k].dns_name
-      elb_dns_zone_id          = aws_lb.this_lb[k].zone_id
-      protocol_to_listener_map = {}
+      elb_arn                          = aws_lb.this_lb[k].arn
+      elb_dns_name                     = aws_lb.this_lb[k].dns_name
+      elb_dns_zone_id                  = aws_lb.this_lb[k].zone_id
+      protocol_to_port_to_listener_map = {}
     }
   }
   l0_map = {
@@ -63,7 +66,7 @@ locals {
       is_internal                                 = v.is_internal == null ? var.elb_is_internal_default : v.is_internal
       load_balancer_type                          = "application"
       preserve_host_header                        = v.preserve_host_header == null ? var.elb_preserve_host_header_default : v.preserve_host_header
-      protocol_to_listener_map                    = v.protocol_to_listener_map == null ? var.elb_protocol_to_listener_map_default : v.protocol_to_listener_map
+      protocol_to_port_to_listener_map            = v.protocol_to_port_to_listener_map == null ? var.elb_protocol_to_port_to_listener_map_default : v.protocol_to_port_to_listener_map
       xff_header_processing_mode                  = v.xff_header_processing_mode == null ? var.elb_xff_header_processing_mode_default : v.xff_header_processing_mode
     })
   }
@@ -87,8 +90,10 @@ locals {
       local.elb_data_map_emulated[k],
       {
         elb_arn_suffix = aws_lb.this_lb[k].arn_suffix
-        protocol_to_listener_map = {
-          for k_listen, v_listen in v.protocol_to_listener_map : k_listen => merge(v_listen, module.elb_listener.data["${k}_${k_listen}"])
+        protocol_to_port_to_listener_map = {
+          for k_proto, v_proto in v.protocol_to_port_to_listener_map : k_proto => {
+            for k_port, v_port in v_proto : k_port => merge(v_port, module.elb_listener.data["${k}_${k_proto}_${k_port}"])
+          }
         }
       }
     )

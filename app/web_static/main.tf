@@ -1,28 +1,32 @@
 module "cdn" {
   source                            = "../../cdn/distribution"
   cdn_global_data                   = var.cdn_global_data
-  domain_dns_from_zone_key_default  = var.site_dns_from_zone_key_default
-  domain_map                        = local.create_cdn_map
-  domain_origin_dns_enabled_default = var.site_origin_dns_enabled_default
+  domain_dns_from_zone_key_default  = var.domain_dns_from_zone_key_default
+  domain_map                        = local.lx_map
+  domain_origin_dns_enabled_default = var.domain_origin_dns_enabled_default
   dns_data                          = var.dns_data
+  name_include_app_fields_default   = var.name_include_app_fields_default
+  name_infix_default                = var.name_infix_default
   std_map                           = var.std_map
 }
 
 module "code_build" {
   source             = "../../ci_cd/build"
   ci_cd_account_data = var.ci_cd_account_data
-  repo_map           = local.build_map
+  repo_map           = local.create_build_map
   std_map            = var.std_map
 }
 
-module "code_pipe" {
-  source                                  = "../../ci_cd/pipe"
-  ci_cd_account_data                      = var.ci_cd_account_data
-  pipe_iam_role_arn_default               = var.site_build_iam_role_arn_default
-  pipe_map                                = local.pipe_map
-  pipe_secret_is_param_default            = var.site_ci_cd_pipeline_webhook_secret_is_param_default
-  pipe_source_connection_name_default     = var.code_star_connection_key
-  pipe_source_repository_id_default       = var.site_source_repository_id_default
-  pipe_webhook_enable_github_hook_default = var.site_webhook_enable_github_hook_default
-  std_map                                 = var.std_map
+module "pipe" {
+  source                                       = "../../ci_cd/pipe_embedded"
+  ci_cd_account_data                           = var.ci_cd_account_data
+  name_include_app_fields_default              = var.name_include_app_fields_default
+  name_infix_default                           = var.name_infix_default
+  pipe_map                                     = local.create_pipe_map
+  pipe_source_branch_default                   = var.pipe_source_branch_default
+  pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
+  pipe_source_repository_id_default            = var.pipe_source_repository_id_default
+  pipe_webhook_enable_github_hook_default      = var.pipe_webhook_enable_github_hook_default
+  pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
+  std_map                                      = var.std_map
 }

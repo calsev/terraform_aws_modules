@@ -5,6 +5,7 @@ variable "dns_data" {
     }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
+      name_simple     = string
     })))
   })
 }
@@ -13,7 +14,7 @@ variable "elb_map" {
   type = map(object({
     access_log_bucket                           = optional(string)
     access_log_enabled                          = optional(bool)
-    acm_certificate_fqdn                        = optional(string) # Will be injected into HTTPS listener
+    acm_certificate_key                         = optional(string) # Will be injected into HTTPS listener
     connection_log_bucket                       = optional(string)
     connection_log_enabled                      = optional(bool)
     desync_mitigation_mode                      = optional(string)
@@ -30,7 +31,7 @@ variable "elb_map" {
     name_include_app_fields                     = optional(bool)
     name_infix                                  = optional(bool)
     preserve_host_header                        = optional(bool)
-    protocol_to_listener_map = optional(map(object({
+    protocol_to_port_to_listener_map = optional(map(map(object({
       action_map = map(object({
         action_fixed_response_content_type = optional(string)
         action_fixed_response_message_body = optional(string)
@@ -44,9 +45,8 @@ variable "elb_map" {
         action_redirect_status_code        = optional(string)
         action_type                        = optional(string)
       }))
-      listen_port       = optional(number)
       listen_ssl_policy = optional(string)
-    })))
+    }))))
     vpc_az_key_list             = optional(list(string))
     vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
@@ -152,8 +152,8 @@ variable "elb_preserve_host_header_default" {
   default = false
 }
 
-variable "elb_protocol_to_listener_map_default" {
-  type = map(object({
+variable "elb_protocol_to_port_to_listener_map_default" {
+  type = map(map(object({
     action_map = map(object({
       action_fixed_response_content_type = optional(string)
       action_fixed_response_message_body = optional(string)
@@ -167,50 +167,69 @@ variable "elb_protocol_to_listener_map_default" {
       action_redirect_status_code        = optional(string)
       action_type                        = optional(string)
     }))
-    listen_port       = optional(number)
     listen_ssl_policy = optional(string)
-  }))
+  })))
   default = {
     HTTP = {
-      action_map = {
-        default_redirect = {
-          action_fixed_response_content_type = null
-          action_fixed_response_message_body = null
-          action_fixed_response_status_code  = null
-          action_order                       = 50000
-          action_redirect_host               = null
-          action_redirect_path               = null
-          action_redirect_port               = 443
-          action_redirect_protocol           = "HTTPS"
-          action_redirect_query              = null
-          action_redirect_status_code        = null
-          action_type                        = "redirect"
+      80 = {
+        action_map = {
+          default_redirect = {
+            action_fixed_response_content_type = null
+            action_fixed_response_message_body = null
+            action_fixed_response_status_code  = null
+            action_order                       = 50000
+            action_redirect_host               = null
+            action_redirect_path               = null
+            action_redirect_port               = 443
+            action_redirect_protocol           = "HTTPS"
+            action_redirect_query              = null
+            action_redirect_status_code        = null
+            action_type                        = "redirect"
+          }
         }
+        listen_ssl_policy = null
       }
-      listen_port       = 80
-      listen_ssl_policy = null
     }
     HTTPS = {
-      action_map = {
-        default_not_found = {
-          action_fixed_response_content_type = null
-          action_fixed_response_message_body = "{status:\"Not Found\"}"
-          action_fixed_response_status_code  = 404
-          action_order                       = 50000
-          action_redirect_host               = null
-          action_redirect_path               = null
-          action_redirect_port               = null
-          action_redirect_protocol           = null
-          action_redirect_query              = null
-          action_redirect_status_code        = null
-          action_type                        = "fixed-response"
+      443 = {
+        action_map = {
+          default_not_found = {
+            action_fixed_response_content_type = null
+            action_fixed_response_message_body = "{status:\"Not Found\"}"
+            action_fixed_response_status_code  = 404
+            action_order                       = 50000
+            action_redirect_host               = null
+            action_redirect_path               = null
+            action_redirect_port               = null
+            action_redirect_protocol           = null
+            action_redirect_query              = null
+            action_redirect_status_code        = null
+            action_type                        = "fixed-response"
+          }
         }
+        listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
       }
-      listen_port       = null
-      listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      8443 = { # This is the test port for blue-green deployments
+        action_map = {
+          default_not_found = {
+            action_fixed_response_content_type = null
+            action_fixed_response_message_body = "{status:\"Not Found\"}"
+            action_fixed_response_status_code  = 404
+            action_order                       = 50000
+            action_redirect_host               = null
+            action_redirect_path               = null
+            action_redirect_port               = null
+            action_redirect_protocol           = null
+            action_redirect_query              = null
+            action_redirect_status_code        = null
+            action_type                        = "fixed-response"
+          }
+        }
+        listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      }
     }
   }
-  description = "These are standard listeners indexed by protocol only, so should use standard ports"
+  description = "These are standard listeners indexed by protocol and port"
 }
 
 variable "elb_xff_header_processing_mode_default" {
@@ -259,6 +278,7 @@ variable "vpc_security_group_key_list_default" {
   default = [
     "world_all_out",
     "world_http_in",
+    "world_http_alt_in",
   ]
 }
 

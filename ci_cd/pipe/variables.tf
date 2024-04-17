@@ -18,12 +18,12 @@ variable "pipe_map" {
     pipeline_type   = optional(string)
     secret_is_param = optional(bool)
     # There is always a source stage, that uses namespace "SourceSource" and produces zip artifact "SourceArtifact"
-    source_artifact_encryption_key = optional(string)
-    source_artifact_format         = optional(string)
-    source_branch                  = optional(string)
-    source_connection_name         = optional(string)
-    source_detect_changes          = optional(bool)
-    source_repository_id           = optional(string) # e.g. user-name/repo-name
+    source_artifact_encryption_key  = optional(string)
+    source_artifact_format          = optional(string)
+    source_branch                   = optional(string)
+    source_code_star_connection_key = optional(string)
+    source_detect_changes           = optional(bool)
+    source_repository_id            = optional(string) # e.g. user-name/repo-name
     stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -70,12 +70,6 @@ variable "pipe_pipeline_type_default" {
   default = "V2"
 }
 
-variable "pipe_secret_is_param_default" {
-  type        = bool
-  default     = false
-  description = "If true, an SSM param will be created, otherwise a SM secret"
-}
-
 variable "pipe_source_artifact_encryption_key_default" {
   type    = string
   default = "alias/aws/s3"
@@ -95,7 +89,7 @@ variable "pipe_source_branch_default" {
   default = "main"
 }
 
-variable "pipe_source_connection_name_default" {
+variable "pipe_source_code_star_connection_key_default" {
   type    = string
   default = null
 }
@@ -170,6 +164,12 @@ variable "pipe_webhook_filter_map_default" {
   }))
   default     = {}
   description = "This will be merged over the filter for branch at source_branch"
+}
+
+variable "pipe_webhook_secret_is_param_default" {
+  type        = bool
+  default     = false
+  description = "If true, an SSM param will be created, otherwise a SM secret"
 }
 
 variable "std_map" {

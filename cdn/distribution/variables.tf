@@ -27,6 +27,7 @@ variable "domain_map" {
   type = map(object({
     cache_policy_key                  = optional(string)
     dns_from_zone_key                 = optional(string)
+    name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     origin_allow_public               = optional(bool)
     origin_dns_enabled                = optional(bool)
@@ -82,11 +83,6 @@ variable "domain_cache_policy_key_default" {
 variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
-}
-
-variable "domain_name_infix_default" {
-  type    = bool
-  default = false
 }
 
 variable "domain_origin_allow_public_default" {
@@ -254,6 +250,17 @@ variable "key_group_data_map" {
   }))
   default     = {}
   description = "Must be provided if any distribution has a trusted key group"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
 }
 
 variable "std_map" {

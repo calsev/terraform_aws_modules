@@ -19,14 +19,14 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      iam_role_arn                   = v.iam_role_arn == null ? var.pipe_iam_role_arn_default : v.iam_role_arn
-      pipeline_type                  = v.pipeline_type == null ? var.pipe_pipeline_type_default : v.pipeline_type
-      source_artifact_encryption_key = v.source_artifact_encryption_key == null ? var.pipe_source_artifact_encryption_key_default : v.source_artifact_encryption_key
-      source_artifact_format         = v.source_artifact_format == null ? var.pipe_source_artifact_format_default : v.source_artifact_format
-      source_branch                  = v.source_branch == null ? var.pipe_source_branch_default : v.source_branch
-      source_connection_name         = v.source_connection_name == null ? var.pipe_source_connection_name_default : v.source_connection_name
-      source_detect_changes          = v.source_detect_changes == null ? var.pipe_source_detect_changes_default : v.source_detect_changes
-      source_repository_id           = v.source_repository_id == null ? var.pipe_source_repository_id_default : v.source_repository_id
+      iam_role_arn                    = v.iam_role_arn == null ? var.pipe_iam_role_arn_default : v.iam_role_arn
+      pipeline_type                   = v.pipeline_type == null ? var.pipe_pipeline_type_default : v.pipeline_type
+      source_artifact_encryption_key  = v.source_artifact_encryption_key == null ? var.pipe_source_artifact_encryption_key_default : v.source_artifact_encryption_key
+      source_artifact_format          = v.source_artifact_format == null ? var.pipe_source_artifact_format_default : v.source_artifact_format
+      source_branch                   = v.source_branch == null ? var.pipe_source_branch_default : v.source_branch
+      source_code_star_connection_key = v.source_code_star_connection_key == null ? var.pipe_source_code_star_connection_key_default : v.source_code_star_connection_key
+      source_detect_changes           = v.source_detect_changes == null ? var.pipe_source_detect_changes_default : v.source_detect_changes
+      source_repository_id            = v.source_repository_id == null ? var.pipe_source_repository_id_default : v.source_repository_id
       stage_list = [
         for i_stage, v_stage in v.stage_list : merge(v_stage, {
           action_map = {
@@ -69,7 +69,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      connection_arn             = var.ci_cd_account_data.code_star.connection[local.l1_map[k].source_connection_name].connection_arn
+      connection_arn             = var.ci_cd_account_data.code_star.connection[local.l1_map[k].source_code_star_connection_key].connection_arn
       webhook_enable_github_hook = local.l1_map[k].webhook_enabled ? v.webhook_enable_github_hook == null ? var.pipe_webhook_enable_github_hook_default : v.webhook_enable_github_hook : false
       webhook_filter_map_final   = merge(local.l1_map[k].webhook_filter_map_default, local.l1_map[k].webhook_filter_map)
       source_repository_name     = split("/", local.l1_map[k].source_repository_id)[1]

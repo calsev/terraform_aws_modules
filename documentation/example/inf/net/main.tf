@@ -24,7 +24,7 @@ module "load_balancer" {
   elb_dns_from_zone_key_default      = "example.com"
   elb_map = {
     main = {
-      acm_certificate_fqdn = "elb.example.com"
+      acm_certificate_key = "elb.example.com"
     }
   }
   std_map         = module.com_lib.std_map
