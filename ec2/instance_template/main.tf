@@ -95,7 +95,8 @@ resource "aws_launch_template" "this_launch_template" {
 
 resource "local_file" "user_data" {
   # Not sensitive because it is useful to see the diff of the rendered template
-  for_each = local.create_user_data_map
-  content  = local.user_data_map[each.key]
-  filename = "${path.root}/user_data/${replace(each.value.name_simple, "/-/", "_")}_${var.std_map.config_name}.txt"
+  for_each        = local.create_user_data_map
+  content         = local.user_data_map[each.key]
+  filename        = "${path.root}/user_data/${replace(each.value.name_simple, "/-/", "_")}_${var.std_map.config_name}.txt"
+  file_permission = "0644"
 }

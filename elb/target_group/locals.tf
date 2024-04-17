@@ -29,7 +29,7 @@ locals {
       health_check_no_response_timeout_seconds           = v.health_check_no_response_timeout_seconds == null ? var.target_health_check_no_response_timeout_seconds_default : v.health_check_no_response_timeout_seconds
       health_check_port                                  = v.health_check_port == null ? var.target_health_check_port_default : v.health_check_port
       health_check_protocol                              = v.health_check_protocol == null ? var.target_health_check_protocol_default : v.health_check_protocol
-      health_check_success_code                          = v.health_check_success_code == null ? var.target_health_check_success_code_default : v.health_check_success_code
+      health_check_success_code_list                     = v.health_check_success_code_list == null ? var.target_health_check_success_code_list_default : v.health_check_success_code_list
       lambda_multi_value_headers_enabled                 = v.lambda_multi_value_headers_enabled == null ? var.target_lambda_multi_value_headers_enabled_default : v.lambda_multi_value_headers_enabled
       load_balancing_algorithm_type                      = v.load_balancing_algorithm_type == null ? var.target_load_balancing_algorithm_type_default : v.load_balancing_algorithm_type
       load_balancing_anomaly_mitigation_enabled          = v.load_balancing_anomaly_mitigation_enabled == null ? var.target_load_balancing_anomaly_mitigation_enabled_default : v.load_balancing_anomaly_mitigation_enabled

@@ -27,6 +27,7 @@ module "asg" {
   group_auto_scaling_num_instances_min_default           = var.compute_auto_scaling_num_instances_min_default
   group_auto_scaling_protect_from_scale_in_default       = var.compute_auto_scaling_protect_from_scale_in_default
   group_elb_target_group_key_list_default                = var.compute_elb_target_group_key_list_default
+  group_health_check_type_default                        = var.compute_health_check_type_default
   group_map                                              = local.create_asg_map
   elb_target_data_map                                    = var.elb_target_data_map
   std_map                                                = var.std_map

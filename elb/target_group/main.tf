@@ -8,7 +8,7 @@ resource "aws_lb_target_group" "this_target" {
       enabled             = each.value.health_check_enabled
       healthy_threshold   = each.value.health_check_consecutive_success_threshold
       interval            = each.value.health_check_interval_seconds
-      matcher             = each.value.health_check_success_code
+      matcher             = join(",", each.value.health_check_success_code_list)
       path                = each.value.health_check_http_path
       port                = each.value.health_check_port_effective
       protocol            = each.value.health_check_protocol

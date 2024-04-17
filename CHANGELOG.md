@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.29.0
+
+### New modules
+
+* CI/CD deployment app
+* CI/CD deployment config
+* CI/CD embedded pipe
+
+### General
+
+* Add alarm config for ECS service
+* ELB default listeners now mapped by protocol and port
+* Enforce lowercase names
+* Add HTTP alt to default security group map
+
 ## 0.28.0
 
 ### New modules

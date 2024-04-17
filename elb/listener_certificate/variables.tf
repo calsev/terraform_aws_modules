@@ -5,6 +5,7 @@ variable "dns_data" {
     }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
+      name_simple     = string
     })))
   })
 }
@@ -18,7 +19,7 @@ variable "elb_data_map" {
 
 variable "listener_map" {
   type = map(object({
-    acm_certificate_fqdn    = string # If null, no cert will be created
+    acm_certificate_key     = string # If null, no cert will be created
     elb_key                 = string
     elb_listener_arn        = optional(string)
     dns_from_zone_key       = optional(string)
@@ -28,7 +29,7 @@ variable "listener_map" {
   }))
 }
 
-variable "listener_acm_certificate_fqdn_default" {
+variable "listener_acm_certificate_key_default" {
   type    = string
   default = null
 }

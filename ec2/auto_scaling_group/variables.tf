@@ -49,14 +49,15 @@ variable "group_auto_scaling_protect_from_scale_in_default" {
 }
 
 variable "group_elb_target_group_key_list_default" {
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
+  description = "This value is typically used with instance auto scaling. For ECS the target group is attached to the service."
 }
 
 variable "group_health_check_type_default" {
   type        = string
   default     = null
-  description = "Defaults to EC2 if no ELB is attached, otherwise ELB"
+  description = "Defaults to EC2 if no target is attached, otherwise ELB. Must be set to ELB manually for any service attached to an ELB."
   validation {
     condition     = var.group_health_check_type_default == null ? true : contains(["EC2", "ELB"], var.group_health_check_type_default)
     error_message = "Invalid health check type"

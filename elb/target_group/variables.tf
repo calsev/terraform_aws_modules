@@ -10,7 +10,7 @@ variable "target_map" {
     health_check_no_response_timeout_seconds           = optional(number)
     health_check_port                                  = optional(number)
     health_check_protocol                              = optional(string)
-    health_check_success_code                          = optional(number)
+    health_check_success_code_list                     = optional(list(number))
     lambda_multi_value_headers_enabled                 = optional(bool)
     load_balancing_algorithm_type                      = optional(string)
     load_balancing_anomaly_mitigation_enabled          = optional(bool)
@@ -108,9 +108,9 @@ variable "target_health_check_protocol_default" {
   }
 }
 
-variable "target_health_check_success_code_default" {
-  type    = number
-  default = 200
+variable "target_health_check_success_code_list_default" {
+  type    = list(number)
+  default = [200, 301, 302, 404]
 }
 
 variable "target_lambda_multi_value_headers_enabled_default" {
@@ -224,7 +224,7 @@ variable "target_protocol_default" {
 
 variable "target_protocol_http_version_default" {
   type    = string
-  default = "HTTP2"
+  default = "HTTP1"
   validation {
     condition     = contains(["GRPC", "HTTP1", "HTTP2"], var.target_protocol_http_version_default)
     error_message = "Invalid target protocol version"
@@ -232,8 +232,9 @@ variable "target_protocol_http_version_default" {
 }
 
 variable "target_type_default" {
-  type    = string
-  default = "instance"
+  type        = string
+  default     = "ip"
+  description = "For awsvpc networking mode ip is required, for bridged networking instance is appropriate."
   validation {
     condition     = contains(["instance", "ip", "lambda", "alb"], var.target_type_default)
     error_message = "Invalid target_type"

@@ -5,6 +5,7 @@ variable "compute_map" {
     auto_scaling_num_instances_min           = optional(number)
     auto_scaling_protect_from_scale_in       = optional(bool)
     elb_target_group_key_list                = optional(list(string))
+    health_check_type                        = optional(string)
     image_id                                 = optional(string)
     instance_allocation_type                 = optional(string)
     instance_storage_gib                     = optional(number)
@@ -48,6 +49,16 @@ variable "compute_auto_scaling_protect_from_scale_in_default" {
 variable "compute_elb_target_group_key_list_default" {
   type    = list(string)
   default = []
+}
+
+variable "compute_health_check_type_default" {
+  type        = string
+  default     = null
+  description = "Defaults to EC2 if no target is attached, otherwise ELB. Must be set to ELB manually for any service attached to an ELB."
+  validation {
+    condition     = var.compute_health_check_type_default == null ? true : contains(["EC2", "ELB"], var.compute_health_check_type_default)
+    error_message = "Invalid health check type"
+  }
 }
 
 variable "compute_image_id_default" {

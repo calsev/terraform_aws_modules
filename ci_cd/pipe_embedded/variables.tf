@@ -1,20 +1,3 @@
-variable "cdn_global_data" {
-  type = object({
-    cache_policy_map = map(object({
-      policy_id = string
-    }))
-    domain_cert_map = map(object({
-      certificate_arn = string
-    }))
-    origin_request_policy_map = map(object({
-      policy_id = string
-    }))
-    web_acl_map = map(object({
-      waf_arn = string
-    }))
-  })
-}
-
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
@@ -46,24 +29,6 @@ variable "ci_cd_account_data" {
   })
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-  })
-}
-
-variable "domain_dns_from_zone_key_default" {
-  type    = string
-  default = null
-}
-
-variable "domain_origin_dns_enabled_default" {
-  type    = bool
-  default = true
-}
-
 variable "name_include_app_fields_default" {
   type        = bool
   default     = true
@@ -75,10 +40,9 @@ variable "name_infix_default" {
   default = true
 }
 
-variable "site_map" {
+variable "pipe_map" {
   type = map(object({
-    build_artifact_name      = optional(string)
-    build_artifact_sync_path = optional(string) # The local root path to sync to S3 bucket root
+    build_artifact_name = optional(string)
     build_stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -98,13 +62,28 @@ variable "site_map" {
       }))
       name = string
     }))
-    cdn_invalidation_path                  = optional(string)
     ci_cd_pipeline_webhook_secret_is_param = optional(bool)
-    dns_from_zone_key                      = optional(string)
-    name_include_app_fields                = optional(bool)
-    name_infix                             = optional(bool)
-    origin_dns_enabled                     = optional(bool)
-    origin_fqdn                            = string
+    deploy_stage_list = list(object({
+      action_map = map(object({
+        category      = optional(string)
+        configuration = optional(map(string)) # If a config is provided all other config vars are ignored
+        configuration_environment_map = optional(map(object({
+          type  = string
+          value = string
+        })))
+        configuration_project_name = optional(string) # Must provide a config or project name
+        input_artifact_list        = optional(list(string))
+        # namespace is always StageNameActionKey
+        output_artifact      = optional(string) # simply combined with list below
+        output_artifact_list = optional(list(string))
+        owner                = optional(string)
+        provider             = optional(string)
+        version              = optional(string)
+      }))
+      name = string
+    }))
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
     role_policy_attach_arn_map      = optional(map(string))
     role_policy_create_json_map     = optional(map(string))
@@ -115,12 +94,6 @@ variable "site_map" {
     source_repository_id            = optional(string)
     webhook_enable_github_hook      = optional(bool)
   }))
-}
-
-variable "pipe_build_artifact_name_default" {
-  type        = string
-  default     = "site"
-  description = "The name of the artifact that contains the site directory to sync"
 }
 
 variable "pipe_source_branch_default" {
@@ -150,22 +123,11 @@ variable "pipe_webhook_secret_is_param_default" {
   description = "If true, an SSM param will be created, otherwise a SM secret"
 }
 
-variable "site_build_artifact_sync_path_default" {
-  type    = string
-  default = "."
-}
-
-variable "site_cdn_invalidation_path_default" {
-  type    = string
-  default = "/index.html" # Only invalidate the index file
-}
-
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
-    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

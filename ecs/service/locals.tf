@@ -25,6 +25,9 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+      alarm_metric_name_list                         = v.alarm_metric_name_list == null ? var.alarm_metric_name_list_default : v.alarm_metric_name_list
+      alarm_monitoring_enabled                       = v.alarm_monitoring_enabled == null ? var.alarm_monitoring_enabled_default : v.alarm_monitoring_enabled
+      alarm_rollback_enabled                         = v.alarm_rollback_enabled == null ? var.alarm_rollback_enabled_default : v.alarm_rollback_enabled
       desired_count                                  = v.desired_count == null ? var.service_desired_count_default : v.desired_count
       deployment_controller_circuit_breaker_enabled  = v.deployment_controller_circuit_breaker_enabled == null ? var.service_deployment_controller_circuit_breaker_enabled_default : v.deployment_controller_circuit_breaker_enabled
       deployment_controller_circuit_breaker_rollback = v.deployment_controller_circuit_breaker_rollback == null ? var.service_deployment_controller_circuit_breaker_rollback_default : v.deployment_controller_circuit_breaker_rollback
@@ -32,7 +35,7 @@ locals {
       deployment_maximum_percent                     = v.deployment_maximum_percent == null ? var.service_deployment_maximum_percent_default : v.deployment_maximum_percent
       deployment_minimum_healthy_percent             = v.deployment_minimum_healthy_percent == null ? var.service_deployment_minimum_healthy_percent_default : v.deployment_minimum_healthy_percent
       ecs_cluster_key                                = v.ecs_cluster_key == null ? var.service_ecs_cluster_key_default == null ? k : var.service_ecs_cluster_key_default : v.ecs_cluster_key
-      ecs_task_definition_key                        = v.ecs_task_definition_key == null ? var.service_ecs_task_definition_key_default : v.ecs_task_definition_key
+      ecs_task_definition_key                        = v.ecs_task_definition_key == null ? var.service_ecs_task_definition_key_default == null ? k : var.service_ecs_task_definition_key_default : v.ecs_task_definition_key
       elb_container_name                             = v.elb_container_name == null ? var.service_elb_container_name_default : v.elb_container_name
       elb_container_port                             = v.elb_container_port == null ? var.service_elb_container_port_default : v.elb_container_port
       elb_health_check_grace_period_seconds          = v.elb_health_check_grace_period_seconds == null ? var.service_elb_health_check_grace_period_seconds_default : v.elb_health_check_grace_period_seconds
@@ -50,8 +53,8 @@ locals {
     for k, v in local.l0_map : k => {
       assign_public_ip                                         = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].capability_type == "EC2" ? false : v.assign_public_ip == null ? var.service_assign_public_ip_default == null ? local.l1_map[k].vpc_segment_route_public : var.service_assign_public_ip_default : v.assign_public_ip
       capacity_provider_name                                   = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].capacity_provider_name
-      deployment_controller_circuit_breaker_enabled_effective  = local.l1_map[k].deployment_controller_type == "ECS" ? local.l1_map[k].deployment_controller_circuit_breaker_enabled : false
-      deployment_controller_circuit_breaker_rollback_effective = local.l1_map[k].deployment_controller_type == "ECS" ? local.l1_map[k].deployment_controller_circuit_breaker_rollback : false
+      deployment_controller_circuit_breaker_enabled_effective  = local.l1_map[k].deployment_controller_type == "ECS" ? local.l1_map[k].deployment_controller_circuit_breaker_enabled : null
+      deployment_controller_circuit_breaker_rollback_effective = local.l1_map[k].deployment_controller_type == "ECS" ? local.l1_map[k].deployment_controller_circuit_breaker_rollback : null
       deployment_maximum_percent_effective                     = local.l1_map[k].scheduling_strategy == "DAEMON" ? null : local.l1_map[k].deployment_maximum_percent
       deployment_minimum_healthy_percent_effective             = local.l1_map[k].scheduling_strategy == "DAEMON" ? null : local.l1_map[k].deployment_minimum_healthy_percent
       desired_count_effective                                  = local.l1_map[k].scheduling_strategy == "DAEMON" ? null : local.l1_map[k].desired_count
@@ -60,8 +63,9 @@ locals {
       elb_target_group_arn_list = [
         for key in local.l1_map[k].elb_target_group_key_list : var.elb_target_data_map[key].target_group_arn
       ]
-      is_attached_to_elb = length(local.l1_map[k].elb_target_group_key_list) != 0
-      network_mode       = var.ecs_task_definition_data_map[local.l1_map[k].ecs_task_definition_key].network_mode
+      force_new_deployment_effective = local.l1_map[k].deployment_controller_type == "ECS" ? local.l1_map[k].force_new_deployment : false
+      is_attached_to_elb             = length(local.l1_map[k].elb_target_group_key_list) != 0
+      network_mode                   = var.ecs_task_definition_data_map[local.l1_map[k].ecs_task_definition_key].network_mode
       placement_constraint_list = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].capability_type == "FARGATE" ? [] : [
         {
           field = "attribute:ecs.availability-zone"
