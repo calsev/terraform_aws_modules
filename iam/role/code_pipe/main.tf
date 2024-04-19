@@ -1,5 +1,6 @@
 module "start_build" {
   source                  = "../../../iam/policy/identity/code_build/project"
+  for_each                = local.has_build ? { this = {} } : {}
   access_list             = ["read_write"]
   build_project_name_list = var.build_name_list
   name                    = var.name == null ? null : "${var.name}_build"
@@ -14,13 +15,21 @@ module "this_role" {
   create_instance_profile  = false
   embedded_role_policy_attach_arn_map = {
     build_start = {
-      policy = module.start_build.data.iam_policy_arn_map.read_write
+      condition = local.has_build
+      policy    = local.has_build ? module.start_build["this"].data.iam_policy_arn_map.read_write : null
     }
     code_connection = {
       policy = var.ci_cd_account_data.code_star.connection[var.code_star_connection_key].iam_policy_arn_map.read_write
     }
-    source_write = {
-      policy = var.ci_cd_account_data.bucket.iam_policy_arn_map.write
+    source_read_write = {
+      # Write is always required, but read can be required for e.g. CodeDeploy
+      policy = var.ci_cd_account_data.bucket.iam_policy_arn_map.read_write
+    }
+  }
+  embedded_role_policy_managed_name_map = {
+    deploy_start = {
+      condition = local.has_deploy
+      policy    = "AWSCodeDeployDeployerAccess"
     }
   }
   map_policy                           = var.map_policy

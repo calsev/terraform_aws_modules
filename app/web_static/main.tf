@@ -11,10 +11,12 @@ module "cdn" {
 }
 
 module "code_build" {
-  source             = "../../ci_cd/build"
-  ci_cd_account_data = var.ci_cd_account_data
-  repo_map           = local.create_build_map
-  std_map            = var.std_map
+  source                          = "../../ci_cd/build"
+  ci_cd_account_data              = var.ci_cd_account_data
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  repo_map                        = local.create_build_map
+  std_map                         = var.std_map
 }
 
 module "pipe" {

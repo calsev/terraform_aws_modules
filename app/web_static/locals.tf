@@ -1,8 +1,8 @@
 locals {
   create_build_map = {
-    for k, v in local.lx_map : "web_${k}" => merge(v, {
+    for k, v in local.lx_map : k => merge(v, {
       build_map = {
-        deploy = {
+        pipe_deploy = {
           environment_type    = "cpu-arm-amazon-small"
           iam_role_arn        = module.code_build_role[k].data.iam_role_arn
           input_artifact_list = [v.build_artifact_name]
@@ -23,8 +23,8 @@ locals {
         {
           action_map = {
             Deploy = {
-              configuration_project_name = module.code_build.data["web_${k}"].deploy.name
-              input_artifact_list        = [v.build_artifact_name]
+              configuration_build_project_name = module.code_build.data[k]["pipe_deploy"].name_effective
+              input_artifact_list              = [v.build_artifact_name]
             }
           }
           name = "Deploy"
@@ -55,7 +55,7 @@ locals {
       module.pipe.data[k],
       {
         cdn        = module.cdn.data[k],
-        code_build = module.code_build.data["web_${k}"]
+        code_build = module.code_build.data[k]
         role = merge(module.pipe.data[k].role, {
           code_build = module.code_build_role[k].data
         })

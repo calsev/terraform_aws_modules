@@ -58,7 +58,7 @@ resource "aws_codebuild_project" "this_build_project" {
       status              = each.value.log_s3_enabled ? "ENABLED" : "DISABLED"
     }
   }
-  name                 = each.value.name
+  name                 = each.value.name_effective
   project_visibility   = each.value.public_visibility ? "PUBLIC_READ" : "PRIVATE"
   resource_access_role = each.value.iam_role_arn_resource_access
   service_role         = each.value.iam_role_arn
@@ -104,5 +104,5 @@ resource "aws_codebuild_webhook" "this_web_hook" {
       }
     }
   }
-  project_name = aws_codebuild_project.this_build_project[each.value.k_map].name
+  project_name = each.value.name_effective
 }

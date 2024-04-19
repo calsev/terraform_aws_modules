@@ -32,16 +32,22 @@ locals {
           action_map = {
             for k_action, v_action in v_stage.action_map : k_action => merge(v_action, {
               category = v_action.category == null ? var.pipe_stage_category_default : v_action.category
-              configuration = v_action.configuration != null ? v_action.configuration : {
-                EnvironmentVariables = v_action.configuration_environment_map == null ? jsonencode([]) : jsonencode([
-                  for k, v in v_action.configuration_environment_map : {
-                    name  = k
-                    type  = v.type
-                    value = v.value
-                  }
-                ])
-                ProjectName = v_action.configuration_project_name
-              }
+              configuration = v_action.configuration != null ? v_action.configuration : merge(
+                v_action.category != "Build" ? null : {
+                  EnvironmentVariables = v_action.configuration_build_environment_map == null ? jsonencode([]) : jsonencode([
+                    for k, v in v_action.configuration_build_environment_map : {
+                      name  = k
+                      type  = v.type
+                      value = v.value
+                    }
+                  ])
+                  ProjectName = v_action.configuration_build_project_name
+                },
+                v_action.category != "Deploy" ? null : {
+                  ApplicationName     = v_action.configuration_deploy_application_name
+                  DeploymentGroupName = v_action.configuration_deploy_group_name
+                },
+              )
               iam_role_arn         = v_action.iam_role_arn == null ? var.pipe_stage_iam_role_arn_default : v_action.iam_role_arn
               input_artifact_list  = v_action.input_artifact_list == null ? var.pipe_stage_input_artifact_list_default : v_action.input_artifact_list
               name                 = k_action

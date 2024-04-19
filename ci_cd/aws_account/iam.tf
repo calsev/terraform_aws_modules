@@ -44,3 +44,30 @@ module "public_log_access_role" {
   }
   std_map = var.std_map
 }
+
+module "code_deploy_ecs" {
+  source                   = "../../iam/role/base"
+  assume_role_service_list = ["codedeploy"]
+  name                     = "codedeploy_ecs"
+  role_policy_attach_arn_map_default = {
+    artifact_read_write = local.bucket_data.iam_policy_arn_map["read_write"]
+  }
+  role_policy_managed_name_map_default = {
+    codedeploy_ec2 = "service-role/AWSCodeDeployRole"
+    codedeploy_ecs = "AWSCodeDeployRoleForECS"
+  }
+  std_map = var.std_map
+}
+
+module "code_deploy_lamba" {
+  source                   = "../../iam/role/base"
+  assume_role_service_list = ["codedeploy"]
+  name                     = "codedeploy_lambda"
+  role_policy_attach_arn_map_default = {
+    artifact_read_write = local.bucket_data.iam_policy_arn_map["read_write"]
+  }
+  role_policy_managed_name_map_default = {
+    codedeploy_lambda = "service-role/AWSCodeDeployRoleForLambda"
+  }
+  std_map = var.std_map
+}

@@ -93,6 +93,7 @@ tf-lint: tflint-install
 	cd ../app/ecr_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_mirror/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_mirror/requirements && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/ecs_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/web_static && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -111,6 +112,7 @@ tf-lint: tflint-install
 	cd ../ci_cd/deploy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/deploy/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/deploy/config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ci_cd/deploy/group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/pipe && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/pipe_embedded && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/remote && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
