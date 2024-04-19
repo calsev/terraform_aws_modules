@@ -52,6 +52,8 @@ variable "repo_map" {
       log_s3_bucket_name           = optional(string)
       log_s3_enabled               = optional(bool)
       log_s3_encryption_disabled   = optional(bool)
+      name_include_app_fields      = optional(bool)
+      name_infix                   = optional(bool)
       name_override                = optional(string)
       public_visibility            = optional(bool)
       source_build_spec            = optional(string)
@@ -283,6 +285,18 @@ variable "build_webhook_filter_map_default" {
     }
   }
 }
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
 
 variable "std_map" {
   type = object({

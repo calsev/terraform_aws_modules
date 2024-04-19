@@ -26,7 +26,7 @@ locals {
       # Always use full regex because infix makes no sense as anything else
       # Always do standard replace for name_context - use name_effective for DNS, etc.
       name_context   = lower(replace("${local.l1_map[k].name_prefix}${replace(local.l2_map[k].temp_root_full_context, var.std_map.name_replace_regex, "-")}${local.l1_map[k].name_suffix}", "--", "-"))
-      name_effective = lower(replace("${local.l1_map[k].name_prefix}${local.l3_map[k].temp_root_effective_context}${local.l1_map[k].name_suffix}", "--", "-"))
+      name_effective = local.l1_map[k].name_override == null ? lower(replace("${local.l1_map[k].name_prefix}${local.l3_map[k].temp_root_effective_context}${local.l1_map[k].name_suffix}", "--", "-")) : local.l1_map[k].name_override
     }
   }
   l5_map = {

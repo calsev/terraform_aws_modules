@@ -1,6 +1,14 @@
+module "name_map" {
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  std_map                         = var.std_map
+}
+
 module "vpc_map" {
   source                              = "../../vpc/id_map"
-  vpc_map                             = local.build_flattened_map
+  vpc_map                             = local.l0_map
   vpc_az_key_list_default             = var.vpc_az_key_list_default
   vpc_key_default                     = var.vpc_key_default
   vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
@@ -9,26 +17,29 @@ module "vpc_map" {
 }
 
 locals {
-  build_flattened_list = flatten([for k_repo, v_repo in var.repo_map :
-    flatten([for k_build, v_build in v_repo.build_map : merge(
-      {
-        for k, v in v_repo : k => v if k != "build_map"
-      },
-      v_build,
-      {
-        k_map = local.build_name_map[k_repo][k_build].k_map
-      },
-    )])
-  ])
-  build_flattened_map = {
-    for b in local.build_flattened_list : b.k_map => b
-  }
   create_webhook_map = {
     # The webhook is not re-created if the source changes, so encode the source in the key
     for k, v in local.lx_map : "${k}-${v.source_location}" => v if v.webhook_enabled
   }
+  l0_list = flatten([
+    for k_repo, v_repo in var.repo_map : [
+      for k_build, v_build in v_repo.build_map : merge(
+        {
+          for k, v in v_repo : k => v if k != "build_map"
+        },
+        v_build,
+        {
+          k_map                   = "${k_repo}_${k_build}"
+          name_include_app_fields = v_build.name_include_app_fields == null ? !strcontains(k_build, "pipe-") : v_build.name_include_app_fields
+        },
+      )
+    ]
+  ])
+  l0_map = {
+    for v in local.l0_list : v.k_map => v
+  }
   l1_map = {
-    for k, v in local.build_flattened_map : k => merge(v, module.vpc_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       artifact_encryption_disabled = v.artifact_encryption_disabled == null ? var.build_artifact_encryption_disabled_default : v.artifact_encryption_disabled
       artifact_location            = v.artifact_location == null ? var.build_artifact_location_default : v.artifact_location
       build_source_type            = v.source_type == null ? var.build_source_type_default : v.source_type
@@ -42,6 +53,10 @@ locals {
           AWS_DEFAULT_REGION = {
             type  = "PLAINTEXT"
             value = var.std_map.aws_region_name
+          }
+          CODEBUILD_CONFIG_AUTO_DISCOVER = {
+            type  = "PLAINTEXT"
+            value = "true"
           }
         },
         v.environment_variable_map == null ? var.build_environment_variable_map_default : v.environment_variable_map,
@@ -61,24 +76,17 @@ locals {
       log_s3_bucket_name           = v.log_s3_bucket_name == null ? var.build_log_s3_bucket_name_default : v.log_s3_bucket_name
       log_s3_enabled               = v.log_s3_enabled == null ? var.build_log_s3_enabled_default : v.log_s3_enabled
       log_s3_encryption_disabled   = v.log_s3_encryption_disabled == null ? var.build_log_s3_encryption_disabled_default : v.log_s3_encryption_disabled
-      name                         = v.name_override == null ? k : v.name_override # This is both the resource name in AWS and the display name in github when reporting status, so make it unique, but no prefix/suffix
       public_visibility            = v.public_visibility == null ? var.build_public_visibility_default : v.public_visibility
       source_build_spec            = v.source_build_spec == null ? var.build_source_build_spec_default : v.source_build_spec
       source_fetch_submodules      = v.source_fetch_submodules == null ? var.build_source_fetch_submodules_default : v.source_fetch_submodules
       source_version               = v.source_version == null ? var.build_source_version_default : v.source_version
-      tags = merge(
-        var.std_map.tags,
-        {
-          Name = "${var.std_map.resource_name_prefix}${v.k_map}${var.std_map.resource_name_suffix}"
-        }
-      )
-      webhook_filter_map_raw = v.webhook_filter_map == null ? var.build_webhook_filter_map_default : v.webhook_filter_map
+      webhook_filter_map_raw       = v.webhook_filter_map == null ? var.build_webhook_filter_map_default : v.webhook_filter_map
     })
   }
   l2_map = {
-    for k, v in local.build_flattened_map : k => {
+    for k, v in local.l0_map : k => {
       artifact_is_pipe                        = local.l1_map[k].build_source_type == "CODEPIPELINE"
-      cache_location                          = local.l1_map[k].cache_type == "S3" ? "${var.ci_cd_account_data.bucket.bucket_name}/cache/${local.l1_map[k].name}" : null
+      cache_location                          = local.l1_map[k].cache_type == "S3" ? "${var.ci_cd_account_data.bucket.bucket_name}/cache/${local.l1_map[k].name_effective}" : null
       cache_modes                             = local.l1_map[k].cache_type == "LOCAL" ? v.cache_modes == null ? var.build_cache_modes_default : v.cache_modes : []
       environment_compute_type                = "BUILD_GENERAL1_${upper(split("-", local.l1_map[k].environment_type)[3])}"
       environment_image_standard              = local.compute_env_map[join("-", slice(split("-", local.l1_map[k].environment_type), 0, 3))].image
@@ -108,8 +116,8 @@ locals {
     }
   }
   l3_map = {
-    for k, v in local.build_flattened_map : k => {
-      artifact_is_none                 = local.l2_map[k].artifact_is_pipe ? false : v.artifact_type == null ? local.no_default_artifact : v.artifact_type == "NO_ARTIFACTS"
+    for k, v in local.l0_map : k => {
+      artifact_is_none                 = local.l2_map[k].artifact_is_pipe ? false : v.artifact_type == null ? var.build_artifact_type_default == "NO_ARTIFACTS" : v.artifact_type == "NO_ARTIFACTS"
       artifact_type                    = local.l2_map[k].artifact_is_pipe ? "CODEPIPELINE" : v.artifact_type == null ? var.build_artifact_type_default : v.artifact_type
       badge_enabled                    = local.l2_map[k].artifact_is_pipe ? false : v.badge_enabled == null ? var.build_badge_enabled_default : v.badge_enabled # Not supported for pipe builds
       environment_image                = local.l1_map[k].environment_image_custom == null ? local.l2_map[k].environment_image_standard : local.l1_map[k].environment_image_custom
@@ -119,7 +127,7 @@ locals {
     }
   }
   l4_map = {
-    for k, v in local.build_flattened_map : k => {
+    for k, v in local.l0_map : k => {
       artifact_namespace_type = v.artifact_namespace_type == null ? local.l3_map[k].artifact_is_none ? null : local.l2_map[k].artifact_is_pipe ? "NONE" : var.build_artifact_namespace_type_default : v.artifact_namespace_type
       artifact_packaging      = v.artifact_packaging == null ? local.l3_map[k].artifact_is_none ? null : var.build_artifact_packaging_default : v.artifact_packaging
       artifact_path           = v.artifact_path == null ? local.l3_map[k].artifact_is_none ? null : var.build_artifact_path_default : v.artifact_path
@@ -127,16 +135,7 @@ locals {
     }
   }
   lx_map = {
-    for k, v in local.build_flattened_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
-  }
-  build_name_map = {
-    for k_repo, v_repo in var.repo_map : k_repo => {
-      for k_build, _ in v_repo.build_map : k_build => {
-        k_repo  = replace(k_repo, var.std_map.name_replace_regex, "-")
-        k_build = replace(k_build, var.std_map.name_replace_regex, "-")
-        k_map   = "${replace(k_repo, var.std_map.name_replace_regex, "-")}-${replace(k_build, var.std_map.name_replace_regex, "-")}"
-      }
-    }
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
   compute_env_map = {
     # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
@@ -155,16 +154,15 @@ locals {
       image = "aws/codebuild/standard:7.0"
     }
   }
-  no_default_artifact = var.build_artifact_type_default == "NO_ARTIFACTS"
   output_data = {
     for k_repo, v_repo in var.repo_map : k_repo => {
       for k_build, _ in v_repo.build_map : k_build => merge(
         {
-          for k, v in local.lx_map[local.build_name_map[k_repo][k_build].k_map] : k => v if !contains(["k_map", "webhook_filter_map_raw"], k)
+          for k, v in local.lx_map["${k_repo}_${k_build}"] : k => v if !contains(["k_map", "webhook_filter_map_raw"], k)
         },
         {
-          arn               = aws_codebuild_project.this_build_project[local.build_name_map[k_repo][k_build].k_map].arn
-          source_build_spec = yamldecode(local.lx_map[local.build_name_map[k_repo][k_build].k_map].source_build_spec)
+          arn               = aws_codebuild_project.this_build_project["${k_repo}_${k_build}"].arn
+          source_build_spec = yamldecode(local.lx_map["${k_repo}_${k_build}"].source_build_spec)
         }
       )
     }

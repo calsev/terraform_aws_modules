@@ -2,6 +2,10 @@ variable "build_name_list" {
   type = list(string)
 }
 
+variable "deploy_group_to_app" {
+  type = map(string)
+}
+
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({

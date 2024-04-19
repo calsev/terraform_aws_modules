@@ -83,12 +83,14 @@ variable "site_map" {
       action_map = map(object({
         category      = optional(string)
         configuration = optional(map(string)) # If a config is provided all other config vars are ignored
-        configuration_environment_map = optional(map(object({
+        configuration_build_environment_map = optional(map(object({
           type  = string
           value = string
         })))
-        configuration_project_name = optional(string) # Must provide a config or project name
-        input_artifact_list        = optional(list(string))
+        configuration_build_project_name      = optional(string) # Must provide a config or project name
+        configuration_deploy_application_name = optional(string) # Must provide all or none for deploy
+        configuration_deploy_group_name       = optional(string)
+        input_artifact_list                   = optional(list(string))
         # namespace is always StageNameActionKey
         output_artifact      = optional(string) # simply combined with list below
         output_artifact_list = optional(list(string))

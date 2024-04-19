@@ -226,6 +226,11 @@ resource "aws_lb_listener_rule" "this_rule" {
       }
     }
   }
+  lifecycle {
+    ignore_changes = [
+      action[0].forward[0].target_group, # TODO: Eye roll: https://github.com/hashicorp/terraform/issues/24188
+    ]
+  }
   listener_arn = each.value.elb_listener_arn
   priority     = each.value.rule_priority
   tags         = each.value.tags

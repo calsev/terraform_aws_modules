@@ -178,6 +178,87 @@ locals {
         write        = []
       }
     }
+    codedeploy = {
+      application = {
+        public_read = []
+        read = [
+          "BatchGetApplicationRevisions",
+          "BatchGetApplications",
+          "GetApplication",
+          "GetApplicationRevision",
+          "ListApplicationRevisions",
+          "ListDeploymentGroups",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "RegisterApplicationRevision",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      deploymentconfig = {
+        public_read = []
+        read = [
+          "GetDeploymentConfig",
+        ]
+        public_write = []
+        write        = []
+      }
+      deploymentgroup = {
+        public_read = []
+        read = [
+          "BatchGetDeploymentGroups",
+          "BatchGetDeploymentInstances",
+          "BatchGetDeployments",
+          "GetDeployment",
+          "GetDeploymentGroup",
+          "GetDeploymentInstance",
+          "ListDeploymentInstances",
+          "ListDeployments",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "CreateDeployment",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      instance = {
+        public_read = []
+        read = [
+          "BatchGetOnPremisesInstances",
+          "GetOnPremisesInstance",
+        ]
+        public_write = []
+        write = [
+          "AddTagsToOnPremisesInstances",
+          "RegisterOnPremisesInstance",
+          "RemoveTagsFromOnPremisesInstances",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "BatchGetDeploymentTargets",
+          "GetDeploymentTarget",
+          "ListApplications",
+          "ListDeploymentConfigs",
+          "ListDeploymentTargets",
+          # "ListGitHubAccountTokenNames",
+          "ListOnPremisesInstances",
+        ]
+        public_write = []
+        write = [
+          "ContinueDeployment",
+          "CreateCloudFormationDeployment",
+          "PutLifecycleEventHookExecutionStatus",
+          "SkipWaitTimeForInstanceTermination",
+          "StopDeployment",
+        ]
+      }
+    }
     codestar-connections = {
       connection = {
         public_read = []

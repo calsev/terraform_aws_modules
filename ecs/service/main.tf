@@ -9,7 +9,7 @@ resource "aws_ecs_service" "this_service" {
     }
   }
   capacity_provider_strategy { # Conflicts with launch_type
-    base              = each.value.desired_count
+    base              = 0      # Base does not work well with auto scaling and app spec
     capacity_provider = each.value.capacity_provider_name
     weight            = 100 # We are always using 1 ASG per cluster
   }
@@ -33,6 +33,11 @@ resource "aws_ecs_service" "this_service" {
   health_check_grace_period_seconds  = each.value.elb_health_check_grace_period_seconds_effective
   iam_role                           = each.value.iam_role_arn_elb_calls_effective
   launch_type                        = null # Conflicts with capacity_provider_strategy
+  lifecycle {
+    ignore_changes = [
+      load_balancer # TODO: Eye roll: https://github.com/hashicorp/terraform/issues/24188
+    ]
+  }
   dynamic "load_balancer" {
     for_each = toset(each.value.elb_target_group_arn_list)
     content {

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.30.0
+
+* ECS application
+* CI/CD deployment group
+
+### General
+
+* Regularize CI/CD build names
+* Add deploy roles to CI/CD IAM app
+* Support build and deploy for embedded pipe
+
 ## 0.29.0
 
 ### New modules
