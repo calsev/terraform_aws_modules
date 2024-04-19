@@ -29,6 +29,20 @@ variable "ci_cd_account_data" {
   })
 }
 
+variable "ci_cd_build_data_map" {
+  type = map(map(object({
+    name_effective = string
+  })))
+}
+
+variable "ci_cd_deploy_data_map" {
+  type = map(map(object({
+    name_effective = string
+  })))
+  default     = null
+  description = "Must be provided if any deployment (app) projects are included"
+}
+
 variable "name_include_app_fields_default" {
   type        = bool
   default     = true
@@ -50,7 +64,7 @@ variable "pipe_map" {
           type  = string
           value = string
         })))
-        configuration_build_project_name      = optional(string) # Must provide a config or project name
+        configuration_build_project_key       = optional(string) # Must provide a config or project key
         configuration_deploy_application_name = optional(string) # Must provide all or none for deploy
         configuration_deploy_group_name       = optional(string)
         input_artifact_list                   = optional(list(string))
@@ -72,7 +86,7 @@ variable "pipe_map" {
           type  = string
           value = string
         })))
-        configuration_build_project_name      = optional(string) # Must provide a config or project name
+        configuration_build_project_key       = optional(string) # Must provide a config or project key
         configuration_deploy_application_name = optional(string) # Must provide all or none for deploy
         configuration_deploy_group_name       = optional(string)
         input_artifact_list                   = optional(list(string))

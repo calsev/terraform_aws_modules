@@ -30,32 +30,32 @@ locals {
       stage_list = [
         for i_stage, v_stage in v.stage_list : merge(v_stage, {
           action_map = {
-            for k_action, v_action in v_stage.action_map : k_action => merge(v_action, {
-              category = v_action.category == null ? var.pipe_stage_category_default : v_action.category
-              configuration = v_action.configuration != null ? v_action.configuration : merge(
-                v_action.category != "Build" ? null : {
-                  EnvironmentVariables = v_action.configuration_build_environment_map == null ? jsonencode([]) : jsonencode([
-                    for k, v in v_action.configuration_build_environment_map : {
+            for k_act, v_act in v_stage.action_map : k_act => merge(v_act, {
+              category = v_act.category == null ? var.pipe_stage_category_default : v_act.category
+              configuration = v_act.configuration != null ? v_act.configuration : merge(
+                v_act.category != "Build" ? null : {
+                  EnvironmentVariables = v_act.configuration_build_environment_map == null ? jsonencode([]) : jsonencode([
+                    for k, v in v_act.configuration_build_environment_map : {
                       name  = k
                       type  = v.type
                       value = v.value
                     }
                   ])
-                  ProjectName = v_action.configuration_build_project_name
+                  ProjectName = v_act.configuration_build_project_name
                 },
-                v_action.category != "Deploy" ? null : {
-                  ApplicationName     = v_action.configuration_deploy_application_name
-                  DeploymentGroupName = v_action.configuration_deploy_group_name
+                v_act.category != "Deploy" ? null : {
+                  ApplicationName     = v_act.configuration_deploy_application_name
+                  DeploymentGroupName = v_act.configuration_deploy_group_name
                 },
               )
-              iam_role_arn         = v_action.iam_role_arn == null ? var.pipe_stage_iam_role_arn_default : v_action.iam_role_arn
-              input_artifact_list  = v_action.input_artifact_list == null ? var.pipe_stage_input_artifact_list_default : v_action.input_artifact_list
-              name                 = k_action
-              output_artifact_list = concat(v_action.output_artifact == null ? [] : [v_action.output_artifact], v_action.output_artifact_list == null ? [] : v_action.output_artifact_list)
-              owner                = v_action.owner == null ? var.pipe_stage_owner_default : v_action.owner
-              provider             = v_action.provider == null ? var.pipe_stage_provider_default : v_action.provider
+              iam_role_arn         = v_act.iam_role_arn == null ? var.pipe_stage_iam_role_arn_default : v_act.iam_role_arn
+              input_artifact_list  = v_act.input_artifact_list == null ? var.pipe_stage_input_artifact_list_default : v_act.input_artifact_list
+              name                 = k_act
+              output_artifact_list = concat(v_act.output_artifact == null ? [] : [v_act.output_artifact], v_act.output_artifact_list == null ? [] : v_act.output_artifact_list)
+              owner                = v_act.owner == null ? var.pipe_stage_owner_default : v_act.owner
+              provider             = v_act.provider == null ? var.pipe_stage_provider_default : v_act.provider
               run_order            = i_stage
-              version              = v_action.version == null ? var.pipe_stage_version_default : v_action.version
+              version              = v_act.version == null ? var.pipe_stage_version_default : v_act.version
             })
           }
         })

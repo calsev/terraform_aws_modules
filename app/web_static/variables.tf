@@ -46,6 +46,12 @@ variable "ci_cd_account_data" {
   })
 }
 
+variable "ci_cd_build_data_map" {
+  type = map(map(object({
+    name_effective = string
+  })))
+}
+
 variable "dns_data" {
   type = object({
     domain_to_dns_zone_map = map(object({
@@ -87,7 +93,7 @@ variable "site_map" {
           type  = string
           value = string
         })))
-        configuration_build_project_name      = optional(string) # Must provide a config or project name
+        configuration_build_project_key       = optional(string) # Must provide a config or project key
         configuration_deploy_application_name = optional(string) # Must provide all or none for deploy
         configuration_deploy_group_name       = optional(string)
         input_artifact_list                   = optional(list(string))

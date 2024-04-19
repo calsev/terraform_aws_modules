@@ -10,7 +10,7 @@ locals {
   build_name_list_map = {
     for k, v_site in local.lx_map : k => flatten([
       for v_stage in concat(v_site.build_stage_list, v_site.deploy_stage_list) : [
-        for _, v_action in v_stage.action_map : v_action.configuration_build_project_name if v_action.category == "Build"
+        for _, v_act in v_stage.action_map : v_act.configuration_build_project_name if v_act.category == "Build"
       ]
     ])
   }
@@ -27,9 +27,9 @@ locals {
   deploy_group_to_app_map = {
     for k, v_site in local.lx_map : k => merge([
       for v_stage in concat(v_site.build_stage_list, v_site.deploy_stage_list) : merge([
-        for _, v_action in v_stage.action_map : {
-          (v_action.configuration_deploy_group_name) = (v_action.configuration_deploy_application_name)
-        } if v_action.category == "Deploy"
+        for _, v_act in v_stage.action_map : {
+          (v_act.configuration_deploy_group_name) = (v_act.configuration_deploy_application_name)
+        } if v_act.category == "Deploy"
       ]...)
     ]...)
   }
@@ -42,7 +42,8 @@ locals {
         for v_build in v.build_stage_list : merge(v_build, {
           action_map = {
             for k_act, v_act in v_build.action_map : k_act => merge(v_act, {
-              category = v_act.category == null ? var.pipe_stage_category_default : v_act.category
+              category                         = v_act.category == null ? var.pipe_stage_category_default : v_act.category
+              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_build_data_map[k][v_act.configuration_build_project_key].name_effective
             })
           }
         })
@@ -51,7 +52,8 @@ locals {
         for v_build in v.deploy_stage_list : merge(v_build, {
           action_map = {
             for k_act, v_act in v_build.action_map : k_act => merge(v_act, {
-              category = v_act.category == null ? var.pipe_stage_category_default : v_act.category
+              category                         = v_act.category == null ? var.pipe_stage_category_default : v_act.category
+              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_deploy_data_map[k][v_act.configuration_build_project_key].name_effective
             })
           }
         })

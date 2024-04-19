@@ -2,6 +2,7 @@ variable "group_map" {
   type = map(object({
     k_user_list             = optional(list(string))
     name_infix              = optional(string)
+    name_override           = optional(string)
     path                    = optional(string)
     policy_attach_arn_map   = optional(map(string), {})
     policy_create_json_map  = optional(map(string), {})
@@ -42,6 +43,7 @@ variable "user_map" {
     enable_console_access   = optional(bool)
     force_destroy           = optional(bool)
     name_infix              = optional(string)
+    name_override           = optional(string)
     path                    = optional(string)
     pgp_key                 = optional(string)
     policy_attach_arn_map   = optional(map(string), {})
