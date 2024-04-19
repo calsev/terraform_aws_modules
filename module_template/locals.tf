@@ -19,7 +19,7 @@ locals {
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.30.1
+
+### Bugfix
+
+* Fix condition for context in CI/CD name
+
 ## 0.30.0
 
 * ECS application
