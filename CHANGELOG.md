@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.31.0
+
+### General
+
+* Regularize CI/CD pipe stack
+
 ## 0.30.1
 
 ### Bugfix

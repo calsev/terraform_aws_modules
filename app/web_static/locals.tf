@@ -23,8 +23,8 @@ locals {
         {
           action_map = {
             Deploy = {
-              configuration_build_project_name = module.code_build.data[k]["pipe_deploy"].name_effective
-              input_artifact_list              = [v.build_artifact_name]
+              configuration_build_project_key = "pipe_deploy"
+              input_artifact_list             = [v.build_artifact_name]
             }
           }
           name = "Deploy"

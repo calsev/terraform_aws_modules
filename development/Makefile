@@ -114,7 +114,7 @@ tf-lint: tflint-install
 	cd ../ci_cd/deploy/config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/deploy/group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/pipe && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../ci_cd/pipe_embedded && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ci_cd/pipe_stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/remote && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/remote/account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/remote/connection && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

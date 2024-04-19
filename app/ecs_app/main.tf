@@ -178,8 +178,10 @@ module "code_build" {
 }
 
 module "code_pipe" {
-  source                                       = "../../ci_cd/pipe_embedded"
+  source                                       = "../../ci_cd/pipe_stack"
   ci_cd_account_data                           = var.ci_cd_account_data
+  ci_cd_build_data_map                         = var.ci_cd_build_data_map
+  ci_cd_deploy_data_map                        = module.code_build.data
   name_include_app_fields_default              = var.name_include_app_fields_default
   name_infix_default                           = var.name_infix_default
   pipe_source_branch_default                   = var.pipe_source_branch_default

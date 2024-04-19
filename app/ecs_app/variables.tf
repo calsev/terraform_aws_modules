@@ -52,7 +52,7 @@ variable "app_map" {
           type  = string
           value = string
         })))
-        configuration_build_project_name      = optional(string) # Must provide a config or project name
+        configuration_build_project_key       = optional(string) # Must provide a config or project key
         configuration_deploy_application_name = optional(string) # Must provide all or none for deploy
         configuration_deploy_group_name       = optional(string)
         input_artifact_list                   = optional(list(string))
@@ -133,6 +133,21 @@ variable "app_map" {
   }))
 }
 
+variable "app_path_include_env_default" {
+  type    = bool
+  default = true
+}
+
+variable "app_path_repo_root_to_spec_directory_default" {
+  type    = string
+  default = null
+}
+
+variable "app_path_terraform_app_to_repo_root_default" {
+  type    = string
+  default = null
+}
+
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
@@ -169,19 +184,10 @@ variable "ci_cd_account_data" {
   })
 }
 
-variable "app_path_include_env_default" {
-  type    = bool
-  default = true
-}
-
-variable "app_path_repo_root_to_spec_directory_default" {
-  type    = string
-  default = null
-}
-
-variable "app_path_terraform_app_to_repo_root_default" {
-  type    = string
-  default = null
+variable "ci_cd_build_data_map" {
+  type = map(map(object({
+    name_effective = string
+  })))
 }
 
 variable "compute_auto_scaling_num_instances_max_default" {
