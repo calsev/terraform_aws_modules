@@ -56,6 +56,7 @@ variable "name_infix_default" {
 
 variable "pipe_map" {
   type = map(object({
+    build_data_key = optional(string) # Defaults to map key
     build_stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -78,7 +79,8 @@ variable "pipe_map" {
       name = string
     }))
     ci_cd_pipeline_webhook_secret_is_param = optional(bool)
-    deploy_stage_list = list(object({
+    deploy_data_key                        = optional(string) # Defaults to map key
+    deploy_stage_list = optional(list(object({
       action_map = map(object({
         category      = optional(string)
         configuration = optional(map(string)) # If a config is provided all other config vars are ignored
@@ -98,7 +100,7 @@ variable "pipe_map" {
         version              = optional(string)
       }))
       name = string
-    }))
+    })), [])
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
@@ -106,11 +108,21 @@ variable "pipe_map" {
     role_policy_create_json_map     = optional(map(string))
     role_policy_inline_json_map     = optional(map(string))
     role_policy_managed_name_map    = optional(map(string))
+    source_artifact_format          = optional(string)
     source_branch                   = optional(string)
     source_code_star_connection_key = optional(string)
     source_repository_id            = optional(string)
     webhook_enable_github_hook      = optional(bool)
   }))
+}
+
+variable "pipe_source_artifact_format_default" {
+  type    = string
+  default = "CODE_ZIP"
+  validation {
+    condition     = contains(["CODEBUILD_CLONE_REF", "CODE_ZIP"], var.pipe_source_artifact_format_default)
+    error_message = "Invalid artifact format"
+  }
 }
 
 variable "pipe_source_branch_default" {

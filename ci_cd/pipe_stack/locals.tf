@@ -38,12 +38,18 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      build_data_key  = v.build_data_key == null ? k : v.build_data_key
+      deploy_data_key = v.deploy_data_key == null ? k : v.deploy_data_key
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
       build_stage_list = [
         for v_build in v.build_stage_list : merge(v_build, {
           action_map = {
             for k_act, v_act in v_build.action_map : k_act => merge(v_act, {
               category                         = v_act.category == null ? var.pipe_stage_category_default : v_act.category
-              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_build_data_map[k][v_act.configuration_build_project_key].name_effective
+              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_build_data_map[local.l1_map[k].build_data_key][v_act.configuration_build_project_key].name_effective
             })
           }
         })
@@ -53,15 +59,11 @@ locals {
           action_map = {
             for k_act, v_act in v_build.action_map : k_act => merge(v_act, {
               category                         = v_act.category == null ? var.pipe_stage_category_default : v_act.category
-              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_deploy_data_map[k][v_act.configuration_build_project_key].name_effective
+              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_deploy_data_map[local.l1_map[k].deploy_data_key][v_act.configuration_build_project_key].name_effective
             })
           }
         })
       ]
-    })
-  }
-  l2_map = {
-    for k, v in local.l0_map : k => {
     }
   }
   lx_map = {
