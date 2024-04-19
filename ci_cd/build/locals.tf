@@ -30,7 +30,7 @@ locals {
         v_build,
         {
           k_map                   = "${k_repo}_${k_build}"
-          name_include_app_fields = v_build.name_include_app_fields == null ? !strcontains(k_build, "pipe-") : v_build.name_include_app_fields
+          name_include_app_fields = v_build.name_include_app_fields == null ? strcontains(k_build, "pipe_") : v_build.name_include_app_fields
         },
       )
     ]
@@ -99,7 +99,7 @@ locals {
         })
       }
       log_group_name             = local.l1_map[k].public_visibility ? var.ci_cd_account_data.log_public.log_group_name : var.ci_cd_account_data.log.log_group_name
-      log_s3_bucket_location     = local.l1_map[k].log_s3_enabled && local.l1_map[k].log_s3_bucket_name != null ? "${local.l1_map[k].log_s3_bucket_name}/codebuild-${v.k_map}" : null
+      log_s3_bucket_location     = local.l1_map[k].log_s3_enabled && local.l1_map[k].log_s3_bucket_name != null ? "${local.l1_map[k].log_s3_bucket_name}/codebuild-${local.l1_map[k].name_simple}" : null
       source_no_clone            = contains(["CODEPIPELINE", "S3", "NO_SOURCE"], local.l1_map[k].build_source_type)
       source_report_build_status = local.l1_map[k].build_source_type == "CODEPIPELINE" ? false : v.source_report_build_status == null ? var.build_source_report_build_status_default : v.source_report_build_status
       source_type                = local.l1_map[k].build_source_type
@@ -135,7 +135,7 @@ locals {
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
   compute_env_map = {
     # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
