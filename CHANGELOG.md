@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.31.1
+
+### General
+
+* Add data key and format to pipe stack
+
 ## 0.31.0
 
 ### General
