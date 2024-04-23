@@ -52,7 +52,6 @@ locals {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       access_log_bucket                           = v.access_log_bucket == null ? var.elb_access_log_bucket_default : v.access_log_bucket
       access_log_enabled                          = v.access_log_enabled == null ? var.elb_access_log_enabled_default : v.access_log_enabled
-      connection_log_bucket                       = v.connection_log_bucket == null ? var.elb_connection_log_bucket_default : v.connection_log_bucket
       connection_log_enabled                      = v.connection_log_enabled == null ? var.elb_connection_log_enabled_default : v.connection_log_enabled
       desync_mitigation_mode                      = v.desync_mitigation_mode == null ? var.elb_desync_mitigation_mode_default : v.desync_mitigation_mode
       drop_invalid_header_fields                  = v.drop_invalid_header_fields == null ? var.elb_drop_invalid_header_fields_default : v.drop_invalid_header_fields
@@ -72,6 +71,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      connection_log_bucket = v.connection_log_bucket == null ? var.elb_connection_log_bucket_default == null ? local.l1_map[k].access_log_bucket : var.elb_connection_log_bucket_default : v.connection_log_bucket
       subnet_map = {
         for k_az, subnet_id in local.l1_map[k].vpc_subnet_id_map : k_az => {
           subnet_id = subnet_id

@@ -35,7 +35,8 @@ resource "aws_ecs_service" "this_service" {
   launch_type                        = null # Conflicts with capacity_provider_strategy
   lifecycle {
     ignore_changes = [
-      load_balancer # TODO: Eye roll: https://github.com/hashicorp/terraform/issues/24188
+      load_balancer, # TODO: Eye roll: https://github.com/hashicorp/terraform/issues/24188
+      task_definition,
     ]
   }
   dynamic "load_balancer" {

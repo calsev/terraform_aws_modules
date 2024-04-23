@@ -116,28 +116,28 @@ locals {
   l8_map = {
     for k, v in local.l0_map : k => {
       container_definition_list = [
-        for def in v.container_definition_list : {
-          command = def.command_list == null ? null : (def.command_join == null ? var.task_container_command_join_default : def.command_join) ? [
-            join(" && ", def.command_list)
-          ] : def.command_list
-          cpu        = (def.reserved_num_vcpu == null ? var.task_container_reserved_num_vcpu_default == null ? local.l4_map[k].resource_num_vcpu / length(v.container_definition_list) : var.task_container_reserved_num_vcpu_default : def.reserved_num_vcpu) * 1024
-          entryPoint = def.entry_point == null ? var.task_container_entry_point_default : def.entry_point
+        for k_def, v_def in v.container_definition_map : {
+          command = v_def.command_list == null ? null : (v_def.command_join == null ? var.task_container_command_join_default : v_def.command_join) ? [
+            join(" && ", v_def.command_list)
+          ] : v_def.command_list
+          cpu        = (v_def.reserved_num_vcpu == null ? var.task_container_reserved_num_vcpu_default == null ? local.l4_map[k].resource_num_vcpu / length(v.container_definition_map) : var.task_container_reserved_num_vcpu_default : v_def.reserved_num_vcpu) * 1024
+          entryPoint = v_def.entry_point == null ? var.task_container_entry_point_default : v_def.entry_point
           environment = [
             for k, v in merge(
               {
                 AWS_DEFAULT_REGION = var.std_map.aws_region_name
               },
-              def.environment_map == null ? var.task_container_environment_map_default : def.environment_map
+              v_def.environment_map == null ? var.task_container_environment_map_default : v_def.environment_map
               ) : {
               name  = k
               value = v
             }
           ]
           environmentFiles = [
-            for file in def.environment_file_list == null ? var.task_container_environment_file_list_default : def.environment_file_list : file
+            for file in v_def.environment_file_list == null ? var.task_container_environment_file_list_default : v_def.environment_file_list : file
           ]
           essential = true
-          image     = def.image != null ? def.image : var.task_container_image_default
+          image     = v_def.image != null ? v_def.image : var.task_container_image_default
           linuxParameters = {
             initProcessEnabled = true
           }
@@ -149,24 +149,24 @@ locals {
               awslogs-stream-prefix = local.l1_map[k].name_context
             }
           }
-          memoryReservation = (def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.l7_map[k].resource_memory_gib / length(v.container_definition_list) : var.task_container_reserved_memory_gib_default : def.reserved_memory_gib) * 1024
-          mountPoints = def.mount_point_map == null ? [] : [
-            for name, mount_data in def.mount_point_map : {
+          memoryReservation = (v_def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.l7_map[k].resource_memory_gib / length(v.container_definition_map) : var.task_container_reserved_memory_gib_default : v_def.reserved_memory_gib) * 1024
+          mountPoints = v_def.mount_point_map == null ? [] : [
+            for name, mount_data in v_def.mount_point_map : {
               containerPath = mount_data.container_path
               readOnly      = mount_data.read_only != null ? mount_data.read_only : var.task_container_mount_read_only_default
               sourceVolume  = name
             }
           ]
-          name = def.name
+          name = k_def
           portMappings = [
-            for port_map in def.port_map_list != null ? def.port_map_list : [] : {
-              containerPort = port_map.container_port
-              hostPort      = port_map.host_port != null ? port_map.host_port : port_map.container_port
-              protocol      = port_map.protocol != null ? port_map.protocol : var.task_container_port_protocol_default
+            for k_port, v_port in v_def.port_map == null ? var.task_container_port_map_default : v_def.port_map : {
+              containerPort = tonumber(k_port)
+              hostPort      = tonumber(v_port.host_port == null ? k_port : v_port.host_port)
+              protocol      = v_port.protocol == null ? var.task_container_port_protocol_default : v_port.protocol
             }
           ]
           secrets = [
-            for k_secret, v_secret in def.secret_map == null ? var.task_container_secret_map_default : def.secret_map :
+            for k_secret, v_secret in v_def.secret_map == null ? var.task_container_secret_map_default : v_def.secret_map :
             {
               name      = k_secret
               valueFrom = v_secret

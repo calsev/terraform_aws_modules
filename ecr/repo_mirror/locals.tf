@@ -9,13 +9,12 @@ locals {
     repo = module.ecr_repo.data
     task = module.ecr_mirror_task.data
   }
-  mirror_container_definition_list = [
-    {
+  mirror_container_definition_map = {
+    ecr-mirror = {
       command_list = [
         "make ecr-mirror",
       ]
       image = "${module.ecr_repo.data[var.ecr_repo_name].repo_url}:latest"
-      name  = "ecr-mirror"
-    },
-  ]
+    }
+  }
 }

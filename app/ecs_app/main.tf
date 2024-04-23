@@ -42,6 +42,7 @@ module "elb_listener" {
   listener_auth_scope_list_default                             = var.listener_auth_scope_list_default
   listener_auth_session_cookie_name_default                    = var.listener_auth_session_cookie_name_default
   listener_auth_session_timeout_seconds_default                = var.listener_auth_session_timeout_seconds_default
+  listener_dns_alias_enabled_default                           = var.listener_dns_alias_enabled_default
   listener_dns_from_zone_key_default                           = var.listener_dns_from_zone_key_default
   listener_elb_key_default                                     = var.listener_elb_key_default
   listener_map                                                 = local.create_target_x_map
@@ -79,15 +80,21 @@ module "ecs_cluster" {
 
 module "ecs_task" {
   source                                       = "../../ecs/task"
+  alert_enabled_default                        = var.alert_enabled_default
   ecs_cluster_data                             = module.ecs_cluster.data
   iam_data                                     = var.iam_data
   monitor_data                                 = var.monitor_data
+  role_policy_attach_arn_map_default           = var.role_policy_attach_arn_map_default
+  role_policy_create_json_map_default          = var.role_policy_create_json_map_default
+  role_policy_inline_json_map_default          = var.role_policy_inline_json_map_default
+  role_policy_managed_name_map_default         = var.role_policy_managed_name_map_default
   task_container_command_join_default          = var.task_container_command_join_default
   task_container_entry_point_default           = var.task_container_entry_point_default
   task_container_environment_file_list_default = var.task_container_environment_file_list_default
   task_container_environment_map_default       = var.task_container_environment_map_default
   task_container_image_default                 = var.task_container_image_default
   task_container_mount_read_only_default       = var.task_container_mount_read_only_default
+  task_container_port_map_default              = var.task_container_port_map_default
   task_container_port_protocol_default         = var.task_container_port_protocol_default
   task_container_reserved_memory_gib_default   = var.task_container_reserved_memory_gib_default
   task_container_reserved_num_vcpu_default     = var.task_container_reserved_num_vcpu_default
@@ -147,11 +154,13 @@ module "codedeploy_group" {
   std_map                                                = var.std_map
 }
 
-resource "local_file" "app_spec" {
-  for_each        = local.create_file_app_spec_map
-  content         = jsonencode(each.value.app_spec)
-  filename        = "${path.root}/${each.value.path_terraform_app_to_app_spec}"
-  file_permission = "0644"
+module "app_spec" {
+  # This is currently not used by the script
+  source   = "../../local_config"
+  for_each = local.create_file_app_spec_map
+  content  = each.value.app_spec
+  name     = "app"
+  std_map  = var.std_map
 }
 
 resource "local_file" "deploy_script" {

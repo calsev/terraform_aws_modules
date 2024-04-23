@@ -32,9 +32,9 @@ module "ecr_mirror_task" {
   std_map          = var.std_map
   task_map = {
     (var.task_name) = {
-      container_definition_list = local.mirror_container_definition_list
-      schedule_expression       = var.schedule_expression
-      ecs_cluster_arn           = module.computation.data[var.task_name].ecs_cluster_arn
+      container_definition_map = local.mirror_container_definition_map
+      schedule_expression      = var.schedule_expression
+      ecs_cluster_arn          = module.computation.data[var.task_name].ecs_cluster_arn
       role_policy_attach_arn_map = {
         get_token        = var.iam_data.iam_policy_arn_ecr_get_token
         image_read_write = module.ecr_mirror_policy.data.iam_policy_arn_map.read_write

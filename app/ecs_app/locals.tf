@@ -26,26 +26,10 @@ locals {
         {
           action_map = {
             Deploy = {
+              # The CodeDeploy integration insists on managing the task as well, so we use CodeBuild, see
+              # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
               configuration_build_project_key = "pipe_deploy"
               input_artifact_list             = [v.build_artifact_name]
-            }
-          }
-          action_map_alt = {
-            Deploy = {
-              category = "Deploy"
-              configuration = {
-                # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
-                AppSpecTemplateArtifact = "SourceArtifact"
-                AppSpecTemplatePath     = v.path_repo_root_to_app_spec
-                ApplicationName         = module.codedeploy_app.data[k].name_effective
-                DeploymentGroupName     = module.codedeploy_group.data[k].name_effective
-                # Image1ArtifactName             = "" # TODO
-                # Image1ContainerName            = "" # TODO
-                TaskDefinitionTemplateArtifact = "SourceArtifact"
-                TaskDefinitionTemplatePath     = v.path_repo_root_to_task_definition
-              }
-              input_artifact_list = ["SourceArtifact"]
-              provider            = "CodeDeployToECS"
             }
           }
           name = "Deploy"
@@ -187,14 +171,10 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      path_repo_root_to_app_spec            = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_app${local.l2_map[k].path_env_suffix}.json"
-      path_repo_root_to_deploy_script       = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.sh"
-      path_repo_root_to_deploy_spec         = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.yml"
-      path_repo_root_to_task_definition     = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_task${local.l2_map[k].path_env_suffix}.json"
-      path_terraform_app_to_app_spec        = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_app${local.l2_map[k].path_env_suffix}.raw.json"
-      path_terraform_app_to_deploy_script   = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.sh"
-      path_terraform_app_to_deploy_spec     = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.yml"
-      path_terraform_app_to_task_definition = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_task${local.l2_map[k].path_env_suffix}.json"
+      path_repo_root_to_deploy_script     = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.sh"
+      path_repo_root_to_deploy_spec       = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.yml"
+      path_terraform_app_to_deploy_script = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.sh"
+      path_terraform_app_to_deploy_spec   = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.yml"
     }
   }
   lx_map = {

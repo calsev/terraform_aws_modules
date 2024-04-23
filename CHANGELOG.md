@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.32.0
+
+### General
+
+* Streamline API for ECS app
+
 ## 0.31.1
 
 ### General
