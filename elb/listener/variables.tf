@@ -66,6 +66,7 @@ variable "listener_map" {
     })))
     alpn_policy                                            = optional(string)
     elb_key                                                = optional(string)
+    dns_alias_enabled                                      = optional(bool)
     dns_from_zone_key                                      = optional(string)
     listen_port                                            = optional(number)
     listen_protocol                                        = optional(string)
@@ -339,6 +340,11 @@ variable "listener_auth_session_timeout_seconds_default" {
   type        = number
   default     = null
   description = "Ignored unless action_type is authenticate"
+}
+
+variable "listener_dns_alias_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "listener_dns_from_zone_key_default" {

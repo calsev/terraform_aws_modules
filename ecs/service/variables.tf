@@ -66,6 +66,7 @@ variable "service_map" {
     alarm_monitoring_enabled                       = optional(bool)
     alarm_rollback_enabled                         = optional(bool)
     assign_public_ip                               = optional(bool)
+    container_definition_map                       = optional(map(object({})), {})
     deployment_controller_circuit_breaker_enabled  = optional(bool)
     deployment_controller_circuit_breaker_rollback = optional(bool)
     deployment_controller_type                     = optional(string)
@@ -154,8 +155,9 @@ variable "service_ecs_task_definition_key_default" {
 }
 
 variable "service_elb_container_name_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Every service attached to an ELB must provide an ELB container name or a container map with a single container"
 }
 
 variable "service_elb_container_port_default" {

@@ -241,6 +241,7 @@ module "certificate" {
   dns_data                                 = var.dns_data
   elb_data_map                             = var.elb_data_map
   listener_acm_certificate_key_default     = var.listener_acm_certificate_key_default
+  listener_dns_alias_enabled_default       = var.listener_dns_alias_enabled_default
   listener_dns_from_zone_key_default       = var.listener_dns_from_zone_key_default
   listener_map                             = local.create_attachment_map
   listener_name_include_app_fields_default = var.listener_name_include_app_fields_default

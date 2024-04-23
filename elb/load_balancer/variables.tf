@@ -67,8 +67,9 @@ variable "elb_access_log_enabled_default" {
 }
 
 variable "elb_connection_log_bucket_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Defaults to access log bucket"
 }
 
 variable "elb_connection_log_enabled_default" {

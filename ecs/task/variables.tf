@@ -76,22 +76,20 @@ variable "task_map" {
   type = map(object({
     alert_enabled = optional(bool)
     alert_level   = optional(string)
-    container_definition_list = list(object({
+    container_definition_map = map(object({
       command_join          = optional(bool)
       command_list          = optional(list(string))
       environment_file_list = optional(list(string))
       environment_map       = optional(map(string))
       entry_point           = optional(list(string))
       image                 = optional(string)
-      name                  = string
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
       })))
-      port_map_list = optional(list(object({
-        container_port = number
-        host_port      = optional(number)
-        protocol       = optional(string)
+      port_map = optional(map(object({
+        host_port = optional(number) # Defaults to container port (key)
+        protocol  = optional(string)
       })))
       reserved_memory_gib = optional(number)
       reserved_num_vcpu   = optional(number)
@@ -147,6 +145,19 @@ variable "task_container_image_default" {
 variable "task_container_mount_read_only_default" {
   type    = bool
   default = false
+}
+
+variable "task_container_port_map_default" {
+  type = map(object({
+    host_port = optional(number) # Defaults to container port (key)
+    protocol  = optional(string)
+  }))
+  default = {
+    80 = {
+      host_port = null
+      protocol  = null
+    }
+  }
 }
 
 variable "task_container_port_protocol_default" {

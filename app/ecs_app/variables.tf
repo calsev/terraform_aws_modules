@@ -65,22 +65,20 @@ variable "app_map" {
       }))
       name = string
     }))
-    container_definition_list = list(object({
+    container_definition_map = map(object({
       command_join          = optional(bool)
       command_list          = optional(list(string))
       environment_file_list = optional(list(string))
       environment_map       = optional(map(string))
       entry_point           = optional(list(string))
       image                 = optional(string)
-      name                  = string
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
       })))
-      port_map_list = optional(list(object({
-        container_port = number
-        host_port      = optional(number)
-        protocol       = optional(string)
+      port_map = optional(map(object({
+        host_port = optional(number) # Defaults to container port (key)
+        protocol  = optional(string)
       })))
       reserved_memory_gib = optional(number)
       reserved_num_vcpu   = optional(number)
@@ -88,6 +86,7 @@ variable "app_map" {
     }))
     deployment_style_use_blue_green       = optional(bool)
     desired_count                         = optional(number)
+    dns_alias_enabled                     = optional(bool)
     dns_from_zone_key                     = optional(string)
     elb_container_name                    = optional(string)
     elb_container_port                    = optional(number)
@@ -103,6 +102,10 @@ variable "app_map" {
     path_repo_root_to_spec_directory      = optional(string)
     path_terraform_app_to_repo_root       = optional(string)
     provider_instance_warmup_period_s     = optional(number)
+    role_policy_attach_arn_map            = optional(map(string))
+    role_policy_create_json_map           = optional(map(string))
+    role_policy_inline_json_map           = optional(map(string))
+    role_policy_managed_name_map          = optional(map(string))
     rule_condition_map = optional(map(object({
       host_header_pattern_list = optional(list(string))
       http_header_map = optional(map(object({
@@ -509,6 +512,11 @@ variable "listener_auth_session_timeout_seconds_default" {
   description = "Ignored unless action_type is authenticate"
 }
 
+variable "listener_dns_alias_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "listener_dns_from_zone_key_default" {
   type    = string
   default = null
@@ -581,6 +589,26 @@ variable "pipe_webhook_secret_is_param_default" {
   description = "If true, an SSM param will be created, otherwise a SM secret"
 }
 
+variable "role_policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
+}
+
 variable "rule_condition_map_default" {
   type = map(object({
     host_header_pattern_list = optional(list(string))
@@ -647,8 +675,9 @@ variable "service_desired_count_default" {
 }
 
 variable "service_elb_container_name_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Every service attached to an ELB must provide an ELB container name or a container map with a single container"
 }
 
 variable "service_elb_container_port_default" {
@@ -725,6 +754,19 @@ variable "task_container_image_default" {
 variable "task_container_mount_read_only_default" {
   type    = bool
   default = false
+}
+
+variable "task_container_port_map_default" {
+  type = map(object({
+    host_port = optional(number) # Defaults to container port (key)
+    protocol  = optional(string)
+  }))
+  default = {
+    80 = {
+      host_port = null
+      protocol  = null
+    }
+  }
 }
 
 variable "task_container_port_protocol_default" {

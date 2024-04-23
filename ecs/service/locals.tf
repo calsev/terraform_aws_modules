@@ -36,7 +36,7 @@ locals {
       deployment_minimum_healthy_percent             = v.deployment_minimum_healthy_percent == null ? var.service_deployment_minimum_healthy_percent_default : v.deployment_minimum_healthy_percent
       ecs_cluster_key                                = v.ecs_cluster_key == null ? var.service_ecs_cluster_key_default == null ? k : var.service_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_task_definition_key                        = v.ecs_task_definition_key == null ? var.service_ecs_task_definition_key_default == null ? k : var.service_ecs_task_definition_key_default : v.ecs_task_definition_key
-      elb_container_name                             = v.elb_container_name == null ? var.service_elb_container_name_default : v.elb_container_name
+      elb_container_name                             = v.elb_container_name == null ? var.service_elb_container_name_default == null ? length(v.container_definition_map) == 1 ? keys(v.container_definition_map)[0] : null : var.service_elb_container_name_default : v.elb_container_name
       elb_container_port                             = v.elb_container_port == null ? var.service_elb_container_port_default : v.elb_container_port
       elb_health_check_grace_period_seconds          = v.elb_health_check_grace_period_seconds == null ? var.service_elb_health_check_grace_period_seconds_default : v.elb_health_check_grace_period_seconds
       elb_target_group_key_list                      = v.elb_target_group_key_list == null ? var.service_elb_target_group_key_list_default : v.elb_target_group_key_list
