@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.33.0
+
+### General
+
+* Make DNS optional for CDN
+
 ## 0.32.0
 
 ### General

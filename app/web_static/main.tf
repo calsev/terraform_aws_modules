@@ -1,6 +1,7 @@
 module "cdn" {
   source                            = "../../cdn/distribution"
   cdn_global_data                   = var.cdn_global_data
+  domain_dns_alias_enabled_default  = var.domain_dns_alias_enabled_default
   domain_dns_from_zone_key_default  = var.domain_dns_from_zone_key_default
   domain_map                        = local.lx_map
   domain_origin_dns_enabled_default = var.domain_origin_dns_enabled_default

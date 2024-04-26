@@ -60,6 +60,11 @@ variable "dns_data" {
   })
 }
 
+variable "domain_dns_alias_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
@@ -108,6 +113,7 @@ variable "site_map" {
     }))
     cdn_invalidation_path                  = optional(string)
     ci_cd_pipeline_webhook_secret_is_param = optional(bool)
+    dns_alias_enabled                      = optional(bool)
     dns_from_zone_key                      = optional(string)
     name_include_app_fields                = optional(bool)
     name_infix                             = optional(bool)
