@@ -39,16 +39,17 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       dns_alias_name    = aws_cloudfront_distribution.this_distribution[k].domain_name
       dns_alias_zone_id = aws_cloudfront_distribution.this_distribution[k].hosted_zone_id
-    })
+    }) if v.dns_alias_enabled
   }
   l0_map = {
     for k, v in var.domain_map : k => v
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      acm_certificate_arn                                   = var.cdn_global_data.domain_cert_map[k].certificate_arn
       bucket_key                                            = replace(v.origin_fqdn, "-", "_")
       cache_policy_key                                      = v.cache_policy_key == null ? var.domain_cache_policy_key_default : v.cache_policy_key
+      cache_viewer_protocol_policy                          = v.cache_viewer_protocol_policy == null ? var.domain_cache_viewer_protocol_policy_default : v.cache_viewer_protocol_policy
+      dns_alias_enabled                                     = v.dns_alias_enabled == null ? var.domain_dns_alias_enabled_default : v.dns_alias_enabled
       dns_from_zone_key                                     = v.dns_from_zone_key == null ? var.domain_dns_from_zone_key_default : v.dns_from_zone_key
       origin_allow_public                                   = v.origin_allow_public == null ? var.domain_origin_allow_public_default : v.origin_allow_public
       origin_dns_enabled                                    = v.origin_dns_enabled == null ? var.domain_origin_dns_enabled_default : v.origin_dns_enabled
@@ -76,12 +77,16 @@ locals {
       response_security_header_transport_preload            = v.response_security_header_transport_preload == null ? var.domain_response_security_header_transport_preload_default : v.response_security_header_transport_preload
       response_server_timing_enabled                        = v.response_server_timing_enabled == null ? var.domain_response_server_timing_enabled_default : v.response_server_timing_enabled
       response_server_timing_sampling_rate                  = v.response_server_timing_sampling_rate == null ? var.domain_response_server_timing_sampling_rate_default : v.response_server_timing_sampling_rate
+      smooth_streaming_enabled                              = v.smooth_streaming_enabled == null ? var.domain_smooth_streaming_enabled_default : v.smooth_streaming_enabled
       trusted_key_group_key_list                            = v.trusted_key_group_key_list == null ? var.domain_trusted_key_group_key_list_default : v.trusted_key_group_key_list
       web_acl_key                                           = v.web_acl_key == null ? var.domain_web_acl_key_default : v.web_acl_key
     })
   }
   l2_map = {
     for k, v in var.domain_map : k => {
+      acm_certificate_arn                   = local.l1_map[k].dns_alias_enabled ? var.cdn_global_data.domain_cert_map[k].certificate_arn : null
+      acm_certificate_use_default           = !local.l1_map[k].dns_alias_enabled
+      alias_name_list                       = local.l1_map[k].dns_alias_enabled ? [local.l1_map[k].name_simple] : []
       cache_policy_id                       = var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
       origin_request_policy_id              = var.cdn_global_data.origin_request_policy_map[local.l1_map[k].origin_request_policy_key].policy_id
       response_cors_allowed_origin_list_all = concat(["https://${local.l1_map[k].dns_from_zone_key}"], local.l1_map[k].response_cors_allowed_origin_list)
@@ -93,7 +98,9 @@ locals {
       trusted_key_group_id_list = [
         for k_group in local.l1_map[k].trusted_key_group_key_list : var.key_group_data_map[k_group].group_id
       ]
-      web_acl_arn = var.cdn_global_data.web_acl_map[local.l1_map[k].web_acl_key].waf_arn
+      viewer_certificate_minimum_protocol_version = local.l1_map[k].dns_alias_enabled ? v.viewer_certificate_minimum_protocol_version == null ? var.domain_viewer_certificate_minimum_protocol_version_default : v.viewer_certificate_minimum_protocol_version : null
+      viewer_certificate_ssl_support_method       = local.l1_map[k].dns_alias_enabled ? v.viewer_certificate_ssl_support_method == null ? var.domain_viewer_certificate_ssl_support_method_default : v.viewer_certificate_ssl_support_method : null
+      web_acl_arn                                 = var.cdn_global_data.web_acl_map[local.l1_map[k].web_acl_key].waf_arn
     }
   }
   l3_map = {
@@ -116,7 +123,7 @@ locals {
         )
         cdn_arn   = aws_cloudfront_distribution.this_distribution[k].arn
         cdn_id    = aws_cloudfront_distribution.this_distribution[k].id
-        dns_alias = module.this_dns_alias.data[k]
+        dns_alias = v.dns_alias_enabled ? module.this_dns_alias.data[k] : null
       }
     )
   }

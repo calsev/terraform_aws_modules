@@ -26,6 +26,8 @@ variable "dns_data" {
 variable "domain_map" {
   type = map(object({
     cache_policy_key                  = optional(string)
+    cache_viewer_protocol_policy      = optional(string)
+    dns_alias_enabled                 = optional(bool)
     dns_from_zone_key                 = optional(string)
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
@@ -70,14 +72,31 @@ variable "domain_map" {
       identifier_type = optional(string)
       object_key_list = optional(list(string))
     })))
-    trusted_key_group_key_list = optional(list(string))
-    web_acl_key                = optional(string)
+    smooth_streaming_enabled                    = optional(bool)
+    trusted_key_group_key_list                  = optional(list(string))
+    viewer_certificate_minimum_protocol_version = optional(string)
+    viewer_certificate_ssl_support_method       = optional(string)
+    web_acl_key                                 = optional(string)
   }))
 }
 
 variable "domain_cache_policy_key_default" {
   type    = string
   default = "max_cache"
+}
+
+variable "domain_cache_viewer_protocol_policy_default" {
+  type    = string
+  default = "redirect-to-https"
+  validation {
+    condition     = contains(["allow-all", "https-only", "redirect-to-https"], var.domain_cache_viewer_protocol_policy_default)
+    error_message = "Invalid viewer protocol policy"
+  }
+}
+
+variable "domain_dns_alias_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "domain_dns_from_zone_key_default" {
@@ -232,6 +251,27 @@ variable "domain_response_server_timing_enabled_default" {
 variable "domain_response_server_timing_sampling_rate_default" {
   type    = number
   default = 0
+}
+
+variable "domain_smooth_streaming_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "domain_viewer_certificate_minimum_protocol_version_default" {
+  type        = string
+  default     = "TLSv1.2_2021"
+  description = "Ignored unless DNS alias is enabled"
+}
+
+variable "domain_viewer_certificate_ssl_support_method_default" {
+  type        = string
+  default     = "sni-only"
+  description = "Ignored unless DNS alias is enabled"
+  validation {
+    condition     = contains(["sni-only", "static-ip", "vip"], var.domain_viewer_certificate_ssl_support_method_default)
+    error_message = "Invalid SSL support method"
+  }
 }
 
 variable "domain_trusted_key_group_key_list_default" {

@@ -85,7 +85,7 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
 
 resource "aws_cloudfront_distribution" "this_distribution" {
   for_each = local.lx_map
-  aliases  = [each.value.name_simple]
+  aliases  = each.value.alias_name_list
   default_cache_behavior {
     allowed_methods           = each.value.response_cors_allowed_method_list
     cached_methods            = each.value.response_cors_allowed_method_list
@@ -100,11 +100,11 @@ resource "aws_cloudfront_distribution" "this_distribution" {
     origin_request_policy_id   = each.value.origin_request_policy_id
     realtime_log_config_arn    = null
     response_headers_policy_id = aws_cloudfront_response_headers_policy.header_policy[each.key].id
-    smooth_streaming           = false # TODO
+    smooth_streaming           = each.value.smooth_streaming_enabled
     target_origin_id           = each.value.origin_fqdn
     trusted_key_groups         = each.value.trusted_key_group_id_list
-    trusted_signers            = []                  # TODO
-    viewer_protocol_policy     = "redirect-to-https" # TODO
+    trusted_signers            = [] # TODO
+    viewer_protocol_policy     = each.value.cache_viewer_protocol_policy
   }
   default_root_object = "index.html"
   enabled             = true
@@ -124,9 +124,11 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   }
   tags = each.value.tags
   viewer_certificate {
-    acm_certificate_arn      = each.value.acm_certificate_arn
-    minimum_protocol_version = "TLSv1.2_2021"
-    ssl_support_method       = "sni-only"
+    acm_certificate_arn            = each.value.acm_certificate_arn
+    cloudfront_default_certificate = each.value.acm_certificate_use_default
+    iam_certificate_id             = null # TODO
+    minimum_protocol_version       = each.value.viewer_certificate_minimum_protocol_version
+    ssl_support_method             = each.value.viewer_certificate_ssl_support_method
   }
   web_acl_id = each.value.web_acl_arn
 }
