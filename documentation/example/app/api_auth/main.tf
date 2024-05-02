@@ -63,9 +63,7 @@ module "api" {
         }
         options = {
           route_map = {
-            "OPTIONS /auth-cognito" = {
-            }
-            "OPTIONS /auth-lambda" = {
+            "OPTIONS /{path+}" = {
             }
           }
           target_uri = module.lambda.data[local.lambda_name_options].invoke_arn

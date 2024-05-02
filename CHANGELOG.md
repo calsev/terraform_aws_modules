@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.35.0
+
+### General
+
+* Improve all default templates for Cognito
+
 ## 0.34.0
 
 ### General
