@@ -1,7 +1,11 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = local.l0_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 module "vpc_map" {
@@ -50,13 +54,13 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
-      auth_client_password_type = v.auth_client_password_type == null ? var.proxy_auth_client_password_type_default : v.xauth_client_password_type
-      auth_iam_required         = v.auth_iam_required == null ? var.proxy_auth_iam_required_default : v.auth_iam_required
-      auth_username             = v.auth_username == null ? var.proxy_auth_username_default : v.auth_username
-      debug_logging_enabled     = v.debug_logging_enabled == null ? var.proxy_debug_logging_enabled_default : v.debug_logging_enabled
-      engine_family             = v.engine_family == null ? var.proxy_engine_family_default : v.engine_family
-      iam_role_arn              = v.iam_role_arn == null ? var.proxy_iam_role_arn_default : v.iam_role_arn
-      idle_client_timeout       = v.idle_client_timeout == null ? var.proxy_idle_client_timeout_default : v.idle_client_timeout
+      auth_client_password_type   = v.auth_client_password_type == null ? var.proxy_auth_client_password_type_default : v.xauth_client_password_type
+      auth_iam_required           = v.auth_iam_required == null ? var.proxy_auth_iam_required_default : v.auth_iam_required
+      auth_username               = v.auth_username == null ? var.proxy_auth_username_default : v.auth_username
+      debug_logging_enabled       = v.debug_logging_enabled == null ? var.proxy_debug_logging_enabled_default : v.debug_logging_enabled
+      engine_family               = v.engine_family == null ? var.proxy_engine_family_default : v.engine_family
+      iam_role_arn                = v.iam_role_arn == null ? var.proxy_iam_role_arn_default : v.iam_role_arn
+      idle_client_timeout_seconds = v.idle_client_timeout_seconds == null ? var.proxy_idle_client_timeout_seconds_default : v.idle_client_timeout_seconds
       target_group_map = {
         for k_group, v_group in v.target_group_map : k_group => merge(v_group, {
           connection_borrow_timeout_seconds = v_group.connection_borrow_timeout_seconds == null ? var.proxy_target_connection_borrow_timeout_seconds_default : v_group.connection_borrow_timeout_seconds

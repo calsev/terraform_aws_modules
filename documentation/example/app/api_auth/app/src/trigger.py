@@ -17,6 +17,6 @@ def main(
             f"Invalid request, no userAttributes:\n{json.dumps(list(request.keys()))}"
         )
         raise ValueError("Request error, try again later")
-
-    print(f"User attributes:\n{user_attributes}")  # Manipulate attributes here
+    # Manipulate attributes or create user in DB here
+    print(f"User attributes:\n{user_attributes}")
     return event

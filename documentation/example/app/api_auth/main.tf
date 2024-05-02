@@ -7,29 +7,6 @@ module "com_lib" {
   std_var = local.std_var
 }
 
-module "user_pool" {
-  source          = "path/to/modules/cognito/user_pool"
-  cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data
-  dns_data        = data.terraform_remote_state.dns.outputs.data
-  pool_client_app_map_default = {
-    (local.client_app_name) = {
-      callback_url_list = ["https://auth-app.example.com"]
-    }
-  }
-  pool_dns_from_zone_key_default            = "example.com"
-  pool_lambda_arn_pre_sign_up_default       = module.lambda.data[local.lambda_name_trigger].lambda_arn
-  pool_lambda_arn_post_confirmation_default = module.lambda.data[local.lambda_name_trigger].lambda_arn
-  pool_map = {
-    (local.pool_name) = {}
-  }
-  pool_only_admin_create_user_default = false
-  pool_schema_map_default = {
-    super_special = {}
-  }
-  pool_username_attribute_list_default = ["email"]
-  std_map                              = module.com_lib.std_map
-}
-
 module "lambda" {
   source = "path/to/modules/lambda/function"
   function_map = {
@@ -59,8 +36,8 @@ module "api" {
   source = "path/to/modules/api_gateway/stack"
   api_auth_map_default = {
     (local.auth_key_cognito) = {
-      cognito_client_app_key = local.client_app_name
-      cognito_pool_key       = local.pool_name
+      cognito_client_app_key = "app"
+      cognito_pool_key       = "app"
     }
     (local.auth_key_lambda) = {
       lambda_key = local.lambda_name_auth
@@ -99,7 +76,7 @@ module "api" {
       stage_map                   = local.stage_map
     }
   }
-  cognito_data_map = module.user_pool.data
+  cognito_data_map = data.terraform_remote_state.core.outputs.data["com"].user_pool
   dns_data         = data.terraform_remote_state.dns.outputs.data
   domain_map = {
     (local.api_name) = {}

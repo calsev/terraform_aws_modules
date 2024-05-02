@@ -56,9 +56,8 @@ locals {
           action_redirect_status_code                 = v_act.action_redirect_status_code == null ? var.listener_action_redirect_status_code_default : v_act.action_redirect_status_code
           action_type                                 = v_act.action_type == null ? var.listener_action_type_default : v_act.action_type
           auth_authentication_request_extra_param_map = v_act.auth_authentication_request_extra_param_map == null ? var.listener_auth_authentication_request_extra_param_map_default : v_act.auth_authentication_request_extra_param_map
-          auth_cognito_user_pool_arn                  = v_act.auth_cognito_user_pool_arn == null ? var.listener_auth_cognito_user_pool_arn_default : v_act.auth_cognito_user_pool_arn
-          auth_cognito_user_pool_client_app_id        = v_act.auth_cognito_user_pool_client_app_id == null ? var.listener_auth_cognito_user_pool_client_app_id_default : v_act.auth_cognito_user_pool_client_app_id
-          auth_cognito_user_pool_fqdn                 = v_act.auth_cognito_user_pool_fqdn == null ? var.listener_auth_cognito_user_pool_fqdn_default : v_act.auth_cognito_user_pool_fqdn
+          auth_cognito_client_app_key                 = v_act.auth_cognito_client_app_key == null ? var.listener_auth_cognito_client_app_key_default : v_act.auth_cognito_client_app_key
+          auth_cognito_pool_key                       = v_act.auth_cognito_pool_key == null ? var.listener_auth_cognito_pool_key_default : v_act.auth_cognito_pool_key
           auth_oidc_authorization_endpoint            = v_act.auth_oidc_authorization_endpoint == null ? var.listener_auth_oidc_authorization_endpoint_default : v_act.auth_oidc_authorization_endpoint
           auth_oidc_client_id                         = v_act.auth_oidc_client_id == null ? var.listener_auth_oidc_client_id_default : v_act.auth_oidc_client_id
           auth_oidc_client_secret                     = v_act.auth_oidc_client_secret == null ? var.listener_auth_oidc_client_secret_default : v_act.auth_oidc_client_secret
@@ -99,7 +98,11 @@ locals {
               target_group_weight = v_fwd.target_group_weight == null ? var.listener_action_forward_target_group_weight_default == null ? 100 / max(1, length(v_act.action_forward_target_group_map)) : var.listener_action_forward_target_group_weight_default : v_fwd.target_group_weight
             })
           }
-          action_redirect_port = local.l1_map[k].action_map[k_act].action_redirect_port == null ? "#{port}" : local.l2_map[k].action_map[k_act].action_redirect_port
+          action_redirect_port        = local.l1_map[k].action_map[k_act].action_redirect_port == null ? "#{port}" : local.l2_map[k].action_map[k_act].action_redirect_port
+          auth_cognito_client_app_id  = v_act.auth_cognito_client_app_key == null ? null : var.cognito_data_map[v_act.auth_cognito_pool_key].user_pool_client.client_app_map[v_act.auth_cognito_client_app_key].client_app_id
+          auth_cognito_user_pool_arn  = v_act.auth_cognito_pool_key == null ? null : var.cognito_data_map[v_act.auth_cognito_pool_key].user_pool_arn
+          auth_cognito_user_pool_fqdn = v_act.auth_cognito_pool_key == null ? null : var.cognito_data_map[v_act.auth_cognito_pool_key].user_pool_fqdn
+          auth_scope_string           = join(" ", v_act.auth_scope_list)
         })
       }
     }

@@ -114,7 +114,7 @@ variable "db_availability_zone_default" {
 
 variable "db_backup_retention_period_day_default" {
   type    = number
-  default = 1
+  default = 14
   validation {
     condition     = 0 <= var.db_backup_retention_period_day_default && var.db_backup_retention_period_day_default <= 35
     error_message = "Invalid retention period"
@@ -232,28 +232,6 @@ variable "db_monitoring_interval_s_default" {
 variable "db_multi_az_default" {
   type    = bool
   default = false
-}
-
-variable "db_name_include_app_fields_default" {
-  type        = bool
-  default     = false
-  description = "It is assumed the DB transcends app organization"
-}
-
-variable "db_name_infix_default" {
-  type    = bool
-  default = true
-}
-
-variable "db_name_prefix_default" {
-  type    = string
-  default = ""
-}
-
-variable "db_name_suffix_default" {
-  type        = string
-  default     = ""
-  description = "Appended after context suffix"
 }
 
 variable "db_nchar_character_set_name_default" {
@@ -379,6 +357,28 @@ variable "iam_data" {
   })
   default     = null
   description = "Must be provided if performance insights are enabled - they are by default"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "It is assumed the DB transcends app organization"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "subnet_group_map" {

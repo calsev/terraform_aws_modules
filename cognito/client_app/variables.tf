@@ -56,7 +56,7 @@ variable "client_explicit_auth_flow_list_default" {
 variable "client_generate_secret_default" {
   type        = bool
   default     = false
-  description = "Required for enable_propagate_additional_user_context_data"
+  description = "Disallows implicit grant flow (Amplify). Required for enable_propagate_additional_user_context_data and ELB integration."
 }
 
 variable "client_logout_url_list_default" {

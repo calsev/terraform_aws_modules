@@ -211,8 +211,9 @@ variable "pool_invite_email_message_template_default" {
 }
 
 variable "pool_invite_email_subject_default" {
-  type    = string
-  default = "Login credentials"
+  type        = string
+  default     = null
+  description = "Defaults to 'Login credentials from email_from_username'"
 }
 
 variable "pool_invite_sms_message_template_default" {
@@ -405,7 +406,7 @@ variable "pool_username_case_sensitive_default" {
 
 variable "pool_verify_confirm_with_link_default" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "pool_verify_email_message_by_code_template_default" {

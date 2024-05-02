@@ -60,7 +60,6 @@ locals {
       email_reply_to_address                            = v.email_reply_to_address == null ? var.pool_email_reply_to_address_default : v.email_reply_to_address
       email_ses_key                                     = v.email_ses_key == null ? var.pool_email_ses_key_default : v.email_ses_key
       invite_email_message_template                     = v.invite_email_message_template == null ? var.pool_invite_email_message_template_default : v.invite_email_message_template
-      invite_email_subject                              = v.invite_email_subject == null ? var.pool_invite_email_subject_default : v.invite_email_subject
       invite_sms_message_template                       = v.invite_sms_message_template == null ? var.pool_invite_sms_message_template_default : v.invite_sms_message_template
       lambda_arn_create_auth_challenge                  = v.lambda_arn_create_auth_challenge == null ? var.pool_lambda_arn_create_auth_challenge_default : v.lambda_arn_create_auth_challenge
       lambda_arn_custom_message                         = v.lambda_arn_custom_message == null ? var.pool_lambda_arn_custom_message_default : v.lambda_arn_custom_message
@@ -114,6 +113,7 @@ locals {
       email_ses_configuration_set_name = local.l1_map[k].email_ses_key == null ? null : var.comms_data.ses_email_map[local.l1_map[k].email_ses_key].configuration_set_name
       email_ses_identity_arn           = local.l1_map[k].email_ses_key == null ? null : var.comms_data.ses_email_map[local.l1_map[k].email_ses_key].identity_arn
       dns_from_fqdn                    = local.l1_map[k].dns_from_zone_key == null ? null : "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_from_zone_key}"
+      invite_email_subject             = v.invite_email_subject == null ? var.pool_invite_email_subject_default == null ? local.l1_map[k].email_from_username == null ? "Login credentials" : "Login credentials from ${local.l1_map[k].email_from_username}" : var.pool_invite_email_subject_default : v.invite_email_subject
       lambda_has_config = local.l1_map[k].lambda_arn_create_auth_challenge != null || (
         local.l1_map[k].lambda_arn_custom_message != null || (
           local.l1_map[k].lambda_arn_define_auth_challenge != null || (
@@ -169,6 +169,7 @@ locals {
         user_pool_arn      = aws_cognito_user_pool.this_pool[k].arn
         user_pool_client   = module.pool_client.data[k]
         user_pool_endpoint = aws_cognito_user_pool.this_pool[k].endpoint
+        user_pool_fqdn     = v.dns_from_fqdn == null ? aws_cognito_user_pool.this_pool[k].endpoint : v.dns_from_fqdn
       }
     )
   }

@@ -9,7 +9,7 @@ resource "aws_db_proxy" "this_proxy" {
   }
   debug_logging          = each.value.debug_logging_enabled
   engine_family          = each.value.engine_family
-  idle_client_timeout    = each.value.idle_client_timeout
+  idle_client_timeout    = each.value.idle_client_timeout_seconds
   name                   = each.value.name_effective
   require_tls            = each.value.tls_required
   role_arn               = each.value.iam_role_arn

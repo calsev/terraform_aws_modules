@@ -11,6 +11,7 @@ module "elb_target" {
 
 module "elb_listener" {
   source                                                       = "../../elb/listener"
+  cognito_data_map                                             = var.cognito_data_map
   dns_data                                                     = var.dns_data
   elb_data_map                                                 = var.elb_data_map
   elb_target_data_map                                          = module.elb_target.data
@@ -29,9 +30,8 @@ module "elb_listener" {
   listener_action_redirect_status_code_default                 = var.listener_action_redirect_status_code_default
   listener_action_type_default                                 = var.listener_action_type_default
   listener_auth_authentication_request_extra_param_map_default = var.listener_auth_authentication_request_extra_param_map_default
-  listener_auth_cognito_user_pool_arn_default                  = var.listener_auth_cognito_user_pool_arn_default
-  listener_auth_cognito_user_pool_client_app_id_default        = var.listener_auth_cognito_user_pool_client_app_id_default
-  listener_auth_cognito_user_pool_fqdn_default                 = var.listener_auth_cognito_user_pool_fqdn_default
+  listener_auth_cognito_client_app_key_default                 = var.listener_auth_cognito_client_app_key_default
+  listener_auth_cognito_pool_key_default                       = var.listener_auth_cognito_pool_key_default
   listener_auth_oidc_authorization_endpoint_default            = var.listener_auth_oidc_authorization_endpoint_default
   listener_auth_oidc_client_id_default                         = var.listener_auth_oidc_client_id_default
   listener_auth_oidc_client_secret_default                     = var.listener_auth_oidc_client_secret_default
@@ -157,8 +157,8 @@ module "codedeploy_group" {
 module "app_spec" {
   # This is currently not used by the script
   source   = "../../local_config"
-  for_each = local.create_file_app_spec_map
-  content  = each.value.app_spec
+  for_each = local.create_file_app_spec_x_map
+  content  = each.value.revision_spec
   name     = "app"
   std_map  = var.std_map
 }

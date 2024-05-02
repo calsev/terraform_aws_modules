@@ -116,6 +116,12 @@ variable "secret_random_init_value_map" {
   default     = {}
 }
 
+variable "secret_random_special_character_set_default" {
+  type        = string
+  default     = "!@#$%&*()-_=+[]{}<>:?"
+  description = "Has no effect unless a secret is a password"
+}
+
 variable "std_map" {
   type = object({
     access_title_map               = map(string)

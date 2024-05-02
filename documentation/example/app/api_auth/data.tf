@@ -1,9 +1,9 @@
-data "terraform_remote_state" "cdn_global" {
+data "terraform_remote_state" "core" {
   backend = "s3"
 
   config = {
     bucket = "example-deploy"
-    key    = "tf-backend/inf-cdn-global.tfstate"
+    key    = "tf-backend/data-core.tfstate"
     region = local.std_var.aws_region_name
   }
 }

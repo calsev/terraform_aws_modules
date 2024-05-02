@@ -4,16 +4,42 @@ variable "db_data_map" {
   }))
 }
 
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "It is assumed the DB transcends app organization"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
 variable "proxy_map" {
   type = map(object({
-    auth_client_password_type = optional(string)
-    auth_iam_required         = optional(bool)
-    auth_sm_secret_arn        = string
-    auth_username             = optional(string)
-    debug_logging_enabled     = optional(bool)
-    engine_family             = optional(string)
-    iam_role_arn              = optional(string)
-    idle_client_timeout       = optional(number)
+    auth_client_password_type   = optional(string)
+    auth_iam_required           = optional(bool)
+    auth_sm_secret_arn          = string
+    auth_username               = optional(string)
+    debug_logging_enabled       = optional(bool)
+    engine_family               = optional(string)
+    iam_role_arn                = optional(string)
+    idle_client_timeout_seconds = optional(number)
+    name_include_app_fields     = optional(bool)
+    name_infix                  = optional(bool)
+    name_prefix                 = optional(string)
+    name_suffix                 = optional(string)
     target_group_map = map(object({ # Currently only a single target group is supported per proxy
       connection_borrow_timeout_seconds = optional(number)
       target_map = map(object({
@@ -73,9 +99,9 @@ variable "proxy_iam_role_arn_default" {
   default = null
 }
 
-variable "proxy_idle_client_timeout_default" {
+variable "proxy_idle_client_timeout_seconds_default" {
   type    = number
-  default = null
+  default = 30 * 60
 }
 
 variable "proxy_target_connection_borrow_timeout_seconds_default" {

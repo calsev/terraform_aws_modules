@@ -10,6 +10,7 @@ module "user_name_map" {
   name_infix_default = var.user_name_infix_default
   name_map           = var.user_map
   std_map            = var.std_map
+  tags_default       = var.user_tags_default
 }
 
 module "group_policy_map" {
