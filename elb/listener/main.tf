@@ -8,40 +8,30 @@ resource "aws_lb_listener" "this_listener" {
       dynamic "authenticate_cognito" {
         for_each = default_action.value.action_type == "authenticate-cognito" ? { this = {} } : {}
         content {
-          authentication_request_extra_params = [
-            for k, v in default_action.value.auth_authentication_request_extra_param_map : {
-              key   = k
-              value = v
-            }
-          ]
-          on_unauthenticated_request = default_action.value.auth_on_unauthenticated_request
-          scope                      = default_action.value.auth_scope_list
-          session_cookie_name        = default_action.value.auth_session_cookie_name
-          session_timeout            = default_action.value.auth_session_timeout_seconds
-          user_pool_arn              = default_action.value.auth_cognito_user_pool_arn
-          user_pool_client_id        = default_action.value.auth_cognito_user_pool_client_app_id
-          user_pool_domain           = default_action.value.auth_cognito_user_pool_fqdn
+          authentication_request_extra_params = default_action.value.auth_authentication_request_extra_param_map
+          on_unauthenticated_request          = default_action.value.auth_on_unauthenticated_request
+          scope                               = default_action.value.auth_scope_string
+          session_cookie_name                 = default_action.value.auth_session_cookie_name
+          session_timeout                     = default_action.value.auth_session_timeout_seconds
+          user_pool_arn                       = default_action.value.auth_cognito_user_pool_arn
+          user_pool_client_id                 = default_action.value.auth_cognito_client_app_id
+          user_pool_domain                    = default_action.value.auth_cognito_user_pool_fqdn
         }
       }
       dynamic "authenticate_oidc" {
         for_each = default_action.value.action_type == "authenticate-oidc" ? { this = {} } : {}
         content {
-          authentication_request_extra_params = [
-            for k, v in default_action.value.auth_authentication_request_extra_param_map : {
-              key   = k
-              value = v
-            }
-          ]
-          authorization_endpoint     = default_action.value.auth_oidc_authorization_endpoint
-          client_id                  = default_action.value.auth_oidc_client_id
-          client_secret              = default_action.value.auth_oidc_client_secret
-          issuer                     = default_action.value.auth_oidc_issuer
-          on_unauthenticated_request = default_action.value.auth_on_unauthenticated_request
-          scope                      = default_action.value.auth_scope_list
-          session_cookie_name        = default_action.value.auth_session_cookie_name
-          session_timeout            = default_action.value.auth_session_timeout_seconds
-          token_endpoint             = default_action.value.auth_oidc_token_endpoint
-          user_info_endpoint         = default_action.value.auth_oidc_user_info_endpoint
+          authentication_request_extra_params = default_action.value.auth_authentication_request_extra_param_map
+          authorization_endpoint              = default_action.value.auth_oidc_authorization_endpoint
+          client_id                           = default_action.value.auth_oidc_client_id
+          client_secret                       = default_action.value.auth_oidc_client_secret
+          issuer                              = default_action.value.auth_oidc_issuer
+          on_unauthenticated_request          = default_action.value.auth_on_unauthenticated_request
+          scope                               = default_action.value.auth_scope_string
+          session_cookie_name                 = default_action.value.auth_session_cookie_name
+          session_timeout                     = default_action.value.auth_session_timeout_seconds
+          token_endpoint                      = default_action.value.auth_oidc_token_endpoint
+          user_info_endpoint                  = default_action.value.auth_oidc_user_info_endpoint
         }
       }
       dynamic "fixed_response" {
@@ -107,40 +97,30 @@ resource "aws_lb_listener_rule" "this_rule" {
       dynamic "authenticate_cognito" {
         for_each = action.value.action_type == "authenticate-cognito" ? { this = {} } : {}
         content {
-          authentication_request_extra_params = [
-            for k, v in action.value.auth_authentication_request_extra_param_map : {
-              key   = k
-              value = v
-            }
-          ]
-          on_unauthenticated_request = action.value.auth_on_unauthenticated_request
-          scope                      = action.value.auth_scope_list
-          session_cookie_name        = action.value.auth_session_cookie_name
-          session_timeout            = action.value.auth_session_timeout_seconds
-          user_pool_arn              = action.value.auth_cognito_user_pool_arn
-          user_pool_client_id        = action.value.auth_cognito_user_pool_client_app_id
-          user_pool_domain           = action.value.auth_cognito_user_pool_fqdn
+          authentication_request_extra_params = action.value.auth_authentication_request_extra_param_map
+          on_unauthenticated_request          = action.value.auth_on_unauthenticated_request
+          scope                               = action.value.auth_scope_string
+          session_cookie_name                 = action.value.auth_session_cookie_name
+          session_timeout                     = action.value.auth_session_timeout_seconds
+          user_pool_arn                       = action.value.auth_cognito_user_pool_arn
+          user_pool_client_id                 = action.value.auth_cognito_client_app_id
+          user_pool_domain                    = action.value.auth_cognito_user_pool_fqdn
         }
       }
       dynamic "authenticate_oidc" {
         for_each = action.value.action_type == "authenticate-oidc" ? { this = {} } : {}
         content {
-          authentication_request_extra_params = [
-            for k, v in action.value.auth_authentication_request_extra_param_map : {
-              key   = k
-              value = v
-            }
-          ]
-          authorization_endpoint     = action.value.auth_oidc_authorization_endpoint
-          client_id                  = action.value.auth_oidc_client_id
-          client_secret              = action.value.auth_oidc_client_secret
-          issuer                     = action.value.auth_oidc_issuer
-          on_unauthenticated_request = action.value.auth_on_unauthenticated_request
-          scope                      = action.value.auth_scope_list
-          session_cookie_name        = action.value.auth_session_cookie_name
-          session_timeout            = action.value.auth_session_timeout_seconds
-          token_endpoint             = action.value.auth_oidc_token_endpoint
-          user_info_endpoint         = action.value.auth_oidc_user_info_endpoint
+          authentication_request_extra_params = action.value.auth_authentication_request_extra_param_map
+          authorization_endpoint              = action.value.auth_oidc_authorization_endpoint
+          client_id                           = action.value.auth_oidc_client_id
+          client_secret                       = action.value.auth_oidc_client_secret
+          issuer                              = action.value.auth_oidc_issuer
+          on_unauthenticated_request          = action.value.auth_on_unauthenticated_request
+          scope                               = action.value.auth_scope_string
+          session_cookie_name                 = action.value.auth_session_cookie_name
+          session_timeout                     = action.value.auth_session_timeout_seconds
+          token_endpoint                      = action.value.auth_oidc_token_endpoint
+          user_info_endpoint                  = action.value.auth_oidc_user_info_endpoint
         }
       }
       dynamic "fixed_response" {

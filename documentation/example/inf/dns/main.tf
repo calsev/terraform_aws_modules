@@ -26,7 +26,11 @@ module "dns_zone" {
     "40 alt4.gmr-smtp-in.l.google.com",
   ]
   domain_to_dns_zone_map = {
-    "example.com" : {},
+    "example.com" : {
+      mx_url_list = [
+        "1 smtp.google.com",
+      ]
+    },
     "example2.net" : {},
     "example3.com" : {},
   }
@@ -61,6 +65,20 @@ module "cert_oregon" {
   }
   domain_dns_from_zone_key_default = "example.com"
   std_map                          = module.oregon_lib.std_map
+}
+
+module "dns_record" {
+  source                           = "path/to/modules/dns/record"
+  dns_data                         = local.o1_map
+  record_dns_from_zone_key_default = "example.com"
+  record_map = {
+    google_workspace_validation = {
+      dns_from_fqdn   = "example.com"
+      dns_record_list = ["google-site-verification=some-hash"]
+      dns_type        = "TXT"
+    }
+  }
+  std_map = module.oregon_lib.std_map
 }
 
 module "local_config" {

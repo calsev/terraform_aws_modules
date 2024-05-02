@@ -189,9 +189,9 @@ Also demonstrated are:
 ### VPC networking
 
 For an example of creating VPC networking infrastructure the easy way, [see this example](documentation/example/inf/net).
-This app uses the [vpc_stack module](vpc_stack) to create multiple peered VPCs in a few lines.
+This app uses the [vpc/stack module](vpc/stack) to create multiple peered VPCs in a few lines.
 This example will work for most AWS accounts for startups by modifying only the CIDR of the VPC.
-For finer-grained control and advanced usage, see the underlying [vpc_networking module](vpc_networking).
+For finer-grained control and advanced usage, see the underlying [vpc/networking module](vpc/networking).
 
 In this example an ELB is also instantiated with standard HTTP and HTTPS listeners.
 
@@ -200,8 +200,8 @@ Specifically, the output of this example can be imported and passed as `vpc_data
 
 ### DNS
 
-This [example](documentation/example/inf/dns) uses the [dns_zone module](dns_zone) to generate multiple hosted zones.
-It also demonstrates using the [dns_sd_public module](dns_sd_public) to create a service discovery domain.
+This [example](documentation/example/inf/dns) uses the [dns/zone module](dns/zone) to generate multiple hosted zones.
+It also demonstrates using the [dns/sd_public module](dns/sd_public) to create a service discovery domain.
 Finally, the [cert module](cert) is used to create multiple ACM certificates.
 
 Notably, the output from this example app can be imported and passed to many modules as `dns_data = data.terraform_remote_state.dns.outputs.data`.
@@ -213,9 +213,21 @@ It also shows some reusable request and caching policies for Cloudfront.
 
 Notably, the output from this example app can be imported and passed to modules as `cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data`.
 
+### Communications
+
+[This example](documentation/example/inf/comms) uses the [Domain identity](ses/domain_identity) and [Email identity](ses/email_identity) modules to create SES email resources for use in alerting and user-facing emails.
+
+Notably, the output from this example can be passed to modules as `comms_data = data.terraform_remote_state.comms.outputs.data`.
+
+### Data persistence
+
+[This example](documentation/example/data/core) uses the [RDS instance](rds/instance) and [Cognito user pool](cognito/user_pool) modules to create persistent data stores.
+
+Notably, the output from this example app can be passed to modules as `cognito_data_map = data.terraform_remote_state.core.outputs.data.user_pool`.
+
 ### ECR images
 
-This [small example](documentation/example/inf/ecr) uses the [ecr_repo module](ecr_repo) to generate `ecr_data` as expected by modules that use a container.
+This [small example](documentation/example/inf/ecr) uses the [ecr/repo module](ecr/repo) to generate `ecr_data` as expected by modules that use a container.
 
 Notably, the output from this example app can be imported and passed as `ecr_data = data.terraform_remote_state.ecr.outputs.data`.
 
@@ -256,6 +268,11 @@ provides an example of integrating authorization with API Gateway:
 
 * Lambda authorizer
 * Cognito user pool and JWT token
+
+### ECS service
+
+The example [app/web_backend](documentation/example/app/web_backend)
+shows the creation of a web backend service behind a load balancer using the high-level [app/ecs_app module](app/ecs_app).
 
 ## Development scripts
 

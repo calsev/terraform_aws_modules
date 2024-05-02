@@ -4,12 +4,13 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, {
-      random_keeper_map  = v.random_keeper_map == null ? var.random_keeper_map_default : v.random_keeper_map
-      random_length      = v.random_length == null ? var.random_length_default : v.random_length
-      random_min_lower   = v.random_min_lower == null ? var.random_min_lower_default : v.random_min_lower
-      random_min_numeric = v.random_min_numeric == null ? var.random_min_numeric_default : v.random_min_numeric
-      random_min_special = v.random_min_special == null ? var.random_min_special_default : v.random_min_special
-      random_min_upper   = v.random_min_upper == null ? var.random_min_upper_default : v.random_min_upper
+      random_keeper_map            = v.random_keeper_map == null ? var.random_keeper_map_default : v.random_keeper_map
+      random_length                = v.random_length == null ? var.random_length_default : v.random_length
+      random_min_lower             = v.random_min_lower == null ? var.random_min_lower_default : v.random_min_lower
+      random_min_numeric           = v.random_min_numeric == null ? var.random_min_numeric_default : v.random_min_numeric
+      random_min_special           = v.random_min_special == null ? var.random_min_special_default : v.random_min_special
+      random_min_upper             = v.random_min_upper == null ? var.random_min_upper_default : v.random_min_upper
+      random_special_character_set = v.random_special_character_set == null ? var.random_special_character_set_default : v.random_special_character_set
     })
   }
   l2_map = {

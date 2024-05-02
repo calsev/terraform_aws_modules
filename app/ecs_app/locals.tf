@@ -37,14 +37,9 @@ locals {
       ]
     })
   }
-  create_file_app_spec_map = {
+  create_file_app_spec_1_map = {
     for k, v in local.lx_map : k => merge(v, {
       app_spec = {
-        # applicationName     = module.codedeploy_app.data[k].name_effective
-        # deploymentGroupName = module.codedeploy_group.data[k].name_effective
-        # revision = {
-        #   appSpecContent = {
-        #     content = {
         Resources = [
           {
             TargetService = {
@@ -67,15 +62,25 @@ locals {
           }
         ]
         version = "0.0"
-        #     }
-        #   }
-        #   revisionType = "AppSpecContent"
-        # }
+      }
+    })
+  }
+  create_file_app_spec_x_map = {
+    for k, v in local.create_file_app_spec_1_map : k => merge(v, {
+      revision_spec = {
+        applicationName     = module.codedeploy_app.data[k].name_effective
+        deploymentGroupName = module.codedeploy_group.data[k].name_effective
+        revision = {
+          appSpecContent = {
+            content = v.app_spec
+          }
+          revisionType = "AppSpecContent"
+        }
       }
     })
   }
   create_file_deploy_script_map = {
-    for k, v in local.create_file_app_spec_map : k => merge(v, {
+    for k, v in local.create_file_app_spec_1_map : k => merge(v, {
       deploy_script = templatefile("${path.module}/deploy_script.sh", {
         codedeploy_application_name = module.codedeploy_app.data[k].name_effective
         deployment_group_name       = module.codedeploy_group.data[k].name_effective
@@ -117,6 +122,7 @@ locals {
             action_forward_target_group_map = {
               "${k}_${k_dep}" = {}
             }
+            action_order = 40000
           })
         })
         k_all       = "${k}_${k_dep}"

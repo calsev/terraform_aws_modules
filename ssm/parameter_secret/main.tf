@@ -1,6 +1,7 @@
 module "initial_value" {
-  source     = "../../secret/init_value"
-  secret_map = local.param_map
+  source                                      = "../../secret/init_value"
+  secret_map                                  = local.param_map
+  secret_random_special_character_set_default = var.secret_random_special_character_set_default
 }
 
 resource "aws_ssm_parameter" "this_param" {

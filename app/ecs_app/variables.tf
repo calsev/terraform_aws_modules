@@ -24,9 +24,8 @@ variable "app_map" {
       action_redirect_status_code                 = optional(string)
       action_type                                 = optional(string)
       auth_authentication_request_extra_param_map = optional(map(string))
-      auth_cognito_user_pool_arn                  = optional(string)
-      auth_cognito_user_pool_client_app_id        = optional(string)
-      auth_cognito_user_pool_fqdn                 = optional(string)
+      auth_cognito_client_app_key                 = optional(string)
+      auth_cognito_pool_key                       = optional(string)
       auth_oidc_authorization_endpoint            = optional(string)
       auth_oidc_client_id                         = optional(string)
       auth_oidc_client_secret                     = optional(string)
@@ -193,6 +192,20 @@ variable "ci_cd_build_data_map" {
   })))
 }
 
+variable "cognito_data_map" {
+  type = map(object({
+    user_pool_arn = string
+    user_pool_client = object({
+      client_app_map = map(object({
+        client_app_id = string
+      }))
+    })
+    user_pool_fqdn = string
+  }))
+  default     = {}
+  description = "Must be provided if any action uses a Cognito authorizer"
+}
+
 variable "compute_auto_scaling_num_instances_max_default" {
   type    = number
   default = 1
@@ -312,9 +325,8 @@ variable "listener_action_map_default" {
     action_redirect_status_code                 = optional(string)
     action_type                                 = optional(string)
     auth_authentication_request_extra_param_map = optional(map(string))
-    auth_cognito_user_pool_arn                  = optional(string)
-    auth_cognito_user_pool_client_app_id        = optional(string)
-    auth_cognito_user_pool_fqdn                 = optional(string)
+    auth_cognito_client_app_key                 = optional(string)
+    auth_cognito_pool_key                       = optional(string)
     auth_oidc_authorization_endpoint            = optional(string)
     auth_oidc_client_id                         = optional(string)
     auth_oidc_client_secret                     = optional(string)
@@ -430,19 +442,13 @@ variable "listener_auth_authentication_request_extra_param_map_default" {
   description = "Ignored unless action_type is authenticate"
 }
 
-variable "listener_auth_cognito_user_pool_arn_default" {
+variable "listener_auth_cognito_client_app_key_default" {
   type        = string
   default     = null
   description = "Ignored unless action_type is authenticate-cognito"
 }
 
-variable "listener_auth_cognito_user_pool_client_app_id_default" {
-  type        = string
-  default     = null
-  description = "Ignored unless action_type is authenticate-cognito"
-}
-
-variable "listener_auth_cognito_user_pool_fqdn_default" {
+variable "listener_auth_cognito_pool_key_default" {
   type        = string
   default     = null
   description = "Ignored unless action_type is authenticate-cognito"
@@ -486,8 +492,8 @@ variable "listener_auth_oidc_user_info_endpoint_default" {
 
 variable "listener_auth_on_unauthenticated_request_default" {
   type        = string
-  default     = null # TODO: ?
-  description = "Ignored unless action_type is authenticate"
+  default     = "deny"
+  description = "Ignored unless action_type is authenticate. Authenticate involves a 302 redirect."
   validation {
     condition     = var.listener_auth_on_unauthenticated_request_default == null ? true : contains(["allow", "authenticate", "deny"], var.listener_auth_on_unauthenticated_request_default)
     error_message = "Invalid auth_on_unauthenticated_request"
@@ -508,7 +514,7 @@ variable "listener_auth_session_cookie_name_default" {
 
 variable "listener_auth_session_timeout_seconds_default" {
   type        = number
-  default     = null
+  default     = 60 * 60 * 24
   description = "Ignored unless action_type is authenticate"
 }
 

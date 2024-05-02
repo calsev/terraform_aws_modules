@@ -14,3 +14,9 @@ variable "secret_random_init_value_map" {
   description = "For each secret, if an initial value is provided, the secret will be initialized with that value, otherwise a random password."
   default     = {}
 }
+
+variable "secret_random_special_character_set_default" {
+  type        = string
+  default     = "!@#$%&*()-_=+[]{}<>:?"
+  description = "Has no effect unless a secret is a password"
+}

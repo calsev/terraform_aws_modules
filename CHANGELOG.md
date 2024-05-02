@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.34.0
+
+### General
+
+* Create full revision spec for ECS app
+* Improve default subject for Cognito user pool validation email
+* Improve handling of Cognito data for ELB
+* Standardize name usage for RDS
+* Add special character list for random password
+* Example for ECS app
+* Example for RDS and Cognito pool
+* Example for SES email
+
 ## 0.33.0
 
 ### General

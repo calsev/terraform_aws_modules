@@ -115,6 +115,12 @@ variable "secret_random_init_value_map" {
   default     = {}
 }
 
+variable "secret_random_special_character_set_default" {
+  type        = string
+  default     = "!@#$%&*()-_=+[]{}<>:?"
+  description = "Has no effect unless a secret is a password"
+}
+
 variable "secret_recovery_window_days_default" {
   type        = number
   default     = 30

@@ -50,6 +50,7 @@ variable "user_map" {
     policy_create_json_map  = optional(map(string), {})
     policy_inline_json_map  = optional(map(string), {})
     policy_managed_name_map = optional(map(string), {})
+    tags                    = optional(map(string))
   }))
 }
 
@@ -82,4 +83,9 @@ variable "user_pgp_key_default" {
   type        = string
   default     = null
   description = "A base-64 encoded PGP public key"
+}
+
+variable "user_tags_default" {
+  type    = map(string)
+  default = {}
 }
