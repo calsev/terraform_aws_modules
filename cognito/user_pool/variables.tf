@@ -2,6 +2,7 @@ variable "cdn_global_data" {
   type = object({
     domain_cert_map = map(object({
       certificate_arn = string
+      name_simple     = string
     }))
   })
 }
@@ -56,7 +57,7 @@ variable "pool_map" {
     device_challenge_required_on_new          = optional(bool)
     device_only_remembered_on_user_prompt     = optional(bool)
     dns_from_zone_key                         = optional(string)
-    dns_subdomain                             = optional(string)
+    dns_subdomain_key                         = optional(string)
     email_from_username                       = optional(string)
     email_reply_to_address                    = optional(string)
     email_ses_key                             = optional(string)
@@ -181,7 +182,7 @@ variable "pool_dns_from_zone_key_default" {
   default = null
 }
 
-variable "pool_dns_subdomain_default" {
+variable "pool_dns_subdomain_key_default" {
   type    = string
   default = "cognito"
 }
@@ -203,24 +204,24 @@ variable "pool_email_ses_key_default" {
 
 variable "pool_invite_email_message_template_default" {
   type    = string
-  default = "Username is '{username}' and temporary password is {####}"
+  default = null
   validation {
-    condition     = strcontains(var.pool_invite_email_message_template_default, "{username}") && strcontains(var.pool_invite_email_message_template_default, "{####}")
+    condition     = var.pool_invite_email_message_template_default == null ? true : strcontains(var.pool_invite_email_message_template_default, "{username}") && strcontains(var.pool_invite_email_message_template_default, "{####}")
     error_message = "Template must contain placeholders for username and temporary password"
   }
 }
 
 variable "pool_invite_email_subject_default" {
-  type        = string
-  default     = null
-  description = "Defaults to 'Login credentials from email_from_username'"
+  type    = string
+  default = null
 }
 
 variable "pool_invite_sms_message_template_default" {
-  type    = string
-  default = "Username is '{username}' and temporary password is {####}"
+  type        = string
+  default     = null
+  description = "Must be less than 140 characters."
   validation {
-    condition     = strcontains(var.pool_invite_sms_message_template_default, "{username}") && strcontains(var.pool_invite_sms_message_template_default, "{####}")
+    condition     = var.pool_invite_sms_message_template_default == null ? true : strcontains(var.pool_invite_sms_message_template_default, "{username}") && strcontains(var.pool_invite_sms_message_template_default, "{####}")
     error_message = "Template must contain placeholders for username and temporary password"
   }
 }
@@ -411,37 +412,38 @@ variable "pool_verify_confirm_with_link_default" {
 
 variable "pool_verify_email_message_by_code_template_default" {
   type    = string
-  default = "Here is your verification code: {####}"
+  default = null
   validation {
-    condition     = strcontains(var.pool_verify_email_message_by_code_template_default, "{####}")
+    condition     = var.pool_verify_email_message_by_code_template_default == null ? true : strcontains(var.pool_verify_email_message_by_code_template_default, "{####}")
     error_message = "Template must contain placeholder for code"
   }
 }
 
 variable "pool_verify_email_message_by_link_template_default" {
   type    = string
-  default = "To verify your email address click on this link: {##Click Here##}"
+  default = null
   validation {
-    condition     = strcontains(var.pool_verify_email_message_by_link_template_default, "{##Click Here##}")
+    condition     = var.pool_verify_email_message_by_link_template_default == null ? true : strcontains(var.pool_verify_email_message_by_link_template_default, "{##Click Here##}")
     error_message = "Template must contain placeholder for code"
   }
 }
 
 variable "pool_verify_email_message_by_code_subject_default" {
   type    = string
-  default = "Verify email"
+  default = null
 }
 
 variable "pool_verify_email_message_by_link_subject_default" {
   type    = string
-  default = "Verify email"
+  default = null
 }
 
 variable "pool_verify_sms_message_template_default" {
-  type    = string
-  default = "Here is your verification code: {####}"
+  type        = string
+  default     = null
+  description = "Must be less than 140 characters."
   validation {
-    condition     = strcontains(var.pool_verify_sms_message_template_default, "{####}")
+    condition     = var.pool_verify_sms_message_template_default == null ? true : strcontains(var.pool_verify_sms_message_template_default, "{####}")
     error_message = "Template must contain placeholder for code"
   }
 }

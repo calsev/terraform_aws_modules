@@ -9,7 +9,7 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       dns_alias_name    = aws_cognito_user_pool_domain.domain[k].cloudfront_distribution
       dns_alias_zone_id = aws_cognito_user_pool_domain.domain[k].cloudfront_distribution_zone_id
-    }) if v.dns_from_fqdn != null
+    }) if v.dns_from_zone_key != null
   }
   create_client_map = {
     for k_pool, v_pool in local.lx_map : k_pool => merge(v_pool, {
@@ -17,7 +17,7 @@ locals {
     })
   }
   create_domain_map = {
-    for k, v in local.lx_map : k => v if v.dns_from_fqdn != null
+    for k, v in local.lx_map : k => v if v.dns_from_zone_key != null
   }
   create_lambda_permission_1_map = {
     for k, v in local.lx_map : k => merge(v, {
@@ -59,8 +59,6 @@ locals {
       email_from_username                               = v.email_from_username == null ? var.pool_email_from_username_default : v.email_from_username
       email_reply_to_address                            = v.email_reply_to_address == null ? var.pool_email_reply_to_address_default : v.email_reply_to_address
       email_ses_key                                     = v.email_ses_key == null ? var.pool_email_ses_key_default : v.email_ses_key
-      invite_email_message_template                     = v.invite_email_message_template == null ? var.pool_invite_email_message_template_default : v.invite_email_message_template
-      invite_sms_message_template                       = v.invite_sms_message_template == null ? var.pool_invite_sms_message_template_default : v.invite_sms_message_template
       lambda_arn_create_auth_challenge                  = v.lambda_arn_create_auth_challenge == null ? var.pool_lambda_arn_create_auth_challenge_default : v.lambda_arn_create_auth_challenge
       lambda_arn_custom_message                         = v.lambda_arn_custom_message == null ? var.pool_lambda_arn_custom_message_default : v.lambda_arn_custom_message
       lambda_arn_define_auth_challenge                  = v.lambda_arn_define_auth_challenge == null ? var.pool_lambda_arn_define_auth_challenge_default : v.lambda_arn_define_auth_challenge
@@ -86,13 +84,8 @@ locals {
       username_attribute_list                           = v.username_attribute_list == null ? var.pool_username_attribute_list_default : v.username_attribute_list
       username_case_sensitive                           = v.username_case_sensitive == null ? var.pool_username_case_sensitive_default : v.username_case_sensitive
       verify_confirm_with_link                          = v.verify_confirm_with_link == null ? var.pool_verify_confirm_with_link_default : v.verify_confirm_with_link
-      verify_email_message_by_code_template             = v.verify_email_message_by_code_template == null ? var.pool_verify_email_message_by_code_template_default : v.verify_email_message_by_code_template
-      verify_email_message_by_link_template             = v.verify_email_message_by_link_template == null ? var.pool_verify_email_message_by_link_template_default : v.verify_email_message_by_link_template
-      verify_email_message_by_code_subject              = v.verify_email_message_by_code_subject == null ? var.pool_verify_email_message_by_code_subject_default : v.verify_email_message_by_code_subject
-      verify_email_message_by_link_subject              = v.verify_email_message_by_link_subject == null ? var.pool_verify_email_message_by_link_subject_default : v.verify_email_message_by_link_subject
-      verify_sms_message_template                       = v.verify_sms_message_template == null ? var.pool_verify_sms_message_template_default : v.verify_sms_message_template
       dns_from_zone_key                                 = v.dns_from_zone_key == null ? var.pool_dns_from_zone_key_default : v.dns_from_zone_key
-      dns_subdomain                                     = v.dns_subdomain == null ? var.pool_dns_subdomain_default : v.dns_subdomain
+      dns_subdomain_key                                 = v.dns_subdomain_key == null ? var.pool_dns_subdomain_key_default : v.dns_subdomain_key
     })
   }
   l2_map = {
@@ -109,11 +102,13 @@ locals {
           verified_phone_number = local.l1_map[k].account_recovery_phone_priority
         },
       )
-      email_from_full                  = local.l1_map[k].email_ses_key == null ? null : local.l1_map[k].email_from_username == null ? local.l1_map[k].email_ses_key : "${local.l1_map[k].email_from_username} <${local.l1_map[k].email_ses_key}>"
+      acm_certificate_key              = local.l1_map[k].dns_from_zone_key == null ? null : "${local.l1_map[k].dns_subdomain_key}.${local.l1_map[k].dns_from_zone_key}"
+      email_from_full                  = local.l1_map[k].email_ses_key == null ? null : "${local.l1_map[k].email_from_username} <${local.l1_map[k].email_ses_key}>"
       email_ses_configuration_set_name = local.l1_map[k].email_ses_key == null ? null : var.comms_data.ses_email_map[local.l1_map[k].email_ses_key].configuration_set_name
       email_ses_identity_arn           = local.l1_map[k].email_ses_key == null ? null : var.comms_data.ses_email_map[local.l1_map[k].email_ses_key].identity_arn
-      dns_from_fqdn                    = local.l1_map[k].dns_from_zone_key == null ? null : "${local.l1_map[k].dns_subdomain}.${local.l1_map[k].dns_from_zone_key}"
-      invite_email_subject             = v.invite_email_subject == null ? var.pool_invite_email_subject_default == null ? local.l1_map[k].email_from_username == null ? "Login credentials" : "Login credentials from ${local.l1_map[k].email_from_username}" : var.pool_invite_email_subject_default : v.invite_email_subject
+      invite_email_subject             = v.invite_email_subject == null ? var.pool_invite_email_subject_default == null ? "You are invited to ${local.l1_map[k].email_from_username}" : var.pool_invite_email_subject_default : v.invite_email_subject
+      invite_email_message_template    = v.invite_email_message_template == null ? var.pool_invite_email_message_template_default == null ? "Your username is {username} and your temporary password is {####}. This password is valid for only ${local.l1_map[k].password_temporary_validity_days} days and must be changed on first login." : v.var.pool_invite_email_message_template_default : v.invite_email_message_template
+      invite_sms_message_template      = v.invite_sms_message_template == null ? var.pool_invite_sms_message_template_default == null ? "You are invited to ${local.l1_map[k].email_from_username}. Your username is {username} and your password is {####} but must be changed on first login within ${local.l1_map[k].password_temporary_validity_days} days." : var.pool_invite_sms_message_template_default : v.invite_sms_message_template
       lambda_has_config = local.l1_map[k].lambda_arn_create_auth_challenge != null || (
         local.l1_map[k].lambda_arn_custom_message != null || (
           local.l1_map[k].lambda_arn_define_auth_challenge != null || (
@@ -147,11 +142,17 @@ locals {
           string_length_min = v_schema.string_length_min == null ? var.pool_schema_string_length_min_default : v_schema.string_length_min
         }
       }
+      verify_email_message_by_code_subject  = v.verify_email_message_by_code_subject == null ? var.pool_verify_email_message_by_code_subject_default == null ? "Verify your email address for ${local.l1_map[k].email_from_username}" : var.pool_verify_email_message_by_code_subject_default : v.verify_email_message_by_code_subject
+      verify_email_message_by_code_template = v.verify_email_message_by_code_template == null ? var.pool_verify_email_message_by_code_template_default == null ? "Here is your verification code for ${local.l1_map[k].email_from_username}: {####}" : var.pool_verify_email_message_by_code_template_default : v.verify_email_message_by_code_template
+      verify_email_message_by_link_subject  = v.verify_email_message_by_link_subject == null ? var.pool_verify_email_message_by_link_subject_default == null ? "Verify your email address for ${local.l1_map[k].email_from_username}" : var.pool_verify_email_message_by_link_subject_default : v.verify_email_message_by_link_subject
+      verify_email_message_by_link_template = v.verify_email_message_by_link_template == null ? var.pool_verify_email_message_by_link_template_default == null ? "To verify your email address for ${local.l1_map[k].email_from_username} click on this link: {##Click Here##}" : var.pool_verify_email_message_by_link_template_default : v.verify_email_message_by_link_template
+      verify_sms_message_template           = v.verify_sms_message_template == null ? var.pool_verify_sms_message_template_default == null ? "Verify your phone number for ${local.l1_map[k].email_from_username} by entering this code: {####}" : var.pool_verify_sms_message_template_default : v.verify_sms_message_template
     }
   }
   l3_map = {
     for k, v in var.pool_map : k => {
-      acm_certificate_arn = local.l2_map[k].dns_from_fqdn == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].dns_from_fqdn].certificate_arn
+      acm_certificate_arn = local.l1_map[k].dns_from_zone_key == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].acm_certificate_key].certificate_arn
+      dns_from_fqdn       = local.l1_map[k].dns_from_zone_key == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].acm_certificate_key].name_simple
     }
   }
   lx_map = {
@@ -164,12 +165,12 @@ locals {
         if !contains([], k_attr)
       },
       {
-        dns_alias          = v.dns_from_fqdn == null ? null : module.domain_alias.data[k]
+        dns_alias          = v.dns_from_zone_key == null ? null : module.domain_alias.data[k]
         lambda_permission  = module.lambda_permission[k].data
         user_pool_arn      = aws_cognito_user_pool.this_pool[k].arn
         user_pool_client   = module.pool_client.data[k]
         user_pool_endpoint = aws_cognito_user_pool.this_pool[k].endpoint
-        user_pool_fqdn     = v.dns_from_fqdn == null ? aws_cognito_user_pool.this_pool[k].endpoint : v.dns_from_fqdn
+        user_pool_fqdn     = v.dns_from_zone_key == null ? aws_cognito_user_pool.this_pool[k].endpoint : v.dns_from_fqdn
       }
     )
   }
