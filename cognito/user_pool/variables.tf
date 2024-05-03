@@ -7,6 +7,26 @@ variable "cdn_global_data" {
   })
 }
 
+variable "client_access_token_validity_minutes_default" {
+  type    = number
+  default = 60
+}
+
+variable "client_auth_session_validity_minutes_default" {
+  type    = number
+  default = 3
+}
+
+variable "client_id_token_validity_minutes_default" {
+  type    = number
+  default = 60
+}
+
+variable "client_refresh_token_validity_hours_default" {
+  type    = number
+  default = 30
+}
+
 variable "comms_data" {
   type = object({
     ses_email_map = map(object({

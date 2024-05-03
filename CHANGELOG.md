@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.35.1
+
+### General
+
+* Add client timeouts to Cognito pool
+
 ## 0.35.0
 
 ### General
