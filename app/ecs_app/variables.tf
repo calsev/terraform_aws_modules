@@ -95,6 +95,7 @@ variable "app_map" {
     image_id                              = optional(string)
     instance_storage_gib                  = optional(number)
     instance_type                         = optional(string)
+    key_pair_key                          = optional(string)
     name_include_app_fields               = optional(bool)
     name_infix                            = optional(bool)
     path_include_env                      = optional(bool)
@@ -229,6 +230,11 @@ variable "compute_instance_storage_gib_default" {
 variable "compute_instance_type_default" {
   type    = string
   default = "t4g.nano"
+}
+
+variable "compute_key_pair_key_default" {
+  type    = string
+  default = null
 }
 
 variable "compute_provider_instance_warmup_period_s_default" {

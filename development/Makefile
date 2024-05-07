@@ -184,6 +184,8 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/access_resource && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/bedrock && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/bedrock/model_job && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/cdn && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/cdn/distribution && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/code_build && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

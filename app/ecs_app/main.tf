@@ -65,6 +65,7 @@ module "ecs_cluster" {
   compute_image_id_default                          = var.compute_image_id_default
   compute_instance_storage_gib_default              = var.compute_instance_storage_gib_default
   compute_instance_type_default                     = var.compute_instance_type_default
+  compute_key_pair_key_default                      = var.compute_key_pair_key_default
   compute_map                                       = local.lx_map
   compute_provider_instance_warmup_period_s_default = var.compute_provider_instance_warmup_period_s_default
   elb_target_data_map                               = module.elb_target.data
