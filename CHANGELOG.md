@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.36.0
+
+### New modules
+
+* IAM policy for Bedrock models and jobs
+
+### General
+
+* Add key pair for ECS app
+
 ## 0.35.1
 
 ### General

@@ -66,6 +66,103 @@ locals {
         ]
       }
     }
+    bedrock = {
+      custom-model = {
+        public_read = []
+        read = [
+          "GetCustomModel",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "CreateEvaluationJob",
+          "CreateModelCustomizationJob",
+          "CreateModelEvaluationJob",
+          "CreateModelInvocationJob",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      evaluation-job = {
+        public_read = []
+        read = [
+          "GetEvaluationJob",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "StopEvaluationJob",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      foundation-model = {
+        public_read = []
+        read = [
+          "GetFoundationModel",
+        ]
+        public_write = []
+        write = [
+          "CreateEvaluationJob",
+          "CreateModelCustomizationJob",
+          "CreateModelEvaluationJob",
+          "CreateModelInvocationJob",
+          "InvokeModel",
+          "InvokeModelWithResponseStream",
+        ]
+      }
+      model-customization-job = {
+        public_read = []
+        read = [
+          "GetModelCustomizationJob",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "StopModelCustomizationJob",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      model-evaluation-job = {
+        public_read = []
+        read = [
+          "GetModelEvaluationJob",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      model-invocation-job = {
+        public_read = []
+        read = [
+          "GetModelInvocationJob",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "StopModelInvocationJob",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      provisioned-model = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "InvokeModel",
+          "InvokeModelWithResponseStream",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+    }
     cloudfront = {
       distribution = {
         public_read = []
