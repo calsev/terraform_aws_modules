@@ -153,6 +153,10 @@ tf-lint: tflint-install
 	cd ../ecs/service && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs/task && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../efs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elasticache && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elasticache/cluster && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elasticache/parameter_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elasticache/subnet_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elb/listener && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elb/listener_certificate && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

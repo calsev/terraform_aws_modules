@@ -75,6 +75,18 @@ variable "sg_map_internal" {
         }
       }
     }
+    memcached_in = {
+      rule_map = {
+        memcached = {
+          cidr_blocks      = null
+          from_port        = 11211
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     mongodb_in = {
       rule_map = {
         mongodb = {
@@ -116,6 +128,18 @@ variable "sg_map_internal" {
         postgres = {
           cidr_blocks      = null
           from_port        = 5432
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
+    redis_in = {
+      rule_map = {
+        redis = {
+          cidr_blocks      = null
+          from_port        = 6379
           ipv6_cidr_blocks = null
           protocol         = null
           to_port          = null

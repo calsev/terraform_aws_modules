@@ -21,7 +21,7 @@ variable "db_map" {
     allow_major_version_upgrade           = optional(bool)
     apply_immediately                     = optional(bool)
     auto_minor_version_upgrade            = optional(bool)
-    availability_zone                     = optional(string)
+    availability_zone_key                 = optional(string)
     backup_retention_period_day           = optional(number)
     backup_window_utc                     = optional(string)
     blue_green_update_enabled             = optional(bool)
@@ -107,9 +107,9 @@ variable "db_auto_minor_version_upgrade_default" {
   default = true
 }
 
-variable "db_availability_zone_default" {
+variable "db_availability_zone_key_default" {
   type    = string
-  default = null
+  default = "a"
 }
 
 variable "db_backup_retention_period_day_default" {
@@ -383,14 +383,20 @@ variable "name_suffix_default" {
 
 variable "subnet_group_map" {
   type = map(object({
-    name_effective = string
-    vpc_key        = string
+    name_effective  = string
+    vpc_key         = string
+    vpc_segment_key = string
   }))
 }
 
 variable "vpc_data_map" {
   type = map(object({
     security_group_id_map = map(string)
+    segment_map = map(object({
+      subnet_map = map(object({
+        availability_zone_name = string
+      }))
+    }))
   }))
 }
 

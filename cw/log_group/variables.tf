@@ -45,14 +45,14 @@ variable "log_retention_days_default" {
   }
 }
 
-variable "log_name_prefix_default" {
-  type    = string
-  default = ""
-}
-
 variable "log_skip_destroy_default" {
   type    = bool
   default = false
+}
+
+variable "name_prefix_default" {
+  type    = string
+  default = ""
 }
 
 variable "policy_access_list_default" {
