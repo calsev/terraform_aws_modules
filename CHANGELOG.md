@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.37.0
+
+### New modules
+
+* Elasticache cluster
+* Elasticache parameter group
+* Elasticache subnet group
+
+### General
+
+* Default security groups for Redis and Memcached
+* Example for ECS configuration
+
 ## 0.36.0
 
 ### New modules

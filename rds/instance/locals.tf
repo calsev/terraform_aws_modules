@@ -20,7 +20,7 @@ locals {
       allow_major_version_upgrade               = v.allow_major_version_upgrade == null ? var.db_allow_major_version_upgrade_default : v.allow_major_version_upgrade
       auto_minor_version_upgrade                = v.auto_minor_version_upgrade == null ? var.db_auto_minor_version_upgrade_default : v.auto_minor_version_upgrade
       apply_immediately                         = v.apply_immediately == null ? var.db_apply_immediately_default : v.apply_immediately
-      availability_zone                         = v.availability_zone == null ? var.db_availability_zone_default : v.availability_zone
+      availability_zone_key                     = v.availability_zone_key == null ? var.db_availability_zone_key_default : v.availability_zone_key
       backup_retention_period_day               = v.backup_retention_period_day == null ? var.db_backup_retention_period_day_default : v.backup_retention_period_day
       backup_window_utc                         = v.backup_window_utc == null ? var.db_backup_window_utc_default : v.backup_window_utc
       blue_green_update_enabled                 = v.blue_green_update_enabled == null ? var.db_blue_green_update_enabled_default : v.blue_green_update_enabled
@@ -80,10 +80,12 @@ locals {
       storage_type      = local.l1_map[k].provisioned_iops == null ? v.storage_type == null ? var.db_storage_type_default : v.storage_type : "io1"
       subnet_group_name = var.subnet_group_map[local.l1_map[k].subnet_group_key].name_effective
       vpc_key           = var.subnet_group_map[local.l1_map[k].subnet_group_key].vpc_key
+      vpc_segment_key   = var.subnet_group_map[local.l1_map[k].subnet_group_key].vpc_segment_key
     }
   }
   l3_map = {
     for k, v in local.l0_map : k => {
+      availability_zone_name  = var.vpc_data_map[local.l2_map[k].vpc_key].segment_map[local.l2_map[k].vpc_segment_key].subnet_map[local.l1_map[k].availability_zone_key].availability_zone_name
       iam_role_arn_monitoring = local.l2_map[k].performance_insights_enabled ? var.iam_data.iam_role_arn_rds_monitor : null
       #ignore_change_list = [
       #  for k_attrib, _ in local.l2_map[k].ignore_change_map : k_attrib

@@ -231,6 +231,10 @@ This [small example](documentation/example/inf/ecr) uses the [ecr/repo module](e
 
 Notably, the output from this example app can be imported and passed as `ecr_data = data.terraform_remote_state.ecr.outputs.data`.
 
+### ECS and Batch
+
+The [ECS example](documentation/example/inf/ecs) uses the [ecs/ami_map](ecs/ami_map) module to generate a record of the latest ECS AMIs, as well as the [ecs/aws_account](ecs/aws_account) module to set account options for ECS. The [batch/compute](batch/compute) module is used to create several Batch clusters.
+
 ### S3 object ingestion
 
 The example [app/s3_proc](documentation/example/app/s3_proc)

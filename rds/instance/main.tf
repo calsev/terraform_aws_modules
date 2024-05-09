@@ -17,7 +17,7 @@ resource "aws_db_instance" "this_db" {
   allow_major_version_upgrade = each.value.allow_major_version_upgrade
   apply_immediately           = each.value.apply_immediately
   auto_minor_version_upgrade  = each.value.auto_minor_version_upgrade
-  availability_zone           = each.value.availability_zone
+  availability_zone           = each.value.availability_zone_name
   backup_retention_period     = each.value.backup_retention_period_day
   backup_target               = "region" # Other option is outpost
   backup_window               = each.value.backup_window_utc

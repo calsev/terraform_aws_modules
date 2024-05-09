@@ -1,7 +1,7 @@
 module "name_map" {
   source              = "../../name_map"
   name_map            = var.log_map
-  name_prefix_default = var.log_name_prefix_default
+  name_prefix_default = var.name_prefix_default
   std_map             = var.std_map
 }
 

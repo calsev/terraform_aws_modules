@@ -25,3 +25,5 @@ curl -X OPTIONS -w '\n\n' -i ${API_URL}/prd/auth-cognito
 curl -X POST -H "Authorization: FakeTokenNotGonnaWork" -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Origin: http://localhost' -d '{"items": [{"test1": 1}, {"test2": 2}]}' -w '\n\n' ${API_URL}/prd/auth-cognito
 
 curl -X POST -H "Authorization: ${TOKEN}" -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Origin: http://localhost' -d '{"items": [{"test1": 1}, {"test2": 2}]}' -w '\n\n' -i ${API_URL}/prd/auth-cognito
+
+curl -X POST -H "Authorization: Bearer ${TOKEN}" -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Origin: http://localhost' -d '{"items": [{"test1": 1}, {"test2": 2}]}' -w '\n\n' -i ${API_URL}/prd/auth-cognito
