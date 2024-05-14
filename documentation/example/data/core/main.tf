@@ -21,9 +21,8 @@ module "db_sub" {
 }
 
 module "db" {
-  source                       = "path/to/modules/rds/instance"
-  for_each                     = local.env_list_db
-  db_availability_zone_default = "${local.aws_region_name}a"
+  source   = "path/to/modules/rds/instance"
+  for_each = local.env_list_db
   db_map = {
     dev = {
       (local.db_key) = {

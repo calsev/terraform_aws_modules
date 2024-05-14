@@ -1,7 +1,7 @@
 variable "bucket_map" {
   type = map(object({
     allow_access_point                = optional(bool)
-    allow_elb_logging                 = optional(bool)
+    allow_service_logging             = optional(bool)
     allow_public                      = optional(bool)
     cloudfront_origin_access_identity = optional(string)
     cors_allowed_headers              = optional(list(string))
@@ -19,6 +19,8 @@ variable "bucket_map" {
     lifecycle_upload_expiration_days  = optional(number)
     lifecycle_version_count           = optional(number)
     lifecycle_version_expiration_days = optional(number) # Defaults to lifecycle_expiration_days
+    log_target_bucket_name            = optional(string)
+    log_target_prefix                 = optional(string)
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     notification_enable_event_bridge  = optional(bool)
@@ -46,7 +48,7 @@ variable "bucket_allow_access_point_default" {
   default = true
 }
 
-variable "bucket_allow_elb_logging_default" {
+variable "bucket_allow_service_logging_default" {
   type    = bool
   default = false
 }
@@ -135,6 +137,17 @@ variable "bucket_lifecycle_version_count_default" {
 variable "bucket_lifecycle_version_expiration_days_default" {
   type    = number
   default = null
+}
+
+variable "bucket_log_target_bucket_name_default" {
+  type        = string
+  default     = null
+  description = "Set non-null to enable server access logging"
+}
+
+variable "bucket_log_target_prefix_default" {
+  type    = string
+  default = "s3-server-access/"
 }
 
 variable "bucket_name_include_app_fields_default" {

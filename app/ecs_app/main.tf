@@ -97,9 +97,11 @@ module "ecs_task" {
   task_container_mount_read_only_default       = var.task_container_mount_read_only_default
   task_container_port_map_default              = var.task_container_port_map_default
   task_container_port_protocol_default         = var.task_container_port_protocol_default
+  task_container_privileged_default            = var.task_container_privileged_default
   task_container_reserved_memory_gib_default   = var.task_container_reserved_memory_gib_default
   task_container_reserved_num_vcpu_default     = var.task_container_reserved_num_vcpu_default
   task_container_secret_map_default            = var.task_container_secret_map_default
+  task_container_username_default              = var.task_container_username_default
   task_map                                     = local.create_task_map
   std_map                                      = var.std_map
 }

@@ -65,7 +65,7 @@ locals {
         instance_template  = module.instance_template.data[k]
         license_secret     = module.license_secret.data[v.k_license_secret]
         password_secret    = module.password_secret.data[v.k_password_secret]
-        role               = module.instance_template.data[k]
+        role               = module.instance_role[k].data
       }
     )
   }

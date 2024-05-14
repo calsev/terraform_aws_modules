@@ -24,6 +24,11 @@ variable "policy_name_prefix" {
   default = ""
 }
 
+variable "bucket_log_target_bucket_name_default" {
+  type    = string
+  default = null
+}
+
 variable "server_type_to_secret" {
   type = map(object({
     secret_key     = optional(string)

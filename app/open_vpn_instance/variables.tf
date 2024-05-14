@@ -170,10 +170,10 @@ variable "vpc_key_default" {
 variable "vpc_security_group_key_list_default" {
   type = list(string)
   default = [
+    "internal_ssh_in",
     "world_all_out",
     "world_http_in",
     "world_open_vpn_in",
-    "world_ssh_in",
   ]
 }
 

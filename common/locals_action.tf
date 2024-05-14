@@ -627,9 +627,9 @@ locals {
           "GetObjectVersion",
         ]
         read = [
-          "GetObjectAcl",
+          # "GetObjectAcl",
           "GetObjectTagging",
-          "GetObjectVersionAcl",
+          # "GetObjectVersionAcl",
           "GetObjectVersionTagging",
         ]
         public_write = [
@@ -642,9 +642,9 @@ locals {
           "DeleteObjectTagging",
           "DeleteObjectVersion",
           "DeleteObjectVersionTagging",
-          "PutObjectAcl",
+          # "PutObjectAcl",
           "PutObjectTagging",
-          "PutObjectVersionAcl",
+          # "PutObjectVersionAcl",
           "PutObjectVersionTagging",
           "RestoreObject",
         ]

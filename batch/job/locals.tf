@@ -35,9 +35,11 @@ locals {
       image_tag                  = v.image_tag == null ? var.job_image_tag_default : v.image_tag
       mount_map                  = v.mount_map == null ? var.job_mount_map_default : v.mount_map
       parameter_map              = v.parameter_map == null ? var.job_parameter_map_default : v.parameter_map
+      privileged                 = v.privileged == null ? var.job_privileged_default : v.privileged
       resource_memory_shared_gib = v.resource_memory_shared_gib == null ? var.job_resource_memory_shared_gib_default : v.resource_memory_shared_gib
       secret_map                 = v.secret_map == null ? var.job_secret_map_default : v.secret_map
       ulimit_map                 = v.ulimit_map == null ? var.job_ulimit_map_default : v.ulimit_map
+      username                   = v.username == null ? var.job_username_default : v.username
     })
   }
   l2_map = {
@@ -112,9 +114,58 @@ locals {
       requirement_list = local.l3_map[k].resource_num_gpu > 0 ? concat(local.l6_map[k].requirement_list_cpu, local.l4_map[k].requirement_list_gpu) : local.l6_map[k].requirement_list_cpu
     }
   }
+  l8_map = {
+    for k, v in var.job_map : k => {
+      container_properties = {
+        # args does not work as advertised
+        command = concat(local.l1_map[k].entry_point == null ? [] : local.l1_map[k].entry_point, local.l1_map[k].command_list)
+        environment = [
+          for k, v in local.l1_map[k].environment_map :
+          {
+            name  = k
+            value = v
+          }
+        ]
+        executionRoleArn = local.l1_map[k].iam_role_arn_job_execution
+        image            = "${local.l1_map[k].image_id}:${local.l1_map[k].image_tag}"
+        jobRoleArn       = local.l1_map[k].iam_role_arn_job_container
+        linuxParameters  = local.l2_map[k].linux_param_map
+        mountPoints = [
+          for k_mount, v_mount in local.l1_map[k].mount_map : {
+            containerPath = v_mount.container_path
+            sourceVolume  = k_mount
+          }
+        ]
+        privileged           = local.l1_map[k].privileged
+        resourceRequirements = local.l7_map[k].requirement_list
+        secrets = [
+          for k, v in local.l1_map[k].secret_map : {
+            name      = k
+            valueFrom = v
+          }
+        ]
+        ulimits = [
+          for k, v in local.l1_map[k].ulimit_map : {
+            hardLimit = v.hard_limit
+            name      = k
+            softLimit = v.soft_limit
+          }
+        ]
+        user = local.l1_map[k].username
+        volumes = [
+          for k_mount, v_mount in local.l1_map[k].mount_map : {
+            host = {
+              sourcePath = v_mount.source_path
+            }
+            name = k_mount
+          }
+        ]
+      }
+    }
+  }
   job_map = {
     for k, v in var.job_map : k =>
-    merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k], local.l7_map[k])
+    merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k], local.l7_map[k], local.l8_map[k])
   }
   output_data = {
     for k, v in local.job_map : k => merge(

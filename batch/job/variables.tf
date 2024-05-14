@@ -41,6 +41,7 @@ variable "job_map" {
       source_path    = string
     })))
     parameter_map              = optional(map(string))
+    privileged                 = optional(bool)
     resource_memory_gib        = optional(number)
     resource_memory_host_gib   = optional(number)
     resource_memory_shared_gib = optional(number)
@@ -51,6 +52,7 @@ variable "job_map" {
       hard_limit = number
       soft_limit = number
     })))
+    username = optional(string)
   }))
 }
 
@@ -110,6 +112,11 @@ variable "job_parameter_map_default" {
   default = {}
 }
 
+variable "job_privileged_default" {
+  type    = bool
+  default = false
+}
+
 variable "job_resource_memory_gib_default" {
   type        = number
   default     = null
@@ -150,6 +157,11 @@ variable "job_ulimit_map_default" {
     soft_limit = number
   }))
   default = {}
+}
+
+variable "job_username_default" {
+  type    = string
+  default = "ubuntu"
 }
 
 variable "monitor_data" {

@@ -277,9 +277,10 @@ variable "vpc_key_default" {
 variable "vpc_security_group_key_list_default" {
   type = list(string)
   default = [
+    "internal_http_alt_in",
+    "internal_http_in", # For port 80
     "world_all_out",
     "world_http_in",
-    "world_http_alt_in",
   ]
 }
 

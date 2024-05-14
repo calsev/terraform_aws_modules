@@ -75,6 +75,26 @@ variable "sg_map_internal" {
         }
       }
     }
+    http_alt_in = {
+      rule_map = {
+        http = {
+          cidr_blocks      = null
+          from_port        = 8080
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        https = {
+          cidr_blocks      = null
+          from_port        = 8443
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     memcached_in = {
       rule_map = {
         memcached = {
@@ -189,14 +209,7 @@ variable "sg_map_public" {
     }
     http_in = {
       rule_map = {
-        http = {
-          cidr_blocks      = null
-          from_port        = 80
-          ipv6_cidr_blocks = null
-          protocol         = null
-          to_port          = null
-          type             = null
-        }
+        # http - critical security violation
         https = {
           cidr_blocks      = null
           from_port        = 443
@@ -207,26 +220,7 @@ variable "sg_map_public" {
         }
       }
     }
-    http_alt_in = {
-      rule_map = {
-        http = {
-          cidr_blocks      = null
-          from_port        = 8080
-          ipv6_cidr_blocks = null
-          protocol         = null
-          to_port          = null
-          type             = null
-        }
-        https = {
-          cidr_blocks      = null
-          from_port        = 8443
-          ipv6_cidr_blocks = null
-          protocol         = null
-          to_port          = null
-          type             = null
-        }
-      }
-    }
+    # http_alt_in: http - critical security violation, https - high security violation
     icmp_in = {
       rule_map = {
         icmp = {
@@ -275,30 +269,7 @@ variable "sg_map_public" {
         }
       }
     }
-    ssh_in = {
-      rule_map = {
-        ssh = {
-          cidr_blocks      = null
-          from_port        = 22
-          ipv6_cidr_blocks = null
-          protocol         = null
-          to_port          = null
-          type             = null
-        }
-      }
-    }
-    vpn_in = {
-      rule_map = {
-        vpn = {
-          cidr_blocks      = null
-          from_port        = 1194
-          ipv6_cidr_blocks = null
-          protocol         = "udp"
-          to_port          = null
-          type             = null
-        }
-      }
-    }
+    # ssh_in - critical security violation
   }
 }
 

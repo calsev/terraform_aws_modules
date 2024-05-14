@@ -23,7 +23,8 @@ module "milan_lib" {
 }
 
 module "oregon_bucket" {
-  source = "path/to/modules/s3/bucket"
+  source                                = "path/to/modules/s3/bucket"
+  bucket_log_target_bucket_name_default = "example-log"
   bucket_map = {
     example_backup_cal    = {}
     example_backup_marina = {}
@@ -31,7 +32,7 @@ module "oregon_bucket" {
     example_data          = {}
     example_deploy        = {}
     example_log = {
-      allow_elb_logging         = true
+      allow_service_logging     = true
       lifecycle_expiration_days = 30
     }
     example_log_public = {

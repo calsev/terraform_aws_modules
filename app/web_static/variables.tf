@@ -1,3 +1,8 @@
+variable "bucket_log_target_bucket_name_default" {
+  type    = string
+  default = null
+}
+
 variable "cdn_global_data" {
   type = object({
     cache_policy_map = map(object({

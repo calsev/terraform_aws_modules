@@ -3,12 +3,12 @@ variable "allow_access_point" {
   default = true
 }
 
-variable "allow_elb_logging" {
+variable "allow_public" {
   type    = bool
   default = false
 }
 
-variable "allow_public" {
+variable "allow_service_logging" {
   type    = bool
   default = false
 }
@@ -55,6 +55,7 @@ variable "std_map" {
   type = object({
     access_title_map               = map(string)
     aws_account_id                 = string
+    aws_region_name                = string
     iam_partition                  = string
     service_resource_access_action = map(map(map(list(string))))
   })

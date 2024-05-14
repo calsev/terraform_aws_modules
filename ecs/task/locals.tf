@@ -165,6 +165,8 @@ locals {
               protocol      = v_port.protocol == null ? var.task_container_port_protocol_default : v_port.protocol
             }
           ]
+          privileged             = v_def.privileged == null ? var.task_container_privileged_default : v_def.privileged
+          readonlyRootFilesystem = v_def.read_only_root_file_system == null ? var.task_container_read_only_root_file_system_default : v_def.read_only_root_file_system
           secrets = [
             for k_secret, v_secret in v_def.secret_map == null ? var.task_container_secret_map_default : v_def.secret_map :
             {
@@ -172,7 +174,9 @@ locals {
               valueFrom = v_secret
             }
           ]
-          volumesFrom = []
+          systemControls = []
+          user           = v_def.username == null ? var.task_container_username_default : v_def.username
+          volumesFrom    = []
         }
       ]
     }

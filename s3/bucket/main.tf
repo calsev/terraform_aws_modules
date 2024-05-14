@@ -103,14 +103,24 @@ resource "aws_s3_bucket_notification" "this_notification" {
   eventbridge = each.value.notification_enable_event_bridge
 }
 
+resource "aws_s3_bucket_logging" "this_logging" {
+  for_each              = local.create_log_map
+  bucket                = aws_s3_bucket.this_bucket[each.key].id
+  expected_bucket_owner = var.std_map.aws_account_id
+  target_bucket         = each.value.log_target_bucket_name
+  # target_grant # TODO
+  # target_object_key_format # TODO
+  target_prefix = each.value.log_target_prefix
+}
+
 module "this_bucket_policy" {
-  for_each           = local.create_policy_map
-  depends_on         = [aws_s3_bucket.this_bucket] # This fails on new buckets
-  source             = "../../iam/policy/resource/s3/bucket"
-  allow_access_point = each.value.allow_access_point
-  allow_public       = each.value.allow_public
-  allow_elb_logging  = each.value.allow_elb_logging
-  bucket_name        = each.value.name_effective
-  sid_map            = each.value.sid_map
-  std_map            = var.std_map
+  for_each              = local.create_policy_map
+  depends_on            = [aws_s3_bucket.this_bucket] # This fails on new buckets
+  source                = "../../iam/policy/resource/s3/bucket"
+  allow_access_point    = each.value.allow_access_point
+  allow_public          = each.value.allow_public
+  allow_service_logging = each.value.allow_service_logging
+  bucket_name           = each.value.name_effective
+  sid_map               = each.value.sid_map
+  std_map               = var.std_map
 }
