@@ -1,20 +1,27 @@
 variable "key_map" {
   type = map(object({
-    name_infix         = optional(bool)
-    policy_access_list = optional(list(string))
-    policy_create      = optional(bool)
-    secret_is_param    = optional(bool)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    policy_access_list      = optional(list(string))
+    policy_create           = optional(bool)
+    secret_is_param         = optional(bool)
   }))
-}
-
-variable "key_name_infix_default" {
-  type    = bool
-  default = false
 }
 
 variable "key_secret_is_param_default" {
   type    = bool
   default = false
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
 }
 
 variable "policy_access_list_default" {

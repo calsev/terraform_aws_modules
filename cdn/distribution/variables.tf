@@ -32,15 +32,25 @@ variable "domain_map" {
   type = map(object({
     cache_policy_key                  = optional(string)
     cache_viewer_protocol_policy      = optional(string)
+    default_root_object               = optional(string)
     dns_alias_enabled                 = optional(bool)
     dns_from_zone_key                 = optional(string)
+    enabled                           = optional(bool)
+    http_version_max_supported        = optional(string)
+    ipv6_enabled                      = optional(bool)
+    logging_bucket_name               = optional(string)
+    logging_include_cookies           = optional(bool)
+    logging_object_prefix             = optional(string)
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     origin_allow_public               = optional(bool)
+    origin_connection_attempts        = optional(number)
+    origin_connection_timeout_seconds = optional(number)
     origin_dns_enabled                = optional(bool)
     origin_fqdn                       = string
     origin_path                       = optional(string)
     origin_request_policy_key         = optional(string)
+    price_class                       = optional(string)
     response_cors_allow_credentials   = optional(bool)
     response_cors_allowed_header_list = optional(list(string))
     response_cors_allowed_method_list = optional(list(string))
@@ -66,6 +76,7 @@ variable "domain_map" {
     response_security_header_transport_preload            = optional(bool)
     response_server_timing_enabled                        = optional(bool)
     response_server_timing_sampling_rate                  = optional(number)
+    retain_on_delete                                      = optional(bool)
     sid_map = optional(map(object({
       access = string
       condition_map = optional(map(object({
@@ -81,6 +92,7 @@ variable "domain_map" {
     trusted_key_group_key_list                  = optional(list(string))
     viewer_certificate_minimum_protocol_version = optional(string)
     viewer_certificate_ssl_support_method       = optional(string)
+    wait_for_deployment                         = optional(bool)
     web_acl_key                                 = optional(string)
   }))
 }
@@ -99,6 +111,11 @@ variable "domain_cache_viewer_protocol_policy_default" {
   }
 }
 
+variable "domain_default_root_object_default" {
+  type    = string
+  default = "index.html"
+}
+
 variable "domain_dns_alias_enabled_default" {
   type    = bool
   default = true
@@ -109,9 +126,53 @@ variable "domain_dns_from_zone_key_default" {
   default = null
 }
 
+variable "domain_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_http_version_max_supported_default" {
+  type    = string
+  default = "http2and3"
+  validation {
+    condition     = contains(["http1.1", "http2", "http2and3", "http3"], var.domain_http_version_max_supported_default)
+    error_message = "Invalid HTTP version"
+  }
+}
+
+variable "domain_ipv6_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_logging_bucket_name_default" {
+  type    = string
+  default = null
+}
+
+variable "domain_logging_include_cookies_default" {
+  type    = bool
+  default = false
+}
+
+variable "domain_logging_object_prefix_default" {
+  type    = string
+  default = "cdn_access_log"
+}
+
 variable "domain_origin_allow_public_default" {
   type    = bool
   default = false
+}
+
+variable "domain_origin_connection_attempts_default" {
+  type    = number
+  default = 3
+}
+
+variable "domain_origin_connection_timeout_seconds_default" {
+  type    = number
+  default = 10
 }
 
 variable "domain_origin_dns_enabled_default" {
@@ -127,6 +188,15 @@ variable "domain_origin_path_default" {
 variable "domain_origin_request_policy_key_default" {
   type    = string
   default = "max_cache"
+}
+
+variable "domain_price_class_default" {
+  type    = string
+  default = "PriceClass_All"
+  validation {
+    condition     = contains(["PriceClass_100", "PriceClass_200", "PriceClass_All"], var.domain_price_class_default)
+    error_message = "Invalid price class"
+  }
 }
 
 variable "domain_response_cors_allow_credentials_default" {
@@ -258,6 +328,11 @@ variable "domain_response_server_timing_sampling_rate_default" {
   default = 0
 }
 
+variable "domain_retain_on_delete_default" {
+  type    = bool
+  default = false
+}
+
 variable "domain_smooth_streaming_enabled_default" {
   type    = bool
   default = false
@@ -284,6 +359,11 @@ variable "domain_trusted_key_group_key_list_default" {
   default = []
 }
 
+variable "domain_wait_for_deployment_default" {
+  type    = bool
+  default = true
+}
+
 variable "domain_web_acl_key_default" {
   type    = string
   default = "basic_rate_limit"
@@ -299,7 +379,7 @@ variable "key_group_data_map" {
 
 variable "name_include_app_fields_default" {
   type        = bool
-  default     = true
+  default     = false
   description = "If true, the Terraform project context will be included in the name"
 }
 

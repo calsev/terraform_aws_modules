@@ -1,7 +1,7 @@
 module "key_secret" {
   source                          = "../../secret/random"
   secret_map                      = local.lx_map
-  secret_name_infix_default       = var.key_name_infix_default
+  secret_name_infix_default       = var.name_infix_default
   secret_is_param_default         = var.key_secret_is_param_default
   secret_random_init_type_default = "tls_key"
   policy_access_list_default      = var.policy_access_list_default
