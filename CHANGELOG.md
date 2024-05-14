@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.39.0
+
+### General
+
+* Improve parameterization and name handling for CDN modules
+
 ## 0.38.0
 
 ### New modules

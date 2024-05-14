@@ -49,12 +49,23 @@ locals {
       bucket_key                                            = replace(v.origin_fqdn, "-", "_")
       cache_policy_key                                      = v.cache_policy_key == null ? var.domain_cache_policy_key_default : v.cache_policy_key
       cache_viewer_protocol_policy                          = v.cache_viewer_protocol_policy == null ? var.domain_cache_viewer_protocol_policy_default : v.cache_viewer_protocol_policy
+      default_root_object                                   = v.default_root_object == null ? var.domain_default_root_object_default : v.default_root_object
       dns_alias_enabled                                     = v.dns_alias_enabled == null ? var.domain_dns_alias_enabled_default : v.dns_alias_enabled
       dns_from_zone_key                                     = v.dns_from_zone_key == null ? var.domain_dns_from_zone_key_default : v.dns_from_zone_key
+      enabled                                               = v.enabled == null ? var.domain_enabled_default : v.enabled
+      http_version_max_supported                            = v.http_version_max_supported == null ? var.domain_http_version_max_supported_default : v.http_version_max_supported
+      ipv6_enabled                                          = v.ipv6_enabled == null ? var.domain_ipv6_enabled_default : v.ipv6_enabled
+      logging_bucket_name                                   = v.logging_bucket_name == null ? var.domain_logging_bucket_name_default : v.logging_bucket_name
+      logging_include_cookies                               = v.logging_include_cookies == null ? var.domain_logging_include_cookies_default : v.logging_include_cookies
+      logging_object_prefix                                 = v.logging_object_prefix == null ? var.domain_logging_object_prefix_default : v.logging_object_prefix
       origin_allow_public                                   = v.origin_allow_public == null ? var.domain_origin_allow_public_default : v.origin_allow_public
+      origin_connection_attempts                            = v.origin_connection_attempts == null ? var.domain_origin_connection_attempts_default : v.origin_connection_attempts
+      origin_connection_timeout_seconds                     = v.origin_connection_timeout_seconds == null ? var.domain_origin_connection_timeout_seconds_default : v.origin_connection_timeout_seconds
       origin_dns_enabled                                    = v.origin_dns_enabled == null ? var.domain_origin_dns_enabled_default : v.origin_dns_enabled
+      origin_fqdn                                           = replace(v.origin_fqdn, "_", "-")
       origin_path                                           = v.origin_path == null ? var.domain_origin_path_default : v.origin_path
       origin_request_policy_key                             = v.origin_request_policy_key == null ? var.domain_origin_request_policy_key_default : v.origin_request_policy_key
+      price_class                                           = v.price_class == null ? var.domain_price_class_default : v.price_class
       response_cors_allow_credentials                       = v.response_cors_allow_credentials == null ? var.domain_response_cors_allow_credentials_default : v.response_cors_allow_credentials
       response_cors_allowed_header_list                     = v.response_cors_allowed_header_list == null ? var.domain_response_cors_allowed_header_list_default : v.response_cors_allowed_header_list
       response_cors_allowed_method_list                     = v.response_cors_allowed_method_list == null ? var.domain_response_cors_allowed_method_list_default : v.response_cors_allowed_method_list
@@ -77,8 +88,10 @@ locals {
       response_security_header_transport_preload            = v.response_security_header_transport_preload == null ? var.domain_response_security_header_transport_preload_default : v.response_security_header_transport_preload
       response_server_timing_enabled                        = v.response_server_timing_enabled == null ? var.domain_response_server_timing_enabled_default : v.response_server_timing_enabled
       response_server_timing_sampling_rate                  = v.response_server_timing_sampling_rate == null ? var.domain_response_server_timing_sampling_rate_default : v.response_server_timing_sampling_rate
+      retain_on_delete                                      = v.retain_on_delete == null ? var.domain_retain_on_delete_default : v.retain_on_delete
       smooth_streaming_enabled                              = v.smooth_streaming_enabled == null ? var.domain_smooth_streaming_enabled_default : v.smooth_streaming_enabled
       trusted_key_group_key_list                            = v.trusted_key_group_key_list == null ? var.domain_trusted_key_group_key_list_default : v.trusted_key_group_key_list
+      wait_for_deployment                                   = v.wait_for_deployment == null ? var.domain_wait_for_deployment_default : v.wait_for_deployment
       web_acl_key                                           = v.web_acl_key == null ? var.domain_web_acl_key_default : v.web_acl_key
     })
   }
