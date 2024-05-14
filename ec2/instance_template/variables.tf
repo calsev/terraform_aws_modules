@@ -1,5 +1,15 @@
 variable "compute_map" {
   type = map(object({
+    api_stop_disabled               = optional(bool)
+    auto_recovery_enabled           = optional(bool)
+    cpu_option_amd_sev_snp_enabled  = optional(bool)
+    cpu_option_core_count           = optional(number)
+    cpu_option_threads_per_core     = optional(number)
+    dns_private_aaaa_record_enabled = optional(bool)
+    dns_private_a_record_enabled    = optional(bool)
+    dns_private_hostname_type       = optional(string)
+    ebs_optimized                   = optional(bool)
+    hibernation_enabled             = optional(bool)
     iam_instance_profile_arn        = optional(string)
     image_id                        = optional(string)
     image_search_for_ecs            = optional(bool)
@@ -8,9 +18,15 @@ variable "compute_map" {
     instance_storage_gib            = optional(number)
     instance_type                   = optional(string)
     key_pair_key                    = optional(string)
+    metadata_endpoint_enabled       = optional(bool)
+    metadata_version_2_required     = optional(bool)
+    metadata_ipv6_enabled           = optional(bool)
+    metadata_response_hop_limit     = optional(number)
+    metadata_tags_enabled           = optional(bool)
     monitoring_advanced_enabled     = optional(bool)
     name_include_app_fields         = optional(bool)
     name_infix                      = optional(bool)
+    nitro_enclaves_enabled          = optional(bool)
     placement_partition_count       = optional(number)
     placement_spread_level          = optional(string)
     placement_strategy              = optional(string)
@@ -27,6 +43,61 @@ variable "compute_map" {
     vpc_security_group_key_list   = optional(list(string))
     vpc_segment_key               = optional(string)
   }))
+}
+
+variable "compute_api_stop_disabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "compute_auto_recovery_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_cpu_option_amd_sev_snp_enabled_default" {
+  type    = bool
+  default = null
+}
+
+variable "compute_cpu_option_core_count_default" {
+  type    = number
+  default = null
+}
+
+variable "compute_cpu_option_threads_per_core_default" {
+  type    = number
+  default = null
+}
+
+variable "compute_dns_private_aaaa_record_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_dns_private_a_record_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_dns_private_hostname_type_default" {
+  type        = string
+  default     = "ip-name"
+  description = "For IPv4 networks, ip-name is required. For IPv6 resource-name. For duplex either is allowed."
+  validation {
+    condition     = contains(["ip-name", "resource-name"], var.compute_dns_private_hostname_type_default)
+    error_message = "Invalid hostname type"
+  }
+}
+
+variable "compute_ebs_optimized_default" {
+  type    = bool
+  default = false
+}
+
+variable "compute_hibernation_enabled_default" {
+  type    = bool
+  default = false
 }
 
 variable "compute_iam_instance_profile_arn_default" {
@@ -71,6 +142,32 @@ variable "compute_key_pair_key_default" {
   default = null
 }
 
+variable "compute_metadata_endpoint_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_metadata_version_2_required_default" {
+  type        = bool
+  default     = true
+  description = "A high severity finding if disabled"
+}
+
+variable "compute_metadata_ipv6_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_metadata_response_hop_limit_default" {
+  type    = number
+  default = 1
+}
+
+variable "compute_metadata_tags_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "compute_monitoring_advanced_enabled_default" {
   type    = bool
   default = true
@@ -85,6 +182,11 @@ variable "compute_name_include_app_fields_default" {
 variable "compute_name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "compute_nitro_enclaves_enabled_default" {
+  type    = bool
+  default = false
 }
 
 variable "compute_placement_partition_count_default" {

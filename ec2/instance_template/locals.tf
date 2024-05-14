@@ -29,6 +29,16 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+      api_stop_disabled               = v.api_stop_disabled == null ? var.compute_api_stop_disabled_default : v.api_stop_disabled
+      auto_recovery_enabled           = v.auto_recovery_enabled == null ? var.compute_auto_recovery_enabled_default : v.auto_recovery_enabled
+      cpu_option_amd_sev_snp_enabled  = v.cpu_option_amd_sev_snp_enabled == null ? var.compute_cpu_option_amd_sev_snp_enabled_default : v.cpu_option_amd_sev_snp_enabled
+      cpu_option_core_count           = v.cpu_option_core_count == null ? var.compute_cpu_option_core_count_default : v.cpu_option_core_count
+      cpu_option_threads_per_core     = v.cpu_option_threads_per_core == null ? var.compute_cpu_option_threads_per_core_default : v.cpu_option_threads_per_core
+      dns_private_aaaa_record_enabled = v.dns_private_aaaa_record_enabled == null ? var.compute_dns_private_aaaa_record_enabled_default : v.dns_private_aaaa_record_enabled
+      dns_private_a_record_enabled    = v.dns_private_a_record_enabled == null ? var.compute_dns_private_a_record_enabled_default : v.dns_private_a_record_enabled
+      dns_private_hostname_type       = v.dns_private_hostname_type == null ? var.compute_dns_private_hostname_type_default : v.dns_private_hostname_type
+      ebs_optimized                   = v.ebs_optimized == null ? var.compute_ebs_optimized_default : v.ebs_optimized
+      hibernation_enabled             = v.hibernation_enabled == null ? var.compute_hibernation_enabled_default : v.hibernation_enabled
       iam_instance_profile_arn        = v.iam_instance_profile_arn == null ? var.compute_iam_instance_profile_arn_default : v.iam_instance_profile_arn
       image_id                        = v.image_id == null ? var.compute_image_id_default : v.image_id
       image_search_for_ecs            = v.image_search_for_ecs == null ? var.compute_image_search_for_ecs_default : v.image_search_for_ecs
@@ -36,7 +46,13 @@ locals {
       instance_storage_gib            = v.instance_storage_gib == null ? var.compute_instance_storage_gib_default : v.instance_storage_gib
       instance_type                   = v.instance_type == null ? var.compute_instance_type_default : v.instance_type
       key_pair_key                    = v.key_pair_key == null ? var.compute_key_pair_key_default : v.key_pair_key
+      metadata_endpoint_enabled       = v.metadata_endpoint_enabled == null ? var.compute_metadata_endpoint_enabled_default : v.metadata_endpoint_enabled
+      metadata_version_2_required     = v.metadata_version_2_required == null ? var.compute_metadata_version_2_required_default : v.metadata_version_2_required
+      metadata_ipv6_enabled           = v.metadata_ipv6_enabled == null ? var.compute_metadata_ipv6_enabled_default : v.metadata_ipv6_enabled
+      metadata_response_hop_limit     = v.metadata_response_hop_limit == null ? var.compute_metadata_response_hop_limit_default : v.metadata_response_hop_limit
+      metadata_tags_enabled           = v.metadata_tags_enabled == null ? var.compute_metadata_tags_enabled_default : v.metadata_tags_enabled
       monitoring_advanced_enabled     = v.monitoring_advanced_enabled == null ? var.compute_monitoring_advanced_enabled_default : v.monitoring_advanced_enabled
+      nitro_enclaves_enabled          = v.nitro_enclaves_enabled == null ? var.compute_nitro_enclaves_enabled_default : v.nitro_enclaves_enabled
       placement_partition_count       = v.placement_partition_count == null ? var.compute_placement_partition_count_default : v.placement_partition_count
       placement_spread_level          = v.placement_spread_level == null ? var.compute_placement_spread_level_default : v.placement_spread_level
       placement_strategy              = v.placement_strategy == null ? var.compute_placement_strategy_default : v.placement_strategy
@@ -49,6 +65,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      has_cpu_option       = local.l1_map[k].cpu_option_amd_sev_snp_enabled != null || local.l1_map[k].cpu_option_core_count != null || local.l1_map[k].cpu_option_threads_per_core != null
       image_search_tag     = local.l1_map[k].image_search_for_ecs ? "amazon" : v.image_search_tag == null ? var.compute_image_search_tag_default : v.image_search_tag
       instance_family      = split(".", local.l1_map[k].instance_type)[0]
       key_pair_name        = local.l1_map[k].key_pair_key == null ? null : var.iam_data.key_pair_map[local.l1_map[k].key_pair_key].key_pair_name

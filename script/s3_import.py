@@ -23,13 +23,13 @@ resource_type_priority_list = [
     "aws_s3_bucket_server_side_encryption_configuration",
     "aws_s3_bucket_versioning",
     "aws_s3_bucket_website_configuration",
-    # TODO: aws_s3_bucket_analytics_configuration
-    # TODO: aws_s3_bucket_intelligent_tiering_configuration
-    # TODO: aws_s3_bucket_inventory
-    # TODO: aws_s3_bucket_logging
-    # TODO: aws_s3_bucket_metric
+    # TODO: aws_s3_bucket_analytics_configuration,
+    # TODO: aws_s3_bucket_intelligent_tiering_configuration,
+    # TODO: aws_s3_bucket_inventory,
+    "aws_s3_bucket_logging",
+    # TODO: aws_s3_bucket_metric,
     "aws_s3_bucket_notification",
-    # TODO: aws_s3_bucket_object_lock_configuration
+    # TODO: aws_s3_bucket_object_lock_configuration,
     "aws_s3_bucket_request_payment_configuration",
 ]
 

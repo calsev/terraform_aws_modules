@@ -1,5 +1,5 @@
 resource "aws_vpc" "this_vpc" {
-  for_each                             = local.vpc_map
+  for_each                             = local.lx_map
   assign_generated_ipv6_cidr_block     = each.value.vpc_assign_ipv6_cidr
   cidr_block                           = each.value.vpc_cidr_block
   enable_dns_hostnames                 = true
@@ -16,19 +16,19 @@ resource "aws_vpc" "this_vpc" {
 }
 
 resource "aws_default_network_acl" "this_default_nacl" {
-  for_each               = local.vpc_map
+  for_each               = local.lx_map
   default_network_acl_id = aws_vpc.this_vpc[each.key].default_network_acl_id
   tags                   = each.value.tags
 }
 
 resource "aws_default_route_table" "this_default_route_table" {
-  for_each               = local.vpc_map
+  for_each               = local.lx_map
   default_route_table_id = aws_vpc.this_vpc[each.key].default_route_table_id
   tags                   = each.value.tags
 }
 
 resource "aws_default_security_group" "this_default_sg" {
-  for_each = local.vpc_map
+  for_each = local.lx_map
   tags     = each.value.tags
   vpc_id   = aws_vpc.this_vpc[each.key].id
 }

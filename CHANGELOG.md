@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.38.0
+
+### New modules
+
+* Default VPC
+
+### General
+
+* OpenVPN instance allows only internal SSH by default
+* Params for reduced privilege for Batch job
+* Remove standard ACL permissions for S3 policies
+* Require metadata V2 for launch template by default
+* Params for reduced privilege for ECS task
+* Elasticache backup enabled by default
+* ELB security groups limited to internal testing access
+* S3 CloudTrail logging
+* S3 server access logging
+* Remove default world-accessible HTTP-alt, SSH security groups
+
 ## 0.37.0
 
 ### New modules

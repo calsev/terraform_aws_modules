@@ -217,8 +217,8 @@ variable "cluster_snapshot_name_default" {
 
 variable "cluster_snapshot_retention_days_default" {
   type        = number
-  default     = 0
-  description = "Set nonzero to enable shapshots."
+  default     = 1
+  description = "Set nonzero to enable shapshots. No snapshots is a high severity security finding."
 }
 
 variable "cluster_snapshot_window_utc_default" {

@@ -15,9 +15,10 @@ resource "aws_codebuild_source_credential" "this_credential" {
 }
 
 module "build_bucket" {
-  source     = "../../s3/bucket"
-  bucket_map = local.bucket_map
-  std_map    = var.std_map
+  source                                = "../../s3/bucket"
+  bucket_map                            = local.bucket_map
+  bucket_log_target_bucket_name_default = var.bucket_log_target_bucket_name_default
+  std_map                               = var.std_map
 }
 
 module "build_log" {

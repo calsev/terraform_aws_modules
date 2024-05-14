@@ -91,9 +91,12 @@ variable "task_map" {
         host_port = optional(number) # Defaults to container port (key)
         protocol  = optional(string)
       })))
-      reserved_memory_gib = optional(number)
-      reserved_num_vcpu   = optional(number)
-      secret_map          = optional(map(string))
+      privileged                 = optional(bool)
+      read_only_root_file_system = optional(bool)
+      reserved_memory_gib        = optional(number)
+      reserved_num_vcpu          = optional(number)
+      secret_map                 = optional(map(string))
+      username                   = optional(string)
     }))
     ecs_cluster_key = optional(string)
     efs_volume_map = optional(map(object({
@@ -165,6 +168,17 @@ variable "task_container_port_protocol_default" {
   default = "tcp"
 }
 
+variable "task_container_privileged_default" {
+  type    = bool
+  default = false
+}
+
+variable "task_container_read_only_root_file_system_default" {
+  type        = bool
+  default     = true
+  description = "A critical severity finding if false"
+}
+
 variable "task_container_reserved_memory_gib_default" {
   type        = number
   default     = null
@@ -180,6 +194,11 @@ variable "task_container_reserved_num_vcpu_default" {
 variable "task_container_secret_map_default" {
   type    = map(string)
   default = {}
+}
+
+variable "task_container_username_default" {
+  type    = string
+  default = "ubuntu"
 }
 
 variable "task_ecs_cluster_key_default" {

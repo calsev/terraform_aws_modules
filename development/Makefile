@@ -294,6 +294,7 @@ tf-lint: tflint-install
 	cd ../ssm/parameter_secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/default && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/id_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/nat_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/nat_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

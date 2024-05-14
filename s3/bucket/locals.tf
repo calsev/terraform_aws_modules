@@ -21,6 +21,9 @@ locals {
       dns_alias_zone_id = aws_s3_bucket.this_bucket[k].hosted_zone_id
     }) if v.dns_enabled
   }
+  create_log_map = {
+    for k, v in local.lx_map : k => v if v.log_target_bucket_name != null
+  }
   create_owner_map = {
     for k, v in local.lx_map : k => v if v.enforce_object_ownership
   }
@@ -36,7 +39,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       allow_access_point                   = v.allow_access_point == null ? var.bucket_allow_access_point_default : v.allow_access_point
-      allow_elb_logging                    = v.allow_elb_logging == null ? var.bucket_allow_elb_logging_default : v.allow_elb_logging
+      allow_service_logging                = v.allow_service_logging == null ? var.bucket_allow_service_logging_default : v.allow_service_logging
       acceleration_enabled                 = length(split(".", k)) == 1 # TODO: Why not dot buckets?
       allow_public                         = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
       cloudfront_origin_access_identity    = v.cloudfront_origin_access_identity
@@ -55,6 +58,8 @@ locals {
       lifecycle_upload_expiration_days     = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
       lifecycle_version_count              = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
       lifecycle_version_expiration_days_l1 = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
+      log_target_bucket_name               = v.log_target_bucket_name == null ? var.bucket_log_target_bucket_name_default : v.log_target_bucket_name
+      log_target_prefix                    = v.log_target_prefix == null ? var.bucket_log_target_prefix_default : v.log_target_prefix
       notification_enable_event_bridge     = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
       policy_create                        = v.policy_create == null ? var.bucket_policy_create_default : v.policy_create
       requester_pays                       = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
