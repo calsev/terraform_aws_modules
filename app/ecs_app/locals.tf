@@ -25,14 +25,14 @@ locals {
       deploy_stage_list = [
         {
           action_map = {
-            Deploy = {
+            CodeDeployTrigger = {
               # The CodeDeploy integration insists on managing the task as well, so we use CodeBuild, see
               # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
               configuration_build_project_key = "pipe_deploy"
               input_artifact_list             = [v.build_artifact_name]
             }
           }
-          name = "Deploy"
+          name = "ServiceDeploy"
         },
       ]
     })

@@ -29,7 +29,7 @@ variable "repo_map" {
       artifact_path                = optional(string)
       artifact_type                = optional(string) # Ignored for pipeline sources
       badge_enabled                = optional(bool)   # Ignored for pipeline sources
-      build_timeout                = optional(number)
+      build_timeout_minutes        = optional(number)
       cache_modes                  = optional(list(string))
       cache_type                   = optional(string)
       concurrent_build_limit       = optional(number)
@@ -119,7 +119,7 @@ variable "build_badge_enabled_default" {
   default = true
 }
 
-variable "build_build_timeout_default" {
+variable "build_build_timeout_minutes_default" {
   type    = number
   default = 30
 }

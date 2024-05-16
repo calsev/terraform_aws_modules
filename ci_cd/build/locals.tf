@@ -43,7 +43,7 @@ locals {
       artifact_encryption_disabled = v.artifact_encryption_disabled == null ? var.build_artifact_encryption_disabled_default : v.artifact_encryption_disabled
       artifact_location            = v.artifact_location == null ? var.build_artifact_location_default : v.artifact_location
       build_source_type            = v.source_type == null ? var.build_source_type_default : v.source_type
-      build_timeout                = v.build_timeout == null ? var.build_build_timeout_default : v.build_timeout
+      build_timeout_minutes        = v.build_timeout_minutes == null ? var.build_build_timeout_minutes_default : v.build_timeout_minutes
       cache_type                   = v.cache_type == null ? var.build_cache_type_default : v.cache_type
       concurrent_build_limit       = v.concurrent_build_limit == null ? var.build_concurrent_limit_default : v.concurrent_build_limit
       encryption_key               = "arn:${var.std_map.iam_partition}:kms:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:alias/aws/s3" # This is just the default S3 key, but keeps diffs clean
