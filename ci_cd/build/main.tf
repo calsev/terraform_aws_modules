@@ -12,7 +12,7 @@ resource "aws_codebuild_project" "this_build_project" {
     type                = each.value.artifact_type
   }
   badge_enabled = each.value.badge_enabled
-  build_timeout = each.value.build_timeout
+  build_timeout = each.value.build_timeout_minutes
   cache {
     location = each.value.cache_location
     modes    = each.value.cache_modes

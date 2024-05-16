@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.39.1
+
+### General
+
+* Clarify names for builds
+
 ## 0.39.0
 
 ### General
