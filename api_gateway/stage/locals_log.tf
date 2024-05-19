@@ -63,4 +63,7 @@ locals {
     #"webaclArn",
     #"xrayTraceId",
   ]
+  log_format_map = {
+    for v in local.log_format_list : v => "$context.${v}"
+  }
 }

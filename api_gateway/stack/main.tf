@@ -57,7 +57,9 @@ module "domain" {
 }
 
 module "stage" {
-  source  = "../../api_gateway/stage"
-  api_map = local.stage_map
-  std_map = var.std_map
+  source                   = "../../api_gateway/stage"
+  api_map                  = local.stage_map
+  domain_data_map          = module.domain.data
+  stage_domain_key_default = var.stage_domain_key_default
+  std_map                  = var.std_map
 }

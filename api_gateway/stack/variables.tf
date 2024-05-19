@@ -44,6 +44,7 @@ variable "api_map" {
     name_infix                         = optional(bool)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
+      domain_key               = optional(string)
       enable_default_route     = optional(bool)
       stage_path               = optional(string) # Defaults to "" if stage is $default, k_stage otherwise
       throttling_burst_limit   = optional(number)
@@ -172,6 +173,12 @@ variable "lambda_data_map" {
   }))
   default     = {}
   description = "Must be provided if any API uses a Lambda authorizer"
+}
+
+variable "stage_domain_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to api key"
 }
 
 variable "std_map" {
