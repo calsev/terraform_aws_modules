@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.40.0
+
+### General
+
+* Per-stage domain mapping for API Gateway
+* Embed log group and policy in Step Function
+
 ## 0.39.1
 
 ### General

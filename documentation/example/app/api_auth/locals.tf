@@ -11,9 +11,6 @@ locals {
     lambda = module.lambda.data
     role   = module.api_role.data
   }
-  stage_map = {
-    prd = {}
-  }
   std_var = {
     app             = "app-auth"
     aws_region_name = "us-west-2"

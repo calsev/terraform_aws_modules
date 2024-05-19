@@ -1,26 +1,22 @@
 variable "machine_map" {
   type = map(object({
-    definition_json = string
-    iam_role_arn    = optional(string)
-    log_data = object({
-      log_group_arn = string
-    })
-    log_level           = optional(string)
-    name_infix          = optional(bool)
-    policy_access_list  = optional(list(string))
-    policy_create       = optional(bool)
-    policy_name         = optional(string)
-    policy_name_append  = optional(string)
-    policy_name_infix   = optional(bool)
-    policy_name_prefix  = optional(string)
-    policy_name_prepend = optional(string)
-    policy_name_suffix  = optional(string)
+    definition_json              = string
+    log_level                    = optional(string)
+    name_include_app_fields      = optional(bool)
+    name_infix                   = optional(bool)
+    policy_access_list           = optional(list(string))
+    policy_create                = optional(bool)
+    policy_name                  = optional(string)
+    policy_name_append           = optional(string)
+    policy_name_infix            = optional(bool)
+    policy_name_prefix           = optional(string)
+    policy_name_prepend          = optional(string)
+    policy_name_suffix           = optional(string)
+    role_policy_attach_arn_map   = optional(map(string))
+    role_policy_create_json_map  = optional(map(string))
+    role_policy_inline_json_map  = optional(map(string))
+    role_policy_managed_name_map = optional(map(string))
   }))
-}
-
-variable "machine_iam_role_arn_default" {
-  type    = string
-  default = null
 }
 
 variable "machine_log_level_default" {
@@ -32,7 +28,13 @@ variable "machine_log_level_default" {
   }
 }
 
-variable "machine_name_infix_default" {
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
   type    = bool
   default = true
 }
@@ -70,6 +72,26 @@ variable "policy_name_prepend_default" {
 variable "policy_name_suffix_default" {
   type    = string
   default = ""
+}
+
+variable "role_policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "std_map" {

@@ -7,12 +7,6 @@ module "com_lib" {
   std_var = local.std_var
 }
 
-module "stage_log" {
-  source  = "path/to/modules/cw/log_group"
-  log_map = local.stage_map
-  std_map = module.com_lib.std_map
-}
-
 module "sqs" {
   source = "path/to/modules/sqs/queue"
   queue_map = {
@@ -27,11 +21,9 @@ module "step_function" {
     (local.machine_name) = {
       definition_json = templatefile("${path.module}/pipeline_machine.json", {
       })
-      log_data = module.stage_log.data["prd"]
     }
   }
-  machine_iam_role_arn_default = module.machine_role.data.iam_role_arn
-  std_map                      = module.com_lib.std_map
+  std_map = module.com_lib.std_map
 }
 
 module "lambda" {
@@ -54,7 +46,7 @@ module "lambda" {
 module "api" {
   source = "path/to/modules/api_gateway/stack"
   api_map = {
-    (local.api_name) = {
+    "api.example.com" = {
       integration_iam_role_arn_default = module.api_role.data.iam_role_arn
       integration_map = {
         lambda = {
@@ -74,17 +66,27 @@ module "api" {
             }
           }
           service    = "states"
-          target_arn = module.step_function.data[local.machine_name].arn
+          target_arn = module.step_function.data[local.machine_name].machine_arn
         }
       }
       integration_route_method_default = "POST"
       name_infix                       = false
-      stage_map                        = local.stage_map
+      stage_map = {
+        dev = {
+          domain_key = "api_dev.example.com"
+          stage_path = ""
+        }
+        prd = {
+          domain_key = "api.example.com"
+          stage_path = ""
+        }
+      }
     }
   }
   dns_data = data.terraform_remote_state.dns.outputs.data
   domain_map = {
-    (local.api_name) = {}
+    "api.example.com"     = {}
+    "api_dev.example.com" = {}
   }
   domain_dns_from_zone_key_default = "example.com"
   std_map                          = module.com_lib.std_map

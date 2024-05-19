@@ -59,6 +59,7 @@ module "cert_oregon" {
   domain_map = {
     "elb.example.com"      = {}
     "api.example.com"      = {}
+    "api_dev.example.com"  = {}
     "auth_api.example.com" = {}
     "web.example.com"      = {}
     "web_dev.example.com"  = {}

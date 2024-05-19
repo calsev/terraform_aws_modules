@@ -264,6 +264,7 @@ provides code to create several targets:
 * State machine
 
 Integrations for each of these with API Gateway are also shown.
+Stage mapping by hostname is shown in this example.
 
 ### API Gateway Auth
 
@@ -272,6 +273,8 @@ provides an example of integrating authorization with API Gateway:
 
 * Lambda authorizer
 * Cognito user pool and JWT token
+
+Stage mapping by path is shown in this example.
 
 ### ECS service
 

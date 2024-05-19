@@ -71,7 +71,9 @@ module "api" {
       }
       integration_service_default = "lambda"
       name_infix                  = false
-      stage_map                   = local.stage_map
+      stage_map = {
+        prd = {}
+      }
     }
   }
   cognito_data_map = data.terraform_remote_state.core.outputs.data["com"].user_pool
