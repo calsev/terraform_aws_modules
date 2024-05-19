@@ -26,10 +26,11 @@ variable "dns_data" {
 
 variable "elb_data_map" {
   type = map(object({
-    elb_arn         = string
-    elb_dns_name    = string
-    elb_dns_zone_id = string
-    protocol_to_port_to_listener_map = map(map(object({
+    elb_arn            = string
+    elb_dns_name       = string
+    elb_dns_zone_id    = string
+    load_balancer_type = string
+    port_to_protocol_to_listener_map = map(map(object({
       elb_listener_arn = string
     })))
   }))

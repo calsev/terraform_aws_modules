@@ -143,6 +143,34 @@ variable "sg_map_internal" {
         }
       }
     }
+    open_vpn_in = {
+      rule_map = {
+        web = {
+          cidr_blocks      = null
+          from_port        = 943
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        api = {
+          cidr_blocks      = null
+          from_port        = 945
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        daemon = {
+          cidr_blocks      = null
+          from_port        = 1194
+          ipv6_cidr_blocks = null
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     postgres_in = {
       rule_map = {
         postgres = {

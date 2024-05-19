@@ -9,7 +9,7 @@ module "name_map" {
 locals {
   create_attachment_map = {
     for k, v in local.lx_map : k => merge(v, {
-      elb_listener_arn = v.is_listener ? aws_lb_listener.this_listener[k].arn : lookup(local.lx_map, v.rule_listener_key, null) == null ? var.elb_data_map[v.elb_key].protocol_to_port_to_listener_map[v.rule_listener_key][v.listen_port].elb_listener_arn : aws_lb_listener.this_listener[v.rule_listener_key].arn
+      elb_listener_arn = v.is_listener ? aws_lb_listener.this_listener[k].arn : lookup(local.lx_map, v.rule_listener_key, null) == null ? var.elb_data_map[v.elb_key].port_to_protocol_to_listener_map[v.listen_port][v.rule_listener_key].elb_listener_arn : aws_lb_listener.this_listener[v.rule_listener_key].arn
     })
   }
   create_listener_map = {
@@ -38,7 +38,6 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      acm_certificate_arn = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn
       action_map = {
         for k_act, v_act in local.l1_map[k].action_map : k_act => merge(v_act, {
           action_fixed_response_content_type          = v_act.action_fixed_response_content_type == null ? var.listener_action_fixed_response_content_type_default : v_act.action_fixed_response_content_type
@@ -70,10 +69,11 @@ locals {
           auth_session_timeout_seconds                = v_act.auth_session_timeout_seconds == null ? var.listener_auth_session_timeout_seconds_default : v_act.auth_session_timeout_seconds
         })
       }
-      alpn_policy_effective       = local.l1_map[k].listen_protocol == "TLS" ? local.l1_map[k].alpn_policy : null
-      elb_arn                     = var.elb_data_map[local.l1_map[k].elb_key].elb_arn
-      is_listener                 = length(local.l1_map[k].rule_condition_map) == 0
-      listen_ssl_policy_effective = local.l1_map[k].listen_protocol == "HTTPS" ? local.l1_map[k].listen_ssl_policy : null
+      alpn_policy_effective = local.l1_map[k].listen_protocol == "TLS" ? local.l1_map[k].alpn_policy : null
+      certificate_supported = local.l1_map[k].listen_protocol == "HTTPS" || local.l1_map[k].listen_protocol == "TLS"
+      elb_arn               = var.elb_data_map[local.l1_map[k].elb_key].elb_arn
+      is_listener           = length(local.l1_map[k].rule_condition_map) == 0
+      load_balancer_type    = var.elb_data_map[local.l1_map[k].elb_key].load_balancer_type
       rule_condition_map = {
         for k_rule, v_rule in local.l1_map[k].rule_condition_map : k_rule => merge(v_rule, {
           host_header_pattern_list = v_rule.host_header_pattern_list == null ? var.rule_host_header_pattern_list_default : v_rule.host_header_pattern_list
@@ -89,7 +89,7 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      acm_certificate_arn_effective = local.l1_map[k].listen_protocol == "HTTPS" ? local.l2_map[k].acm_certificate_arn : null
+      acm_certificate_arn = local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn : null
       action_map = {
         for k_act, v_act in local.l2_map[k].action_map : k_act => merge(v_act, {
           action_forward_target_group_map = {
@@ -105,6 +105,7 @@ locals {
           auth_scope_string           = join(" ", v_act.auth_scope_list)
         })
       }
+      listen_ssl_policy_effective = local.l2_map[k].certificate_supported ? local.l1_map[k].listen_ssl_policy : null
     }
   }
   lx_map = {

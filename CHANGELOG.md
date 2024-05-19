@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.41.0
+
+### General
+
+* Add support for NLB
+* Add default SG rule for internal OpenVPN
+
 ## 0.40.0
 
 ### General
