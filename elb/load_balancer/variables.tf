@@ -12,26 +12,30 @@ variable "dns_data" {
 
 variable "elb_map" {
   type = map(object({
-    access_log_bucket                           = optional(string)
-    access_log_enabled                          = optional(bool)
-    acm_certificate_key                         = optional(string) # Will be injected into HTTPS listener
-    connection_log_bucket                       = optional(string)
-    connection_log_enabled                      = optional(bool)
-    desync_mitigation_mode                      = optional(string)
-    dns_from_zone_key                           = optional(string)
-    drop_invalid_header_fields                  = optional(bool)
-    enable_deletion_protection                  = optional(bool)
-    enable_dualstack_networking                 = optional(bool)
-    enable_http2                                = optional(bool)
-    enable_tls_version_and_cipher_suite_headers = optional(bool)
-    enable_xff_client_port                      = optional(bool)
-    enable_waf_fail_open                        = optional(bool)
-    idle_connection_timeout_seconds             = optional(string)
-    is_internal                                 = optional(bool)
-    name_include_app_fields                     = optional(bool)
-    name_infix                                  = optional(bool)
-    preserve_host_header                        = optional(bool)
-    protocol_to_port_to_listener_map = optional(map(map(object({
+    access_log_bucket                                            = optional(string)
+    access_log_enabled                                           = optional(bool)
+    acm_certificate_key                                          = optional(string) # Will be injected into HTTPS listener
+    connection_log_bucket                                        = optional(string)
+    connection_log_enabled                                       = optional(bool)
+    desync_mitigation_mode                                       = optional(string)
+    dns_from_zone_key                                            = optional(string)
+    dns_record_client_routing_policy                             = optional(string)
+    drop_invalid_header_fields                                   = optional(bool)
+    enable_cross_zone_load_balancing                             = optional(bool)
+    enable_deletion_protection                                   = optional(bool)
+    enable_dualstack_networking                                  = optional(bool)
+    enable_http2                                                 = optional(bool)
+    enable_tls_version_and_cipher_suite_headers                  = optional(bool)
+    enable_xff_client_port                                       = optional(bool)
+    enable_waf_fail_open                                         = optional(bool)
+    enforce_security_group_inbound_rules_on_private_link_traffic = optional(bool)
+    idle_connection_timeout_seconds                              = optional(string)
+    is_internal                                                  = optional(bool)
+    load_balancer_type                                           = optional(string)
+    name_include_app_fields                                      = optional(bool)
+    name_infix                                                   = optional(bool)
+    preserve_host_header                                         = optional(bool)
+    port_to_protocol_to_listener_map = optional(map(map(object({
       action_map = map(object({
         action_fixed_response_content_type = optional(string)
         action_fixed_response_message_body = optional(string)
@@ -62,8 +66,8 @@ variable "elb_access_log_bucket_default" {
 
 variable "elb_access_log_enabled_default" {
   type        = bool
-  default     = true
-  description = "Ignored unless a bucket is specified"
+  default     = null
+  description = "Ignored unless a bucket is specified. Defaults to true for ALB and false for NLB. NLB requires a policy for both the bucket and the customer-managed kms key if encrypted. See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements"
 }
 
 variable "elb_connection_log_bucket_default" {
@@ -87,6 +91,16 @@ variable "elb_desync_mitigation_mode_default" {
   }
 }
 
+variable "elb_dns_record_client_routing_policy_default" {
+  type        = string
+  default     = "partial_availability_zone_affinity"
+  description = "Ignored except for NLB"
+  validation {
+    condition     = contains(["any_availability_zone", "availability_zone_affinity", "partial_availability_zone_affinity"], var.elb_dns_record_client_routing_policy_default)
+    error_message = "Invalid dns routing policy"
+  }
+}
+
 variable "elb_dns_from_zone_key_default" {
   type    = string
   default = null
@@ -97,14 +111,21 @@ variable "elb_drop_invalid_header_fields_default" {
   default = false
 }
 
+variable "elb_enable_cross_zone_load_balancing_default" {
+  type        = bool
+  default     = true
+  description = "value"
+}
+
 variable "elb_enable_deletion_protection_default" {
   type    = bool
   default = false
 }
 
 variable "elb_enable_dualstack_networking_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = null
+  description = "Defaults to true for ALB, false for NLB. Dualstack does not support UDP listeners."
 }
 
 variable "elb_enable_http2_default" {
@@ -137,6 +158,15 @@ variable "elb_is_internal_default" {
   default = false
 }
 
+variable "elb_load_balancer_type_default" {
+  type    = string
+  default = "application"
+  validation {
+    condition     = contains(["application", "gateway", "network"], var.elb_load_balancer_type_default)
+    error_message = "Invalid load balancer type"
+  }
+}
+
 variable "elb_name_include_app_fields_default" {
   type        = bool
   default     = false
@@ -153,8 +183,8 @@ variable "elb_preserve_host_header_default" {
   default = false
 }
 
-variable "elb_protocol_to_port_to_listener_map_default" {
-  type = map(map(object({
+variable "elb_type_to_port_to_protocol_to_listener_map_default" {
+  type = map(map(map(object({
     action_map = map(object({
       action_fixed_response_content_type = optional(string)
       action_fixed_response_message_body = optional(string)
@@ -169,68 +199,74 @@ variable "elb_protocol_to_port_to_listener_map_default" {
       action_type                        = optional(string)
     }))
     listen_ssl_policy = optional(string)
-  })))
+  }))))
   default = {
-    HTTP = {
+    application = {
       80 = {
-        action_map = {
-          default_redirect = {
-            action_fixed_response_content_type = null
-            action_fixed_response_message_body = null
-            action_fixed_response_status_code  = null
-            action_order                       = 50000
-            action_redirect_host               = null
-            action_redirect_path               = null
-            action_redirect_port               = 443
-            action_redirect_protocol           = "HTTPS"
-            action_redirect_query              = null
-            action_redirect_status_code        = null
-            action_type                        = "redirect"
+        HTTP = {
+          action_map = {
+            default_redirect = {
+              action_fixed_response_content_type = null
+              action_fixed_response_message_body = null
+              action_fixed_response_status_code  = null
+              action_order                       = 50000
+              action_redirect_host               = null
+              action_redirect_path               = null
+              action_redirect_port               = 443
+              action_redirect_protocol           = "HTTPS"
+              action_redirect_query              = null
+              action_redirect_status_code        = null
+              action_type                        = "redirect"
+            }
           }
+          listen_ssl_policy = null
         }
-        listen_ssl_policy = null
+      }
+      443 = {
+        HTTPS = {
+          action_map = {
+            default_not_found = {
+              action_fixed_response_content_type = null
+              action_fixed_response_message_body = "{status:\"Not Found\"}"
+              action_fixed_response_status_code  = 404
+              action_order                       = 50000
+              action_redirect_host               = null
+              action_redirect_path               = null
+              action_redirect_port               = null
+              action_redirect_protocol           = null
+              action_redirect_query              = null
+              action_redirect_status_code        = null
+              action_type                        = "fixed-response"
+            }
+          }
+          listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+        }
+      }
+      8443 = {
+        HTTPS = { # This is the test port for blue-green deployments
+          action_map = {
+            default_not_found = {
+              action_fixed_response_content_type = null
+              action_fixed_response_message_body = "{status:\"Not Found\"}"
+              action_fixed_response_status_code  = 404
+              action_order                       = 50000
+              action_redirect_host               = null
+              action_redirect_path               = null
+              action_redirect_port               = null
+              action_redirect_protocol           = null
+              action_redirect_query              = null
+              action_redirect_status_code        = null
+              action_type                        = "fixed-response"
+            }
+          }
+          listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+        }
       }
     }
-    HTTPS = {
-      443 = {
-        action_map = {
-          default_not_found = {
-            action_fixed_response_content_type = null
-            action_fixed_response_message_body = "{status:\"Not Found\"}"
-            action_fixed_response_status_code  = 404
-            action_order                       = 50000
-            action_redirect_host               = null
-            action_redirect_path               = null
-            action_redirect_port               = null
-            action_redirect_protocol           = null
-            action_redirect_query              = null
-            action_redirect_status_code        = null
-            action_type                        = "fixed-response"
-          }
-        }
-        listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      }
-      8443 = { # This is the test port for blue-green deployments
-        action_map = {
-          default_not_found = {
-            action_fixed_response_content_type = null
-            action_fixed_response_message_body = "{status:\"Not Found\"}"
-            action_fixed_response_status_code  = 404
-            action_order                       = 50000
-            action_redirect_host               = null
-            action_redirect_path               = null
-            action_redirect_port               = null
-            action_redirect_protocol           = null
-            action_redirect_query              = null
-            action_redirect_status_code        = null
-            action_type                        = "fixed-response"
-          }
-        }
-        listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      }
+    network = {
     }
   }
-  description = "These are standard listeners indexed by protocol and port"
+  description = "These are standard listeners indexed by protocol and port. NLBs do not understand hostname or path, so typically do not have multiple listeners per port."
 }
 
 variable "elb_xff_header_processing_mode_default" {
@@ -240,6 +276,12 @@ variable "elb_xff_header_processing_mode_default" {
     condition     = contains(["append", "preserve", "remove"], var.elb_xff_header_processing_mode_default)
     error_message = "Invalid XFF header processing mode"
   }
+}
+
+variable "elb_enforce_security_group_inbound_rules_on_private_link_traffic_default" {
+  type        = bool
+  default     = true
+  description = "Ignored except for network load balancers"
 }
 
 variable "std_map" {

@@ -1,7 +1,7 @@
 resource "aws_lb_listener" "this_listener" {
   for_each        = local.create_listener_map
   alpn_policy     = each.value.alpn_policy_effective
-  certificate_arn = each.value.acm_certificate_arn_effective
+  certificate_arn = each.value.acm_certificate_arn
   dynamic "default_action" {
     for_each = each.value.action_map
     content {

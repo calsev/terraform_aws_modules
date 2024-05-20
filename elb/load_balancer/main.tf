@@ -18,15 +18,15 @@ resource "aws_lb" "this_lb" {
   }
   customer_owned_ipv4_pool                                     = null
   desync_mitigation_mode                                       = each.value.desync_mitigation_mode
-  dns_record_client_routing_policy                             = null # NLB only
+  dns_record_client_routing_policy                             = each.value.dns_record_client_routing_policy
   drop_invalid_header_fields                                   = each.value.drop_invalid_header_fields
-  enable_cross_zone_load_balancing                             = true # Always true for ALB
+  enable_cross_zone_load_balancing                             = each.value.enable_cross_zone_load_balancing
   enable_deletion_protection                                   = each.value.enable_deletion_protection
   enable_http2                                                 = each.value.enable_http2
   enable_tls_version_and_cipher_suite_headers                  = each.value.enable_tls_version_and_cipher_suite_headers
   enable_xff_client_port                                       = each.value.enable_xff_client_port
   enable_waf_fail_open                                         = each.value.enable_waf_fail_open
-  enforce_security_group_inbound_rules_on_private_link_traffic = null # NLB only
+  enforce_security_group_inbound_rules_on_private_link_traffic = each.value.enforce_security_group_inbound_rules_on_private_link_traffic == null ? null : each.value.enforce_security_group_inbound_rules_on_private_link_traffic ? "on" : "off"
   idle_timeout                                                 = each.value.idle_connection_timeout_seconds
   internal                                                     = each.value.is_internal
   ip_address_type                                              = each.value.enable_dualstack_networking ? "dualstack" : "ipv4"

@@ -64,15 +64,16 @@ data "aws_elb_service_account" "lb" {}
 data "aws_iam_policy_document" "elb_policy" {
   for_each = var.allow_service_logging ? { this = {} } : {}
   statement {
+    # See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#attach-bucket-policy
     actions = ["s3:PutObject"]
     principals {
       identifiers = [data.aws_elb_service_account.lb.arn]
       type        = "AWS"
     }
     resources = [
-      "${local.bucket_arn}/AWSLogs/${var.std_map.aws_account_id}/*"
+      local.log_object_prefix
     ]
-    sid = "AllowElbLogging"
+    sid = "AllowAlbLogging"
   }
   statement {
     actions = ["s3:GetBucketAcl"]
@@ -110,6 +111,54 @@ data "aws_iam_policy_document" "elb_policy" {
       "${local.bucket_arn}/AWSLogs/${var.std_map.aws_account_id}/*"
     ]
     sid = "AllowCloudTrailLoggingObject"
+  }
+  statement {
+    # See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+    actions = ["s3:GetBucketAcl"]
+    condition {
+      test     = "ArnLike"
+      values   = [local.logs_arn_prefix]
+      variable = "AWS:SourceArn"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "AWS:SourceAccount"
+    }
+    principals {
+      identifiers = ["delivery.logs.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = [
+      local.bucket_arn
+    ]
+    sid = "AllowLogDeliveryAclCheck"
+  }
+  statement {
+    actions = ["s3:PutObject"]
+    condition {
+      test     = "ArnLike"
+      values   = [local.logs_arn_prefix]
+      variable = "AWS:SourceArn"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "AWS:SourceAccount"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = ["bucket-owner-full-control"]
+      variable = "s3:x-amz-acl"
+    }
+    principals {
+      identifiers = ["delivery.logs.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = [
+      local.log_object_prefix
+    ]
+    sid = "AllowLogDeliveryWrite"
   }
 }
 

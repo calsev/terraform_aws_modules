@@ -79,7 +79,7 @@ tf-fmt-lint: tf-fmt git-lint
 
 tf-lint: tflint-install
 	$(LINT) --config=.tflint.hcl --init{% for app_dir, app_data in app_dirs.items() %}
-	cd {{ app_data.path }} && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl --module{% if app_data.var_file %} --var-file {{ app_data.var_file }}.tfvars{% endif %}{% endfor %}{% for mod_dir in mod_dirs %}
+	cd {{ app_data.path }} && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl --call-module-type=all{% if app_data.var_file %} --var-file {{ app_data.var_file }}.tfvars{% endif %}{% endfor %}{% for mod_dir in mod_dirs %}
 	cd {{ mod_dir }} && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl{% endfor %}
 
 tflint-install:
