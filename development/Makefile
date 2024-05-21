@@ -90,9 +90,10 @@ tf-lint: tflint-install
 	cd ../api_gateway/stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../api_gateway/stage && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../app/ecr_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../app/ecr_mirror/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../app/ecr_mirror/requirements && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/ecr_repo_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/ecr_repo_mirror/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/ecr_repo_mirror/app/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/ecr_repo_mirror/app/requirements && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecs_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/web_static && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -143,7 +144,6 @@ tf-lint: tflint-install
 	cd ../ec2/network_interface && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr/repo && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../ecr/repo_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs/ami_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

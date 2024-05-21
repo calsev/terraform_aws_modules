@@ -1,0 +1,21 @@
+name: ecr-mirror
+services:
+  client:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: sleep infinity
+    container_name: ecr-mirror
+    image: ecr-mirror
+    networks:
+      ecr-mirror:
+        aliases:
+          - ecr-mirror
+    read_only: true
+    restart: unless-stopped
+    user: ubuntu
+    volumes:
+      - ~/.aws:/home/ubuntu/.aws
+networks:
+  ecr-mirror:
+    driver: bridge

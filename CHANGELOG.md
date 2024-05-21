@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.42.0
+
+### General
+
+* Consolidate `app/ecr_repo_mirror` from `ecr/repo_mirror` and `app/ecr_mirror` 
+* Improve parameterization of Fargate cluster
+
 ## 0.41.0
 
 ### General
