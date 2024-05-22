@@ -46,7 +46,7 @@ variable "monitor_data" {
 
 variable "schedule_expression" {
   type    = string
-  default = "cron(0 7 ? * SAT *)" # every Saturday at 7am UTC
+  default = "cron(0 4 ? * SAT *)" # every Saturday at 4am UTC
 }
 
 variable "std_map" {
