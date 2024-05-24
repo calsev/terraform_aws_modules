@@ -6,9 +6,12 @@ module "assume_role_policy" {
 
 resource "aws_iam_policy" "this_created_policy" {
   for_each = local.l1_map.role_policy_create_doc_map
-  name     = module.name_map.data[each.key].name_effective
-  policy   = jsonencode(each.value)
-  tags     = module.name_map.data[each.key].tags
+  lifecycle {
+    create_before_destroy = true
+  }
+  name   = module.name_map.data[each.key].name_effective
+  policy = jsonencode(each.value)
+  tags   = module.name_map.data[each.key].tags
 }
 
 resource "aws_iam_role" "this_iam_role" {
@@ -25,6 +28,9 @@ resource "aws_iam_role" "this_iam_role" {
     # This ensures an empty policy
     for_each = local.l1_map.role_policy_inline_doc_map == null ? { this = {} } : length(local.l1_map.role_policy_inline_doc_map) == 0 ? { this = {} } : {}
     content {}
+  }
+  lifecycle {
+    create_before_destroy = true
   }
   managed_policy_arns = [for _, arn in local.l4_map.role_policy_all_attached_arn_map : arn]
   name                = local.l1_map.name_effective

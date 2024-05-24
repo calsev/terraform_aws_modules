@@ -72,8 +72,9 @@ variable "repo_iam_policy_json_default" {
 }
 
 variable "repo_image_tag_list_default" {
-  type    = list(string)
-  default = ["latest"]
+  type        = list(string)
+  default     = ["latest"]
+  description = "These tags will be duplicated from the base image, if both exist"
 }
 
 variable "repo_image_tag_max_count_default" {

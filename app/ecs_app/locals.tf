@@ -37,6 +37,12 @@ locals {
       ]
     })
   }
+  create_cluster_map = {
+    for k, v in local.lx_map : k => v if !var.use_fargate
+  }
+  create_fargate_map = {
+    for k, v in local.lx_map : k => v if var.use_fargate
+  }
   create_file_app_spec_1_map = {
     for k, v in local.lx_map : k => merge(v, {
       app_spec = {
@@ -47,7 +53,7 @@ locals {
                 CapacityProviderStrategy = [
                   {
                     Base = 0
-                    CapacityProvider : module.ecs_cluster.data[k].capacity_provider_name
+                    CapacityProvider : local.ecs_cluster_data[k].capacity_provider_name
                     Weight = 100
                   },
                 ]
@@ -138,6 +144,7 @@ locals {
       ecs_cluster_key = k
     })
   }
+  ecs_cluster_data = var.use_fargate ? module.fargate_cluster.data : module.ecs_cluster.data
   env_to_port_map = {
     # TODO: A hard code dependency on default ELB setup
     blue  = 443
@@ -168,11 +175,11 @@ locals {
       auto_scaling_num_instances_max = local.l1_map[k].desired_count * 2
       deployment_environment_list    = local.l1_map[k].deployment_style_use_blue_green ? ["blue", "green"] : ["blue"]
       path_env_suffix                = local.l1_map[k].path_include_env ? "_${var.std_map.env}" : ""
-      rule_condition_map = {
-        host_match = {
+      rule_condition_map = merge(v.rule_condition_map == null ? var.rule_condition_map_default : v.rule_condition_map, {
+        host_match = merge({
           host_header_pattern_list = [var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].name_simple]
-        }
-      }
+        })
+      })
     }
   }
   l3_map = {
@@ -194,7 +201,7 @@ locals {
       {
         ci_cd_build   = null # module.code_build.data[k]
         ci_cd_pipe    = module.code_pipe.data[k]
-        cluster       = module.ecs_cluster.data[k]
+        cluster       = local.ecs_cluster_data[k]
         deploy_app    = module.codedeploy_app.data[k]
         deploy_config = module.codedeploy_config.data[k]
         deploy_group  = module.codedeploy_group.data[k]

@@ -1,11 +1,11 @@
 module "password_secret" {
   source                                      = "../../secret/random"
+  name_include_app_fields_default             = var.name_include_app_fields_default
+  name_infix_default                          = var.name_infix_default
+  name_prefix_default                         = var.name_prefix_default
+  name_suffix_default                         = var.name_suffix_default
   secret_is_param_default                     = var.db_secret_is_param_default
   secret_map                                  = local.lx_map
-  secret_name_include_app_fields_default      = var.name_include_app_fields_default
-  secret_name_infix_default                   = var.name_infix_default
-  secret_name_prefix_default                  = var.name_prefix_default
-  secret_name_suffix_default                  = var.name_suffix_default
   secret_random_init_key_default              = "password"
   secret_random_special_character_set_default = "!#$%&*()-_=+[]{}<>:?" # @ not allowed
   std_map                                     = var.std_map

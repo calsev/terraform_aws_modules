@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.43.0
+
+### New modules
+
+* CI/CD build for multi-arch image
+
+### General
+
+* Support Fargate for ECS app
+* Embedded policy for image permission for CodeBuild role
+* Append name for pipe webhook secret
+* Hard code no name app fields for ELB target
+* Lifecycle create before destroy for roles and policies
+* Name map support for append and prepend
+
 ## 0.42.0
 
 ### General

@@ -51,8 +51,9 @@ variable "log_skip_destroy_default" {
 }
 
 variable "name_prefix_default" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
 }
 
 variable "policy_access_list_default" {

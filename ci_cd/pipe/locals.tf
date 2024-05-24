@@ -9,9 +9,14 @@ locals {
   create_github_map = {
     for k, v in local.create_webhook_map : k => v if v.webhook_enable_github_hook
   }
+  create_secret_map = {
+    for k, v in local.lx_map : "${k}_webhook" => merge(v, {
+    })
+  }
   create_webhook_map = {
     for k, v in local.lx_map : "${k}_${v.source_repository_id}_${v.connection_arn}" => merge(v, {
-      k_pipe = k
+      k_pipe   = k
+      k_secret = "${k}_webhook"
     }) if v.webhook_enabled
   }
   l0_map = {
@@ -94,7 +99,7 @@ locals {
         webhook_github_url = v.webhook_enable_github_hook ? github_repository_webhook.this_githhub_webhook["${k}_${v.source_repository_id}_${v.connection_arn}"].url : null
         webhook_arn        = v.webhook_enabled ? aws_codepipeline_webhook.this_pipe_webhook["${k}_${v.source_repository_id}_${v.connection_arn}"].arn : null
         webhook_url        = v.webhook_enabled ? aws_codepipeline_webhook.this_pipe_webhook["${k}_${v.source_repository_id}_${v.connection_arn}"].url : null
-        webhook_secret     = module.webhook_secret.data[k]
+        webhook_secret     = module.webhook_secret.data["${k}_webhook"]
       }
     )
   }

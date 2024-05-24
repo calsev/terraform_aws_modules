@@ -1,3 +1,38 @@
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended after key"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
 variable "policy_access_list_default" {
   type    = list(string)
   default = ["read"]
@@ -35,9 +70,11 @@ variable "policy_name_suffix_default" {
 
 variable "secret_map" {
   type = map(object({
+    name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
     name_prefix             = optional(string)
+    name_prepend            = optional(string)
     name_suffix             = optional(string)
     policy_access_list      = optional(list(string))
     policy_create           = optional(bool)
@@ -57,26 +94,6 @@ variable "secret_map" {
 variable "secret_is_param_default" {
   type    = bool
   default = false
-}
-
-variable "secret_name_include_app_fields_default" {
-  type    = bool
-  default = true
-}
-
-variable "secret_name_infix_default" {
-  type    = bool
-  default = true
-}
-
-variable "secret_name_prefix_default" {
-  type    = string
-  default = ""
-}
-
-variable "secret_name_suffix_default" {
-  type    = string
-  default = ""
 }
 
 variable "secret_random_init_key_default" {

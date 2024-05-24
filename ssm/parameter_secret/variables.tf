@@ -1,9 +1,46 @@
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended after key"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
 variable "param_map" {
   type = map(object({
     kms_key_id              = optional(string)
+    name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
     name_prefix             = optional(string)
+    name_prepend            = optional(string)
     name_suffix             = optional(string)
     policy_access_list      = optional(list(string))
     policy_create           = optional(bool)
@@ -23,26 +60,6 @@ variable "param_map" {
 variable "param_kms_key_id_default" {
   type    = string
   default = "alias/aws/ssm"
-}
-
-variable "param_name_include_app_fields_default" {
-  type    = bool
-  default = true
-}
-
-variable "param_name_infix_default" {
-  type    = bool
-  default = true
-}
-
-variable "param_name_prefix_default" {
-  type    = string
-  default = ""
-}
-
-variable "param_name_suffix_default" {
-  type    = string
-  default = ""
 }
 
 variable "param_secret_random_init_key_default" {

@@ -16,8 +16,9 @@ variable "name_infix_default" {
 }
 
 variable "name_prefix_default" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
 }
 
 variable "name_suffix_default" {

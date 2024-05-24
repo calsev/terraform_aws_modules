@@ -22,6 +22,10 @@ module "this_role" {
       condition = var.code_star_connection_key != null
       policy    = var.code_star_connection_key == null ? null : var.ci_cd_account_data.code_star.connection[var.code_star_connection_key].iam_policy_arn_map.read_write
     }
+    image_read_write = {
+      condition = var.map_policy.ecr_repo_key != null
+      policy    = var.map_policy.ecr_repo_key == null ? null : var.ecr_data_map[var.map_policy.ecr_repo_key].iam_policy_arn_map.read_write
+    }
     log_write = {
       policy = var.log_public_access ? var.ci_cd_account_data.log_public.iam_policy_arn_map.write : var.ci_cd_account_data.log.iam_policy_arn_map.write
     }

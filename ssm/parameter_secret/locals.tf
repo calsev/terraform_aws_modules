@@ -1,10 +1,12 @@
 module "name_map" {
   source                          = "../../name_map"
-  name_include_app_fields_default = var.param_name_include_app_fields_default
-  name_infix_default              = var.param_name_infix_default
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
-  name_prefix_default             = var.param_name_prefix_default
-  name_suffix_default             = var.param_name_suffix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -40,8 +42,11 @@ locals {
       tier       = v.tier == null ? var.param_tier_default : v.tier
     })
   }
+  lx_map = {
+    for k, v in local.l0_map : k => merge(local.l1_map[k])
+  }
   output_data = {
-    for k, v in local.param_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       v,
       module.this_policy[k].data, # This is just the iam maps
       {
@@ -50,8 +55,5 @@ locals {
         secret_id  = aws_ssm_parameter.this_param[k].id
       },
     )
-  }
-  param_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k])
   }
 }

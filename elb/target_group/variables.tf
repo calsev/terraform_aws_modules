@@ -1,21 +1,21 @@
 variable "target_map" {
   type = map(object({
-    draining_to_unused_delay_seconds                   = optional(number)
-    glb_failover_on_deregistration_or_unhealthy        = optional(bool)
-    health_check_consecutive_fail_threshold            = optional(number)
-    health_check_consecutive_success_threshold         = optional(number)
-    health_check_enabled                               = optional(bool)
-    health_check_http_path                             = optional(string)
-    health_check_interval_seconds                      = optional(number)
-    health_check_no_response_timeout_seconds           = optional(number)
-    health_check_port                                  = optional(number)
-    health_check_protocol                              = optional(string)
-    health_check_success_code_list                     = optional(list(number))
-    lambda_multi_value_headers_enabled                 = optional(bool)
-    load_balancing_algorithm_type                      = optional(string)
-    load_balancing_anomaly_mitigation_enabled          = optional(bool)
-    load_balancing_cross_zone_mode                     = optional(string)
-    name_include_app_fields                            = optional(bool)
+    draining_to_unused_delay_seconds            = optional(number)
+    glb_failover_on_deregistration_or_unhealthy = optional(bool)
+    health_check_consecutive_fail_threshold     = optional(number)
+    health_check_consecutive_success_threshold  = optional(number)
+    health_check_enabled                        = optional(bool)
+    health_check_http_path                      = optional(string)
+    health_check_interval_seconds               = optional(number)
+    health_check_no_response_timeout_seconds    = optional(number)
+    health_check_port                           = optional(number)
+    health_check_protocol                       = optional(string)
+    health_check_success_code_list              = optional(list(number))
+    lambda_multi_value_headers_enabled          = optional(bool)
+    load_balancing_algorithm_type               = optional(string)
+    load_balancing_anomaly_mitigation_enabled   = optional(bool)
+    load_balancing_cross_zone_mode              = optional(string)
+    # name_include_app_fields # Hardcoded to false because name is limited to 32 characters
     name_infix                                         = optional(bool)
     nlb_enable_proxy_protocol_v2                       = optional(bool)
     nlb_preserve_client_ip                             = optional(bool)
@@ -140,11 +140,6 @@ variable "target_load_balancing_cross_zone_mode_default" {
     condition     = contains(["use_load_balancer_configuration", "false", "true"], var.target_load_balancing_cross_zone_mode_default)
     error_message = "Invalid corss-zone mode"
   }
-}
-
-variable "target_name_include_app_fields_default" {
-  type    = bool
-  default = null
 }
 
 variable "target_name_infix_default" {

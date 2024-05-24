@@ -43,6 +43,7 @@ variable "app_map" {
     blue_green_termination_wait_minutes = optional(number)
     blue_green_timeout_wait_minutes     = optional(number)
     build_artifact_name                 = optional(string)
+    build_data_key                      = optional(string)
     build_stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -85,15 +86,24 @@ variable "app_map" {
       secret_map          = optional(map(string))
       username            = optional(string)
     }))
-    deployment_style_use_blue_green       = optional(bool)
-    desired_count                         = optional(number)
-    dns_alias_enabled                     = optional(bool)
-    dns_from_zone_key                     = optional(string)
+    deployment_style_use_blue_green = optional(bool)
+    desired_count                   = optional(number)
+    dns_alias_enabled               = optional(bool)
+    dns_from_zone_key               = optional(string)
+    efs_volume_map = optional(map(object({
+      authorization_access_point_id = optional(string)
+      authorization_iam_enabled     = optional(bool)
+      file_system_id                = string
+      root_directory                = optional(string)
+      transit_encryption_enabled    = optional(bool)
+      transit_encryption_port       = optional(string)
+    })))
     elb_container_name                    = optional(string)
     elb_container_port                    = optional(number)
     elb_health_check_grace_period_seconds = optional(number)
     elb_key                               = optional(string)
     health_check_http_path                = optional(string)
+    iam_role_arn_execution                = optional(string)
     image_id                              = optional(string)
     instance_storage_gib                  = optional(number)
     instance_type                         = optional(string)
@@ -104,6 +114,8 @@ variable "app_map" {
     path_repo_root_to_spec_directory      = optional(string)
     path_terraform_app_to_repo_root       = optional(string)
     provider_instance_warmup_period_s     = optional(number)
+    resource_memory_gib                   = optional(number)
+    resource_num_vcpu                     = optional(string)
     role_policy_attach_arn_map            = optional(map(string))
     role_policy_create_json_map           = optional(map(string))
     role_policy_inline_json_map           = optional(map(string))
@@ -125,6 +137,7 @@ variable "app_map" {
     sticky_cookie_enabled           = optional(bool)
     source_branch                   = optional(string)
     source_code_star_connection_key = optional(string)
+    source_detect_changes           = optional(bool)
     source_repository_id            = optional(string)
     target_protocol_http_version    = optional(string)
     trigger_map = optional(map(object({
@@ -190,9 +203,11 @@ variable "ci_cd_account_data" {
 }
 
 variable "ci_cd_build_data_map" {
-  type = map(map(object({
-    name_effective = string
-  })))
+  type = map(object({
+    build_map = map(object({
+      name_effective = string
+    }))
+  }))
 }
 
 variable "cognito_data_map" {
@@ -587,6 +602,11 @@ variable "pipe_source_code_star_connection_key_default" {
   default = null
 }
 
+variable "pipe_source_detect_changes_default" {
+  type    = bool
+  default = true
+}
+
 variable "pipe_source_repository_id_default" {
   type    = string
   default = null
@@ -747,8 +767,9 @@ variable "task_container_command_join_default" {
 }
 
 variable "task_container_entry_point_default" {
-  type    = list(string)
-  default = ["/usr/bin/bash", "-cex"]
+  type        = list(string)
+  default     = null
+  description = "These are typically specified in the Dockerfile for services"
 }
 
 variable "task_container_environment_file_list_default" {
@@ -794,6 +815,12 @@ variable "task_container_privileged_default" {
   default = false
 }
 
+variable "task_container_read_only_root_file_system_default" {
+  type        = bool
+  default     = true
+  description = "A critical severity finding if false"
+}
+
 variable "task_container_reserved_memory_gib_default" {
   type        = number
   default     = null
@@ -814,6 +841,41 @@ variable "task_container_secret_map_default" {
 variable "task_container_username_default" {
   type    = string
   default = "ubuntu"
+}
+
+variable "task_efs_volume_map_default" {
+  type = map(object({
+    authorization_access_point_id = optional(string)
+    authorization_iam_enabled     = optional(bool)
+    file_system_id                = string
+    root_directory                = optional(string)
+    transit_encryption_enabled    = optional(bool)
+    transit_encryption_port       = optional(number)
+  }))
+  default = {}
+}
+
+variable "task_iam_role_arn_execution_default" {
+  type        = string
+  default     = null
+  description = "By default, the task execution role is the basic role from IAM data. This overrides the default."
+}
+
+variable "task_resource_memory_gib_default" {
+  type        = number
+  default     = null
+  description = "Required for Fargate, for EC2 defaults to instance_type_memory_gib - task_memory_host_gib_default"
+}
+
+variable "task_resource_num_vcpu_default" {
+  type        = number
+  default     = null
+  description = "Required for Fargate, for EC2 defaults to number of CPUs for the instance x 1024"
+}
+
+variable "use_fargate" {
+  type    = bool
+  default = false
 }
 
 variable "vpc_az_key_list_default" {

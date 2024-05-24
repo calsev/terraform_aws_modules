@@ -15,22 +15,22 @@ module "dns_alias" {
 }
 
 module "license_secret" {
-  source                                 = "../../secret/random"
-  secret_is_param_default                = var.instance_secret_is_param_default
-  secret_map                             = local.create_open_vpn_license_map
-  secret_name_include_app_fields_default = var.instance_name_include_app_fields_default
-  secret_name_infix_default              = var.instance_name_infix_default
-  secret_random_init_key_default         = "license_key"
-  std_map                                = var.std_map
+  source                          = "../../secret/random"
+  name_include_app_fields_default = var.instance_name_include_app_fields_default
+  name_infix_default              = var.instance_name_infix_default
+  secret_is_param_default         = var.instance_secret_is_param_default
+  secret_map                      = local.create_open_vpn_license_map
+  secret_random_init_key_default  = "license_key"
+  std_map                         = var.std_map
 }
 
 module "password_secret" {
-  source                                 = "../../secret/random"
-  secret_is_param_default                = var.instance_secret_is_param_default
-  secret_map                             = local.create_open_vpn_password_map
-  secret_name_include_app_fields_default = var.instance_name_include_app_fields_default
-  secret_name_infix_default              = var.instance_name_infix_default
-  secret_random_init_key_default         = "password"
+  source                          = "../../secret/random"
+  name_include_app_fields_default = var.instance_name_include_app_fields_default
+  name_infix_default              = var.instance_name_infix_default
+  secret_is_param_default         = var.instance_secret_is_param_default
+  secret_map                      = local.create_open_vpn_password_map
+  secret_random_init_key_default  = "password"
   secret_random_init_map_default = {
     username = "openvpn"
   }
