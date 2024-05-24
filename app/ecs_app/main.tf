@@ -46,7 +46,6 @@ module "elb_listener" {
   listener_dns_from_zone_key_default                           = var.listener_dns_from_zone_key_default
   listener_elb_key_default                                     = var.listener_elb_key_default
   listener_map                                                 = local.create_target_x_map
-  rule_condition_map_default                                   = var.rule_condition_map_default
   rule_host_header_pattern_list_default                        = var.rule_host_header_pattern_list_default
   rule_http_header_map_default                                 = var.rule_http_header_map_default
   rule_http_request_method_list_default                        = var.rule_http_request_method_list_default
@@ -66,7 +65,7 @@ module "ecs_cluster" {
   compute_instance_storage_gib_default              = var.compute_instance_storage_gib_default
   compute_instance_type_default                     = var.compute_instance_type_default
   compute_key_pair_key_default                      = var.compute_key_pair_key_default
-  compute_map                                       = local.lx_map
+  compute_map                                       = local.create_cluster_map
   compute_provider_instance_warmup_period_s_default = var.compute_provider_instance_warmup_period_s_default
   elb_target_data_map                               = module.elb_target.data
   iam_data                                          = var.iam_data
@@ -79,37 +78,48 @@ module "ecs_cluster" {
   vpc_segment_key_default                           = var.vpc_segment_key_default
 }
 
+module "fargate_cluster" {
+  source      = "../../ecs/compute_fargate"
+  compute_map = local.create_fargate_map
+  std_map     = var.std_map
+}
+
 module "ecs_task" {
-  source                                       = "../../ecs/task"
-  alert_enabled_default                        = var.alert_enabled_default
-  ecs_cluster_data                             = module.ecs_cluster.data
-  iam_data                                     = var.iam_data
-  monitor_data                                 = var.monitor_data
-  role_policy_attach_arn_map_default           = var.role_policy_attach_arn_map_default
-  role_policy_create_json_map_default          = var.role_policy_create_json_map_default
-  role_policy_inline_json_map_default          = var.role_policy_inline_json_map_default
-  role_policy_managed_name_map_default         = var.role_policy_managed_name_map_default
-  task_container_command_join_default          = var.task_container_command_join_default
-  task_container_entry_point_default           = var.task_container_entry_point_default
-  task_container_environment_file_list_default = var.task_container_environment_file_list_default
-  task_container_environment_map_default       = var.task_container_environment_map_default
-  task_container_image_default                 = var.task_container_image_default
-  task_container_mount_read_only_default       = var.task_container_mount_read_only_default
-  task_container_port_map_default              = var.task_container_port_map_default
-  task_container_port_protocol_default         = var.task_container_port_protocol_default
-  task_container_privileged_default            = var.task_container_privileged_default
-  task_container_reserved_memory_gib_default   = var.task_container_reserved_memory_gib_default
-  task_container_reserved_num_vcpu_default     = var.task_container_reserved_num_vcpu_default
-  task_container_secret_map_default            = var.task_container_secret_map_default
-  task_container_username_default              = var.task_container_username_default
-  task_map                                     = local.create_task_map
-  std_map                                      = var.std_map
+  source                                            = "../../ecs/task"
+  alert_enabled_default                             = var.alert_enabled_default
+  ecs_cluster_data                                  = local.ecs_cluster_data
+  iam_data                                          = var.iam_data
+  monitor_data                                      = var.monitor_data
+  role_policy_attach_arn_map_default                = var.role_policy_attach_arn_map_default
+  role_policy_create_json_map_default               = var.role_policy_create_json_map_default
+  role_policy_inline_json_map_default               = var.role_policy_inline_json_map_default
+  role_policy_managed_name_map_default              = var.role_policy_managed_name_map_default
+  std_map                                           = var.std_map
+  task_container_command_join_default               = var.task_container_command_join_default
+  task_container_entry_point_default                = var.task_container_entry_point_default
+  task_container_environment_file_list_default      = var.task_container_environment_file_list_default
+  task_container_environment_map_default            = var.task_container_environment_map_default
+  task_container_image_default                      = var.task_container_image_default
+  task_container_mount_read_only_default            = var.task_container_mount_read_only_default
+  task_container_port_map_default                   = var.task_container_port_map_default
+  task_container_port_protocol_default              = var.task_container_port_protocol_default
+  task_container_privileged_default                 = var.task_container_privileged_default
+  task_container_read_only_root_file_system_default = var.task_container_read_only_root_file_system_default
+  task_container_reserved_memory_gib_default        = var.task_container_reserved_memory_gib_default
+  task_container_reserved_num_vcpu_default          = var.task_container_reserved_num_vcpu_default
+  task_container_secret_map_default                 = var.task_container_secret_map_default
+  task_container_username_default                   = var.task_container_username_default
+  task_efs_volume_map_default                       = var.task_efs_volume_map_default
+  task_iam_role_arn_execution_default               = var.task_iam_role_arn_execution_default
+  task_map                                          = local.create_task_map
+  task_resource_memory_gib_default                  = var.task_resource_memory_gib_default
+  task_resource_num_vcpu_default                    = var.task_resource_num_vcpu_default
 }
 
 module "ecs_service" {
   source                                                = "../../ecs/service"
   dns_data                                              = var.dns_data
-  ecs_cluster_data                                      = module.ecs_cluster.data
+  ecs_cluster_data                                      = local.ecs_cluster_data
   ecs_task_definition_data_map                          = module.ecs_task.data
   elb_target_data_map                                   = module.elb_target.data
   service_deployment_controller_type_default            = "CODE_DEPLOY"
@@ -149,7 +159,7 @@ module "codedeploy_group" {
   deployment_config_data_map                             = module.codedeploy_config.data
   deployment_map                                         = local.create_deployment_map
   deployment_trigger_map_default                         = var.deployment_trigger_map_default
-  ecs_cluster_data_map                                   = module.ecs_cluster.data
+  ecs_cluster_data_map                                   = local.ecs_cluster_data
   ecs_service_data_map                                   = module.ecs_service.data
   elb_listener_data_map                                  = module.elb_listener.data
   elb_target_data_map                                    = module.elb_target.data
@@ -198,6 +208,7 @@ module "code_pipe" {
   name_infix_default                           = var.name_infix_default
   pipe_source_branch_default                   = var.pipe_source_branch_default
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
+  pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
   pipe_source_repository_id_default            = var.pipe_source_repository_id_default
   pipe_webhook_enable_github_hook_default      = var.pipe_webhook_enable_github_hook_default
   pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default

@@ -110,6 +110,7 @@ tf-lint: tflint-install
 	cd ../ci_cd && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/build && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ci_cd/build_image && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/deploy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/deploy/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/deploy/config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

@@ -72,7 +72,7 @@ resource "aws_codepipeline" "this_pipeline" {
 module "webhook_secret" {
   source                  = "../../secret/random"
   secret_is_param_default = var.pipe_webhook_secret_is_param_default
-  secret_map              = local.lx_map
+  secret_map              = local.create_secret_map
   std_map                 = var.std_map
 }
 
@@ -81,7 +81,7 @@ resource "aws_codepipeline_webhook" "this_pipe_webhook" {
   authentication = "GITHUB_HMAC" # TODO: Other providers
   authentication_configuration {
     allowed_ip_range = null
-    secret_token     = module.webhook_secret.secret_map[each.value.k_pipe]
+    secret_token     = module.webhook_secret.secret_map[each.value.k_secret]
   }
   dynamic "filter" {
     for_each = each.value.webhook_filter_map_final
@@ -109,7 +109,7 @@ resource "github_repository_webhook" "this_githhub_webhook" {
   configuration {
     content_type = "json"
     insecure_ssl = false
-    secret       = module.webhook_secret.secret_map[each.value.k_pipe]
+    secret       = module.webhook_secret.secret_map[each.value.k_secret]
     url          = aws_codepipeline_webhook.this_pipe_webhook[each.key].url
   }
   lifecycle {

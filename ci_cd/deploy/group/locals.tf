@@ -74,9 +74,9 @@ locals {
       deployment_style_use_blue_green           = lookup(local.l1_map[k].deployment_environment_map, "green", null) != null
       ecs_service_map = {
         for k_serv, v_serv in local.l1_map[k].ecs_service_map : k_serv => merge(v_serv, {
-          auto_scaling_group_arn = var.ecs_cluster_data_map[v_serv.cluster_key].auto_scaling_group.auto_scaling_group_arn
           cluster_name           = v_serv.cluster_key == null ? null : var.ecs_cluster_data_map[v_serv.cluster_key].name_effective
           service_name           = var.ecs_service_data_map[k_serv].name_effective
+          has_auto_scaling_group = var.ecs_cluster_data_map[v_serv.cluster_key].auto_scaling_group != null
         })
       }
       deployment_environment_map = {
@@ -95,24 +95,36 @@ locals {
   }
   l3_map = {
     for k, _ in local.l0_map : k => {
-      auto_scaling_group_arn_list = [
-        for k_serv, v_serv in local.l2_map[k].ecs_service_map : v_serv.auto_scaling_group_arn
-      ]
       deployment_environment_map = {
         for k_env, v_env in local.l2_map[k].deployment_environment_map : k_env => v_env == null ? null : merge(v_env, {
           elb_listener_arn      = var.elb_listener_data_map[v_env.elb_listener_key].elb_listener_target_arn
           elb_target_group_name = var.elb_target_data_map[v_env.elb_target_group_key].target_group_name
         })
       }
+      ecs_service_map = {
+        for k_serv, v_serv in local.l2_map[k].ecs_service_map : k_serv => merge(v_serv, {
+          auto_scaling_group_arn = v_serv.has_auto_scaling_group ? var.ecs_cluster_data_map[v_serv.cluster_key].auto_scaling_group.auto_scaling_group_arn : null
+        })
+      }
     }
   }
   l4_map = {
+    for k, _ in local.l0_map : k => {
+      auto_scaling_group_arn_list = [
+        for v in [
+          for k_serv, v_serv in local.l3_map[k].ecs_service_map : v_serv.auto_scaling_group_arn
+        ] : v if v != null
+      ]
+      auto_scaling_group_arn_list_effective = [] # TODO: Not supported for ECS
+    }
+  }
+  l5_map = {
     for k, _ in local.l0_map : k => {
       auto_scaling_group_arn_list_effective = [] # TODO: Not supported for ECS
     }
   }
   lx_map = {
-    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

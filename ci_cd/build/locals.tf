@@ -156,15 +156,17 @@ locals {
   }
   output_data = {
     for k_repo, v_repo in var.repo_map : k_repo => {
-      for k_build, _ in v_repo.build_map : k_build => merge(
-        {
-          for k, v in local.lx_map["${k_repo}_${k_build}"] : k => v if !contains(["k_map", "webhook_filter_map_raw"], k)
-        },
-        {
-          arn               = aws_codebuild_project.this_build_project["${k_repo}_${k_build}"].arn
-          source_build_spec = yamldecode(local.lx_map["${k_repo}_${k_build}"].source_build_spec)
-        }
-      )
+      build_map = {
+        for k_build, _ in v_repo.build_map : k_build => merge(
+          {
+            for k, v in local.lx_map["${k_repo}_${k_build}"] : k => v if !contains(["k_map", "webhook_filter_map_raw"], k)
+          },
+          {
+            arn               = aws_codebuild_project.this_build_project["${k_repo}_${k_build}"].arn
+            source_build_spec = yamldecode(local.lx_map["${k_repo}_${k_build}"].source_build_spec)
+          }
+        )
+      }
     }
   }
 }

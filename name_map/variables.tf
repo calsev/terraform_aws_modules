@@ -1,12 +1,20 @@
 variable "name_map" {
   type = map(object({
     name_include_app_fields = optional(bool)
+    name_append             = optional(string)
     name_infix              = optional(bool)
     name_override           = optional(string)
     name_prefix             = optional(string)
+    name_prepend            = optional(string)
     name_suffix             = optional(string)
     tags                    = optional(map(string))
   }))
+}
+
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
 }
 
 variable "name_include_app_fields_default" {
@@ -21,8 +29,15 @@ variable "name_infix_default" {
 }
 
 variable "name_prefix_default" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended after key"
 }
 
 variable "name_regex_allow_list" {

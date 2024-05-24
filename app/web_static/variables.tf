@@ -52,9 +52,11 @@ variable "ci_cd_account_data" {
 }
 
 variable "ci_cd_build_data_map" {
-  type = map(map(object({
-    name_effective = string
-  })))
+  type = map(object({
+    build_map = map(object({
+      name_effective = string
+    }))
+  }))
 }
 
 variable "dns_data" {

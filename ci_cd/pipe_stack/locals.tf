@@ -49,7 +49,7 @@ locals {
           action_map = {
             for k_act, v_act in v_build.action_map : k_act => merge(v_act, {
               category                         = v_act.category == null ? var.pipe_stage_category_default : v_act.category
-              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_build_data_map[local.l1_map[k].build_data_key][v_act.configuration_build_project_key].name_effective
+              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_build_data_map[local.l1_map[k].build_data_key].build_map[v_act.configuration_build_project_key].name_effective
             })
           }
         })
@@ -59,7 +59,7 @@ locals {
           action_map = {
             for k_act, v_act in v_build.action_map : k_act => merge(v_act, {
               category                         = v_act.category == null ? var.pipe_stage_category_default : v_act.category
-              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_deploy_data_map[local.l1_map[k].deploy_data_key][v_act.configuration_build_project_key].name_effective
+              configuration_build_project_name = v_act.configuration_build_project_key == null ? null : var.ci_cd_deploy_data_map[local.l1_map[k].deploy_data_key].build_map[v_act.configuration_build_project_key].name_effective
             })
           }
         })

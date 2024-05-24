@@ -1,6 +1,6 @@
 module "this_policy" {
   source         = "../../iam/policy/identity/secret"
-  for_each       = local.param_map
+  for_each       = local.lx_map
   access_list    = each.value.policy_access_list
   name           = each.value.policy_name
   name_infix     = each.value.policy_name_infix

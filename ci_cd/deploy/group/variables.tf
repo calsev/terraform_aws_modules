@@ -51,9 +51,9 @@ variable "deployment_config_data_map" {
 
 variable "ecs_cluster_data_map" {
   type = map(object({
-    auto_scaling_group = object({
+    auto_scaling_group = optional(object({
       auto_scaling_group_arn = string
-    })
+    }))
     name_effective = string
   }))
 }

@@ -30,15 +30,19 @@ variable "ci_cd_account_data" {
 }
 
 variable "ci_cd_build_data_map" {
-  type = map(map(object({
-    name_effective = string
-  })))
+  type = map(object({
+    build_map = map(object({
+      name_effective = string
+    }))
+  }))
 }
 
 variable "ci_cd_deploy_data_map" {
-  type = map(map(object({
-    name_effective = string
-  })))
+  type = map(object({
+    build_map = map(object({
+      name_effective = string
+    }))
+  }))
   default     = null
   description = "Must be provided if any deployment (app) projects are included"
 }
@@ -111,6 +115,7 @@ variable "pipe_map" {
     source_artifact_format          = optional(string)
     source_branch                   = optional(string)
     source_code_star_connection_key = optional(string)
+    source_detect_changes           = optional(bool)
     source_repository_id            = optional(string)
     webhook_enable_github_hook      = optional(bool)
   }))
@@ -133,6 +138,11 @@ variable "pipe_source_branch_default" {
 variable "pipe_source_code_star_connection_key_default" {
   type    = string
   default = null
+}
+
+variable "pipe_source_detect_changes_default" {
+  type    = bool
+  default = true
 }
 
 variable "pipe_source_repository_id_default" {
