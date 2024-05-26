@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.44.0
+
+### General
+
+* Embed image build in ECS app
+
 ## 0.43.0
 
 ### New modules

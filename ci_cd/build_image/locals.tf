@@ -22,9 +22,9 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       code_star_connection_key   = v.code_star_connection_key == null ? var.build_code_star_connection_key_default : v.code_star_connection_key
-      ecr_repo_key               = v.ecr_repo_key == null ? var.build_ecr_repo_key_default : v.ecr_repo_key
-      environment_key_arch       = v.environment_key_arch == null ? var.build_environment_key_arch_default : v.environment_key_arch
-      environment_key_tag        = v.environment_key_tag == null ? var.build_environment_key_tag_default : v.environment_key_tag
+      image_ecr_repo_key         = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
+      image_environment_key_arch = v.image_environment_key_arch == null ? var.build_image_environment_key_arch_default : v.image_environment_key_arch
+      image_environment_key_tag  = v.image_environment_key_tag == null ? var.build_image_environment_key_tag_default : v.image_environment_key_tag
       image_tag_base             = v.image_tag_base == null ? var.build_image_tag_base_default : v.image_tag_base
       source_build_spec_image    = v.source_build_spec_image == null ? var.build_source_build_spec_image_default : v.source_build_spec_image
       source_build_spec_manifest = v.source_build_spec_manifest == null ? var.build_source_build_spec_manifest_default : v.source_build_spec_manifest
@@ -37,11 +37,11 @@ locals {
         # Create a build array for each repo, injecting common values for the repo
         pipe_image_amd = merge(local.l1_map[k], local.repo_build_image_common, {
           environment_variable_map = {
-            (local.l1_map[k].environment_key_arch) = {
+            (local.l1_map[k].image_environment_key_arch) = {
               type  = "PLAINTEXT"
               value = "linux/amd64"
             }
-            (local.l1_map[k].environment_key_tag) = {
+            (local.l1_map[k].image_environment_key_tag) = {
               type  = "PLAINTEXT"
               value = "${local.l1_map[k].image_tag_base}-amd"
             }
@@ -51,11 +51,11 @@ locals {
         pipe_image_arm = merge(local.repo_build_image_common, {
           environment_type = "cpu-arm-amazon-small"
           environment_variable_map = {
-            (local.l1_map[k].environment_key_arch) = {
+            (local.l1_map[k].image_environment_key_arch) = {
               type  = "PLAINTEXT"
               value = "linux/arm64"
             }
-            (local.l1_map[k].environment_key_tag) = {
+            (local.l1_map[k].image_environment_key_tag) = {
               type  = "PLAINTEXT"
               value = "${local.l1_map[k].image_tag_base}-arm"
             }
@@ -64,7 +64,7 @@ locals {
         })
         pipe_image_manifest = merge(local.repo_build_image_common, {
           environment_variable_map = {
-            (local.l1_map[k].environment_key_tag) = {
+            (local.l1_map[k].image_environment_key_tag) = {
               type  = "PLAINTEXT"
               value = local.l1_map[k].image_tag_base
             }

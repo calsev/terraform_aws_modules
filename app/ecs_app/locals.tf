@@ -7,6 +7,14 @@ module "name_map" {
 }
 
 locals {
+  ci_cd_deploy_data_map = {
+    for k, v in local.lx_map : k => {
+      build_map = merge(
+        module.code_build.data[k].build_map,
+        v.image_build_enabled ? module.image_build.data[k].build_map : null,
+      )
+    }
+  }
   create_cicd_build_map = {
     for k, v in local.lx_map : k => merge(v, {
       build_map = {
@@ -20,21 +28,52 @@ locals {
       }
     })
   }
+  create_ci_cd_image_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      role_policy_attach_arn_map   = v.build_role_policy_attach_arn_map
+      role_policy_create_json_map  = v.build_role_policy_create_json_map
+      role_policy_inline_json_map  = v.build_role_policy_inline_json_map
+      role_policy_managed_name_map = v.build_role_policy_managed_name_map
+    }) if v.image_build_enabled
+  }
   create_cicd_pipe_map = {
     for k, v in local.lx_map : k => merge(v, {
-      deploy_stage_list = [
-        {
-          action_map = {
-            CodeDeployTrigger = {
-              # The CodeDeploy integration insists on managing the task as well, so we use CodeBuild, see
-              # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
-              configuration_build_project_key = "pipe_deploy"
-              input_artifact_list             = [v.build_artifact_name]
+      deploy_stage_list = concat(
+        v.image_build_enabled ? [
+          {
+            action_map = {
+              Amd = {
+                configuration_build_project_key = "pipe_image_amd"
+              }
+              Arm = {
+                configuration_build_project_key = "pipe_image_arm"
+              }
             }
-          }
-          name = "ServiceDeploy"
-        },
-      ]
+            name = "ImageBuild"
+          },
+          {
+            action_map = {
+              Deploy = {
+                configuration_build_project_key = "pipe_image_manifest"
+              }
+            }
+            name = "ImageManifest"
+          },
+        ] : [],
+        [
+          {
+            action_map = {
+              CodeDeployTrigger = {
+                # The CodeDeploy integration insists on managing the task as well, so we use CodeBuild, see
+                # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
+                configuration_build_project_key = "pipe_deploy"
+                input_artifact_list             = [v.build_artifact_name]
+              }
+            }
+            name = "ServiceDeploy"
+          },
+        ],
+      )
     })
   }
   create_cluster_map = {
@@ -141,6 +180,11 @@ locals {
   }
   create_task_map = {
     for k, v in local.lx_map : k => merge(v, {
+      container_definition_map = {
+        for k_container, v_container in v.container_definition_map : k_container => merge(v_container, {
+          image = v_container.image == null ? v.image_has_default ? "${var.ecr_data_map[v.image_ecr_repo_key].repo_url}:${v.image_tag_base}" : null : v_container.image
+        })
+      }
       ecs_cluster_key = k
     })
   }
@@ -160,6 +204,9 @@ locals {
       build_artifact_name              = v.build_artifact_name == null ? var.pipe_build_artifact_name_default : v.build_artifact_name
       deployment_style_use_blue_green  = v.deployment_style_use_blue_green == null ? var.deployment_style_use_blue_green_default : v.deployment_style_use_blue_green
       desired_count                    = v.desired_count == null ? var.service_desired_count_default : v.desired_count
+      image_build_enabled              = v.image_build_enabled == null ? var.app_image_build_enabled_default : v.image_build_enabled
+      image_ecr_repo_key               = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
+      image_tag_base                   = v.image_tag_base == null ? var.build_image_tag_base_default : v.image_tag_base
       path_include_env                 = v.path_include_env == null ? var.app_path_include_env_default : v.path_include_env
       path_repo_root_to_spec_directory = v.path_repo_root_to_spec_directory == null ? var.app_path_repo_root_to_spec_directory_default : v.path_repo_root_to_spec_directory
       path_terraform_app_to_repo_root  = trim(v.path_terraform_app_to_repo_root == null ? var.app_path_terraform_app_to_repo_root_default : v.path_terraform_app_to_repo_root, "/")
@@ -174,6 +221,7 @@ locals {
       })
       auto_scaling_num_instances_max = local.l1_map[k].desired_count * 2
       deployment_environment_list    = local.l1_map[k].deployment_style_use_blue_green ? ["blue", "green"] : ["blue"]
+      image_has_default              = var.ecr_data_map != null && local.l1_map[k].image_ecr_repo_key != null && local.l1_map[k].image_tag_base != null
       path_env_suffix                = local.l1_map[k].path_include_env ? "_${var.std_map.env}" : ""
       rule_condition_map = merge(v.rule_condition_map == null ? var.rule_condition_map_default : v.rule_condition_map, {
         host_match = merge({
@@ -199,7 +247,8 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        ci_cd_build   = null # module.code_build.data[k]
+        ci_cd_build   = module.code_build.data[k]
+        ci_cd_image   = v.image_build_enabled ? module.image_build.data[k] : null
         ci_cd_pipe    = module.code_pipe.data[k]
         cluster       = local.ecs_cluster_data[k]
         deploy_app    = module.codedeploy_app.data[k]

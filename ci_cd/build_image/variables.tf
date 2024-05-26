@@ -43,9 +43,9 @@ variable "ecr_data_map" {
 variable "repo_map" {
   type = map(object({
     code_star_connection_key     = optional(string)
-    ecr_repo_key                 = optional(string)
-    environment_key_arch         = optional(string)
-    environment_key_tag          = optional(string)
+    image_ecr_repo_key           = optional(string)
+    image_environment_key_arch   = optional(string)
+    image_environment_key_tag    = optional(string)
     image_tag_base               = optional(string)
     name_include_app_fields      = optional(bool)
     name_infix                   = optional(bool)
@@ -55,7 +55,6 @@ variable "repo_map" {
     role_policy_managed_name_map = optional(map(string))
     source_build_spec_image      = optional(string)
     source_build_spec_manifest   = optional(string)
-    source_location_default      = string
     vpc_access                   = optional(bool)
     vpc_az_key_list              = optional(list(string))
     vpc_key                      = optional(string)
@@ -69,25 +68,19 @@ variable "build_code_star_connection_key_default" {
   default = null
 }
 
-variable "build_ecr_repo_key_default" {
+variable "build_image_ecr_repo_key_default" {
   type    = string
   default = null
 }
 
-variable "build_environment_key_arch_default" {
+variable "build_image_environment_key_arch_default" {
   type    = string
   default = "ARCH"
 }
 
-variable "build_environment_key_tag_default" {
+variable "build_image_environment_key_tag_default" {
   type    = string
   default = "TAG"
-}
-
-variable "name_include_app_fields_default" {
-  type        = bool
-  default     = true
-  description = "If true, the Terraform project context will be included in the name"
 }
 
 variable "build_image_tag_base_default" {
@@ -109,6 +102,12 @@ variable "build_source_build_spec_manifest_default" {
 variable "build_vpc_access_default" {
   type    = bool
   default = true
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
 }
 
 variable "name_infix_default" {
