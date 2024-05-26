@@ -190,20 +190,50 @@ resource "local_file" "deploy_spec" {
   file_permission = "0644"
 }
 
+module "image_build" {
+  source                                   = "../../ci_cd/build_image"
+  build_code_star_connection_key_default   = var.pipe_source_code_star_connection_key_default
+  build_image_ecr_repo_key_default         = var.build_image_ecr_repo_key_default
+  build_image_environment_key_arch_default = var.build_image_environment_key_arch_default
+  build_image_environment_key_tag_default  = var.build_image_environment_key_tag_default
+  build_image_tag_base_default             = var.build_image_tag_base_default
+  build_source_build_spec_image_default    = var.build_source_build_spec_image_default
+  build_source_build_spec_manifest_default = var.build_source_build_spec_manifest_default
+  build_vpc_access_default                 = var.build_vpc_access_default
+  ci_cd_account_data                       = var.ci_cd_account_data
+  ecr_data_map                             = var.ecr_data_map
+  repo_map                                 = local.create_ci_cd_image_map
+  role_policy_attach_arn_map_default       = var.build_role_policy_attach_arn_map_default
+  role_policy_create_json_map_default      = var.build_role_policy_create_json_map_default
+  role_policy_inline_json_map_default      = var.build_role_policy_inline_json_map_default
+  role_policy_managed_name_map_default     = var.build_role_policy_managed_name_map_default
+  std_map                                  = var.std_map
+  vpc_az_key_list_default                  = var.vpc_az_key_list_default
+  vpc_data_map                             = var.vpc_data_map
+  vpc_key_default                          = var.vpc_key_default
+  vpc_security_group_key_list_default      = var.vpc_security_group_key_list_default
+  vpc_segment_key_default                  = var.vpc_segment_key_default
+}
+
 module "code_build" {
-  source                          = "../../ci_cd/build"
-  ci_cd_account_data              = var.ci_cd_account_data
-  name_include_app_fields_default = var.name_include_app_fields_default
-  name_infix_default              = var.name_infix_default
-  repo_map                        = local.create_cicd_build_map
-  std_map                         = var.std_map
+  source                              = "../../ci_cd/build"
+  ci_cd_account_data                  = var.ci_cd_account_data
+  name_include_app_fields_default     = var.name_include_app_fields_default
+  name_infix_default                  = var.name_infix_default
+  repo_map                            = local.create_cicd_build_map
+  std_map                             = var.std_map
+  vpc_az_key_list_default             = var.vpc_az_key_list_default
+  vpc_data_map                        = var.vpc_data_map
+  vpc_key_default                     = var.vpc_key_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_segment_key_default             = var.vpc_segment_key_default
 }
 
 module "code_pipe" {
   source                                       = "../../ci_cd/pipe_stack"
   ci_cd_account_data                           = var.ci_cd_account_data
   ci_cd_build_data_map                         = var.ci_cd_build_data_map
-  ci_cd_deploy_data_map                        = module.code_build.data
+  ci_cd_deploy_data_map                        = local.ci_cd_deploy_data_map
   name_include_app_fields_default              = var.name_include_app_fields_default
   name_infix_default                           = var.name_infix_default
   pipe_source_branch_default                   = var.pipe_source_branch_default

@@ -1,3 +1,14 @@
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = false
+}
+
 variable "policy_access_list_default" {
   type        = list(string)
   default     = ["read", "read_write"]
@@ -53,15 +64,16 @@ variable "repo_map" {
       })
       }
     )))
-    name_infix          = optional(bool)
-    policy_access_list  = optional(list(string))
-    policy_create       = optional(bool)
-    policy_name         = optional(string)
-    policy_name_append  = optional(string)
-    policy_name_infix   = optional(bool)
-    policy_name_prefix  = optional(string)
-    policy_name_prepend = optional(string)
-    policy_name_suffix  = optional(string)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    policy_access_list      = optional(list(string))
+    policy_create           = optional(bool)
+    policy_name             = optional(string)
+    policy_name_append      = optional(string)
+    policy_name_infix       = optional(bool)
+    policy_name_prefix      = optional(string)
+    policy_name_prepend     = optional(string)
+    policy_name_suffix      = optional(string)
   }))
 }
 
@@ -110,11 +122,6 @@ variable "repo_lifecycle_rule_list_default" {
       }
     },
   ]
-}
-
-variable "repo_name_infix_default" {
-  type    = bool
-  default = false
 }
 
 variable "std_map" {

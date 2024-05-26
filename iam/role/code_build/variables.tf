@@ -40,14 +40,14 @@ variable "ecr_data_map" {
 
 variable "map_policy" {
   type = object({
-    ecr_repo_key                 = optional(string) # The key of the image to build. If specified read/write for the image will be granted.
+    image_ecr_repo_key           = optional(string) # The key of the image to build. If specified read/write for the image will be granted.
     role_policy_attach_arn_map   = optional(map(string))
     role_policy_create_json_map  = optional(map(string))
     role_policy_inline_json_map  = optional(map(string))
     role_policy_managed_name_map = optional(map(string))
   })
   default = {
-    ecr_repo_key                 = null
+    image_ecr_repo_key           = null
     role_policy_attach_arn_map   = null
     role_policy_create_json_map  = null
     role_policy_inline_json_map  = null

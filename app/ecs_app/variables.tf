@@ -44,6 +44,10 @@ variable "app_map" {
     blue_green_timeout_wait_minutes     = optional(number)
     build_artifact_name                 = optional(string)
     build_data_key                      = optional(string)
+    build_role_policy_attach_arn_map    = optional(map(string))
+    build_role_policy_create_json_map   = optional(map(string))
+    build_role_policy_inline_json_map   = optional(map(string))
+    build_role_policy_managed_name_map  = optional(map(string))
     build_stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -71,7 +75,7 @@ variable "app_map" {
       environment_file_list = optional(list(string))
       environment_map       = optional(map(string))
       entry_point           = optional(list(string))
-      image                 = optional(string)
+      image                 = optional(string) # Will be defaulted if image_ecr_repo_create
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -104,7 +108,12 @@ variable "app_map" {
     elb_key                               = optional(string)
     health_check_http_path                = optional(string)
     iam_role_arn_execution                = optional(string)
-    image_id                              = optional(string)
+    image_build_enabled                   = optional(bool)
+    image_ecr_repo_key                    = optional(string)
+    image_environment_key_arch            = optional(string)
+    image_environment_key_tag             = optional(string)
+    image_id                              = optional(string) # This is for the AMI
+    image_tag_base                        = optional(string)
     instance_storage_gib                  = optional(number)
     instance_type                         = optional(string)
     key_pair_key                          = optional(string)
@@ -136,6 +145,8 @@ variable "app_map" {
     rule_priority                   = optional(number)
     sticky_cookie_enabled           = optional(bool)
     source_branch                   = optional(string)
+    source_build_spec_image         = optional(string)
+    source_build_spec_manifest      = optional(string)
     source_code_star_connection_key = optional(string)
     source_detect_changes           = optional(bool)
     source_repository_id            = optional(string)
@@ -151,6 +162,11 @@ variable "app_map" {
   }))
 }
 
+variable "app_image_build_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "app_path_include_env_default" {
   type    = bool
   default = true
@@ -164,6 +180,64 @@ variable "app_path_repo_root_to_spec_directory_default" {
 variable "app_path_terraform_app_to_repo_root_default" {
   type    = string
   default = null
+}
+
+variable "build_image_ecr_repo_key_default" {
+  type    = string
+  default = null
+}
+
+variable "build_image_environment_key_arch_default" {
+  type    = string
+  default = "ARCH"
+}
+
+variable "build_image_environment_key_tag_default" {
+  type    = string
+  default = "TAG"
+}
+
+variable "build_image_tag_base_default" {
+  type        = string
+  default     = "latest"
+  description = "The tag of the final manifest. Each arch-specific image tag will have the arch appended"
+}
+
+variable "build_role_policy_attach_arn_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "The special sauce for the role; log write and artifact read/write come free"
+}
+
+variable "build_role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "build_role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "build_role_policy_managed_name_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
+}
+
+variable "build_source_build_spec_image_default" {
+  type    = string
+  default = null
+}
+
+variable "build_source_build_spec_manifest_default" {
+  type    = string
+  default = null
+}
+
+variable "build_vpc_access_default" {
+  type    = bool
+  default = true
 }
 
 variable "ci_cd_account_data" {
@@ -298,6 +372,17 @@ variable "dns_data" {
       name_simple     = string
     })))
   })
+}
+
+variable "ecr_data_map" {
+  type = map(object({
+    iam_policy_arn_map = object({
+      read_write = string
+    })
+    repo_url = string
+  }))
+  default     = null
+  description = "Must be provided if any app enables image build"
 }
 
 variable "elb_data_map" {
@@ -890,7 +975,9 @@ variable "vpc_data_map" {
       route_public  = bool
       subnet_id_map = map(string)
     }))
-    vpc_id = string
+    vpc_cidr_block      = string
+    vpc_id              = string
+    vpc_ipv6_cidr_block = string
   }))
 }
 

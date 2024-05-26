@@ -5,6 +5,7 @@ module "code_build_role" {
   role_policy_managed_name_map_default = {
     deploy_start = "AWSCodeDeployDeployerAccess"
   }
-  name    = "${each.key}_deploy"
-  std_map = var.std_map
+  name       = "${each.key}_deploy"
+  std_map    = var.std_map
+  vpc_access = var.build_vpc_access_default
 }
