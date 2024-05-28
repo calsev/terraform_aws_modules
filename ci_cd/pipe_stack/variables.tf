@@ -60,7 +60,7 @@ variable "name_infix_default" {
 
 variable "pipe_map" {
   type = map(object({
-    build_data_key = optional(string) # Defaults to map key
+    build_data_key = optional(string)
     build_stage_list = list(object({
       action_map = map(object({
         category      = optional(string)
@@ -119,6 +119,12 @@ variable "pipe_map" {
     source_repository_id            = optional(string)
     webhook_enable_github_hook      = optional(bool)
   }))
+}
+
+variable "pipe_build_data_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to map key"
 }
 
 variable "pipe_source_artifact_format_default" {

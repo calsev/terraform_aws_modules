@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.44.1
+
+### General
+
+* Parameterize CodeBuild data key for ECS app
+
 ## 0.44.0
 
 ### General
