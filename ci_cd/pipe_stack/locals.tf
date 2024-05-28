@@ -38,7 +38,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      build_data_key  = v.build_data_key == null ? k : v.build_data_key
+      build_data_key  = v.build_data_key == null ? var.pipe_build_data_key_default == null ? k : var.pipe_build_data_key_default : v.build_data_key
       deploy_data_key = v.deploy_data_key == null ? k : v.deploy_data_key
     })
   }

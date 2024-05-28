@@ -677,6 +677,12 @@ variable "pipe_build_artifact_name_default" {
   description = "The name of the artifact that contains the site directory to sync"
 }
 
+variable "pipe_build_data_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to map key"
+}
+
 variable "pipe_source_branch_default" {
   type    = string
   default = "main"

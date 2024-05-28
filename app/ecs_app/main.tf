@@ -236,6 +236,7 @@ module "code_pipe" {
   ci_cd_deploy_data_map                        = local.ci_cd_deploy_data_map
   name_include_app_fields_default              = var.name_include_app_fields_default
   name_infix_default                           = var.name_infix_default
+  pipe_build_data_key_default                  = var.pipe_build_data_key_default
   pipe_source_branch_default                   = var.pipe_source_branch_default
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
   pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
