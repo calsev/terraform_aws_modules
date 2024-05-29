@@ -167,7 +167,7 @@ locals {
             action_forward_target_group_map = {
               "${k}_${k_dep}" = {}
             }
-            action_order = 40000
+            action_order = v.app_action_order_default_forward
           })
         })
         k_all       = "${k}_${k_dep}"
@@ -200,6 +200,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       acm_certificate_key              = v.acm_certificate_key == null ? var.listener_acm_certificate_key_default : v.acm_certificate_key
+      app_action_order_default_forward = v.app_action_order_default_forward == null ? var.app_action_order_default_forward_default : v.app_action_order_default_forward
       action_map                       = v.action_map == null ? var.listener_action_map_default : v.action_map
       build_artifact_name              = v.build_artifact_name == null ? var.pipe_build_artifact_name_default : v.build_artifact_name
       deployment_style_use_blue_green  = v.deployment_style_use_blue_green == null ? var.deployment_style_use_blue_green_default : v.deployment_style_use_blue_green
@@ -262,7 +263,7 @@ locals {
         }
         iam = {
           role = {
-            ci_cd_build = null # module.code_build_role[k].data
+            ci_cd_build = module.code_build_role[k].data
           }
         }
         service = module.ecs_service.data[k]

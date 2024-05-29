@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.45.0
+
+### General
+
+* Add Docker volume map to ECS app
+
 ## 0.44.1
 
 ### General

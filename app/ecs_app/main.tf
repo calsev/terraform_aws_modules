@@ -50,6 +50,7 @@ module "elb_listener" {
   rule_http_header_map_default                                 = var.rule_http_header_map_default
   rule_http_request_method_list_default                        = var.rule_http_request_method_list_default
   rule_path_pattern_list_default                               = var.rule_path_pattern_list_default
+  rule_priority_default                                        = var.rule_priority_default
   rule_query_string_map_default                                = var.rule_query_string_map_default
   rule_source_ip_list_default                                  = var.rule_source_ip_list_default
   rule_listener_key_default                                    = var.rule_listener_key_default
@@ -109,6 +110,12 @@ module "ecs_task" {
   task_container_reserved_num_vcpu_default          = var.task_container_reserved_num_vcpu_default
   task_container_secret_map_default                 = var.task_container_secret_map_default
   task_container_username_default                   = var.task_container_username_default
+  task_docker_volume_map_default                    = var.task_docker_volume_map_default
+  task_docker_volume_auto_provision_enabled_default = var.task_docker_volume_auto_provision_enabled_default
+  task_docker_volume_driver_default                 = var.task_docker_volume_driver_default
+  task_docker_volume_driver_option_map_default      = var.task_docker_volume_driver_option_map_default
+  task_docker_volume_label_map_default              = var.task_docker_volume_label_map_default
+  task_docker_volume_scope_default                  = var.task_docker_volume_scope_default
   task_efs_volume_map_default                       = var.task_efs_volume_map_default
   task_iam_role_arn_execution_default               = var.task_iam_role_arn_execution_default
   task_map                                          = local.create_task_map

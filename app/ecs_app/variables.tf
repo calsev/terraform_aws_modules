@@ -5,7 +5,8 @@ variable "alert_enabled_default" {
 
 variable "app_map" {
   type = map(object({
-    acm_certificate_key = optional(string)
+    acm_certificate_key              = optional(string)
+    app_action_order_default_forward = optional(number)
     action_map = optional(map(object({
       action_fixed_response_content_type         = optional(string)
       action_fixed_response_message_body         = optional(string)
@@ -94,6 +95,13 @@ variable "app_map" {
     desired_count                   = optional(number)
     dns_alias_enabled               = optional(bool)
     dns_from_zone_key               = optional(string)
+    docker_volume_map = optional(map(object({
+      auto_provision_enabled = optional(bool)
+      driver                 = optional(string)
+      driver_option_map      = optional(map(string))
+      label_map              = optional(map(string))
+      scope                  = optional(string)
+    })))
     efs_volume_map = optional(map(object({
       authorization_access_point_id = optional(string)
       authorization_iam_enabled     = optional(bool)
@@ -415,6 +423,11 @@ variable "listener_acm_certificate_key_default" {
   description = "Must be provided if a listener uses HTTPS"
 }
 
+variable "app_action_order_default_forward_default" {
+  type    = number
+  default = 40000
+}
+
 variable "listener_action_map_default" {
   type = map(object({
     action_fixed_response_content_type         = optional(string)
@@ -448,7 +461,7 @@ variable "listener_action_map_default" {
     auth_session_timeout_seconds                = optional(number)
   }))
   default     = {}
-  description = "This will be merged with a default forward rule at priority 40000"
+  description = "This will be merged with a default forward rule at priority app_action_order_default_forward"
 }
 
 variable "listener_action_fixed_response_content_type_default" {
@@ -775,6 +788,16 @@ variable "rule_path_pattern_list_default" {
   default = []
 }
 
+variable "rule_priority_default" {
+  type        = number
+  default     = null
+  description = "defaults to order in the list"
+  validation {
+    condition     = var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
+    error_message = "Invalid action order"
+  }
+}
+
 variable "rule_query_string_map_default" {
   type = map(object({
     key_pattern   = optional(string)
@@ -932,6 +955,43 @@ variable "task_container_secret_map_default" {
 variable "task_container_username_default" {
   type    = string
   default = "ubuntu"
+}
+
+variable "task_docker_volume_map_default" {
+  type = map(object({
+    auto_provision_enabled = optional(bool)
+    driver                 = optional(string)
+    driver_option_map      = optional(map(string))
+    label_map              = optional(map(string))
+    scope                  = optional(string)
+  }))
+  default = {}
+}
+
+variable "task_docker_volume_auto_provision_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless scope is shared"
+}
+
+variable "task_docker_volume_driver_default" {
+  type    = string
+  default = "local"
+}
+
+variable "task_docker_volume_driver_option_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "task_docker_volume_label_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "task_docker_volume_scope_default" {
+  type    = string
+  default = "task"
 }
 
 variable "task_efs_volume_map_default" {

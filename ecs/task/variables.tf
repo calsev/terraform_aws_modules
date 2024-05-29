@@ -98,6 +98,13 @@ variable "task_map" {
       secret_map                 = optional(map(string))
       username                   = optional(string)
     }))
+    docker_volume_map = optional(map(object({
+      auto_provision_enabled = optional(bool)
+      driver                 = optional(string)
+      driver_option_map      = optional(map(string))
+      label_map              = optional(map(string))
+      scope                  = optional(string)
+    })))
     ecs_cluster_key = optional(string)
     efs_volume_map = optional(map(object({
       authorization_access_point_id = optional(string)
@@ -245,6 +252,47 @@ variable "task_efs_transit_encryption_enabled_default" {
 variable "task_efs_transit_encryption_port_default" {
   type    = number
   default = null
+}
+
+variable "task_docker_volume_map_default" {
+  type = map(object({
+    auto_provision_enabled = optional(bool)
+    driver                 = optional(string)
+    driver_option_map      = optional(map(string))
+    label_map              = optional(map(string))
+    scope                  = optional(string)
+  }))
+  default = {}
+}
+
+variable "task_docker_volume_auto_provision_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless scope is shared"
+}
+
+variable "task_docker_volume_driver_default" {
+  type    = string
+  default = "local"
+}
+
+variable "task_docker_volume_driver_option_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "task_docker_volume_label_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "task_docker_volume_scope_default" {
+  type    = string
+  default = "task"
+  validation {
+    condition     = contains(["shared", "task"], var.task_docker_volume_scope_default)
+    error_message = "invalid volume scope"
+  }
 }
 
 variable "task_iam_role_arn_execution_default" {
