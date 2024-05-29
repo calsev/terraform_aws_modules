@@ -22,6 +22,19 @@ resource "aws_ecs_task_definition" "this_task" {
   tags                     = each.value.tags
   task_role_arn            = module.task_role[each.key].data.iam_role_arn
   dynamic "volume" {
+    for_each = each.value.docker_volume_map
+    content {
+      docker_volume_configuration {
+        autoprovision = volume.value.auto_provision_enabled
+        driver        = volume.value.driver
+        driver_opts   = volume.value.driver_option_map
+        labels        = volume.value.label_map
+        scope         = volume.value.scope
+      }
+      name = volume.key
+    }
+  }
+  dynamic "volume" {
     for_each = each.value.efs_volume_map
     content {
       efs_volume_configuration {

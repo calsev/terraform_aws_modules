@@ -456,6 +456,16 @@ variable "rule_path_pattern_list_default" {
   default = []
 }
 
+variable "rule_priority_default" {
+  type        = number
+  default     = null
+  description = "defaults to order in the list"
+  validation {
+    condition     = var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
+    error_message = "Invalid action order"
+  }
+}
+
 variable "rule_query_string_map_default" {
   type = map(object({
     key_pattern   = optional(string)

@@ -34,6 +34,7 @@ locals {
       mutual_authentication_mode                             = v.mutual_authentication_mode == null ? var.listener_mutual_authentication_mode_default : v.mutual_authentication_mode
       mutual_authentication_trust_store_arn                  = v.mutual_authentication_trust_store_arn == null ? var.listener_mutual_authentication_trust_store_arn_default : v.mutual_authentication_trust_store_arn
       rule_condition_map                                     = v.rule_condition_map == null ? var.rule_condition_map_default : v.rule_condition_map
+      rule_priority                                          = v.rule_priority == null ? var.rule_priority_default : v.rule_priority
     })
   }
   l2_map = {
