@@ -461,7 +461,7 @@ variable "rule_priority_default" {
   default     = null
   description = "defaults to order in the list"
   validation {
-    condition     = var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
+    condition     = var.rule_priority_default == null ? true : var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
     error_message = "Invalid action order"
   }
 }

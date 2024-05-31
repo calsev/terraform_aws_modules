@@ -43,6 +43,7 @@ variable "ecr_data_map" {
 variable "repo_map" {
   type = map(object({
     code_star_connection_key     = optional(string)
+    image_build_arch_list        = optional(list(string))
     image_ecr_repo_key           = optional(string)
     image_environment_key_arch   = optional(string)
     image_environment_key_tag    = optional(string)
@@ -66,6 +67,14 @@ variable "repo_map" {
 variable "build_code_star_connection_key_default" {
   type    = string
   default = null
+}
+
+variable "build_image_build_arch_list_default" {
+  type = list(string)
+  default = [
+    "amd",
+    "arm",
+  ]
 }
 
 variable "build_image_ecr_repo_key_default" {
