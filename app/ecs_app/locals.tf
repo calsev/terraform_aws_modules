@@ -42,11 +42,8 @@ locals {
         v.image_build_enabled ? [
           {
             action_map = {
-              Amd = {
-                configuration_build_project_key = "pipe_image_amd"
-              }
-              Arm = {
-                configuration_build_project_key = "pipe_image_arm"
+              for arch in v.image_build_arch_list : title(arch) => {
+                configuration_build_project_key = "pipe_image_${lower(arch)}"
               }
             }
             name = "ImageBuild"
@@ -205,7 +202,7 @@ locals {
       build_artifact_name              = v.build_artifact_name == null ? var.pipe_build_artifact_name_default : v.build_artifact_name
       deployment_style_use_blue_green  = v.deployment_style_use_blue_green == null ? var.deployment_style_use_blue_green_default : v.deployment_style_use_blue_green
       desired_count                    = v.desired_count == null ? var.service_desired_count_default : v.desired_count
-      image_build_enabled              = v.image_build_enabled == null ? var.app_image_build_enabled_default : v.image_build_enabled
+      image_build_arch_list            = v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
       image_ecr_repo_key               = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
       image_tag_base                   = v.image_tag_base == null ? var.build_image_tag_base_default : v.image_tag_base
       path_include_env                 = v.path_include_env == null ? var.app_path_include_env_default : v.path_include_env
@@ -222,6 +219,7 @@ locals {
       })
       auto_scaling_num_instances_max = local.l1_map[k].desired_count * 2
       deployment_environment_list    = local.l1_map[k].deployment_style_use_blue_green ? ["blue", "green"] : ["blue"]
+      image_build_enabled            = length(local.l1_map[k].image_build_arch_list) != 0
       image_has_default              = var.ecr_data_map != null && local.l1_map[k].image_ecr_repo_key != null && local.l1_map[k].image_tag_base != null
       path_env_suffix                = local.l1_map[k].path_include_env ? "_${var.std_map.env}" : ""
       rule_condition_map = merge(v.rule_condition_map == null ? var.rule_condition_map_default : v.rule_condition_map, {

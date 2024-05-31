@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.46.0
+
+### General
+
+* Add image arch list to ECS app
+
 ## 0.45.0
 
 ### General

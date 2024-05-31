@@ -116,7 +116,7 @@ variable "app_map" {
     elb_key                               = optional(string)
     health_check_http_path                = optional(string)
     iam_role_arn_execution                = optional(string)
-    image_build_enabled                   = optional(bool)
+    image_build_arch_list                 = optional(list(string))
     image_ecr_repo_key                    = optional(string)
     image_environment_key_arch            = optional(string)
     image_environment_key_tag             = optional(string)
@@ -170,11 +170,6 @@ variable "app_map" {
   }))
 }
 
-variable "app_image_build_enabled_default" {
-  type    = bool
-  default = true
-}
-
 variable "app_path_include_env_default" {
   type    = bool
   default = true
@@ -188,6 +183,14 @@ variable "app_path_repo_root_to_spec_directory_default" {
 variable "app_path_terraform_app_to_repo_root_default" {
   type    = string
   default = null
+}
+
+variable "build_image_build_arch_list_default" {
+  type = list(string)
+  default = [
+    "amd",
+    "arm",
+  ]
 }
 
 variable "build_image_ecr_repo_key_default" {
@@ -793,7 +796,7 @@ variable "rule_priority_default" {
   default     = null
   description = "defaults to order in the list"
   validation {
-    condition     = var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
+    condition     = var.rule_priority_default == null ? true : var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
     error_message = "Invalid action order"
   }
 }
