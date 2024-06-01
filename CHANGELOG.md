@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.47.1
+
+### General
+
+* Namespace ELB log databases
+
 ## 0.47.0
 
 ### New modules

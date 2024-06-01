@@ -22,7 +22,7 @@ locals {
       bucket_name  = v.log_db_bucket
       database_key = k
       query        = <<-EOT
-      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_simple, "-", "_")}_access_logs (
+      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_effective, "-", "_")}_access_logs (
         type string,
         time string,
         elb string,
@@ -86,7 +86,7 @@ locals {
       bucket_name  = v.log_db_bucket
       database_key = k
       query        = <<-EOT
-      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_simple, "-", "_")}_connection_logs (
+      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_effective, "-", "_")}_connection_logs (
         time string,
         client_ip string,
         client_port int,
