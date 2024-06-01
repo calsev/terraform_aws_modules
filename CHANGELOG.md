@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.47.0
+
+### New modules
+
+* Athena database
+* Athena named query
+
+### General
+
+* Add Athena database for ELB
+
 ## 0.46.0
 
 ### General

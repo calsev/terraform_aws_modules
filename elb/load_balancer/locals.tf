@@ -17,6 +17,112 @@ module "vpc_map" {
 }
 
 locals {
+  create_db_access_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      bucket_name  = v.log_db_bucket
+      database_key = k
+      query        = <<-EOT
+      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_simple, "-", "_")}_access_logs (
+        type string,
+        time string,
+        elb string,
+        client_ip string,
+        client_port int,
+        target_ip string,
+        target_port int,
+        request_processing_time double,
+        target_processing_time double,
+        response_processing_time double,
+        elb_status_code int,
+        target_status_code string,
+        received_bytes bigint,
+        sent_bytes bigint,
+        request_verb string,
+        request_url string,
+        request_proto string,
+        user_agent string,
+        ssl_cipher string,
+        ssl_protocol string,
+        target_group_arn string,
+        trace_id string,
+        domain_name string,
+        chosen_cert_arn string,
+        matched_rule_priority string,
+        request_creation_time string,
+        actions_executed string,
+        redirect_url string,
+        lambda_error_reason string,
+        target_port_list string,
+        target_status_code_list string,
+        classification string,
+        classification_reason string,
+        traceability_id string
+      )
+      PARTITIONED BY
+      (
+        day STRING
+      )
+      ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
+      WITH SERDEPROPERTIES (
+        'serialization.format' = '1',
+        'input.regex' = '([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*):([0-9]*) ([^ ]*)[:-]([0-9]*) ([-.0-9]*) ([-.0-9]*) ([-.0-9]*) (|[-0-9]*) (-|[-0-9]*) ([-0-9]*) ([-0-9]*) \"([^ ]*) (.*) (- |[^ ]*)\" \"([^\"]*)\" ([A-Z0-9-_]+) ([A-Za-z0-9.-]*) ([^ ]*) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" ([-.0-9]*) ([^ ]*) \"([^\"]*)\" \"([^\"]*)\" \"([^ ]*)\" \"([^\s]+?)\" \"([^\s]+)\" \"([^ ]*)\" \"([^ ]*)\" ?([^ ]*)?( .*)?'
+      )
+      LOCATION 's3://${v.log_db_bucket}/${v.log_prefix_access}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/'
+      TBLPROPERTIES
+      (
+        "projection.enabled" = "true",
+        "projection.day.type" = "date",
+        "projection.day.range" = "2022/01/01,NOW",
+        "projection.day.format" = "yyyy/MM/dd",
+        "projection.day.interval" = "1",
+        "projection.day.interval.unit" = "DAYS",
+        "storage.location.template" = "s3://${v.log_db_bucket}/${v.log_prefix_access}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/$${day}"
+      )
+      EOT
+    }) if v.log_db_enabled
+  }
+  create_db_connection_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      bucket_name  = v.log_db_bucket
+      database_key = k
+      query        = <<-EOT
+      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_simple, "-", "_")}_connection_logs (
+        time string,
+        client_ip string,
+        client_port int,
+        listener_port int,
+        tls_protocol string,
+        tls_cipher string,
+        tls_handshake_latency double,
+        leaf_client_cert_subject string,
+        leaf_client_cert_validity string,
+        leaf_client_cert_serial_number string,
+        tls_verify_status string,
+        traceability_id string
+      )
+      PARTITIONED BY
+      (
+        day STRING
+      )
+      ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
+      WITH SERDEPROPERTIES (
+        'serialization.format' = '1',
+        'input.regex' = '([^ ]*) ([^ ]*) ([0-9]*) ([0-9]*) ([A-Za-z0-9.-]*) ([^ ]*) ([-.0-9]*) \"([^\"]*)\" ([^ ]*) ([^ ]*) ([^ ]*) ?([^ ]*)?( .*)?'
+      )
+      LOCATION 's3://${v.log_db_bucket}/${v.log_prefix_connection}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/'
+      TBLPROPERTIES
+      (
+        "projection.enabled" = "true",
+        "projection.day.type" = "date",
+        "projection.day.range" = "2023/01/01,NOW",
+        "projection.day.format" = "yyyy/MM/dd",
+        "projection.day.interval" = "1",
+        "projection.day.interval.unit" = "DAYS",
+        "storage.location.template" = "s3://${v.log_db_bucket}/${v.log_prefix_connection}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/$${day}"
+      )
+      EOT
+    }) if v.log_db_enabled
+  }
   create_listener_1_list = flatten([
     for k, v in local.lx_map : [
       for k_port, v_port in v.port_to_protocol_to_listener_map : [
@@ -50,8 +156,6 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
-      access_log_bucket                           = v.access_log_bucket == null ? var.elb_access_log_bucket_default : v.access_log_bucket
-      connection_log_enabled                      = v.connection_log_enabled == null ? var.elb_connection_log_enabled_default : v.connection_log_enabled
       desync_mitigation_mode                      = v.desync_mitigation_mode == null ? var.elb_desync_mitigation_mode_default : v.desync_mitigation_mode
       drop_invalid_header_fields                  = v.drop_invalid_header_fields == null ? var.elb_drop_invalid_header_fields_default : v.drop_invalid_header_fields
       enable_cross_zone_load_balancing            = v.enable_cross_zone_load_balancing == null ? var.elb_enable_cross_zone_load_balancing_default : v.enable_cross_zone_load_balancing
@@ -63,17 +167,23 @@ locals {
       idle_connection_timeout_seconds             = v.idle_connection_timeout_seconds == null ? var.elb_idle_connection_timeout_seconds_default : v.idle_connection_timeout_seconds
       is_internal                                 = v.is_internal == null ? var.elb_is_internal_default : v.is_internal
       load_balancer_type                          = v.load_balancer_type == null ? var.elb_load_balancer_type_default : v.load_balancer_type
+      log_access_bucket                           = v.log_access_bucket == null ? var.elb_log_access_bucket_default : v.log_access_bucket
+      log_connection_enabled                      = v.log_connection_enabled == null ? var.elb_log_connection_enabled_default : v.log_connection_enabled
+      log_db_enabled                              = v.log_db_enabled == null ? var.elb_log_db_enabled_default : v.log_db_enabled
       preserve_host_header                        = v.preserve_host_header == null ? var.elb_preserve_host_header_default : v.preserve_host_header
       xff_header_processing_mode                  = v.xff_header_processing_mode == null ? var.elb_xff_header_processing_mode_default : v.xff_header_processing_mode
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      access_log_enabled                                           = v.access_log_enabled == null ? var.elb_access_log_enabled_default == null ? local.l1_map[k].load_balancer_type == "application" : var.elb_access_log_enabled_default : v.access_log_enabled
-      connection_log_bucket                                        = v.connection_log_bucket == null ? var.elb_connection_log_bucket_default == null ? local.l1_map[k].access_log_bucket : var.elb_connection_log_bucket_default : v.connection_log_bucket
       dns_record_client_routing_policy                             = local.l1_map[k].load_balancer_type == "network" ? v.dns_record_client_routing_policy == null ? var.elb_dns_record_client_routing_policy_default : v.dns_record_client_routing_policy : null
       enable_dualstack_networking                                  = v.enable_dualstack_networking == null ? var.elb_enable_dualstack_networking_default == null ? local.l1_map[k].load_balancer_type == "application" : var.elb_enable_dualstack_networking_default : v.enable_dualstack_networking
       enforce_security_group_inbound_rules_on_private_link_traffic = local.l1_map[k].load_balancer_type == "network" ? v.enforce_security_group_inbound_rules_on_private_link_traffic == null ? var.elb_enforce_security_group_inbound_rules_on_private_link_traffic_default : v.enforce_security_group_inbound_rules_on_private_link_traffic : null
+      log_access_enabled                                           = v.log_access_enabled == null ? var.elb_log_access_enabled_default == null ? local.l1_map[k].load_balancer_type == "application" : var.elb_log_access_enabled_default : v.log_access_enabled
+      log_connection_bucket                                        = v.log_connection_bucket == null ? var.elb_log_connection_bucket_default == null ? local.l1_map[k].log_access_bucket : var.elb_log_connection_bucket_default : v.log_connection_bucket
+      log_db_bucket                                                = v.log_db_bucket == null ? var.elb_log_db_bucket_default == null ? local.l1_map[k].log_access_bucket : var.elb_log_db_bucket_default : v.log_db_bucket
+      log_prefix_access                                            = "elb-${local.l1_map[k].name_effective}-access"
+      log_prefix_connection                                        = "elb-${local.l1_map[k].name_effective}-connection"
       port_to_protocol_to_listener_map                             = v.port_to_protocol_to_listener_map == null ? var.elb_type_to_port_to_protocol_to_listener_map_default[local.l1_map[k].load_balancer_type] : v.port_to_protocol_to_listener_map
       subnet_map = {
         for k_az, subnet_id in local.l1_map[k].vpc_subnet_id_map : k_az => {
@@ -92,7 +202,11 @@ locals {
       },
       local.elb_data_map_emulated[k],
       {
-        elb_arn_suffix = aws_lb.this_lb[k].arn_suffix
+        elb_arn_suffix             = aws_lb.this_lb[k].arn_suffix
+        log_access_db              = v.log_db_enabled ? module.log_access_db.data[k] : null
+        log_access_table_query     = v.log_db_enabled ? module.log_access_table_query.data[k] : null
+        log_connection_db          = v.log_db_enabled ? module.log_connection_db.data[k] : null
+        log_connection_table_query = v.log_db_enabled ? module.log_connection_table_query.data[k] : null
         port_to_protocol_to_listener_map = {
           for k_port, v_port in v.port_to_protocol_to_listener_map : k_port => {
             for k_proto, v_proto in v_port : k_proto => merge(v_proto, module.elb_listener.data["${k}_${k_port}_${k_proto}"])
