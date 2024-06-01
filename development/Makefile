@@ -97,6 +97,9 @@ tf-lint: tflint-install
 	cd ../app/ecs_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/web_static && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../athena && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../athena/database && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../athena/named_query && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/compute && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/job && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

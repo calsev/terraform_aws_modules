@@ -5,7 +5,7 @@ locals {
   has_custom_policy      = length(local.sid_map) != 0
   has_empty_policy       = !var.allow_access_point && !var.allow_service_logging && !local.has_custom_policy
   logs_arn_prefix        = "arn:${var.std_map.iam_partition}:logs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:*"
-  log_object_prefix      = "${local.bucket_arn}/AWSLogs/${var.std_map.aws_account_id}/*"
+  log_object_prefix      = "${local.bucket_arn}/*" # AWSLogs/${var.std_map.aws_account_id}/* prevents prefixes
   service_name           = "s3"
   sid_1_list_single_var = [
     for k_sid, v_sid in var.sid_map : merge(v_sid, {

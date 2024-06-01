@@ -1,19 +1,19 @@
 resource "aws_lb" "this_lb" {
   for_each = local.lx_map
   dynamic "access_logs" {
-    for_each = each.value.access_log_bucket == null ? {} : { this = {} }
+    for_each = each.value.log_access_bucket == null ? {} : { this = {} }
     content {
-      bucket  = each.value.access_log_bucket
-      enabled = each.value.access_log_enabled
-      prefix  = null # Objects are already fully prefixed and this complicates S3 policy
+      bucket  = each.value.log_access_bucket
+      enabled = each.value.log_access_enabled
+      prefix  = each.value.log_prefix_access
     }
   }
   dynamic "connection_logs" {
-    for_each = each.value.connection_log_bucket == null ? {} : { this = {} }
+    for_each = each.value.log_connection_bucket == null ? {} : { this = {} }
     content {
-      bucket  = each.value.connection_log_bucket
-      enabled = each.value.connection_log_enabled
-      prefix  = null # Objects are already fully prefixed and this complicates S3 policy
+      bucket  = each.value.log_connection_bucket
+      enabled = each.value.log_connection_enabled
+      prefix  = each.value.log_prefix_connection
     }
   }
   customer_owned_ipv4_pool                                     = null
@@ -56,4 +56,34 @@ module "elb_listener" {
   listener_dns_from_zone_key_default = var.elb_dns_from_zone_key_default
   listener_map                       = local.create_listener_x_map
   std_map                            = var.std_map
+}
+
+module "log_access_db" {
+  source              = "../../athena/database"
+  db_map              = local.create_db_access_map
+  name_append_default = "elb_access"
+  std_map             = var.std_map
+}
+
+module "log_access_table_query" {
+  source              = "../../athena/named_query"
+  athena_database_map = module.log_access_db.data
+  name_append_default = "elb_access"
+  query_map           = local.create_db_access_map
+  std_map             = var.std_map
+}
+
+module "log_connection_db" {
+  source              = "../../athena/database"
+  db_map              = local.create_db_connection_map
+  name_append_default = "elb_connection"
+  std_map             = var.std_map
+}
+
+module "log_connection_table_query" {
+  source              = "../../athena/named_query"
+  athena_database_map = module.log_connection_db.data
+  name_append_default = "elb_connection"
+  query_map           = local.create_db_connection_map
+  std_map             = var.std_map
 }

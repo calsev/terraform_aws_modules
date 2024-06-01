@@ -12,11 +12,7 @@ variable "dns_data" {
 
 variable "elb_map" {
   type = map(object({
-    access_log_bucket                                            = optional(string)
-    access_log_enabled                                           = optional(bool)
     acm_certificate_key                                          = optional(string) # Will be injected into HTTPS listener
-    connection_log_bucket                                        = optional(string)
-    connection_log_enabled                                       = optional(bool)
     desync_mitigation_mode                                       = optional(string)
     dns_from_zone_key                                            = optional(string)
     dns_record_client_routing_policy                             = optional(string)
@@ -32,6 +28,12 @@ variable "elb_map" {
     idle_connection_timeout_seconds                              = optional(string)
     is_internal                                                  = optional(bool)
     load_balancer_type                                           = optional(string)
+    log_access_bucket                                            = optional(string)
+    log_access_enabled                                           = optional(bool)
+    log_connection_bucket                                        = optional(string)
+    log_connection_enabled                                       = optional(bool)
+    log_db_bucket                                                = optional(string)
+    log_db_enabled                                               = optional(bool)
     name_include_app_fields                                      = optional(bool)
     name_infix                                                   = optional(bool)
     preserve_host_header                                         = optional(bool)
@@ -57,29 +59,6 @@ variable "elb_map" {
     vpc_segment_key             = optional(string)
     xff_header_processing_mode  = optional(string)
   }))
-}
-
-variable "elb_access_log_bucket_default" {
-  type    = string
-  default = null
-}
-
-variable "elb_access_log_enabled_default" {
-  type        = bool
-  default     = null
-  description = "Ignored unless a bucket is specified. Defaults to true for ALB and false for NLB. NLB requires a policy for both the bucket and the customer-managed kms key if encrypted. See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements"
-}
-
-variable "elb_connection_log_bucket_default" {
-  type        = string
-  default     = null
-  description = "Defaults to access log bucket"
-}
-
-variable "elb_connection_log_enabled_default" {
-  type        = bool
-  default     = true
-  description = "Ignored unless a bucket is specified"
 }
 
 variable "elb_desync_mitigation_mode_default" {
@@ -165,6 +144,41 @@ variable "elb_load_balancer_type_default" {
     condition     = contains(["application", "gateway", "network"], var.elb_load_balancer_type_default)
     error_message = "Invalid load balancer type"
   }
+}
+
+variable "elb_log_access_bucket_default" {
+  type    = string
+  default = null
+}
+
+variable "elb_log_access_enabled_default" {
+  type        = bool
+  default     = null
+  description = "Ignored unless a bucket is specified. Defaults to true for ALB and false for NLB. NLB requires a policy for both the bucket and the customer-managed kms key if encrypted. See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements"
+}
+
+variable "elb_log_connection_bucket_default" {
+  type        = string
+  default     = null
+  description = "Defaults to access log bucket"
+}
+
+variable "elb_log_connection_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless a bucket is specified"
+}
+
+variable "elb_log_db_bucket_default" {
+  type        = string
+  default     = null
+  description = "Defaults to access log bucket"
+}
+
+variable "elb_log_db_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless a bucket is specified"
 }
 
 variable "elb_name_include_app_fields_default" {
@@ -286,6 +300,7 @@ variable "elb_enforce_security_group_inbound_rules_on_private_link_traffic_defau
 
 variable "std_map" {
   type = object({
+    aws_account_id       = string
     aws_region_name      = string
     name_replace_regex   = string
     resource_name_prefix = string
