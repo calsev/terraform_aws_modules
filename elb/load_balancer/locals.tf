@@ -21,7 +21,8 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.log_db_bucket
       database_key = k
-      query        = <<-EOT
+      # https://docs.aws.amazon.com/athena/latest/ug/application-load-balancer-logs.html
+      query = <<-EOT
       CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_effective, "-", "_")}_access_logs (
         type string,
         time string,

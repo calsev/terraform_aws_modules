@@ -46,7 +46,7 @@ module "vpc_stack" {
 module "load_balancer" {
   source                        = "path/to/modules/elb/load_balancer"
   dns_data                      = data.terraform_remote_state.dns.outputs.data
-  elb_access_log_bucket_default = "example-log"
+  elb_log_access_bucket_default = "example-log"
   elb_dns_from_zone_key_default = "example.com"
   elb_map = {
     main = {

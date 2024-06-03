@@ -75,25 +75,26 @@ variable "service_map" {
     desired_count                                  = optional(number)
     ecs_cluster_key                                = optional(string)
     ecs_task_definition_key                        = optional(string)
-    elb_container_name                             = optional(string)
-    elb_container_port                             = optional(number)
     elb_health_check_grace_period_seconds          = optional(number)
-    elb_target_group_key_list                      = optional(list(string))
-    execute_command_enabled                        = optional(bool)
-    force_new_deployment                           = optional(bool)
-    iam_role_arn_elb_calls                         = optional(string)
-    managed_tags_enabled                           = optional(bool)
-    propagate_tag_source                           = optional(string)
-    scheduling_strategy                            = optional(string)
-    sd_container_name                              = optional(string)
-    sd_container_port                              = optional(number)
-    sd_hostname                                    = optional(string)
-    sd_namespace_key                               = optional(string)
-    sd_port                                        = optional(number)
-    vpc_az_key_list                                = optional(list(string))
-    vpc_key                                        = optional(string)
-    vpc_security_group_key_list                    = optional(list(string))
-    vpc_segment_key                                = optional(string)
+    elb_target_map = optional(map(object({
+      container_name = optional(string)
+      container_port = optional(number)
+    })))
+    execute_command_enabled     = optional(bool)
+    force_new_deployment        = optional(bool)
+    iam_role_arn_elb_calls      = optional(string)
+    managed_tags_enabled        = optional(bool)
+    propagate_tag_source        = optional(string)
+    scheduling_strategy         = optional(string)
+    sd_container_name           = optional(string)
+    sd_container_port           = optional(number)
+    sd_hostname                 = optional(string)
+    sd_namespace_key            = optional(string)
+    sd_port                     = optional(number)
+    vpc_az_key_list             = optional(list(string))
+    vpc_key                     = optional(string)
+    vpc_security_group_key_list = optional(list(string))
+    vpc_segment_key             = optional(string)
   }))
 }
 
@@ -154,26 +155,30 @@ variable "service_ecs_task_definition_key_default" {
   description = "Defaults to service key"
 }
 
-variable "service_elb_container_name_default" {
-  type        = string
-  default     = null
-  description = "Every service attached to an ELB must provide an ELB container name or a container map with a single container"
-}
-
-variable "service_elb_container_port_default" {
-  type    = number
-  default = 80
-}
-
 variable "service_elb_health_check_grace_period_seconds_default" {
   type        = number
   default     = 300
   description = "Ignored unless attached to at least one target group"
 }
 
-variable "service_elb_target_group_key_list_default" {
-  type    = list(string)
-  default = []
+variable "service_elb_target_map_default" {
+  type = map(object({
+    container_name = optional(string)
+    container_port = optional(number)
+  }))
+  default     = {}
+  description = "Map of target group key to container port"
+}
+
+variable "service_elb_target_container_name_default" {
+  type        = string
+  default     = null
+  description = "Every service attached to an ELB must provide an ELB container name or a container map with a single container"
+}
+
+variable "service_elb_target_container_port_default" {
+  type    = number
+  default = 80
 }
 
 variable "service_execute_command_enabled_default" {

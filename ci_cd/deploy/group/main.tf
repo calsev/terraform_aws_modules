@@ -85,7 +85,7 @@ resource "aws_codedeploy_deployment_group" "this_group" {
           dynamic "test_traffic_route" {
             for_each = each.value.deployment_environment_map["green"].elb_listener_arn == null ? {} : { this = {} }
             content {
-              listener_arns = [each.value.deployment_environment_map["green"].elb_listener_arn] # Must be one
+              listener_arns = [each.value.deployment_environment_map["green"].elb_listener_arn] # Can be more than one?
             }
           }
         }

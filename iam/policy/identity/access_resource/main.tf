@@ -14,7 +14,7 @@ module "this_policy" {
   for_each        = var.name == null ? {} : local.sid_map
   source          = "../../../../iam/policy/identity/base"
   iam_policy_json = data.aws_iam_policy_document.this_policy_doc[each.key].json
-  name            = "${var.name}-${each.key}"
+  name            = "${var.name}_${each.key}"
   name_infix      = var.name_infix
   name_prefix     = var.name_prefix
   std_map         = var.std_map

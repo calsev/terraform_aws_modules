@@ -310,6 +310,10 @@ variable "task_resource_memory_gib_default" {
   type        = number
   default     = null
   description = "Required for Fargate, for EC2 defaults to instance_type_memory_gib - task_memory_host_gib_default"
+  validation {
+    condition     = var.task_resource_memory_gib_default == null ? true : var.task_resource_memory_gib_default >= 0.5
+    error_message = "Invalid memory requirement: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size"
+  }
 }
 
 variable "task_resource_memory_host_gib_default" {
@@ -322,6 +326,10 @@ variable "task_resource_num_vcpu_default" {
   type        = number
   default     = null
   description = "Required for Fargate, for EC2 defaults to number of CPUs for the instance x 1024"
+  validation {
+    condition     = var.task_resource_num_vcpu_default == null ? true : var.task_resource_num_vcpu_default >= 0.25
+    error_message = "Invalid vCPU requirement: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size"
+  }
 }
 
 variable "task_schedule_expression_default" {

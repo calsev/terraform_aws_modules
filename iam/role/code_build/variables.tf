@@ -1,7 +1,9 @@
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
-      iam_policy_arn_map = map(string)
+      policy = object({
+        iam_policy_arn_map = map(string)
+      })
     })
     code_star = object({
       connection = map(object({
@@ -82,7 +84,7 @@ variable "log_public_access" {
   description = "If true, this role will add permissions for the public log"
 }
 
-variable "log_bucket_name" {
+variable "log_bucket_key" {
   type        = string
   default     = null
   description = "If provided, write permissions for the bucket will be added"
@@ -113,6 +115,16 @@ variable "role_policy_managed_name_map_default" {
 variable "role_path" {
   type    = string
   default = null
+}
+
+variable "s3_data_map" {
+  type = map(object({
+    policy = object({
+      iam_policy_arn_map = map(string)
+    })
+  }))
+  default     = null
+  description = "Must be provided if a log bucket key is specified"
 }
 
 variable "std_map" {

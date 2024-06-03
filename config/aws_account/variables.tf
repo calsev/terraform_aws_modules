@@ -1,4 +1,12 @@
-variable "log_bucket_name" {
+variable "s3_data_map" {
+  type = map(object({
+    policy = object({
+      iam_policy_arn_map = map(string)
+    })
+  }))
+}
+
+variable "log_bucket_key" {
   type = string
 }
 

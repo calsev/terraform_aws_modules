@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.48.0
+
+### New modules
+
+* Access resource policy for S3 bucket
+
+### General
+
+* Refactor ELB target map for ECS service
+* ELB listener forward rule default to weight of 1
+* Remove conditions for log resource policies for event account
+* Improve name handling for base identity policy
+* Add embedded policy for S3 bucket
+
 ## 0.47.1
 
 ### General

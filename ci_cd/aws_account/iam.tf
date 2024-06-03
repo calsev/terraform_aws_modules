@@ -1,17 +1,3 @@
-module "bucket_policy" {
-  for_each    = local.bucket_policy_map
-  source      = "../../iam/policy/identity/s3/bucket"
-  name        = "build_bucket_${each.key}"
-  name_prefix = var.policy_name_prefix
-  sid_map = {
-    Build = {
-      access           = each.key
-      bucket_name_list = [module.build_bucket.data[local.bucket_name].name_effective]
-    }
-  }
-  std_map = var.std_map
-}
-
 module "net_policy" {
   source  = "../../iam/policy/identity/code_build/net"
   name    = "vpc_net"
@@ -22,7 +8,7 @@ module "basic_build_role" {
   source = "../../iam/role/code_build"
   ci_cd_account_data = {
     # We emulate this here of course :)
-    bucket = local.bucket_data
+    bucket = module.build_bucket.data[local.bucket_name]
     code_star = {
       connection = {}
     }
@@ -50,7 +36,7 @@ module "code_deploy_ecs" {
   assume_role_service_list = ["codedeploy"]
   name                     = "codedeploy_ecs"
   role_policy_attach_arn_map_default = {
-    artifact_read_write = local.bucket_data.iam_policy_arn_map["read_write"]
+    artifact_read_write = module.build_bucket.data[local.bucket_name].policy.iam_policy_arn_map["read_write"]
   }
   role_policy_managed_name_map_default = {
     codedeploy_ec2 = "service-role/AWSCodeDeployRole"
@@ -64,7 +50,7 @@ module "code_deploy_lamba" {
   assume_role_service_list = ["codedeploy"]
   name                     = "codedeploy_lambda"
   role_policy_attach_arn_map_default = {
-    artifact_read_write = local.bucket_data.iam_policy_arn_map["read_write"]
+    artifact_read_write = module.build_bucket.data[local.bucket_name].policy.iam_policy_arn_map["read_write"]
   }
   role_policy_managed_name_map_default = {
     codedeploy_lambda = "service-role/AWSCodeDeployRoleForLambda"

@@ -110,33 +110,35 @@ variable "app_map" {
       transit_encryption_enabled    = optional(bool)
       transit_encryption_port       = optional(string)
     })))
-    elb_container_name                    = optional(string)
-    elb_container_port                    = optional(number)
     elb_health_check_grace_period_seconds = optional(number)
-    elb_key                               = optional(string)
-    health_check_http_path                = optional(string)
-    iam_role_arn_execution                = optional(string)
-    image_build_arch_list                 = optional(list(string))
-    image_ecr_repo_key                    = optional(string)
-    image_environment_key_arch            = optional(string)
-    image_environment_key_tag             = optional(string)
-    image_id                              = optional(string) # This is for the AMI
-    image_tag_base                        = optional(string)
-    instance_storage_gib                  = optional(number)
-    instance_type                         = optional(string)
-    key_pair_key                          = optional(string)
-    name_include_app_fields               = optional(bool)
-    name_infix                            = optional(bool)
-    path_include_env                      = optional(bool)
-    path_repo_root_to_spec_directory      = optional(string)
-    path_terraform_app_to_repo_root       = optional(string)
-    provider_instance_warmup_period_s     = optional(number)
-    resource_memory_gib                   = optional(number)
-    resource_num_vcpu                     = optional(string)
-    role_policy_attach_arn_map            = optional(map(string))
-    role_policy_create_json_map           = optional(map(string))
-    role_policy_inline_json_map           = optional(map(string))
-    role_policy_managed_name_map          = optional(map(string))
+    elb_target_map = optional(map(object({
+      container_name = optional(string)
+      container_port = optional(number)
+    })))
+    elb_key                           = optional(string)
+    health_check_http_path            = optional(string)
+    iam_role_arn_execution            = optional(string)
+    image_build_arch_list             = optional(list(string))
+    image_ecr_repo_key                = optional(string)
+    image_environment_key_arch        = optional(string)
+    image_environment_key_tag         = optional(string)
+    image_id                          = optional(string) # This is for the AMI
+    image_tag_base                    = optional(string)
+    instance_storage_gib              = optional(number)
+    instance_type                     = optional(string)
+    key_pair_key                      = optional(string)
+    name_include_app_fields           = optional(bool)
+    name_infix                        = optional(bool)
+    path_include_env                  = optional(bool)
+    path_repo_root_to_spec_directory  = optional(string)
+    path_terraform_app_to_repo_root   = optional(string)
+    provider_instance_warmup_period_s = optional(number)
+    resource_memory_gib               = optional(number)
+    resource_num_vcpu                 = optional(string)
+    role_policy_attach_arn_map        = optional(map(string))
+    role_policy_create_json_map       = optional(map(string))
+    role_policy_inline_json_map       = optional(map(string))
+    role_policy_managed_name_map      = optional(map(string))
     rule_condition_map = optional(map(object({
       host_header_pattern_list = optional(list(string))
       http_header_map = optional(map(object({
@@ -168,6 +170,16 @@ variable "app_map" {
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
   }))
+}
+
+variable "app_deployment_listen_port_prod_default" {
+  type    = number
+  default = 443
+}
+
+variable "app_deployment_listen_port_test_default" {
+  type    = number
+  default = 8443
 }
 
 variable "app_path_include_env_default" {
@@ -254,8 +266,10 @@ variable "build_vpc_access_default" {
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
-      iam_policy_arn_map = map(string)
-      name_effective     = string
+      name_effective = string
+      policy = object({
+        iam_policy_arn_map = map(string)
+      })
     })
     code_star = object({
       connection = map(object({
@@ -359,7 +373,7 @@ variable "deployment_blue_green_timeout_wait_minutes_default" {
 variable "deployment_style_use_blue_green_default" {
   type        = bool
   default     = true
-  description = "If true a target group and load balancer must be provided"
+  description = "If true a target group and load balancer must be provided. Ignored if a custom elb_target_map is provided."
 }
 
 variable "deployment_trigger_map_default" {
@@ -826,21 +840,30 @@ variable "service_desired_count_default" {
   description = "Ignored for DAEMON scheduling strategy"
 }
 
-variable "service_elb_container_name_default" {
+variable "service_elb_health_check_grace_period_seconds_default" {
+  type        = number
+  default     = 300
+  description = "Ignored unless attached to at least one target group"
+}
+
+variable "service_elb_target_map_default" {
+  type = map(object({
+    container_name = optional(string)
+    container_port = optional(number)
+  }))
+  default     = null
+  description = "Map of target group key to container port. Non-null value disables blue-green deployments."
+}
+
+variable "service_elb_target_container_name_default" {
   type        = string
   default     = null
   description = "Every service attached to an ELB must provide an ELB container name or a container map with a single container"
 }
 
-variable "service_elb_container_port_default" {
+variable "service_elb_target_container_port_default" {
   type    = number
   default = 80
-}
-
-variable "service_elb_health_check_grace_period_seconds_default" {
-  type        = number
-  default     = 300
-  description = "Ignored unless attached to at least one target group"
 }
 
 variable "std_map" {

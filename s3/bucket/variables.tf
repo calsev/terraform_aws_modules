@@ -24,7 +24,8 @@ variable "bucket_map" {
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     notification_enable_event_bridge  = optional(bool)
-    policy_create                     = optional(bool)
+    policy_identity_create            = optional(bool)
+    policy_resource_create            = optional(bool)
     requester_pays                    = optional(bool)
     sid_map = optional(map(object({
       access = string
@@ -165,7 +166,12 @@ variable "bucket_notification_enable_event_bridge_default" {
   default = false
 }
 
-variable "bucket_policy_create_default" {
+variable "bucket_policy_identity_create_default" {
+  type    = bool
+  default = true
+}
+
+variable "bucket_policy_resource_create_default" {
   type    = bool
   default = true
 }

@@ -9,7 +9,9 @@ variable "deploy_group_to_app" {
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
-      iam_policy_arn_map = map(string)
+      policy = object({
+        iam_policy_arn_map = map(string)
+      })
     })
     code_star = object({
       connection = map(object({

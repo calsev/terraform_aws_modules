@@ -56,12 +56,12 @@ variable "listener_is_listener_default" {
   description = "Listeners and rules are abstracted by the listener module. This flag indicates it is a listener."
 }
 
-variable "listener_name_include_app_fields_default" {
+variable "name_include_app_fields_default" {
   type    = bool
   default = true
 }
 
-variable "listener_name_infix_default" {
+variable "name_infix_default" {
   type    = bool
   default = true
 }

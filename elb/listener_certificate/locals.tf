@@ -1,7 +1,7 @@
 module "name_map" {
   source                          = "../../name_map"
-  name_include_app_fields_default = var.listener_name_include_app_fields_default
-  name_infix_default              = var.listener_name_infix_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
   std_map                         = var.std_map
 }
