@@ -27,8 +27,11 @@ locals {
   create_owner_map = {
     for k, v in local.lx_map : k => v if v.enforce_object_ownership
   }
-  create_policy_map = {
-    for k, v in local.lx_map : k => v if v.policy_create
+  create_policy_identity_map = {
+    for k, v in local.lx_map : k => v if v.policy_identity_create
+  }
+  create_policy_resource_map = {
+    for k, v in local.lx_map : k => v if v.policy_resource_create
   }
   create_web_map = {
     for k, v in local.lx_map : k => v if v.website_enabled
@@ -61,7 +64,8 @@ locals {
       log_target_bucket_name               = v.log_target_bucket_name == null ? var.bucket_log_target_bucket_name_default : v.log_target_bucket_name
       log_target_prefix                    = v.log_target_prefix == null ? var.bucket_log_target_prefix_default : v.log_target_prefix
       notification_enable_event_bridge     = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
-      policy_create                        = v.policy_create == null ? var.bucket_policy_create_default : v.policy_create
+      policy_identity_create               = v.policy_identity_create == null ? var.bucket_policy_identity_create_default : v.policy_identity_create
+      policy_resource_create               = v.policy_resource_create == null ? var.bucket_policy_resource_create_default : v.policy_resource_create
       requester_pays                       = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
       sid_map_l1                           = v.sid_map == null ? {} : v.sid_map
       versioning_enabled                   = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
@@ -108,9 +112,10 @@ locals {
       {
         arn                     = aws_s3_bucket.this_bucket[k].arn
         bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
-        bucket_policy_doc       = v.policy_create ? module.this_bucket_policy[k].iam_policy_doc : null
+        bucket_policy_doc       = v.policy_resource_create ? module.this_bucket_policy[k].iam_policy_doc : null
         bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
         dns_alias               = v.dns_enabled ? module.dns_alias.data[k] : null
+        policy                  = v.policy_identity_create ? module.identity_policy[k].data : null
       },
     )
   }

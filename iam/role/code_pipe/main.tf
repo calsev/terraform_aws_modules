@@ -23,7 +23,7 @@ module "this_role" {
     }
     source_read_write = {
       # Write is always required, but read can be required for e.g. CodeDeploy
-      policy = var.ci_cd_account_data.bucket.iam_policy_arn_map.read_write
+      policy = var.ci_cd_account_data.bucket.policy.iam_policy_arn_map.read_write
     }
   }
   embedded_role_policy_managed_name_map = {

@@ -1,16 +1,3 @@
-module "site_deploy" {
-  for_each = var.site_map
-  source   = "../../iam/policy/identity/s3/bucket"
-  sid_map = {
-    Artifact = {
-      access           = "write"
-      bucket_name_list = [each.value.origin_fqdn]
-    }
-  }
-  name    = "${each.key}_site_deploy"
-  std_map = var.std_map
-}
-
 module "cdn_invalidate" {
   for_each = var.site_map
   source   = "../../iam/policy/identity/cdn/distribution"
@@ -26,7 +13,7 @@ module "code_build_role" {
   name               = "${each.key}_deploy"
   role_policy_attach_arn_map_default = {
     cdn_invalidate = module.cdn_invalidate[each.key].data.iam_policy_arn_map.read_write
-    site_deploy    = module.site_deploy[each.key].data.iam_policy_arn
+    site_deploy    = module.cdn.data[each.key].bucket.policy.iam_policy_arn_map["write"]
   }
   std_map = var.std_map
 }

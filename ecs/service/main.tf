@@ -40,12 +40,12 @@ resource "aws_ecs_service" "this_service" {
     ]
   }
   dynamic "load_balancer" {
-    for_each = toset(each.value.elb_target_group_arn_list)
+    for_each = each.value.elb_target_map
     content {
       elb_name         = null # ELB classic
-      target_group_arn = load_balancer.key
-      container_name   = each.value.elb_container_name
-      container_port   = each.value.elb_container_port
+      target_group_arn = load_balancer.value.target_group_arn
+      container_name   = load_balancer.value.container_name
+      container_port   = load_balancer.value.container_port
     }
   }
   name = each.value.name_effective

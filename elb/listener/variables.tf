@@ -79,9 +79,9 @@ variable "listener_map" {
       auth_session_timeout_seconds                = optional(number)
     })))
     alpn_policy                                            = optional(string)
-    elb_key                                                = optional(string)
     dns_alias_enabled                                      = optional(bool)
     dns_from_zone_key                                      = optional(string)
+    elb_key                                                = optional(string)
     listen_port                                            = optional(number)
     listen_protocol                                        = optional(string)
     listen_ssl_policy                                      = optional(string)
@@ -197,7 +197,7 @@ variable "listener_action_forward_target_group_map_default" {
 
 variable "listener_action_forward_target_group_weight_default" {
   type    = number
-  default = null # Defaults to 100/length(target_group_map)
+  default = 1
 }
 
 variable "listener_action_order_default" {
@@ -406,12 +406,12 @@ variable "listener_mutual_authentication_trust_store_arn_default" {
   default = null
 }
 
-variable "listener_name_include_app_fields_default" {
+variable "name_include_app_fields_default" {
   type    = bool
   default = true
 }
 
-variable "listener_name_infix_default" {
+variable "name_infix_default" {
   type    = bool
   default = true
 }

@@ -1,7 +1,7 @@
 module "name_map" {
   source                          = "../../name_map"
-  name_include_app_fields_default = var.listener_name_include_app_fields_default
-  name_infix_default              = var.listener_name_infix_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
   std_map                         = var.std_map
 }
@@ -96,7 +96,7 @@ locals {
           action_forward_target_group_map = {
             for k_fwd, v_fwd in v_act.action_forward_target_group_map : k_fwd => merge(v_fwd, {
               target_group_arn    = var.elb_target_data_map[k_fwd].target_group_arn
-              target_group_weight = v_fwd.target_group_weight == null ? var.listener_action_forward_target_group_weight_default == null ? 100 / max(1, length(v_act.action_forward_target_group_map)) : var.listener_action_forward_target_group_weight_default : v_fwd.target_group_weight
+              target_group_weight = v_fwd.target_group_weight == null ? var.listener_action_forward_target_group_weight_default : v_fwd.target_group_weight
             })
           }
           action_redirect_port        = local.l1_map[k].action_map[k_act].action_redirect_port == null ? "#{port}" : local.l2_map[k].action_map[k_act].action_redirect_port

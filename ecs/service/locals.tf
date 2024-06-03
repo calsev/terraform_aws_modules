@@ -36,10 +36,8 @@ locals {
       deployment_minimum_healthy_percent             = v.deployment_minimum_healthy_percent == null ? var.service_deployment_minimum_healthy_percent_default : v.deployment_minimum_healthy_percent
       ecs_cluster_key                                = v.ecs_cluster_key == null ? var.service_ecs_cluster_key_default == null ? k : var.service_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_task_definition_key                        = v.ecs_task_definition_key == null ? var.service_ecs_task_definition_key_default == null ? k : var.service_ecs_task_definition_key_default : v.ecs_task_definition_key
-      elb_container_name                             = v.elb_container_name == null ? var.service_elb_container_name_default == null ? length(v.container_definition_map) == 1 ? keys(v.container_definition_map)[0] : null : var.service_elb_container_name_default : v.elb_container_name
-      elb_container_port                             = v.elb_container_port == null ? var.service_elb_container_port_default : v.elb_container_port
       elb_health_check_grace_period_seconds          = v.elb_health_check_grace_period_seconds == null ? var.service_elb_health_check_grace_period_seconds_default : v.elb_health_check_grace_period_seconds
-      elb_target_group_key_list                      = v.elb_target_group_key_list == null ? var.service_elb_target_group_key_list_default : v.elb_target_group_key_list
+      elb_target_map                                 = v.elb_target_map == null ? var.service_elb_target_map_default : v.elb_target_map
       execute_command_enabled                        = v.execute_command_enabled == null ? var.service_execute_command_enabled_default : v.execute_command_enabled
       force_new_deployment                           = v.force_new_deployment == null ? var.service_force_new_deployment_default : v.force_new_deployment
       iam_role_arn_elb_calls                         = v.iam_role_arn_elb_calls == null ? var.service_iam_role_arn_elb_calls_default : v.iam_role_arn_elb_calls
@@ -60,11 +58,15 @@ locals {
       desired_count_effective                                  = local.l1_map[k].scheduling_strategy == "DAEMON" ? null : local.l1_map[k].desired_count
       ecs_cluster_id                                           = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].ecs_cluster_id
       ecs_task_definition_arn                                  = var.ecs_task_definition_data_map[local.l1_map[k].ecs_task_definition_key].task_definition_arn_latest_rev
-      elb_target_group_arn_list = [
-        for key in local.l1_map[k].elb_target_group_key_list : var.elb_target_data_map[key].target_group_arn
-      ]
+      elb_target_map = {
+        for k_targ, v_targ in local.l1_map[k].elb_target_map : k_targ => merge(v_targ, {
+          container_name   = v_targ.container_name == null ? var.service_elb_target_container_name_default == null ? length(v.container_definition_map) == 1 ? keys(v.container_definition_map)[0] : null : var.service_elb_target_container_name_default : v_targ.container_name
+          container_port   = v_targ.container_port == null ? var.service_elb_target_container_port_default : v_targ.container_port
+          target_group_arn = var.elb_target_data_map[k_targ].target_group_arn
+        })
+      }
       force_new_deployment_effective = local.l1_map[k].deployment_controller_type == "ECS" ? local.l1_map[k].force_new_deployment : false
-      is_attached_to_elb             = length(local.l1_map[k].elb_target_group_key_list) != 0
+      is_attached_to_elb             = length(local.l1_map[k].elb_target_map) != 0
       network_mode                   = var.ecs_task_definition_data_map[local.l1_map[k].ecs_task_definition_key].network_mode
       placement_constraint_list = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].capability_type == "FARGATE" ? [] : [
         {

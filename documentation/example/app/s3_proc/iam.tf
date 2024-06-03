@@ -1,20 +1,9 @@
-module "source_bucket_policy" {
-  source = "path/to/modules/iam/policy/identity/s3/bucket"
-  sid_map = {
-    TriggerSource = {
-      access           = "read"
-      bucket_name_list = [module.s3.data[local.bucket_key].name_effective]
-    }
-  }
-  std_map = module.com_lib.std_map
-}
-
 module "job_role" {
   source                   = "path/to/modules/iam/role/base"
   assume_role_service_list = ["ecs-tasks"]
   name                     = "job"
-  role_policy_inline_json_map_default = {
-    read_source_object = jsonencode(module.source_bucket_policy.data.iam_policy_doc)
+  role_policy_attach_arn_map_default = {
+    read_source_object = module.s3.data[local.bucket_key].policy.iam_policy_arn_map["read"]
   }
   std_map = module.com_lib.std_map
 }

@@ -61,7 +61,6 @@ locals {
         })
         policy = {
           cdn_invalidate = module.cdn_invalidate[k].data
-          site_deploy    = module.site_deploy[k].data
         }
       }
     )

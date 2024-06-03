@@ -131,9 +131,10 @@ module "ecs_service" {
   elb_target_data_map                                   = module.elb_target.data
   service_deployment_controller_type_default            = "CODE_DEPLOY"
   service_desired_count_default                         = var.service_desired_count_default
-  service_elb_container_name_default                    = var.service_elb_container_name_default
-  service_elb_container_port_default                    = var.service_elb_container_port_default
   service_elb_health_check_grace_period_seconds_default = var.service_elb_health_check_grace_period_seconds_default
+  service_elb_target_map_default                        = var.service_elb_target_map_default
+  service_elb_target_container_name_default             = var.service_elb_target_container_name_default
+  service_elb_target_container_port_default             = var.service_elb_target_container_port_default
   service_map                                           = local.create_service_map
   std_map                                               = var.std_map
   vpc_az_key_list_default                               = var.vpc_az_key_list_default
