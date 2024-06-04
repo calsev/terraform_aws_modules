@@ -5,7 +5,6 @@ variable "alert_enabled_default" {
 
 variable "app_map" {
   type = map(object({
-    acm_certificate_key              = optional(string)
     app_action_order_default_forward = optional(number)
     action_map = optional(map(object({
       action_fixed_response_content_type         = optional(string)
@@ -112,8 +111,23 @@ variable "app_map" {
     })))
     elb_health_check_grace_period_seconds = optional(number)
     elb_target_map = optional(map(object({
-      container_name = optional(string)
-      container_port = optional(number)
+      acm_certificate_key = optional(string)
+      container_name      = optional(string)
+      container_port      = optional(number)
+      rule_condition_map = optional(map(object({
+        host_header_pattern_list = optional(list(string))
+        http_header_map = optional(map(object({
+          pattern_list = list(string)
+        })))
+        http_request_method_list = optional(list(string))
+        path_pattern_list        = optional(list(string))
+        query_string_map = optional(map(object({
+          key_pattern   = optional(string)
+          value_pattern = string
+        })))
+        source_ip_list = optional(list(string))
+      })))
+      rule_priority = optional(number)
     })))
     elb_key                           = optional(string)
     health_check_http_path            = optional(string)
@@ -139,28 +153,14 @@ variable "app_map" {
     role_policy_create_json_map       = optional(map(string))
     role_policy_inline_json_map       = optional(map(string))
     role_policy_managed_name_map      = optional(map(string))
-    rule_condition_map = optional(map(object({
-      host_header_pattern_list = optional(list(string))
-      http_header_map = optional(map(object({
-        pattern_list = list(string)
-      })))
-      http_request_method_list = optional(list(string))
-      path_pattern_list        = optional(list(string))
-      query_string_map = optional(map(object({
-        key_pattern   = optional(string)
-        value_pattern = string
-      })))
-      source_ip_list = optional(list(string))
-    })))
-    rule_priority                   = optional(number)
-    sticky_cookie_enabled           = optional(bool)
-    source_branch                   = optional(string)
-    source_build_spec_image         = optional(string)
-    source_build_spec_manifest      = optional(string)
-    source_code_star_connection_key = optional(string)
-    source_detect_changes           = optional(bool)
-    source_repository_id            = optional(string)
-    target_protocol_http_version    = optional(string)
+    sticky_cookie_enabled             = optional(bool)
+    source_branch                     = optional(string)
+    source_build_spec_image           = optional(string)
+    source_build_spec_manifest        = optional(string)
+    source_code_star_connection_key   = optional(string)
+    source_detect_changes             = optional(bool)
+    source_repository_id              = optional(string)
+    target_protocol_http_version      = optional(string)
     trigger_map = optional(map(object({
       event_list    = optional(list(string))
       sns_topic_arn = optional(string)
@@ -373,7 +373,7 @@ variable "deployment_blue_green_timeout_wait_minutes_default" {
 variable "deployment_style_use_blue_green_default" {
   type        = bool
   default     = true
-  description = "If true a target group and load balancer must be provided. Ignored if a custom elb_target_map is provided."
+  description = "If true a target group and load balancer must be provided. Ignored if a custom elb_target_map is provided with more than one target: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/register-multiple-targetgroups.html"
 }
 
 variable "deployment_trigger_map_default" {
@@ -848,11 +848,26 @@ variable "service_elb_health_check_grace_period_seconds_default" {
 
 variable "service_elb_target_map_default" {
   type = map(object({
-    container_name = optional(string)
-    container_port = optional(number)
+    acm_certificate_key = optional(string)
+    container_name      = optional(string)
+    container_port      = optional(number)
+    rule_condition_map = optional(map(object({
+      host_header_pattern_list = optional(list(string))
+      http_header_map = optional(map(object({
+        pattern_list = list(string)
+      })))
+      http_request_method_list = optional(list(string))
+      path_pattern_list        = optional(list(string))
+      query_string_map = optional(map(object({
+        key_pattern   = optional(string)
+        value_pattern = string
+      })))
+      source_ip_list = optional(list(string))
+    })))
+    rule_priority = optional(number)
   }))
   default     = null
-  description = "Map of target group key to container port. Non-null value disables blue-green deployments."
+  description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."
 }
 
 variable "service_elb_target_container_name_default" {

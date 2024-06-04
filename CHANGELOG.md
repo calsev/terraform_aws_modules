@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.49.0
+
+### General
+
+* Refactor certificate and rules for ECS app into ELB target map
+
+### Bugfix
+
+* Fix target key for ECS app with custom ELB target and blue-green deployment
+
 ## 0.48.0
 
 ### New modules
