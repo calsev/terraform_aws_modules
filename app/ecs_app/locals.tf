@@ -22,7 +22,7 @@ locals {
           environment_type    = "cpu-arm-amazon-small"
           iam_role_arn        = module.code_build_role[k].data.iam_role_arn
           input_artifact_list = [v.build_artifact_name]
-          source_build_spec   = v.path_repo_root_to_deploy_spec # TODO: Non blue-green?
+          source_build_spec   = v.path_repo_root_to_deploy_spec
           source_type         = "CODEPIPELINE"
         }
       }
@@ -73,6 +73,12 @@ locals {
       )
     })
   }
+  create_ci_cd_deploy_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      ecs_cluster_name = local.ecs_cluster_data[k].name_effective
+      ecs_service_name = module.ecs_service.data[k].name_effective
+    }) if !v.deployment_uses_codedeploy
+  }
   create_cluster_map = {
     for k, v in local.lx_map : k => v if !var.use_fargate
   }
@@ -83,7 +89,7 @@ locals {
           cluster_key = k
         }
       }
-    })
+    }) if v.deployment_uses_codedeploy
   }
   create_fargate_map = {
     for k, v in local.lx_map : k => v if var.use_fargate
@@ -104,7 +110,7 @@ locals {
                 ]
                 LoadBalancerInfo = {
                   # Point to initial environment and toggle externally
-                  # This file is only created for blue-green deployments and "${k}_${k_lt}_${blue}" is first
+                  # This file is only created for blue-green deployments, those always have one ELB target, and env "${k}_${blue}" is first
                   ContainerName = module.ecs_service.data[k].elb_target_map[keys(v.listen_target_map)[0]].container_name
                   ContainerPort = module.ecs_service.data[k].elb_target_map[keys(v.listen_target_map)[0]].container_port
                 }
@@ -116,7 +122,7 @@ locals {
         ]
         version = "0.0"
       }
-    }) if v.deployment_style_use_blue_green
+    })
   }
   create_file_app_spec_x_map = {
     for k, v in local.create_file_app_spec_1_map : k => merge(v, {
@@ -130,24 +136,27 @@ locals {
           revisionType = "AppSpecContent"
         }
       }
-    })
+    }) if v.deployment_uses_codedeploy
   }
   create_file_deploy_script_map = {
     for k, v in local.create_file_app_spec_1_map : k => merge(v, {
-      deploy_script = templatefile("${path.module}/deploy_script.sh", {
+      deploy_script = v.deployment_uses_codedeploy ? templatefile("${path.module}/deploy_script_codedeploy.sh", {
         codedeploy_application_name = module.codedeploy_app.data[k].name_effective
         deployment_group_name       = module.codedeploy_group.data[k].name_effective
         app_spec_content            = replace(jsonencode(v.app_spec), "\"", "\\\"")
         app_spec_sha256             = sha256(jsonencode(v.app_spec))
+        }) : templatefile("${path.module}/deploy_script_ecs.sh", {
+        ecs_cluster_name = local.ecs_cluster_data[k].name_effective
+        ecs_service_name = module.ecs_service.data[k].name_effective
       })
-    }) if v.deployment_style_use_blue_green
+    })
   }
   create_file_deploy_spec_map = {
     for k, v in local.lx_map : k => merge(v, {
       deploy_spec = templatefile("${path.module}/deploy_spec.yml", {
         path_repo_root_to_deploy_script = v.path_repo_root_to_deploy_script
       })
-    }) if v.deployment_style_use_blue_green
+    })
   }
   create_service_map = {
     for k, v in local.lx_map : k => merge(v, {
@@ -156,7 +165,8 @@ locals {
   create_target_1_list = flatten([
     for k, v in local.lx_map : [
       for k_lt, v_lt in v.listen_target_map : merge(v, v_lt, {
-        k_lt = k_lt
+        k_lt        = k_lt
+        target_port = v_lt.container_port
       })
     ]
   ])
@@ -187,6 +197,7 @@ locals {
         acm_certificate_key = null
         container_name      = null
         container_port      = null
+        listen_port         = null
         rule_condition_map  = null
         rule_priority       = null
       } } : var.service_elb_target_map_default : v.elb_target_map
@@ -200,32 +211,17 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      auto_scaling_num_instances_max  = local.l1_map[k].desired_count * 2
-      deployment_style_use_blue_green = length(local.l1_map[k].elb_target_map) == 1 ? v.deployment_style_use_blue_green == null ? var.deployment_style_use_blue_green_default : v.deployment_style_use_blue_green : false
-      image_build_enabled             = length(local.l1_map[k].image_build_arch_list) != 0
-      image_has_default               = var.ecr_data_map != null && local.l1_map[k].image_ecr_repo_key != null && local.l1_map[k].image_tag_base != null
-      path_env_suffix                 = local.l1_map[k].path_include_env ? "_${var.std_map.env}" : ""
+      auto_scaling_num_instances_max = local.l1_map[k].desired_count * 2
+      deployment_controller_type     = length(local.l1_map[k].elb_target_map) == 1 ? v.deployment_controller_type == null ? var.service_deployment_controller_type_default : v.deployment_controller_type : "ECS"
+      image_build_enabled            = length(local.l1_map[k].image_build_arch_list) != 0
+      image_has_default              = var.ecr_data_map != null && local.l1_map[k].image_ecr_repo_key != null && local.l1_map[k].image_tag_base != null
+      path_env_suffix                = local.l1_map[k].path_include_env ? "_${var.std_map.env}" : ""
     }
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      deployment_environment_map = merge(
-        # Consumed by create_deployment_map; ports are not actually used by deployments, only below when unrolling targets
-        {
-          blue = {
-            listen_port = var.app_deployment_listen_port_prod_default
-          }
-        },
-        local.l2_map[k].deployment_style_use_blue_green ? {
-          green = {
-            listen_port = var.app_deployment_listen_port_test_default
-          }
-        } : {}
-      )
-      elb_target_map = {
-        # These keys must match the unrolled target keys, even if a single-keyed target uses blue-green
-        for k_targ, v_targ in local.l1_map[k].elb_target_map : local.l2_map[k].deployment_style_use_blue_green ? "${k}_blue" : "${k}_${k_targ}" => v_targ
-      }
+      deployment_uses_codedeploy          = local.l2_map[k].deployment_controller_type == "CODE_DEPLOY"
+      deployment_style_use_blue_green     = local.l2_map[k].deployment_controller_type == "CODE_DEPLOY" ? v.deployment_style_use_blue_green == null ? var.deployment_style_use_blue_green_default : v.deployment_style_use_blue_green : false
       path_repo_root_to_deploy_script     = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.sh"
       path_repo_root_to_deploy_spec       = "${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.yml"
       path_terraform_app_to_deploy_script = "${local.l1_map[k].path_terraform_app_to_repo_root}/${local.l1_map[k].path_repo_root_to_spec_directory}/${k}_deploy${local.l2_map[k].path_env_suffix}.sh"
@@ -234,25 +230,47 @@ locals {
   }
   l4_map = {
     for k, v in local.l0_map : k => {
+      deployment_environment_map = merge(
+        # Consumed by create_deployment_map; ports are not actually used by deployments, only below when unrolling targets
+        {
+          blue = {
+            listen_port = var.app_deployment_listen_port_prod_default
+          }
+        },
+        local.l3_map[k].deployment_style_use_blue_green ? {
+          green = {
+            listen_port = var.app_deployment_listen_port_test_default
+          }
+        } : {}
+      )
+      elb_target_map = {
+        # These keys must match the unrolled target keys, even if a single-keyed target uses blue-green
+        for k_targ, v_targ in local.l1_map[k].elb_target_map : local.l3_map[k].deployment_style_use_blue_green ? "${k}_blue" : "${k}_${k_targ}" => v_targ
+      }
+    }
+  }
+  l5_map = {
+    for k, v in local.l0_map : k => {
       listen_target_list = flatten([
         # The product of targets and deployment environments
         for k_targ, v_targ in local.l1_map[k].elb_target_map : [ # This is intentionally l1
-          for k_dep, v_dep in local.l3_map[k].deployment_environment_map : merge(
+          for k_dep, v_dep in local.l4_map[k].deployment_environment_map : merge(
             v_targ,
             v_dep,
             {
               acm_certificate_key = v_targ.acm_certificate_key == null ? var.listener_acm_certificate_key_default : v_targ.acm_certificate_key
-              k_lt                = local.l2_map[k].deployment_style_use_blue_green ? "${k}_${k_dep}" : "${k}_${k_targ}"
+              k_lt                = local.l3_map[k].deployment_style_use_blue_green ? "${k}_${k_dep}" : "${k}_${k_targ}"
+              listen_port         = v_targ.listen_port == null ? v_dep.listen_port : v_targ.listen_port
             },
           )
         ]
       ])
     }
   }
-  l5_map = {
+  l6_map = {
     for k, v in local.l0_map : k => {
       listen_target_map = {
-        for v_lt in local.l4_map[k].listen_target_list : v_lt.k_lt => merge(v_lt, {
+        for v_lt in local.l5_map[k].listen_target_list : v_lt.k_lt => merge(v_lt, {
           action_map = merge(v.action_map == null ? var.listener_action_map_default : v.action_map, {
             forward_to_service = {
               action_forward_target_group_map = {
@@ -272,7 +290,7 @@ locals {
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(
@@ -286,7 +304,7 @@ locals {
         cluster       = local.ecs_cluster_data[k]
         deploy_app    = module.codedeploy_app.data[k]
         deploy_config = module.codedeploy_config.data[k]
-        deploy_group  = module.codedeploy_group.data[k]
+        deploy_group  = v.deployment_uses_codedeploy ? module.codedeploy_group.data[k] : null
         elb_listener_map = {
           for k_lt, _ in v.listen_target_map : k_lt => module.elb_listener.data[k_lt]
         }
@@ -294,6 +312,9 @@ locals {
           for k_lt, _ in v.listen_target_map : k_lt => module.elb_target.data[k_lt]
         }
         iam = {
+          policy = {
+            service_deploy = v.deployment_uses_codedeploy ? null : module.service_deploy_policy[k].data
+          }
           role = {
             ci_cd_build = module.code_build_role[k].data
           }

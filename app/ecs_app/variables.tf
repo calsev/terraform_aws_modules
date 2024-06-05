@@ -90,6 +90,7 @@ variable "app_map" {
       secret_map          = optional(map(string))
       username            = optional(string)
     }))
+    deployment_controller_type      = optional(string)
     deployment_style_use_blue_green = optional(bool)
     desired_count                   = optional(number)
     dns_alias_enabled               = optional(bool)
@@ -114,6 +115,7 @@ variable "app_map" {
       acm_certificate_key = optional(string)
       container_name      = optional(string)
       container_port      = optional(number)
+      listen_port         = optional(number) # Defaults to prod/test ports
       rule_condition_map = optional(map(object({
         host_header_pattern_list = optional(list(string))
         http_header_map = optional(map(object({
@@ -373,7 +375,7 @@ variable "deployment_blue_green_timeout_wait_minutes_default" {
 variable "deployment_style_use_blue_green_default" {
   type        = bool
   default     = true
-  description = "If true a target group and load balancer must be provided. Ignored if a custom elb_target_map is provided with more than one target: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/register-multiple-targetgroups.html"
+  description = "If true a target group and load balancer must be provided. Ignored if a custom elb_target_map is provided with more than one target or deployment controller is not CODE_DEPLOY: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/register-multiple-targetgroups.html"
 }
 
 variable "deployment_trigger_map_default" {
@@ -834,6 +836,16 @@ variable "rule_listener_key_default" {
   description = "Ignored if no condition is set"
 }
 
+variable "service_deployment_controller_type_default" {
+  type        = string
+  default     = "CODE_DEPLOY"
+  description = "Ignored if more than one ELB target is specified"
+  validation {
+    condition     = contains(["CODE_DEPLOY", "ECS", "EXTERNAL"], var.service_deployment_controller_type_default)
+    error_message = "Invalid deployment controller type"
+  }
+}
+
 variable "service_desired_count_default" {
   type        = number
   default     = 1
@@ -851,6 +863,7 @@ variable "service_elb_target_map_default" {
     acm_certificate_key = optional(string)
     container_name      = optional(string)
     container_port      = optional(number)
+    listen_port         = optional(number)
     rule_condition_map = optional(map(object({
       host_header_pattern_list = optional(list(string))
       http_header_map = optional(map(object({

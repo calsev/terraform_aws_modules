@@ -205,6 +205,8 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity/cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/ecs/service && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/efs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/event && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/event/bus && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
