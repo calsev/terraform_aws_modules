@@ -110,7 +110,7 @@ variable "target_health_check_protocol_default" {
 
 variable "target_health_check_success_code_list_default" {
   type    = list(number)
-  default = [200, 301, 302, 404]
+  default = [200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 307, 308, 401, 402, 403, 404, 405, 410]
 }
 
 variable "target_lambda_multi_value_headers_enabled_default" {

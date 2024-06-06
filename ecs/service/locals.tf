@@ -17,6 +17,12 @@ module "vpc_map" {
 }
 
 locals {
+  create_deploy_ecs_map = {
+    for k, v in local.lx_map : k => v if local.l1_map[k].deployment_controller_type == "ECS"
+  }
+  create_deploy_code_map = {
+    for k, v in local.lx_map : k => v if local.l1_map[k].deployment_controller_type != "ECS"
+  }
   create_sd_map = {
     for k, v in local.lx_map : k => v if v.sd_hostname != null
   }
@@ -98,7 +104,7 @@ locals {
       },
       {
         dns_name     = v.sd_hostname == null ? null : "${v.sd_hostname}.${v.sd_namespace_key}"
-        service_name = aws_ecs_service.this_service[k].name
+        service_name = local.l1_map[k].deployment_controller_type == "ECS" ? aws_ecs_service.this_static_service[k].name : aws_ecs_service.this_dynamic_service[k].name
       }
     )
   }

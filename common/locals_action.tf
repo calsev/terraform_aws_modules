@@ -426,6 +426,104 @@ locals {
         ]
       }
     }
+    ecs = {
+      capacity-provider = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      cluster = {
+        public_read = []
+        read = [
+          "ListContainerInstances",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "DeregisterContainerInstance",
+          "RegisterContainerInstance",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      container-instance = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+          "ListTasks",
+        ]
+        public_write = []
+        write = [
+          "StartTelemetrySession",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      service = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "TagResource",
+          "UntagResource",
+          "UpdateService",
+          "UpdateServicePrimaryTaskSet",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+        ]
+        public_write = []
+        write = [
+        ]
+      }
+      task = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "StopTask",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      task-definition = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "RunTask",
+          "StartTask",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      task-set = {
+        public_read = []
+        read = [
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "TagResource",
+          "UntagResource",
+          "UpdateTaskSet",
+        ]
+      }
+    }
     elasticfilesystem = {
       access-point = {
         public_read = []

@@ -3,6 +3,7 @@ module "elb_target" {
   std_map                               = var.std_map
   target_health_check_http_path_default = var.target_health_check_http_path_default
   target_map                            = local.create_target_x_map
+  target_port_default                   = var.service_elb_target_container_port_default
   target_protocol_http_version_default  = var.target_protocol_http_version_default
   target_sticky_cookie_enabled_default  = var.target_sticky_cookie_enabled_default
   vpc_data_map                          = var.vpc_data_map
@@ -129,7 +130,6 @@ module "ecs_service" {
   ecs_cluster_data                                      = local.ecs_cluster_data
   ecs_task_definition_data_map                          = module.ecs_task.data
   elb_target_data_map                                   = module.elb_target.data
-  service_deployment_controller_type_default            = "CODE_DEPLOY"
   service_desired_count_default                         = var.service_desired_count_default
   service_elb_health_check_grace_period_seconds_default = var.service_elb_health_check_grace_period_seconds_default
   service_elb_target_map_default                        = var.service_elb_target_map_default

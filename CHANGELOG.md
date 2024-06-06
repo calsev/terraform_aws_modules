@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.50.0
+
+### New modules
+
+* IAM policy for ECS service
+
+### General
+
+* Support multi-port ECS apps
+
 ## 0.49.0
 
 ### General
