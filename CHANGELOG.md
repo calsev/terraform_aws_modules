@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.51.0
+
+### New modules
+
+* Directory Service Directory
+
+### General
+
+* Creation flags for costly resources
+* Default lifecycle rule for intelligent tiering
+* Standardize keys for VPC resources
+
 ## 0.50.0
 
 ### New modules

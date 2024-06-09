@@ -28,6 +28,7 @@ variable "db_map" {
     ca_cert_identifier                    = optional(string)
     character_set_name                    = optional(string)       # For Oracle and Microsoft SQL
     cloudwatch_log_export_list            = optional(list(string)) # See per-engine value here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance#enabled_db_enabled_cloudwatch_log_export_defaults
+    create_instance                       = optional(bool)
     copy_tags_to_snapshot                 = optional(bool)
     db_initial_name                       = optional(string)
     delete_automated_backups              = optional(bool)
@@ -151,6 +152,12 @@ variable "db_cloudwatch_log_export_list_default" {
 variable "db_copy_tags_to_snapshot_default" {
   type    = bool
   default = true
+}
+
+variable "db_create_instance_default" {
+  type        = bool
+  default     = true
+  description = "If false, all values will be calcualted and all resources but the instance will be created."
 }
 
 variable "db_delete_automated_backups_default" {

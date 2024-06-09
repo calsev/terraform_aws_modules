@@ -12,7 +12,7 @@ module "password_secret" {
 }
 
 resource "aws_db_instance" "this_db" {
-  for_each                    = local.lx_map
+  for_each                    = local.create_instance_map
   allocated_storage           = each.value.allocated_storage_gib
   allow_major_version_upgrade = each.value.allow_major_version_upgrade
   apply_immediately           = each.value.apply_immediately

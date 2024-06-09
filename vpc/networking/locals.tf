@@ -52,9 +52,9 @@ locals {
           subnet_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
               cidr_block_index = length(local.l2_map[k].segment_map) * v_az.i_az + local.l2_map[k].segment_index_map[k_seg]
-              k_az_full        = "${k}-${k_seg}-${k_az}"
-              k_az_nat         = local.l1_map[k].nat_multi_az ? "${k}-${k_az}" : "${k}-${local.l2_map[k].nat_availability_zone_list[0]}"
-              k_az_only        = "${k}-${k_az}"
+              k_az_full        = "${k}_${k_seg}_${k_az}"
+              k_az_nat         = local.l1_map[k].nat_multi_az ? "${k}_${k_az}" : "${k}_${local.l2_map[k].nat_availability_zone_list[0]}"
+              k_az_only        = "${k}_${k_az}"
               tags = merge(
                 var.std_map.tags,
                 {
@@ -79,8 +79,8 @@ locals {
         for k_az in local.l2_map[k].nat_availability_zone_list : k_az => {
           k_az      = k_az
           k_seg     = local.l3_map[k].public_segment_list[0]
-          k_az_full = "${k}-${local.l3_map[k].public_segment_list[0]}-${k_az}"
-          k_az_only = "${k}-${k_az}"
+          k_az_full = "${k}_${local.l3_map[k].public_segment_list[0]}_${k_az}"
+          k_az_only = "${k}_${k_az}"
           k_vpc     = k
           tags = merge(
             var.std_map.tags,

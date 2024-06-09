@@ -1,6 +1,6 @@
 module "elastic_ip" {
   source                             = "../../ec2/elastic_ip"
-  ip_map                             = local.lx_map
+  ip_map                             = local.create_ip_map
   ip_name_include_app_fields_default = var.instance_name_include_app_fields_default
   ip_name_infix_default              = var.instance_name_infix_default
   std_map                            = var.std_map
@@ -64,7 +64,7 @@ module "instance_template" {
     for k, v in local.create_template_map : k => merge(v, {
       user_data_command_list = [
         "EC2_INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)",
-        "aws ec2 associate-address --allow-reassociation --instance-id $EC2_INSTANCE_ID --allocation-id ${module.elastic_ip.data[k].eip_allocation_id}",
+        v.create_dns_alias ? "aws ec2 associate-address --allow-reassociation --instance-id $EC2_INSTANCE_ID --allocation-id ${module.elastic_ip.data[k].eip_allocation_id}" : "",
         "aws ec2 modify-instance-attribute --region ${var.std_map.aws_region_name} --no-source-dest-check --instance-id $EC2_INSTANCE_ID",
         "hostnamectl set-hostname '${v.dns_from_fqdn}'",
         "cd /usr/local/openvpn_as/scripts",
@@ -95,7 +95,6 @@ module "asg" {
   source                                                 = "../../ec2/auto_scaling_group"
   group_auto_scaling_iam_role_arn_service_linked_default = null
   group_auto_scaling_num_instances_max_default           = 1
-  group_auto_scaling_num_instances_min_default           = var.instance_auto_scaling_num_instances_min_default
   group_auto_scaling_protect_from_scale_in_default       = var.instance_auto_scaling_protect_from_scale_in_default
   group_map                                              = local.create_asg_map
   group_name_include_app_fields_default                  = var.instance_name_include_app_fields_default

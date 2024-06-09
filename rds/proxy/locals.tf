@@ -19,6 +19,9 @@ module "vpc_map" {
 }
 
 locals {
+  create_proxy_map = {
+    for k, v in local.lx_map : k => v if v.create_instance
+  }
   create_target_1_list = flatten([
     for v in local.create_target_group_2_list : [
       for k_targ, v_targ in v.target_map : [
@@ -30,7 +33,7 @@ locals {
     ]
   ])
   create_target_x_map = {
-    for k, v in local.create_target_1_list : v.k_targ_all => v
+    for k, v in local.create_target_1_list : v.k_targ_all => v if v.create_instance
   }
   create_target_group_1_map = {
     for k, v in local.lx_map : k => {
@@ -47,7 +50,7 @@ locals {
     ]
   ])
   create_target_group_x_map = {
-    for k, v in local.create_target_group_2_list : v.k_group_all => v
+    for k, v in local.create_target_group_2_list : v.k_group_all => v if v.create_instance
   }
   l0_map = {
     for k, v in var.proxy_map : k => v
@@ -57,6 +60,7 @@ locals {
       auth_client_password_type   = v.auth_client_password_type == null ? var.proxy_auth_client_password_type_default : v.xauth_client_password_type
       auth_iam_required           = v.auth_iam_required == null ? var.proxy_auth_iam_required_default : v.auth_iam_required
       auth_username               = v.auth_username == null ? var.proxy_auth_username_default : v.auth_username
+      create_instance             = v.create_instance == null ? var.proxy_create_instance_default : v.create_instance
       debug_logging_enabled       = v.debug_logging_enabled == null ? var.proxy_debug_logging_enabled_default : v.debug_logging_enabled
       engine_family               = v.engine_family == null ? var.proxy_engine_family_default : v.engine_family
       iam_role_arn                = v.iam_role_arn == null ? var.proxy_iam_role_arn_default : v.iam_role_arn
@@ -100,14 +104,14 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        proxy_arn      = aws_db_proxy.this_proxy[k].arn
-        proxy_endpoint = aws_db_proxy.this_proxy[k].endpoint
-        proxy_name     = aws_db_proxy.this_proxy[k].name
+        proxy_arn      = v.create_instance ? aws_db_proxy.this_proxy[k].arn : null
+        proxy_endpoint = v.create_instance ? aws_db_proxy.this_proxy[k].endpoint : null
+        proxy_name     = v.create_instance ? aws_db_proxy.this_proxy[k].name : null
         target_group_map = {
           for k_group, v_group in local.lx_map[k].target_group_map : k_group => merge(v_group, {
             target_map = {
               for k_targ, v_targ in v_group.target_map : k_targ => merge(v_targ, {
-                target_endpoint = aws_db_proxy_target.this_target["${k}_${k_group}_${k_targ}"].endpoint
+                target_endpoint = v.create_instance ? aws_db_proxy_target.this_target["${k}_${k_group}_${k_targ}"].endpoint : null
               })
             }
           })

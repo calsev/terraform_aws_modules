@@ -18,9 +18,9 @@ variable "iam_data" {
 
 variable "instance_map" {
   type = map(object({
-    auto_scaling_num_instances_min     = optional(number)
     auto_scaling_protect_from_scale_in = optional(bool)
     cert_contact_email                 = optional(string)
+    create_instance                    = optional(bool)
     dns_from_fqdn                      = optional(string) # Defaults to vpn.${from_zone_key}
     dns_from_zone_key                  = optional(string)
     instance_type                      = optional(string)
@@ -32,11 +32,6 @@ variable "instance_map" {
   }))
 }
 
-variable "instance_auto_scaling_num_instances_min_default" {
-  type    = number
-  default = 0
-}
-
 variable "instance_auto_scaling_protect_from_scale_in_default" {
   type    = bool
   default = false
@@ -45,6 +40,11 @@ variable "instance_auto_scaling_protect_from_scale_in_default" {
 variable "instance_cert_contact_email_default" {
   type    = string
   default = null
+}
+
+variable "instance_create_instance_default" {
+  type    = bool
+  default = true
 }
 
 variable "instance_dns_from_zone_key_default" {

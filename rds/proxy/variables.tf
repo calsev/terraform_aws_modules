@@ -33,6 +33,7 @@ variable "proxy_map" {
     auth_iam_required           = optional(bool)
     auth_sm_secret_arn          = string
     auth_username               = optional(string)
+    create_instance             = optional(bool)
     debug_logging_enabled       = optional(bool)
     engine_family               = optional(string)
     iam_role_arn                = optional(string)
@@ -78,6 +79,11 @@ variable "proxy_auth_username_default" {
   type        = string
   default     = null
   description = "This can also be fetched from secret.username"
+}
+
+variable "proxy_create_instance_default" {
+  type    = bool
+  default = true
 }
 
 variable "proxy_debug_logging_enabled_default" {

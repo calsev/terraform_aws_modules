@@ -1,19 +1,33 @@
 variable "ip_map" {
   type = map(object({
+    name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
+    name_prepend            = optional(string)
   }))
 }
 
-variable "ip_name_include_app_fields_default" {
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
   type        = bool
   default     = false
   description = "If true, the Terraform project context will be included in the name"
 }
 
-variable "ip_name_infix_default" {
+variable "name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended after key"
 }
 
 variable "std_map" {

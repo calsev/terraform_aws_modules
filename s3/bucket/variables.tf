@@ -17,6 +17,11 @@ variable "bucket_map" {
     enforce_object_ownership          = optional(bool)
     lifecycle_expiration_days         = optional(number)
     lifecycle_upload_expiration_days  = optional(number)
+    lifecycle_transition_map = optional(map(object({
+      date          = optional(string)
+      days          = optional(number)
+      storage_class = optional(string)
+    })))
     lifecycle_version_count           = optional(number)
     lifecycle_version_expiration_days = optional(number) # Defaults to lifecycle_expiration_days
     log_target_bucket_name            = optional(string)
@@ -128,6 +133,42 @@ variable "bucket_lifecycle_expiration_days_default" {
 variable "bucket_lifecycle_upload_expiration_days_default" {
   type    = number
   default = 5
+}
+
+variable "bucket_lifecycle_transition_map_default" {
+  type = map(object({
+    date          = optional(string)
+    days          = optional(number)
+    storage_class = optional(string)
+  }))
+  default = {
+    default = {
+      date          = null
+      days          = null
+      storage_class = null
+    }
+  }
+}
+
+variable "bucket_lifecycle_transition_date_default" {
+  type        = string
+  default     = null
+  description = "If neither date nor days is specified the default is 0 days. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.6 for valid date format."
+}
+
+variable "bucket_lifecycle_transition_days_default" {
+  type        = number
+  default     = null
+  description = "Must be positive. If neither date nor days is specified the default is 0 days"
+}
+
+variable "bucket_lifecycle_transition_storage_class_default" {
+  type    = string
+  default = "INTELLIGENT_TIERING"
+  validation {
+    condition     = contains(["DEEP_ARCHIVE", "GLACIER", "GLACIER_IR", "INTELLIGENT_TIERING", "ONEZONE_IA", "STANDARD_IA"], var.bucket_lifecycle_transition_storage_class_default)
+    error_message = "Invalid storage class"
+  }
 }
 
 variable "bucket_lifecycle_version_count_default" {
