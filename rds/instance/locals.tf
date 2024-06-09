@@ -9,6 +9,9 @@ module "name_map" {
 }
 
 locals {
+  create_instance_map = {
+    for k, v in local.lx_map : k => v if v.create_instance
+  }
   l0_map = {
     for k, v in var.db_map : k => v
   }
@@ -28,6 +31,7 @@ locals {
       character_set_name                        = v.character_set_name == null ? var.db_character_set_name_default : v.character_set_name
       cloudwatch_log_export_list                = v.cloudwatch_log_export_list == null ? var.db_cloudwatch_log_export_list_default : v.cloudwatch_log_export_list
       copy_tags_to_snapshot                     = v.copy_tags_to_snapshot == null ? var.db_copy_tags_to_snapshot_default : v.copy_tags_to_snapshot
+      create_instance                           = v.create_instance == null ? var.db_create_instance_default : v.create_instance
       db_initial_name                           = v.db_initial_name == null ? var.db_initial_name_default : v.db_initial_name
       delete_automated_backups                  = v.delete_automated_backups == null ? var.db_delete_automated_backups_default : v.delete_automated_backups
       deletion_protection                       = v.deletion_protection == null ? var.db_deletion_protection_default : v.deletion_protection
@@ -103,9 +107,9 @@ locals {
       v,
       module.password_secret.data[k],
       {
-        db_domain_name = aws_db_instance.this_db[k].address
-        db_arn         = aws_db_instance.this_db[k].arn
-        db_id          = aws_db_instance.this_db[k].id
+        db_domain_name = v.create_instance ? aws_db_instance.this_db[k].address : null
+        db_arn         = v.create_instance ? aws_db_instance.this_db[k].arn : null
+        db_id          = v.create_instance ? aws_db_instance.this_db[k].id : null
       },
     )
   }

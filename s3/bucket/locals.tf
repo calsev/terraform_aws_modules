@@ -59,6 +59,7 @@ locals {
       enforce_object_ownership             = v.enforce_object_ownership == null ? var.bucket_enforce_object_ownership_default : v.enforce_object_ownership
       lifecycle_expiration_days            = v.lifecycle_expiration_days == null ? var.bucket_lifecycle_expiration_days_default : v.lifecycle_expiration_days
       lifecycle_upload_expiration_days     = v.lifecycle_upload_expiration_days == null ? var.bucket_lifecycle_upload_expiration_days_default : v.lifecycle_upload_expiration_days
+      lifecycle_transition_map             = v.lifecycle_transition_map == null ? var.bucket_lifecycle_transition_map_default : v.lifecycle_transition_map
       lifecycle_version_count              = v.lifecycle_version_count == null ? var.bucket_lifecycle_version_count_default : v.lifecycle_version_count
       lifecycle_version_expiration_days_l1 = v.lifecycle_version_expiration_days == null ? var.bucket_lifecycle_version_expiration_days_default : v.lifecycle_version_expiration_days
       log_target_bucket_name               = v.log_target_bucket_name == null ? var.bucket_log_target_bucket_name_default : v.log_target_bucket_name
@@ -74,6 +75,13 @@ locals {
   }
   l2_map = {
     for k, _ in local.l0_map : k => {
+      lifecycle_transition_map = {
+        for k_life, v_life in local.l1_map[k].lifecycle_transition_map : k_life => merge(v_life, {
+          date          = v_life.date == null ? var.bucket_lifecycle_transition_date_default : v_life.date
+          days          = v_life.days == null ? var.bucket_lifecycle_transition_days_default : v_life.days
+          storage_class = v_life.storage_class == null ? var.bucket_lifecycle_transition_storage_class_default : v_life.storage_class
+        })
+      }
       lifecycle_version_expiration_days = local.l1_map[k].lifecycle_version_expiration_days_l1 == null ? local.l1_map[k].lifecycle_expiration_days : local.l1_map[k].lifecycle_version_expiration_days_l1
       sid_map_l2 = local.l1_map[k].cloudfront_origin_access_identity == null ? local.l1_map[k].sid_map_l1 : merge(local.l1_map[k].sid_map_l1, {
         CloudFront = {

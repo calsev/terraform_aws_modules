@@ -86,6 +86,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
         noncurrent_days           = each.value.lifecycle_version_expiration_days
       }
     }
+    dynamic "transition" {
+      for_each = each.value.lifecycle_transition_map
+      content {
+        date          = transition.value.date
+        days          = transition.value.days
+        storage_class = transition.value.storage_class
+      }
+    }
     status = "Enabled"
   }
 }

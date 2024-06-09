@@ -1,5 +1,5 @@
 resource "aws_db_proxy" "this_proxy" {
-  for_each = local.lx_map
+  for_each = local.create_proxy_map
   auth {
     auth_scheme               = "SECRETS"
     client_password_auth_type = each.value.auth_client_password_type

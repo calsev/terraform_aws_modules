@@ -1,8 +1,10 @@
 module "name_map" {
   source                          = "../../name_map"
-  name_include_app_fields_default = var.ip_name_include_app_fields_default
-  name_infix_default              = var.ip_name_infix_default
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prepend_default            = var.name_prepend_default
   std_map                         = var.std_map
 }
 
@@ -31,6 +33,7 @@ locals {
         eip_id            = aws_eip.this_eip[k].id
         eip_public_dns    = aws_eip.this_eip[k].public_dns
         eip_public_ip     = aws_eip.this_eip[k].public_ip
+        eip_private_ip    = aws_eip.this_eip[k].private_ip
       }
     )
   }

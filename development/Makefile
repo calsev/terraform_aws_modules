@@ -133,6 +133,8 @@ tf-lint: tflint-install
 	cd ../cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/config_ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../directory/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/record && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/sd_public && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

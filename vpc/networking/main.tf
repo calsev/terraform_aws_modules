@@ -83,6 +83,7 @@ resource "aws_egress_only_internet_gateway" "this_eog" {
 module "nat_gateway" {
   source        = "../../vpc/nat_gateway"
   nat_map       = local.nat_gateway_flattened_map
+  std_map       = var.std_map
   subnet_id_map = local.subnet_flattened_id_map
 }
 
