@@ -32,6 +32,7 @@ VPC_VARIABLES = {
     "vpc_security_group_key_list": "list(string)",
     "vpc_segment_key": "string",
 }
+ALL_PREFIXES = [*NAME_VARIABLES.values(), *VPC_PREFIXES]
 
 
 def parse_args(
@@ -169,13 +170,23 @@ def get_or_create_resource_map(
     return resource_map[resource_map_name]
 
 
+def default_type_for_variable(variable: str) -> str:
+    if any(variable.endswith(suffix) for suffix in ["allowed", "enabled"]):
+        return "bool"
+    if variable.endswith("list"):
+        return "list(string)"
+    if variable.endswith("map"):
+        return "map(string)"
+    return "string"
+
+
 def generate_variables(
     variable_prefix: str, module_data: ModuleData, variable_list: list[str]
 ) -> None:
     variable_map = {
         **NAME_VARIABLES,
         **(VPC_VARIABLES if module_data.uses_vpc else {}),
-        **{variable: "string" for variable in variable_list},
+        **{variable: default_type_for_variable(variable) for variable in variable_list},
     }
     variable_map = {k: variable_map[k] for k in sorted(variable_map.keys())}
     path = os.path.abspath(os.path.join("development", "module_gen", "variables.tf"))
@@ -199,15 +210,20 @@ def generate_variables(
             )
         )
         for k_var, t_var in variable_map.items():
+            variable_name = (
+                f"{k_var}_default"
+                if any(k_var.startswith(prefix) for prefix in ALL_PREFIXES)
+                else f"{variable_prefix}_{k_var}_default"
+            )
             f.write(
                 textwrap.dedent(
                     f"""
-                    variable "{variable_prefix}_{k_var}_default" {{
+                    variable "{variable_name}" {{
                         type = {t_var}
                         default = null
                         validation {{
                             condition     = contains([], var.{variable_prefix}_{k_var}_default)
-                            error_message = "Invalid {k_var}"
+                            error_message = "Invalid {k_var.replace('_', ' ')}"
                         }}
                     }}
                     """

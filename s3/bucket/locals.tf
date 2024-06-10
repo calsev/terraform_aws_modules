@@ -98,6 +98,15 @@ locals {
   }
   l3_map = {
     for k, _ in local.l0_map : k => {
+      lifecycle_transition_map_effective = {
+        for k_life, v_life in local.l2_map[k].lifecycle_transition_map : k_life => v_life if(
+          local.l1_map[k].lifecycle_expiration_days == null || v_life.date != null ? true : ( # If objects never expire then include all rules; punt for dates
+            v_life.days == null ? local.l1_map[k].lifecycle_expiration_days > 30 : (          # Default is day 0, so min 30 days later for intelligent tiering to IA
+              v_life.days + 30 < local.l1_map[k].lifecycle_expiration_days                    # Ditto for min 30 day wait
+            )
+          )
+        )
+      }
       sid_map = {
         for k_sid, v_sid in local.l2_map[k].sid_map_l2 : k_sid => {
           access          = v_sid.access

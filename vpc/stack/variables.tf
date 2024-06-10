@@ -37,8 +37,10 @@ variable "std_map" {
 
 variable "vpc_map" {
   type = map(object({
-    nat_gateway_enabled = optional(bool)
-    nat_multi_az        = optional(bool)
+    # Subnets can be added after creation, but not segments
+    availability_zone_map_key_list = optional(list(string))
+    nat_gateway_enabled            = optional(bool)
+    nat_multi_az                   = optional(bool)
     peer_map = optional(map(object({ # Key can be a VPC key or VPC ID
     })))
     segment_map = optional(map(object({
@@ -48,6 +50,12 @@ variable "vpc_map" {
     subnet_bit_length = optional(number) # The number of bits to add to the mask, defaults to ceil(log(#segments * #azs, 2)), set higher to accommodate future AZs
     vpc_cidr_block    = string
   }))
+}
+
+variable "vpc_availability_zone_map_key_list_default" {
+  type        = list(string)
+  default     = ["a", "b"]
+  description = "AZs a, ... will be created for each key, mapped to these AWS AZs"
 }
 
 variable "vpc_nat_multi_az_default" {

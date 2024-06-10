@@ -12,9 +12,11 @@ locals {
   }
   create_dns_1_map = {
     for k, v in local.lx_map : k => merge(v, {
-      dns_alias_name    = v.elb_dns_name
-      dns_alias_zone_id = v.elb_dns_zone_id
-      dns_from_fqdn     = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][v.acm_certificate_key].name_simple
+      # dns_alias_name    = v.elb_dns_name
+      # dns_alias_zone_id = v.elb_dns_zone_id
+      dns_from_fqdn   = var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][v.acm_certificate_key].name_simple
+      dns_record_list = [v.elb_dns_name]
+      dns_type        = "CNAME" # Use this to get IPv4 and IPv6 in one
     }) if v.create_alias
   }
   create_dns_2_map = {

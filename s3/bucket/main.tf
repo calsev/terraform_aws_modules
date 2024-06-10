@@ -87,7 +87,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
       }
     }
     dynamic "transition" {
-      for_each = each.value.lifecycle_transition_map
+      for_each = each.value.lifecycle_transition_map_effective
       content {
         date          = transition.value.date
         days          = transition.value.days

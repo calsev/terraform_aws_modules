@@ -178,8 +178,8 @@ locals {
   l2_map = {
     for k, v in local.l0_map : k => {
       dns_record_client_routing_policy                             = local.l1_map[k].load_balancer_type == "network" ? v.dns_record_client_routing_policy == null ? var.elb_dns_record_client_routing_policy_default : v.dns_record_client_routing_policy : null
-      enable_dualstack_networking                                  = v.enable_dualstack_networking == null ? var.elb_enable_dualstack_networking_default == null ? local.l1_map[k].load_balancer_type == "application" : var.elb_enable_dualstack_networking_default : v.enable_dualstack_networking
       enforce_security_group_inbound_rules_on_private_link_traffic = local.l1_map[k].load_balancer_type == "network" ? v.enforce_security_group_inbound_rules_on_private_link_traffic == null ? var.elb_enforce_security_group_inbound_rules_on_private_link_traffic_default : v.enforce_security_group_inbound_rules_on_private_link_traffic : null
+      ip_address_type                                              = v.ip_address_type == null ? var.elb_ip_address_type_default == null ? local.l1_map[k].load_balancer_type == "application" ? "dualstack" : "ipv4" : var.elb_ip_address_type_default : v.ip_address_type
       log_access_enabled                                           = v.log_access_enabled == null ? var.elb_log_access_enabled_default == null ? local.l1_map[k].load_balancer_type == "application" : var.elb_log_access_enabled_default : v.log_access_enabled
       log_connection_bucket                                        = v.log_connection_bucket == null ? var.elb_log_connection_bucket_default == null ? local.l1_map[k].log_access_bucket : var.elb_log_connection_bucket_default : v.log_connection_bucket
       log_db_bucket                                                = v.log_db_bucket == null ? var.elb_log_db_bucket_default == null ? local.l1_map[k].log_access_bucket : var.elb_log_db_bucket_default : v.log_db_bucket

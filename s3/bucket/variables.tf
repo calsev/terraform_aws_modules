@@ -148,6 +148,7 @@ variable "bucket_lifecycle_transition_map_default" {
       storage_class = null
     }
   }
+  description = "Each entry ignored if lifecycle_expiration_days is <= days"
 }
 
 variable "bucket_lifecycle_transition_date_default" {

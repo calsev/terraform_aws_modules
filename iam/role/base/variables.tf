@@ -81,6 +81,11 @@ variable "name_infix" {
   description = "If true, standard resource prefix and suffix will be applied to the role"
 }
 
+variable "name_override" {
+  type    = string
+  default = null
+}
+
 variable "name_prefix" {
   type        = string
   default     = ""

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.52.0
+
+### New modules
+
+* Workspaces default role
+* Workspaces directory
+
+### General
+
+* Support all networking modes for ELB
+
 ## 0.51.0
 
 ### New modules

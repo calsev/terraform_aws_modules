@@ -29,7 +29,7 @@ resource "aws_lb" "this_lb" {
   enforce_security_group_inbound_rules_on_private_link_traffic = each.value.enforce_security_group_inbound_rules_on_private_link_traffic == null ? null : each.value.enforce_security_group_inbound_rules_on_private_link_traffic ? "on" : "off"
   idle_timeout                                                 = each.value.idle_connection_timeout_seconds
   internal                                                     = each.value.is_internal
-  ip_address_type                                              = each.value.enable_dualstack_networking ? "dualstack" : "ipv4"
+  ip_address_type                                              = each.value.ip_address_type
   load_balancer_type                                           = each.value.load_balancer_type
   name                                                         = each.value.name_effective
   name_prefix                                                  = null
