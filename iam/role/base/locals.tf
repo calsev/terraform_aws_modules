@@ -20,24 +20,23 @@ module "role_policy_map" {
 
 module "name_map" {
   source = "../../../name_map"
-  name_map = {
-    (var.name) = merge(
-      {
-        this = {
-          name_include_app_fields = var.name_include_app_fields
-          name_infix              = var.name_infix
-          name_prefix             = var.name_prefix
-        }
-      },
-      {
-        for k, v in module.role_policy_map.data[var.name].role_policy_create_json_map : k => {
-          name_include_app_fields = var.name_include_app_fields
-          name_infix              = var.name_infix
-          name_prefix             = var.name_prefix
-        }
-      },
-    )
-  }
+  name_map = merge(
+    {
+      (var.name) = {
+        name_include_app_fields = var.name_include_app_fields
+        name_infix              = var.name_infix
+        name_override           = var.name_override
+        name_prefix             = var.name_prefix
+      }
+    },
+    {
+      for k, v in module.role_policy_map.data[var.name].role_policy_create_json_map : k => {
+        name_include_app_fields = var.name_include_app_fields
+        name_infix              = var.name_infix
+        name_prefix             = var.name_prefix
+      }
+    },
+  )
   std_map = var.std_map
 }
 

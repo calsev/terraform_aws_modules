@@ -1,9 +1,9 @@
 module "elastic_ip" {
-  source                             = "../../ec2/elastic_ip"
-  ip_map                             = local.create_ip_map
-  ip_name_include_app_fields_default = var.instance_name_include_app_fields_default
-  ip_name_infix_default              = var.instance_name_infix_default
-  std_map                            = var.std_map
+  source                          = "../../ec2/elastic_ip"
+  ip_map                          = local.create_ip_map
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  std_map                         = var.std_map
 }
 
 module "dns_alias" {
@@ -16,8 +16,8 @@ module "dns_alias" {
 
 module "license_secret" {
   source                          = "../../secret/random"
-  name_include_app_fields_default = var.instance_name_include_app_fields_default
-  name_infix_default              = var.instance_name_infix_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   secret_is_param_default         = var.instance_secret_is_param_default
   secret_map                      = local.create_open_vpn_license_map
   secret_random_init_key_default  = "license_key"
@@ -26,8 +26,8 @@ module "license_secret" {
 
 module "password_secret" {
   source                          = "../../secret/random"
-  name_include_app_fields_default = var.instance_name_include_app_fields_default
-  name_infix_default              = var.instance_name_infix_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   secret_is_param_default         = var.instance_secret_is_param_default
   secret_map                      = local.create_open_vpn_password_map
   secret_random_init_key_default  = "password"
@@ -79,8 +79,8 @@ module "instance_template" {
       ]
     })
   }
-  compute_name_include_app_fields_default       = var.instance_name_include_app_fields_default
-  compute_name_infix_default                    = var.instance_name_infix_default
+  compute_name_include_app_fields_default       = var.name_include_app_fields_default
+  compute_name_infix_default                    = var.name_infix_default
   compute_user_data_suppress_generation_default = var.instance_user_data_suppress_generation_default
   monitor_data                                  = var.monitor_data
   std_map                                       = var.std_map
@@ -97,8 +97,8 @@ module "asg" {
   group_auto_scaling_num_instances_max_default           = 1
   group_auto_scaling_protect_from_scale_in_default       = var.instance_auto_scaling_protect_from_scale_in_default
   group_map                                              = local.create_asg_map
-  group_name_include_app_fields_default                  = var.instance_name_include_app_fields_default
-  group_name_infix_default                               = var.instance_name_infix_default
+  group_name_include_app_fields_default                  = var.name_include_app_fields_default
+  group_name_infix_default                               = var.name_infix_default
   std_map                                                = var.std_map
   vpc_az_key_list_default                                = var.vpc_az_key_list_default
   vpc_data_map                                           = var.vpc_data_map

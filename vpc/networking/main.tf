@@ -18,7 +18,7 @@ resource "aws_subnet" "this_subnet" {
 }
 
 resource "aws_network_acl" "this_nacl" {
-  for_each = local.vpc_map
+  for_each = local.lx_map
   egress {
     action     = "allow"
     cidr_block = "0.0.0.0/0"
@@ -69,7 +69,7 @@ resource "aws_route_table_association" "this_rt_association" {
 }
 
 resource "aws_internet_gateway" "this_igw" {
-  for_each = local.vpc_map
+  for_each = local.lx_map
   vpc_id   = each.value.vpc_id
   tags     = each.value.tags
 }

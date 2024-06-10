@@ -40,7 +40,10 @@ resource "aws_iam_role" "this_iam_role" {
 
 resource "aws_iam_instance_profile" "instance_profile" {
   for_each = local.l1_map.create_instance_profile ? { this = {} } : {}
-  name     = local.l1_map.name_effective
-  role     = aws_iam_role.this_iam_role.id
-  tags     = local.l1_map.tags
+  lifecycle {
+    create_before_destroy = true
+  }
+  name = local.l1_map.name_effective
+  role = aws_iam_role.this_iam_role.id
+  tags = local.l1_map.tags
 }

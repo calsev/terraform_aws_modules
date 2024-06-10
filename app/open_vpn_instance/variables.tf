@@ -57,17 +57,6 @@ variable "instance_key_pair_key_default" {
   default = null
 }
 
-variable "instance_name_include_app_fields_default" {
-  type        = bool
-  default     = false
-  description = "If true, the Terraform project context will be included in the name"
-}
-
-variable "instance_name_infix_default" {
-  type    = bool
-  default = true
-}
-
 variable "instance_secret_is_param_default" {
   type    = bool
   default = false
@@ -128,6 +117,17 @@ variable "monitor_data" {
       })
     })
   })
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
 }
 
 variable "std_map" {

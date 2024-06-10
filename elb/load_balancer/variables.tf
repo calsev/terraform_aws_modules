@@ -19,13 +19,13 @@ variable "elb_map" {
     drop_invalid_header_fields                                   = optional(bool)
     enable_cross_zone_load_balancing                             = optional(bool)
     enable_deletion_protection                                   = optional(bool)
-    enable_dualstack_networking                                  = optional(bool)
     enable_http2                                                 = optional(bool)
     enable_tls_version_and_cipher_suite_headers                  = optional(bool)
     enable_xff_client_port                                       = optional(bool)
     enable_waf_fail_open                                         = optional(bool)
     enforce_security_group_inbound_rules_on_private_link_traffic = optional(bool)
     idle_connection_timeout_seconds                              = optional(string)
+    ip_address_type                                              = optional(string)
     is_internal                                                  = optional(bool)
     load_balancer_type                                           = optional(string)
     log_access_bucket                                            = optional(string)
@@ -101,12 +101,6 @@ variable "elb_enable_deletion_protection_default" {
   default = false
 }
 
-variable "elb_enable_dualstack_networking_default" {
-  type        = bool
-  default     = null
-  description = "Defaults to true for ALB, false for NLB. Dualstack does not support UDP listeners."
-}
-
 variable "elb_enable_http2_default" {
   type    = bool
   default = true
@@ -130,6 +124,16 @@ variable "elb_enable_waf_fail_open_default" {
 variable "elb_idle_connection_timeout_seconds_default" {
   type    = number
   default = 60
+}
+
+variable "elb_ip_address_type_default" {
+  type        = string
+  default     = null
+  description = "Defaults to dualstack for ALB, ipv4 for NLB. Dualstack does not support UDP listeners."
+  validation {
+    condition     = var.elb_ip_address_type_default == null ? true : contains(["dualstack", "dualstack-without-public-ipv4", "ipv4"], var.elb_ip_address_type_default)
+    error_message = "Invalid IP address type"
+  }
 }
 
 variable "elb_is_internal_default" {

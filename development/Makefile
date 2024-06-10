@@ -252,6 +252,8 @@ tf-lint: tflint-install
 	cd ../iam/role/policy_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/rds_monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/workspaces && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/workspaces/default && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user/password_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -312,6 +314,8 @@ tf-lint: tflint-install
 	cd ../vpc/stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../waf && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../workspaces && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../workspaces/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 
 tflint-install:
 	./script/install_tf_and_tflint.sh 2> /dev/null
