@@ -316,6 +316,7 @@ tf-lint: tflint-install
 	cd ../waf && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../workspaces/workspace && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 
 tflint-install:
 	./script/install_tf_and_tflint.sh 2> /dev/null

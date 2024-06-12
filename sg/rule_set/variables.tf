@@ -183,6 +183,26 @@ variable "sg_map_internal" {
         }
       }
     }
+    rdp_in = {
+      rule_map = {
+        tcp = {
+          cidr_blocks      = null
+          from_port        = 3389
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        udp = {
+          cidr_blocks      = null
+          from_port        = 3389
+          ipv6_cidr_blocks = null
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     redis_in = {
       rule_map = {
         redis = {

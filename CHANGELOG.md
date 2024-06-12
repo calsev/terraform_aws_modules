@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.53.0
+
+### New modules
+
+* Workspaces workspace
+
+### General
+
+* Add default rules for RDP
+
 ## 0.52.0
 
 ### New modules
