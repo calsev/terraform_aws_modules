@@ -57,6 +57,9 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
+        directory_id                = aws_workspaces_directory.this_dir[k].id
+        directory_dns_ip_addresses  = aws_workspaces_directory.this_dir[k].dns_ip_addresses
+        directory_registration_code = aws_workspaces_directory.this_dir[k].registration_code
       }
     )
   }
