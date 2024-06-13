@@ -8,9 +8,9 @@ resource "aws_lb_target_group" "this_target" {
       enabled             = each.value.health_check_enabled
       healthy_threshold   = each.value.health_check_consecutive_success_threshold
       interval            = each.value.health_check_interval_seconds
-      matcher             = join(",", each.value.health_check_success_code_list)
+      matcher             = each.value.health_check_success_code_list == null ? null : join(",", each.value.health_check_success_code_list)
       path                = each.value.health_check_http_path
-      port                = each.value.health_check_port_effective
+      port                = each.value.health_check_port
       protocol            = each.value.health_check_protocol
       timeout             = each.value.health_check_no_response_timeout_seconds
       unhealthy_threshold = each.value.health_check_consecutive_fail_threshold
@@ -19,15 +19,15 @@ resource "aws_lb_target_group" "this_target" {
   ip_address_type                    = each.value.target_ip_use_v6 ? "ipv6" : "ipv4"
   lambda_multi_value_headers_enabled = each.value.lambda_multi_value_headers_enabled
   load_balancing_algorithm_type      = each.value.load_balancing_algorithm_type
-  load_balancing_anomaly_mitigation  = each.value.load_balancing_anomaly_mitigation_enabled ? "on" : "off"
+  load_balancing_anomaly_mitigation  = each.value.load_balancing_anomaly_mitigation_enabled == null ? null : each.value.load_balancing_anomaly_mitigation_enabled ? "on" : "off"
   load_balancing_cross_zone_enabled  = each.value.load_balancing_cross_zone_mode
   # name_prefix # Conflicts with name
   name               = each.value.name_effective
   port               = each.value.target_port
-  preserve_client_ip = each.value.nlb_preserve_client_ip_effective
+  preserve_client_ip = each.value.nlb_preserve_client_ip
   protocol           = each.value.target_protocol
   protocol_version   = each.value.target_protocol_http_version
-  proxy_protocol_v2  = each.value.nlb_enable_proxy_protocol_v2_effective
+  proxy_protocol_v2  = each.value.nlb_enable_proxy_protocol_v2
   slow_start         = each.value.target_warm_up_seconds
   dynamic "stickiness" {
     for_each = { this = {} }

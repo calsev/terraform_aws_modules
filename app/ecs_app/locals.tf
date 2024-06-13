@@ -273,9 +273,6 @@ locals {
         for v_lt in local.l5_map[k].listen_target_list : v_lt.k_lt => merge(v_lt, {
           action_map = merge(v.action_map == null ? var.listener_action_map_default : v.action_map, {
             forward_to_service = {
-              action_forward_target_group_map = {
-                (v_lt.k_lt) = {}
-              }
               action_order = local.l1_map[k].app_action_order_default_forward
               action_type  = "forward"
             }

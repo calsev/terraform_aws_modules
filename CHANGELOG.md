@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.54.0
+
+### General
+
+* Support NLB target and listener
+
 ## 0.53.0
 
 ### New modules
