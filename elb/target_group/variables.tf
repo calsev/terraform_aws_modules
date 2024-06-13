@@ -1,3 +1,8 @@
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
 variable "target_map" {
   type = map(object({
     draining_to_unused_delay_seconds            = optional(number)
@@ -69,8 +74,9 @@ variable "target_health_check_enabled_default" {
 }
 
 variable "target_health_check_http_path_default" {
-  type    = string
-  default = "/health"
+  type        = string
+  default     = "/health"
+  description = "Ignored unless health check protocol is HTTP or HTTPS"
 }
 
 variable "target_health_check_interval_seconds_default" {
@@ -100,17 +106,18 @@ variable "target_health_check_port_default" {
 
 variable "target_health_check_protocol_default" {
   type        = string
-  default     = "HTTP"
-  description = "Ignored for lambda targets"
+  default     = null
+  description = "Defaults to HTTP for target_protocol HTTP/HTTPS, all others TCP. Ignored for lambda targets."
   validation {
-    condition     = contains(["TCP", "HTTP", "HTTPS"], var.target_health_check_protocol_default)
+    condition     = var.target_health_check_protocol_default == null ? true : contains(["TCP", "HTTP", "HTTPS"], var.target_health_check_protocol_default)
     error_message = "Invalid health_check_protocol"
   }
 }
 
 variable "target_health_check_success_code_list_default" {
-  type    = list(number)
-  default = [200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 307, 308, 401, 402, 403, 404, 405, 410]
+  type        = list(number)
+  default     = [200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 307, 308, 401, 402, 403, 404, 405, 410]
+  description = "Ingored unless health_check_protocol is HTTP/HTTPS"
 }
 
 variable "target_lambda_multi_value_headers_enabled_default" {
@@ -119,8 +126,9 @@ variable "target_lambda_multi_value_headers_enabled_default" {
 }
 
 variable "target_load_balancing_algorithm_type_default" {
-  type    = string
-  default = "round_robin"
+  type        = string
+  default     = "round_robin"
+  description = "Ignored for network load balancers"
   validation {
     condition     = contains(["least_outstanding_requests", "round_robin", "weighted_random"], var.target_load_balancing_algorithm_type_default)
     error_message = "Invalid load_balancing_algorithm_type"
@@ -130,7 +138,7 @@ variable "target_load_balancing_algorithm_type_default" {
 variable "target_load_balancing_anomaly_mitigation_enabled_default" {
   type        = bool
   default     = false
-  description = "Only supported for weighted_random algorithm"
+  description = "Ignored for network load balancers. Only supported for weighted_random algorithm"
 }
 
 variable "target_load_balancing_cross_zone_mode_default" {
@@ -138,13 +146,8 @@ variable "target_load_balancing_cross_zone_mode_default" {
   default = "use_load_balancer_configuration"
   validation {
     condition     = contains(["use_load_balancer_configuration", "false", "true"], var.target_load_balancing_cross_zone_mode_default)
-    error_message = "Invalid corss-zone mode"
+    error_message = "Invalid cross-zone mode"
   }
-}
-
-variable "target_name_infix_default" {
-  type    = bool
-  default = null
 }
 
 variable "target_nlb_enable_proxy_protocol_v2_default" {
@@ -158,13 +161,15 @@ variable "target_nlb_preserve_client_ip_default" {
 }
 
 variable "target_nlb_terminate_connection_on_deregistration_timeout_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "Ignored for UDP targets"
 }
 
 variable "target_nlb_terminate_connection_on_unhealthy_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "Ignored for UDP targets"
 }
 
 variable "target_sticky_cookie_duration_seconds_default" {
@@ -184,10 +189,10 @@ variable "target_sticky_cookie_name_default" {
 
 variable "target_sticky_type_default" {
   type        = string
-  default     = "lb_cookie"
-  description = "Cookie type is set, but not enabled by default"
+  default     = null
+  description = "Defaults to lb_cookie for target_protocol HTTP/HTTPS, source_ip otherwise. Cookie type is set, but not enabled by default"
   validation {
-    condition = contains([
+    condition = var.target_sticky_type_default == null ? true : contains([
       "lb_cookie", "app_cookie",                      # ALB
       "source_ip",                                    # NLB
       "source_ip_dest_ip", "source_ip_dest_ip_proto", # GWLB
@@ -218,8 +223,9 @@ variable "target_protocol_default" {
 }
 
 variable "target_protocol_http_version_default" {
-  type    = string
-  default = "HTTP1"
+  type        = string
+  default     = "HTTP1"
+  description = "Ingored unless target protocol is HTTP or HTTPS"
   validation {
     condition     = contains(["GRPC", "HTTP1", "HTTP2"], var.target_protocol_http_version_default)
     error_message = "Invalid target protocol version"

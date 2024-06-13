@@ -1,6 +1,6 @@
 resource "aws_lb_listener" "this_listener" {
   for_each        = local.create_listener_map
-  alpn_policy     = each.value.alpn_policy_effective
+  alpn_policy     = each.value.alpn_policy
   certificate_arn = each.value.acm_certificate_arn
   dynamic "default_action" {
     for_each = each.value.action_map
@@ -43,7 +43,7 @@ resource "aws_lb_listener" "this_listener" {
         }
       }
       dynamic "forward" {
-        for_each = default_action.value.action_type == "forward" ? { this = {} } : {}
+        for_each = default_action.value.target_group_arn == null ? default_action.value.action_type == "forward" ? { this = {} } : {} : {}
         content {
           stickiness {
             duration = default_action.value.action_forward_stickiness_duration_seconds
@@ -70,7 +70,7 @@ resource "aws_lb_listener" "this_listener" {
           status_code = default_action.value.action_redirect_status_code
         }
       }
-      target_group_arn = null # Conflicts with forward
+      target_group_arn = default_action.value.target_group_arn
       type             = default_action.value.action_type
     }
   }
@@ -85,7 +85,7 @@ resource "aws_lb_listener" "this_listener" {
   }
   port       = each.value.listen_port
   protocol   = each.value.listen_protocol
-  ssl_policy = each.value.listen_ssl_policy_effective
+  ssl_policy = each.value.listen_ssl_policy
   tags       = each.value.tags
 }
 
@@ -132,7 +132,7 @@ resource "aws_lb_listener_rule" "this_rule" {
         }
       }
       dynamic "forward" {
-        for_each = action.value.action_type == "forward" ? { this = {} } : {}
+        for_each = action.value.target_group_arn == null ? action.value.action_type == "forward" ? { this = {} } : {} : {}
         content {
           stickiness {
             duration = action.value.action_forward_stickiness_duration_seconds
@@ -159,7 +159,7 @@ resource "aws_lb_listener_rule" "this_rule" {
           status_code = action.value.action_redirect_status_code
         }
       }
-      target_group_arn = null # Conflicts with forward
+      target_group_arn = action.value.target_group_arn
       type             = action.value.action_type
     }
   }

@@ -38,6 +38,7 @@ variable "elb_data_map" {
 
 variable "elb_target_data_map" {
   type = map(object({
+    is_nlb           = bool
     target_group_arn = string
   }))
   default     = null
@@ -192,12 +193,14 @@ variable "listener_action_forward_target_group_map_default" {
   type = map(object({
     target_group_weight = optional(number)
   }))
-  default = {}
+  default     = null
+  description = "A map of target group key to configuration. When action type is forward, defaults to key for the listener and default weight. Defaults to empty map otherwise."
 }
 
 variable "listener_action_forward_target_group_weight_default" {
-  type    = number
-  default = 1
+  type        = number
+  default     = 1
+  description = "Ignored for network load balancers"
 }
 
 variable "listener_action_order_default" {
