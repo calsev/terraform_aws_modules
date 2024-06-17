@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.55.0
+
+### New modules
+
+* Instance connect endpoint
+
+### General
+
+* Add ELB support to OpenVPN
+* Add EC2 connect to VPC networking
+* Add suspended processes to ALB
+* Add SSM Managed instance permissions to base instance profile
+
 ## 0.54.0
 
 ### General

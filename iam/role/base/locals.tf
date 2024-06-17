@@ -2,14 +2,22 @@ module "role_policy_map" {
   source = "../../../iam/role/policy_map"
   role_map = {
     (var.name) = {
-      embedded_role_policy_attach_arn_map   = var.embedded_role_policy_attach_arn_map
-      embedded_role_policy_create_json_map  = var.embedded_role_policy_create_json_map
-      embedded_role_policy_inline_json_map  = var.embedded_role_policy_inline_json_map
-      embedded_role_policy_managed_name_map = var.embedded_role_policy_managed_name_map
-      role_policy_attach_arn_map            = var.map_policy == null ? null : var.map_policy.role_policy_attach_arn_map
-      role_policy_create_json_map           = var.map_policy == null ? null : var.map_policy.role_policy_create_json_map
-      role_policy_inline_json_map           = var.map_policy == null ? null : var.map_policy.role_policy_inline_json_map
-      role_policy_managed_name_map          = var.map_policy == null ? null : var.map_policy.role_policy_managed_name_map
+      embedded_role_policy_attach_arn_map  = var.embedded_role_policy_attach_arn_map
+      embedded_role_policy_create_json_map = var.embedded_role_policy_create_json_map
+      embedded_role_policy_inline_json_map = var.embedded_role_policy_inline_json_map
+      embedded_role_policy_managed_name_map = merge(
+        var.embedded_role_policy_managed_name_map,
+        var.create_instance_profile ? {
+          ssm_agent = {
+            condition = true
+            policy    = "AmazonSSMManagedInstanceCore"
+          }
+        } : {}
+      )
+      role_policy_attach_arn_map   = var.map_policy == null ? null : var.map_policy.role_policy_attach_arn_map
+      role_policy_create_json_map  = var.map_policy == null ? null : var.map_policy.role_policy_create_json_map
+      role_policy_inline_json_map  = var.map_policy == null ? null : var.map_policy.role_policy_inline_json_map
+      role_policy_managed_name_map = var.map_policy == null ? null : var.map_policy.role_policy_managed_name_map
     }
   }
   role_policy_attach_arn_map_default   = var.role_policy_attach_arn_map_default

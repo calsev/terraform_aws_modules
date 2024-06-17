@@ -13,10 +13,6 @@ module "ecs_app" {
   for_each = local.env_list
   app_map = {
     site = {
-      acm_certificate_key = {
-        dev = "web_dev.example.com"
-        prd = "web.example.com"
-      }[each.key]
       build_stage_list = []
       container_definition_map = {
         server = {
@@ -25,20 +21,24 @@ module "ecs_app" {
       }
       desired_count = {
         dev = 0
-        prd = 1
+        prd = 0
       }[each.key]
     }
   }
   app_path_repo_root_to_spec_directory_default = "app/web_backend/spec"
   app_path_terraform_app_to_repo_root_default  = "../../../.."
+  build_image_build_arch_list_default          = []
   ci_cd_account_data                           = data.terraform_remote_state.ci_cd.outputs.data
   ci_cd_build_data_map                         = {}
   cognito_data_map                             = data.terraform_remote_state.core.outputs.data["com"].user_pool
   dns_data                                     = data.terraform_remote_state.dns.outputs.data
-  listener_dns_from_zone_key_default           = "example.com"
   elb_data_map                                 = data.terraform_remote_state.net.outputs.data.elb_map
   iam_data                                     = data.terraform_remote_state.iam.outputs.data
-  build_image_build_arch_list_default          = []
+  listener_acm_certificate_key_default = {
+    dev = "web_dev.example.com"
+    prd = "web.example.com"
+  }[each.key]
+  listener_dns_from_zone_key_default           = "example.com"
   listener_elb_key_default                     = "main"
   monitor_data                                 = data.terraform_remote_state.monitor.outputs.data
   pipe_build_artifact_name_default             = "SourceArtifact"

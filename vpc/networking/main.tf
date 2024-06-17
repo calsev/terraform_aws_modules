@@ -130,3 +130,14 @@ resource "aws_route" "internal_to_nat_instance" {
   network_interface_id   = module.nat_instance.data[each.value.k_az_nat].network_interface_id
   route_table_id         = aws_route_table.this_route_table[each.key].id
 }
+
+module "instance_connect_endpoint" {
+  source                                      = "../../vpc/instance_connect_endpoint"
+  ec2_connect_security_group_key_list_default = var.ec2_connect_security_group_key_list_default
+  subnet_data_map = {
+    for k, v in local.subnet_flattened_map : k => {
+      subnet_id = aws_subnet.this_subnet[k].id
+    }
+  }
+  vpc_map = local.lx_map
+}

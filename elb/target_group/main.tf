@@ -18,10 +18,13 @@ resource "aws_lb_target_group" "this_target" {
   }
   ip_address_type                    = each.value.target_ip_use_v6 ? "ipv6" : "ipv4"
   lambda_multi_value_headers_enabled = each.value.lambda_multi_value_headers_enabled
-  load_balancing_algorithm_type      = each.value.load_balancing_algorithm_type
-  load_balancing_anomaly_mitigation  = each.value.load_balancing_anomaly_mitigation_enabled == null ? null : each.value.load_balancing_anomaly_mitigation_enabled ? "on" : "off"
-  load_balancing_cross_zone_enabled  = each.value.load_balancing_cross_zone_mode
-  # name_prefix # Conflicts with name
+  lifecycle {
+    create_before_destroy = true
+  }
+  load_balancing_algorithm_type     = each.value.load_balancing_algorithm_type
+  load_balancing_anomaly_mitigation = each.value.load_balancing_anomaly_mitigation_enabled == null ? null : each.value.load_balancing_anomaly_mitigation_enabled ? "on" : "off"
+  load_balancing_cross_zone_enabled = each.value.load_balancing_cross_zone_mode
+  # name_prefix # Conflicts with name, and max 6 chars
   name               = each.value.name_effective
   port               = each.value.target_port
   preserve_client_ip = each.value.nlb_preserve_client_ip

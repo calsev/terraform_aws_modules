@@ -9,6 +9,7 @@ repo_update: true
 repo_upgrade: all
 
 runcmd:
+  - set -x
   - /usr/local/bin/install_basics.sh
   - /usr/local/bin/disk_mount.sh
   - amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:${ssm_param_name_cw_config} -s

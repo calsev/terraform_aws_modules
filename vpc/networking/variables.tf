@@ -1,3 +1,10 @@
+variable "ec2_connect_security_group_key_list_default" {
+  type = list(string)
+  default = [
+    "internal_ssh_in"
+  ]
+}
+
 variable "iam_data" {
   type = object({
     key_pair_map = map(object({
@@ -37,13 +44,14 @@ variable "std_map" {
 variable "vpc_map" {
   type = map(object({
     # Subnets can be added after creation, but not segments
-    availability_zone_map_key_list = optional(list(string))
-    name_context                   = string
-    name_simple                    = string
-    nat_gateway_enabled            = optional(bool)
-    nat_instance_enabled           = optional(bool)
-    nat_multi_az                   = optional(bool)
-    security_group_id_map          = map(string)
+    availability_zone_map_key_list      = optional(list(string))
+    ec2_connect_security_group_key_list = optional(list(string))
+    name_context                        = string
+    name_simple                         = string
+    nat_gateway_enabled                 = optional(bool)
+    nat_instance_enabled                = optional(bool)
+    nat_multi_az                        = optional(bool)
+    security_group_id_map               = map(string)
     segment_map = optional(map(object({
       route_internal = optional(bool)
       route_public   = optional(bool)
