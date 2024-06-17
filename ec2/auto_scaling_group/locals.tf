@@ -32,6 +32,7 @@ locals {
       instance_maintenance_min_healthy_percentage = v.instance_maintenance_min_healthy_percentage == null ? var.group_instance_maintenance_min_healthy_percentage_default : v.instance_maintenance_min_healthy_percentage
       launch_template_id                          = v.launch_template_id == null ? var.group_launch_template_id_default : v.launch_template_id
       placement_group_id                          = v.placement_group_id == null ? var.group_placement_group_id_default : v.placement_group_id
+      suspended_processes                         = v.suspended_processes == null ? var.group_suspended_processes_default : v.suspended_processes
     })
   }
   l2_map = {

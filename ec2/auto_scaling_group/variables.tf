@@ -20,6 +20,7 @@ variable "group_map" {
     name_include_app_fields                     = optional(bool)
     name_infix                                  = optional(bool)
     placement_group_id                          = optional(string)
+    suspended_processes                         = optional(list(string))
     vpc_az_key_list                             = optional(list(string))
     vpc_key                                     = optional(string)
     vpc_security_group_key_list                 = optional(list(string))
@@ -93,6 +94,25 @@ variable "group_name_infix_default" {
 variable "group_placement_group_id_default" {
   type    = string
   default = null
+}
+
+variable "group_suspended_processes_default" {
+  type    = list(string)
+  default = []
+  validation {
+    condition = length(setsubtract(var.group_suspended_processes_default, [
+      "AddToLoadBalancer",
+      "AlarmNotification",
+      "AZRebalance",
+      "HealthCheck",
+      "InstanceRefresh",
+      "Launch",
+      "ReplaceUnhealthy",
+      "ScheduledActions",
+      "Terminate",
+    ])) == 0
+    error_message = "Invalid suspended processes"
+  }
 }
 
 variable "std_map" {

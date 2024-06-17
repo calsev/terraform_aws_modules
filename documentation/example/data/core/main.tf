@@ -21,8 +21,9 @@ module "db_sub" {
 }
 
 module "db" {
-  source   = "path/to/modules/rds/instance"
-  for_each = local.env_list_db
+  source                     = "path/to/modules/rds/instance"
+  for_each                   = local.env_list_db
+  db_create_instance_default = false
   db_map = {
     dev = {
       (local.db_key) = {
@@ -39,9 +40,9 @@ module "db" {
       }
     }
   }[each.key]
-  db_initial_name_default     = "example_db"
   db_engine_default           = "postgres"
   db_engine_version_default   = "16.1"
+  db_initial_name_default     = "example_db"
   db_secret_is_param_default  = false # Not supported for proxy
   db_subnet_group_key_default = "default"
   db_username_default         = "example_user"
@@ -56,6 +57,7 @@ module "db_proxy" {
   for_each                                = local.env_list_db
   db_data_map                             = module.db[each.key].data
   proxy_auth_client_password_type_default = "POSTGRES_SCRAM_SHA_256"
+  proxy_create_instance_default           = false
   proxy_engine_family_default             = "POSTGRESQL"
   proxy_map = {
     (local.db_key) = {

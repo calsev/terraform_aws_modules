@@ -63,17 +63,18 @@ module "instance_template" {
   compute_map = {
     for k, v in local.create_template_map : k => merge(v, {
       user_data_command_list = [
-        "EC2_INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)",
+        "TOKEN=$(curl -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600')",
+        "EC2_INSTANCE_ID=$(curl -H \"X-aws-ec2-metadata-token: $TOKEN\" -s http://169.254.169.254/latest/meta-data/instance-id)",
         v.create_dns_alias ? "aws ec2 associate-address --allow-reassociation --instance-id $EC2_INSTANCE_ID --allocation-id ${module.elastic_ip.data[k].eip_allocation_id}" : "",
         "aws ec2 modify-instance-attribute --region ${var.std_map.aws_region_name} --no-source-dest-check --instance-id $EC2_INSTANCE_ID",
         "hostnamectl set-hostname '${v.dns_from_fqdn}'",
+        v.create_dns_alias ? "snap install --classic certbot" : "",
+        v.create_dns_alias ? "ln -s /snap/bin/certbot /usr/bin/certbot" : "",
+        v.create_dns_alias ? "certbot certonly --standalone -n --preferred-challenges http --agree-tos -m ${v.cert_contact_email} -d ${v.dns_from_fqdn}" : "",
+        v.create_dns_alias ? "sacli --key 'cs.priv_key' --value_file '/etc/letsencrypt/live/${v.dns_from_fqdn}/privkey.pem' ConfigPut" : "",
+        v.create_dns_alias ? "sacli --key 'cs.cert' --value_file '/etc/letsencrypt/live/${v.dns_from_fqdn}/fullchain.pem' ConfigPut" : "",
         "cd /usr/local/openvpn_as/scripts",
-        "./sacli --user openvpn --new_pass=${module.password_secret.secret_map[v.k_password_secret]} SetLocalPassword",
-        "snap install --classic certbot",
-        "ln -s /snap/bin/certbot /usr/bin/certbot",
-        "certbot certonly --standalone -n --preferred-challenges http --agree-tos -m ${v.cert_contact_email} -d ${v.dns_from_fqdn}",
-        "sacli --key 'cs.priv_key' --value_file '/etc/letsencrypt/live/${v.dns_from_fqdn}/privkey.pem' ConfigPut",
-        "sacli --key 'cs.cert' --value_file '/etc/letsencrypt/live/${v.dns_from_fqdn}/fullchain.pem' ConfigPut",
+        "sacli --user openvpn --new_pass='${v.secret_password}' SetLocalPassword",
         "sacli start",
         "./liman Activate '${module.license_secret.secret_map[v.k_license_secret]}'",
       ]
@@ -87,22 +88,47 @@ module "instance_template" {
   vpc_az_key_list_default                       = var.vpc_az_key_list_default
   vpc_data_map                                  = var.vpc_data_map
   vpc_key_default                               = var.vpc_key_default
-  vpc_security_group_key_list_default           = var.vpc_security_group_key_list_default
-  vpc_segment_key_default                       = var.vpc_segment_key_default
+}
+
+module "target_group" {
+  source              = "../../elb/target_group"
+  std_map             = var.std_map
+  target_map          = local.create_elb_target_x_map
+  target_type_default = "instance"
+  vpc_data_map        = var.vpc_data_map
+  vpc_key_default     = var.vpc_key_default
+}
+
+module "listener" {
+  source              = "../../elb/listener"
+  dns_data            = var.dns_data
+  elb_data_map        = var.elb_data_map
+  elb_target_data_map = module.target_group.data
+  listener_action_map_default = {
+    forward_to_service = {}
+  }
+  listener_action_type_default       = "forward"
+  listener_dns_from_zone_key_default = var.instance_dns_from_zone_key_default
+  listener_map                       = local.create_elb_listener_x_map
+  std_map                            = var.std_map
 }
 
 module "asg" {
   source                                                 = "../../ec2/auto_scaling_group"
+  elb_target_data_map                                    = module.target_group.data
   group_auto_scaling_iam_role_arn_service_linked_default = null
   group_auto_scaling_num_instances_max_default           = 1
   group_auto_scaling_protect_from_scale_in_default       = var.instance_auto_scaling_protect_from_scale_in_default
   group_map                                              = local.create_asg_map
   group_name_include_app_fields_default                  = var.name_include_app_fields_default
   group_name_infix_default                               = var.name_infix_default
-  std_map                                                = var.std_map
-  vpc_az_key_list_default                                = var.vpc_az_key_list_default
-  vpc_data_map                                           = var.vpc_data_map
-  vpc_key_default                                        = var.vpc_key_default
-  vpc_security_group_key_list_default                    = var.vpc_security_group_key_list_default
-  vpc_segment_key_default                                = var.vpc_segment_key_default
+  group_suspended_processes_default = [
+    # The instance currently requires manual initialization
+    "InstanceRefresh",
+    "ReplaceUnhealthy",
+  ]
+  std_map                 = var.std_map
+  vpc_az_key_list_default = var.vpc_az_key_list_default
+  vpc_data_map            = var.vpc_data_map
+  vpc_key_default         = var.vpc_key_default
 }

@@ -51,6 +51,7 @@ module "load_balancer" {
   elb_map = {
     main = {
       acm_certificate_key = "elb.example.com"
+      # ip_address_type     = "dualstack-without-public-ipv4"
     }
   }
   std_map         = module.com_lib.std_map

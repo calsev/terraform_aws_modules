@@ -56,7 +56,7 @@ resource "aws_autoscaling_group" "this_asg" {
   placement_group         = each.value.placement_group_id
   protect_from_scale_in   = each.value.auto_scaling_protect_from_scale_in
   service_linked_role_arn = each.value.auto_scaling_iam_role_arn_service_linked
-  suspended_processes     = []
+  suspended_processes     = each.value.suspended_processes
   dynamic "tag" {
     for_each = each.value.tags
     content {

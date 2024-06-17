@@ -307,6 +307,7 @@ tf-lint: tflint-install
 	cd ../vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/default && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/id_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/instance_connect_endpoint && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/nat_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/nat_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/networking && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

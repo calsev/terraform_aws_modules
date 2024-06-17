@@ -160,6 +160,7 @@ locals {
   output_data = {
     vpc_map = {
       for k, v in local.lx_map : k => merge(v, {
+        instance_connect_endpoint = module.instance_connect_endpoint.data[k]
         nat_map = {
           for k_az, v_az in v.nat_map : k_az => merge(v_az, {
             nat_gateway  = v.nat_gateway_enabled ? module.nat_gateway.data[v_az.k_az_only] : null
