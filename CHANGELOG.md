@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.56.0
+
+### New modules
+
+* Access Analyzer analyzer
+
+### General
+
+* Directory internal by default
+* Add default security group for Active Directory
+
+### Bugfix
+
+* Fix target protocol for OpenVPN TCP listener
+
 ## 0.55.0
 
 ### New modules

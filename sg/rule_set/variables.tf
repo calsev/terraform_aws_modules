@@ -43,6 +43,164 @@ variable "sg_map_internal" {
     }))
   }))
   default = {
+    active_directory_in = {
+      # IPv6 not supported so not created for rule brevity
+      # 339?
+      rule_map = {
+        ad_management = {
+          cidr_blocks      = null
+          from_port        = 9389
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        dns_tcp = {
+          cidr_blocks      = null
+          from_port        = 53
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        dns_udp = {
+          cidr_blocks      = null
+          from_port        = 53
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+        ephemeral_reply = {
+          cidr_blocks      = null
+          from_port        = 1024
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = 65535
+          type             = null
+        }
+        icmp = {
+          cidr_blocks      = null
+          from_port        = -1
+          ipv6_cidr_blocks = []
+          protocol         = "icmp"
+          to_port          = -1
+          type             = null
+        }
+        kerberos_1_tcp = {
+          cidr_blocks      = null
+          from_port        = 88
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        kerberos_1_udp = {
+          cidr_blocks      = null
+          from_port        = 88
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+        kerberos_2_tcp = {
+          cidr_blocks      = null
+          from_port        = 464
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        kerberos_2_udp = {
+          cidr_blocks      = null
+          from_port        = 464
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+        ldap_1_tcp = {
+          cidr_blocks      = null
+          from_port        = 389
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        ldap_1_udp = {
+          cidr_blocks      = null
+          from_port        = 389
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+        ldap_2s = {
+          cidr_blocks      = null
+          from_port        = null
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = 636
+          type             = null
+        }
+        ldap_3 = {
+          cidr_blocks      = null
+          from_port        = 3268
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        ldap_3s = {
+          cidr_blocks      = null
+          from_port        = null
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = 3269
+          type             = null
+        }
+        netbios_name = {
+          cidr_blocks      = null
+          from_port        = 138
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+        rpc_mapper = {
+          cidr_blocks      = null
+          from_port        = 135
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        smb_tcp = {
+          cidr_blocks      = null
+          from_port        = 445
+          ipv6_cidr_blocks = []
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+        smb_udp = {
+          cidr_blocks      = null
+          from_port        = 445
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+        win_32_time = {
+          cidr_blocks      = null
+          from_port        = 123
+          ipv6_cidr_blocks = []
+          protocol         = "udp"
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     all_in = {
       rule_map = {
         all = {
