@@ -100,7 +100,7 @@ locals {
             health_check_port     = null
             health_check_protocol = null
             target_port           = 443
-            target_protocol       = "TLS"
+            target_protocol       = "TCP"
           }
           "${k}_udp" = {
             health_check_port     = 443 # Health check is mandatory but does not support UDP
@@ -136,7 +136,7 @@ locals {
             acm_certificate_key = local.l1_map[k].elb_acm_certificate_key_vpn
             elb_key             = local.l1_map[k].elb_key_vpn
             listen_port         = null
-            listen_protocol     = "TLS"
+            listen_protocol     = "TCP"
             rule_condition_map  = {}
             rule_priority       = null
           }

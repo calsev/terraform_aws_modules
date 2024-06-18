@@ -180,6 +180,8 @@ tf-lint: tflint-install
 	cd ../event/trigger/s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/trigger/s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/access_analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/access_analyzer/analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

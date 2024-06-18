@@ -14,7 +14,6 @@ variable "directory_map" {
     sso_enabled                                   = optional(bool)
     vpc_az_key_list                               = optional(list(string))
     vpc_key                                       = optional(string)
-    vpc_security_group_key_list                   = optional(list(string))
     vpc_segment_key                               = optional(string)
   }))
 }
@@ -129,6 +128,7 @@ variable "vpc_key_default" {
 }
 
 variable "vpc_segment_key_default" {
-  type    = string
-  default = "public"
+  type        = string
+  default     = "internal"
+  description = "Public access requires a security group with open access to 3389 - causing multiple critical- and high-level security findings"
 }
