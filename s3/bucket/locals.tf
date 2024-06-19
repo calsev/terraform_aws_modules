@@ -41,10 +41,11 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      allow_access_point                   = v.allow_access_point == null ? var.bucket_allow_access_point_default : v.allow_access_point
-      allow_service_logging                = v.allow_service_logging == null ? var.bucket_allow_service_logging_default : v.allow_service_logging
       acceleration_enabled                 = length(split(".", k)) == 1 # TODO: Why not dot buckets?
+      allow_access_point                   = v.allow_access_point == null ? var.bucket_allow_access_point_default : v.allow_access_point
+      allow_insecure_access                = v.allow_insecure_access == null ? var.bucket_allow_insecure_access_default : v.allow_insecure_access
       allow_public                         = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
+      allow_service_logging                = v.allow_service_logging == null ? var.bucket_allow_service_logging_default : v.allow_service_logging
       cloudfront_origin_access_identity    = v.cloudfront_origin_access_identity
       cors_allowed_headers                 = v.cors_allowed_headers == null ? var.bucket_cors_allowed_headers_default : v.cors_allowed_headers
       cors_allowed_methods                 = v.cors_allowed_methods == null ? var.bucket_cors_allowed_methods_default : v.cors_allowed_methods

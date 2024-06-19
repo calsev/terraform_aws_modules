@@ -50,7 +50,7 @@ resource "aws_launch_template" "this_launch_template" {
     device_name = each.value.storage_root_device_name
     ebs {
       delete_on_termination = true
-      encrypted             = null # TODO
+      encrypted             = each.value.storage_volume_encrypted
       kms_key_id            = null # TODO
       snapshot_id           = null # TODO
       throughput            = null # TODO

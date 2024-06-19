@@ -144,9 +144,17 @@ variable "db_character_set_name_default" {
   default = null
 }
 
-variable "db_cloudwatch_log_export_list_default" {
-  type    = list(string)
-  default = []
+variable "db_cloudwatch_log_export_list_map_default" {
+  type = map(list(string))
+  default = {
+    db2       = ["diag.log", "notify.log"]
+    mariadb   = ["audit", "error", "general", "slowquery"]
+    mysql     = ["audit", "error", "general", "slowquery"]
+    oracle    = ["alert", "audit", "listener", "trace"] # oemagent
+    postgres  = ["postgresql", "upgrade"]
+    sqlserver = ["agent", "error"]
+  }
+  description = "A map of engine family to log exports. See https://docs.aws.amazon.com/securityhub/latest/userguide/rds-controls.html#rds-9"
 }
 
 variable "db_copy_tags_to_snapshot_default" {

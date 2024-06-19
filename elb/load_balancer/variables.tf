@@ -86,8 +86,9 @@ variable "elb_dns_from_zone_key_default" {
 }
 
 variable "elb_drop_invalid_header_fields_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = true
+  description = "Disabling is a medium-level security finding"
 }
 
 variable "elb_enable_cross_zone_load_balancing_default" {
@@ -97,8 +98,9 @@ variable "elb_enable_cross_zone_load_balancing_default" {
 }
 
 variable "elb_enable_deletion_protection_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = true
+  description = "Disabling is a medium-level security finding"
 }
 
 variable "elb_enable_http2_default" {

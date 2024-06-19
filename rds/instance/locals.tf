@@ -29,7 +29,6 @@ locals {
       blue_green_update_enabled                 = v.blue_green_update_enabled == null ? var.db_blue_green_update_enabled_default : v.blue_green_update_enabled
       ca_cert_identifier                        = v.ca_cert_identifier == null ? var.db_ca_cert_identifier_default : v.ca_cert_identifier
       character_set_name                        = v.character_set_name == null ? var.db_character_set_name_default : v.character_set_name
-      cloudwatch_log_export_list                = v.cloudwatch_log_export_list == null ? var.db_cloudwatch_log_export_list_default : v.cloudwatch_log_export_list
       copy_tags_to_snapshot                     = v.copy_tags_to_snapshot == null ? var.db_copy_tags_to_snapshot_default : v.copy_tags_to_snapshot
       create_instance                           = v.create_instance == null ? var.db_create_instance_default : v.create_instance
       db_initial_name                           = v.db_initial_name == null ? var.db_initial_name_default : v.db_initial_name
@@ -69,6 +68,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      engine_family             = split("-", local.l1_map[k].engine)[0]
       final_snapshot_identifier = v.final_snapshot_identifier == null ? local.l1_map[k].name_effective : v.final_snapshot_identifier
       #      ignore_change_map = merge(
       #        {
@@ -89,8 +89,9 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      availability_zone_name  = var.vpc_data_map[local.l2_map[k].vpc_key].segment_map[local.l2_map[k].vpc_segment_key].subnet_map[local.l1_map[k].availability_zone_key].availability_zone_name
-      iam_role_arn_monitoring = local.l2_map[k].performance_insights_enabled ? var.iam_data.iam_role_arn_rds_monitor : null
+      availability_zone_name     = var.vpc_data_map[local.l2_map[k].vpc_key].segment_map[local.l2_map[k].vpc_segment_key].subnet_map[local.l1_map[k].availability_zone_key].availability_zone_name
+      cloudwatch_log_export_list = v.cloudwatch_log_export_list == null ? lookup(var.db_cloudwatch_log_export_list_map_default, local.l2_map[k].engine_family, null) == null ? [] : var.db_cloudwatch_log_export_list_map_default[local.l2_map[k].engine_family] : v.cloudwatch_log_export_list
+      iam_role_arn_monitoring    = local.l2_map[k].performance_insights_enabled ? var.iam_data.iam_role_arn_rds_monitor : null
       #ignore_change_list = [
       #  for k_attrib, _ in local.l2_map[k].ignore_change_map : k_attrib
       #]

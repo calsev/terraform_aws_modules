@@ -30,6 +30,7 @@ variable "compute_map" {
     placement_partition_count       = optional(number)
     placement_spread_level          = optional(string)
     placement_strategy              = optional(string)
+    storage_volume_encrypted        = optional(bool)
     storage_volume_type             = optional(string)
     update_default_template_version = optional(bool)
     user_data_command_list          = optional(list(string))
@@ -213,6 +214,12 @@ variable "compute_placement_strategy_default" {
     error_message = "Invalid placement strategy"
   }
   description = "Spread allows 7 instances per AZ. Partition allows 7 partitions per AZ, with unlimited instances per partition."
+}
+
+variable "instance_storage_volume_encrypted_default" {
+  type        = bool
+  default     = true
+  description = "A medium-level security finding if disabled"
 }
 
 variable "compute_storage_volume_type_default" {

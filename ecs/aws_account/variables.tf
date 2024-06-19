@@ -14,3 +14,8 @@ variable "setting_map" {
     taskLongArnFormat              = true
   }
 }
+
+variable "ebs_encryption_by_default_enabled" {
+  type    = bool
+  default = true
+}

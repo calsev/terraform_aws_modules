@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.57.0
+
+### General
+
+* EC2 volumes encrypted by default
+* EBS default encryption added to ECS account
+* ELB deletion protection and drop invalid headers by default
+* Secure transport policy for S3 buckets
+* Log export for RDS by default
+
 ## 0.56.0
 
 ### New modules

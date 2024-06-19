@@ -3,7 +3,7 @@ locals {
   cloud_trail_arn_prefix = "arn:${var.std_map.iam_partition}:cloudtrail:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:trail/*"
   final_policy_json      = data.aws_iam_policy_document.final_policy.json
   has_custom_policy      = length(local.sid_map) != 0
-  has_empty_policy       = !var.allow_access_point && !var.allow_service_logging && !local.has_custom_policy
+  has_empty_policy       = !var.allow_access_point && var.allow_insecure_access && !var.allow_service_logging && !local.has_custom_policy
   logs_arn_prefix        = "arn:${var.std_map.iam_partition}:logs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:*"
   log_object_prefix      = "${local.bucket_arn}/*" # AWSLogs/${var.std_map.aws_account_id}/* prevents prefixes
   service_name           = "s3"
