@@ -56,6 +56,7 @@ locals {
       placement_partition_count       = v.placement_partition_count == null ? var.compute_placement_partition_count_default : v.placement_partition_count
       placement_spread_level          = v.placement_spread_level == null ? var.compute_placement_spread_level_default : v.placement_spread_level
       placement_strategy              = v.placement_strategy == null ? var.compute_placement_strategy_default : v.placement_strategy
+      storage_volume_encrypted        = v.storage_volume_encrypted == null ? var.instance_storage_volume_encrypted_default : v.storage_volume_encrypted
       storage_volume_type             = v.storage_volume_type == null ? var.compute_storage_volume_type_default : v.storage_volume_type
       update_default_template_version = v.update_default_template_version == null ? var.compute_update_default_template_version_default : v.update_default_template_version
       user_data_command_list          = v.user_data_command_list == null ? var.compute_user_data_command_list_default == null ? [] : var.compute_user_data_command_list_default : v.user_data_command_list

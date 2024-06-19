@@ -3,3 +3,7 @@ resource "aws_ecs_account_setting_default" "this_setting" {
   name     = each.key
   value    = each.value
 }
+
+resource "aws_ebs_encryption_by_default" "example" {
+  enabled = var.ebs_encryption_by_default_enabled
+}
