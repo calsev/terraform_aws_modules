@@ -251,6 +251,7 @@ tf-lint: tflint-install
 	cd ../iam/role/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/task && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/ecs/task_execution && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/policy_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/rds_monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

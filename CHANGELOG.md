@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.58.0
+
+### New modules
+
+* ECS task execution role
+
+### General
+
+* ECR mirror pushes all architectures
+* Default name append for RDS password secret
+* Security group app is now a drop-in replacement for vpc_data_map
+
 ## 0.57.0
 
 ### General

@@ -199,16 +199,6 @@ variable "bucket_log_target_prefix_default" {
   default = "s3-server-access/"
 }
 
-variable "bucket_name_include_app_fields_default" {
-  type    = bool
-  default = true
-}
-
-variable "bucket_name_infix_default" {
-  type    = bool
-  default = true
-}
-
 variable "bucket_notification_enable_event_bridge_default" {
   type    = bool
   default = false
@@ -276,6 +266,16 @@ variable "dns_data" {
     }))
   })
   default = null
+}
+
+variable "name_include_app_fields_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
 }
 
 variable "std_map" {

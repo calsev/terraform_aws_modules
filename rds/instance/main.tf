@@ -1,5 +1,6 @@
 module "password_secret" {
   source                                      = "../../secret/random"
+  name_append_default                         = var.password_secret_name_append_default
   name_include_app_fields_default             = var.name_include_app_fields_default
   name_infix_default                          = var.name_infix_default
   name_prefix_default                         = var.name_prefix_default

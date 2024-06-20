@@ -11,29 +11,29 @@ variable "group_map" {
   }))
 }
 
-variable "group_name_include_app_fields_default" {
+variable "name_include_app_fields_default" {
   type        = bool
   default     = false
   description = "It is assumed the DB transcends app organization"
 }
 
-variable "group_name_infix_default" {
+variable "name_infix_default" {
   type    = bool
   default = true
 }
 
-variable "group_name_is_prefix_default" {
+variable "name_is_prefix_default" {
   type        = bool
   default     = false
   description = "If true, name will be used as a prefix"
 }
 
-variable "group_name_prefix_default" {
+variable "name_prefix_default" {
   type    = string
   default = ""
 }
 
-variable "group_name_suffix_default" {
+variable "name_suffix_default" {
   type        = string
   default     = ""
   description = "Appended after context suffix"

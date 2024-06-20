@@ -1,10 +1,10 @@
 module "name_map" {
   source                          = "../../name_map"
-  name_include_app_fields_default = var.group_name_include_app_fields_default
-  name_infix_default              = var.group_name_infix_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
-  name_prefix_default             = var.group_name_prefix_default
-  name_suffix_default             = var.group_name_suffix_default
+  name_prefix_default             = var.name_prefix_default
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -23,7 +23,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
-      name_is_prefix = v.name_is_prefix == null ? var.group_name_is_prefix_default : v.name_is_prefix
+      name_is_prefix = v.name_is_prefix == null ? var.name_is_prefix_default : v.name_is_prefix
     })
   }
   lx_map = {

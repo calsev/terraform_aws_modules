@@ -14,14 +14,14 @@ module "sg_rule" {
   sg_map_public                    = var.sg_map_public
   sg_map_private                   = var.sg_map_private
   std_map                          = var.std_map
-  vpc_map                          = var.vpc_map
+  vpc_map                          = var.vpc_data_map
 }
 
 module "sg" {
   source = "../../sg/group"
   vpc_map = {
     (var.vpc_key) = merge(
-      var.vpc_map[var.vpc_key],
+      var.vpc_data_map[var.vpc_key],
       {
         security_group_map = module.sg_rule.data.security_group_map
       },

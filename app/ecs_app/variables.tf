@@ -955,6 +955,14 @@ variable "task_container_image_default" {
   default = "public.ecr.aws/lts/ubuntu:latest"
 }
 
+variable "task_container_mount_point_map_default" {
+  type = map(object({
+    container_path = string
+    read_only      = optional(bool)
+  }))
+  default = {}
+}
+
 variable "task_container_mount_read_only_default" {
   type    = bool
   default = false
@@ -976,6 +984,10 @@ variable "task_container_port_map_default" {
 variable "task_container_port_protocol_default" {
   type    = string
   default = "tcp"
+  validation {
+    condition     = contains(["tcp", "udp"], var.task_container_port_protocol_default)
+    error_message = "Invalid protocol"
+  }
 }
 
 variable "task_container_privileged_default" {
