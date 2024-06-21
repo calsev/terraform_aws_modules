@@ -102,6 +102,7 @@ module "ecs_task" {
   task_container_environment_file_list_default      = var.task_container_environment_file_list_default
   task_container_environment_map_default            = var.task_container_environment_map_default
   task_container_image_default                      = var.task_container_image_default
+  task_container_mount_point_map_default            = var.task_container_mount_point_map_default
   task_container_mount_read_only_default            = var.task_container_mount_read_only_default
   task_container_port_map_default                   = var.task_container_port_map_default
   task_container_port_protocol_default              = var.task_container_port_protocol_default

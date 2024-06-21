@@ -15,14 +15,13 @@ module "ecs_instance_role" {
 
 module "ecs_task_execution_role" {
   # ecsTaskExecutionRole does not exist in all accounts
-  source                   = "../../../iam/role/base"
-  assume_role_service_list = ["ecs-tasks"]
-  name                     = "ecs_task_execution"
-  name_prefix              = var.name_prefix
-  role_policy_attach_arn_map_default = {
-    ecs_task_execution = module.managed_policies.data.iam_policy_arn_ecs_task_execution
+  source = "../../../iam/role/ecs/task_execution"
+  iam_data = {
+    iam_policy_arn_ecs_task_execution = module.managed_policies.data.iam_policy_arn_ecs_task_execution
   }
-  std_map = var.std_map
+  name        = "ecs_task_execution"
+  name_prefix = var.name_prefix
+  std_map     = var.std_map
 }
 
 data "aws_iam_policy_document" "ecs_start_task_policy" {

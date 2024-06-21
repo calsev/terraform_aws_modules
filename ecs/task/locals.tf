@@ -164,8 +164,8 @@ locals {
             }
           }
           memoryReservation = (v_def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.l7_map[k].resource_memory_gib / length(v.container_definition_map) : var.task_container_reserved_memory_gib_default : v_def.reserved_memory_gib) * 1024
-          mountPoints = v_def.mount_point_map == null ? [] : [
-            for name, mount_data in v_def.mount_point_map : {
+          mountPoints = [
+            for name, mount_data in v_def.mount_point_map == null ? var.task_container_mount_point_map_default : v_def.mount_point_map : {
               containerPath = mount_data.container_path
               readOnly      = mount_data.read_only != null ? mount_data.read_only : var.task_container_mount_read_only_default
               sourceVolume  = name

@@ -397,6 +397,11 @@ variable "name_suffix_default" {
   description = "Appended after context suffix"
 }
 
+variable "password_secret_name_append_default" {
+  type    = string
+  default = "db"
+}
+
 variable "subnet_group_map" {
   type = map(object({
     name_effective  = string

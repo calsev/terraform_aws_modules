@@ -77,7 +77,7 @@ ecr-login:
 	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(REPO)
 
 ecr-mirror:
-	$(PY) ecr-mirror --registry-id $(AWS_ACCOUNT) sync
+	$(PY) ecr-mirror --override-arch all --registry-id $(AWS_ACCOUNT) sync
 
 $(VENV):
 	@echo Application Python version is \'$(PY_VER)\'
