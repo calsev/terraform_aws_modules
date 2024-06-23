@@ -17,6 +17,11 @@ module "vpc_map" {
 }
 
 locals {
+  associate_waf_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      elb_id = aws_lb.this_lb[k].id
+    }) if v.waf_arn != null
+  }
   create_db_access_map = {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.log_db_bucket
@@ -191,10 +196,16 @@ locals {
           subnet_id = subnet_id
         }
       }
+      waf_key = local.l1_map[k].load_balancer_type == "application" ? v.waf_key == null ? var.elb_waf_key_default : v.waf_key : null
+    }
+  }
+  l3_map = {
+    for k, v in local.l0_map : k => {
+      waf_arn = local.l2_map[k].waf_key == null ? null : var.waf_data_map[local.l2_map[k].waf_key].waf_arn
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(
@@ -204,6 +215,7 @@ locals {
       local.elb_data_map_emulated[k],
       {
         elb_arn_suffix             = aws_lb.this_lb[k].arn_suffix
+        elb_id                     = aws_lb.this_lb[k].id
         log_access_db              = v.log_db_enabled ? module.log_access_db.data[k] : null
         log_access_table_query     = v.log_db_enabled ? module.log_access_table_query.data[k] : null
         log_connection_db          = v.log_db_enabled ? module.log_connection_db.data[k] : null

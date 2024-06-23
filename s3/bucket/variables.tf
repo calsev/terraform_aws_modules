@@ -24,7 +24,7 @@ variable "bucket_map" {
       storage_class = optional(string)
     })))
     lifecycle_version_count           = optional(number)
-    lifecycle_version_expiration_days = optional(number) # Defaults to lifecycle_expiration_days
+    lifecycle_version_expiration_days = optional(number)
     log_target_bucket_name            = optional(string)
     log_target_prefix                 = optional(string)
     name_include_app_fields           = optional(bool)
@@ -180,12 +180,12 @@ variable "bucket_lifecycle_transition_storage_class_default" {
 
 variable "bucket_lifecycle_version_count_default" {
   type    = number
-  default = null
+  default = 1
 }
 
 variable "bucket_lifecycle_version_expiration_days_default" {
   type    = number
-  default = null
+  default = 7
 }
 
 variable "bucket_log_target_bucket_name_default" {
@@ -249,8 +249,9 @@ variable "bucket_tags_default" {
 }
 
 variable "bucket_versioning_enabled_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = true
+  description = "A medium-level security finding if disabled. Prevents accidental and forced deletion of the bucket while enabled."
 }
 
 variable "bucket_website_enabled_default" {

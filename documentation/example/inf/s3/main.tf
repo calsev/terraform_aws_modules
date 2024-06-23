@@ -42,8 +42,8 @@ module "oregon_bucket" {
     }
     example_package = {}
   }
-  bucket_name_infix_default = false
-  std_map                   = module.com_lib.std_map
+  name_infix_default = false
+  std_map            = module.com_lib.std_map
 }
 
 module "milan_bucket" {

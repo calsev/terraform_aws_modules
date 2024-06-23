@@ -57,6 +57,7 @@ variable "elb_map" {
     vpc_key                     = optional(string)
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
+    waf_key                     = optional(string)
     xff_header_processing_mode  = optional(string)
   }))
 }
@@ -89,6 +90,12 @@ variable "elb_drop_invalid_header_fields_default" {
   type        = bool
   default     = true
   description = "Disabling is a medium-level security finding"
+}
+
+variable "elb_enforce_security_group_inbound_rules_on_private_link_traffic_default" {
+  type        = bool
+  default     = true
+  description = "Ignored except for network load balancers"
 }
 
 variable "elb_enable_cross_zone_load_balancing_default" {
@@ -289,6 +296,12 @@ variable "elb_type_to_port_to_protocol_to_listener_map_default" {
   description = "These are standard listeners indexed by protocol and port. NLBs do not understand hostname or path, so typically do not have multiple listeners per port."
 }
 
+variable "elb_waf_key_default" {
+  type        = string
+  default     = null
+  description = "Ignored for NLB. It is a medium-severity security finding for an ALB to not be associated with a WAF."
+}
+
 variable "elb_xff_header_processing_mode_default" {
   type    = string
   default = "append"
@@ -296,12 +309,6 @@ variable "elb_xff_header_processing_mode_default" {
     condition     = contains(["append", "preserve", "remove"], var.elb_xff_header_processing_mode_default)
     error_message = "Invalid XFF header processing mode"
   }
-}
-
-variable "elb_enforce_security_group_inbound_rules_on_private_link_traffic_default" {
-  type        = bool
-  default     = true
-  description = "Ignored except for network load balancers"
 }
 
 variable "std_map" {
@@ -350,4 +357,12 @@ variable "vpc_security_group_key_list_default" {
 variable "vpc_segment_key_default" {
   type    = string
   default = "public"
+}
+
+variable "waf_data_map" {
+  type = map(object({
+    waf_arn = string
+  }))
+  default     = null
+  description = "Must be provided if any ELB is configured to use a WAF"
 }
