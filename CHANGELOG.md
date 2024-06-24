@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.59.0
+
+### General
+
+* WAF for ELB
+* S3 buckets versioned by default
+* Update WAF
+
 ## 0.58.0
 
 ### New modules

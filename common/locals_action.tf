@@ -107,6 +107,7 @@ locals {
           "CreateModelCustomizationJob",
           "CreateModelEvaluationJob",
           "CreateModelInvocationJob",
+          "DetectGeneratedContent",
           "InvokeModel",
           "InvokeModelWithResponseStream",
         ]

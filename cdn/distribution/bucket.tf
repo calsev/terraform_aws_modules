@@ -5,7 +5,7 @@ module "cdn_origin_bucket" {
   bucket_policy_resource_create_default = false
   dns_data                              = var.dns_data
   bucket_log_target_bucket_name_default = var.bucket_log_target_bucket_name_default
-  bucket_name_infix_default             = false
+  name_infix_default                    = false
   std_map                               = var.std_map
 }
 

@@ -49,6 +49,12 @@ resource "aws_lb" "this_lb" {
   xff_header_processing_mode = each.value.xff_header_processing_mode
 }
 
+resource "aws_wafv2_web_acl_association" "waf" {
+  for_each     = local.associate_waf_map
+  resource_arn = each.value.elb_id
+  web_acl_arn  = each.value.waf_arn
+}
+
 module "elb_listener" {
   source                             = "../../elb/listener"
   dns_data                           = var.dns_data
