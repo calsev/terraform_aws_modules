@@ -14,7 +14,7 @@
 
 This library provides modules to configure many common AWS resources.
 The modules follow a consistent, opinionated programming and data flow paradigm,
-but are configurable and un-opinionated in how they configure resources.
+but are highly parameterized and un-opinionated in how they configure resources.
 
 ## Installation
 
@@ -101,14 +101,27 @@ Modules default to `name_infix = true`.
 This is usually appropriate for internal and "glue" resources so they are easy to track down,
 but is usually changed for external-facing resources or resources with lifetimes that transcend management in Terraform.
 
-
 ### Trivial, structured output
 
 The vast majority of modules provide a single output object named `data`.
 Thus outputs from modules are easy to aggregate.
-Notably, a JSON record of all resources created by an app and their configurations can usually be generated with little difficulty.
+
+This is done for two reasons. First, the internal structure of the modules is largely opaque to clients.
+Many modules will consume output from other modules as a 'data map' and a key into that map.
+The consuming module handles extraction of low-level strings, lists, etc. from the structured output of its dependencies.
+As a result, upgrading typically requires only remapping inputs to root modules.
+
+Second, a JSON record of all resources created by an app and their configurations can usually be generated with little difficulty.
 
 ```terraform
+locals {
+  output_data = {
+    one   = module.one.data
+    two   = module.two.data
+    three = module.three.data
+  }
+}
+
 module "local_config" {
   source  = "../../../modules/local_config"
   content = local.output_data # Aggregated output from all root modules
@@ -116,8 +129,10 @@ module "local_config" {
 }
 ```
 
-This output enables easy consumption by other languages.
+This output enables easy consumption of terraform configuration from other languages.
 This paradigm is used extensively in the examples.
+
+One notable exception is modules that create secrets. These provide separate outputs for secret content to avoid inadvertent aggregation of sensitive data.
 
 ### Networking from vpc_data_map
 
@@ -198,6 +213,13 @@ In this example an ELB is also instantiated with standard HTTP and HTTPS listene
 Notably, this example app generates output that is suitable for usage as the `vpc_data_map` variable that is expected by many other modules.
 Specifically, the output of this example can be imported and passed as `vpc_data_map = data.terraform_remote_state.net.outputs.data.vpc_map`.
 
+### IAM and monitoring
+
+IAM modules provide "apps" for several services. These create the resources that will be required in pretty much any AWS account where these services are utilized.
+These applications are [instantiated here](documentation/example/inf/iam). Notably, output from this app is usable for any module that requires IAM data as `iam_data = data.terraform_remote_state.iam.outputs.data`.
+
+[This example](documentation/example/inf/monitor) demonstrates creation of trails, dashboards, event bus logging, alerting. Notably, output from this app can be consumed by modules as `monitor_data = data.terraform_remote_state.monitor.outputs.data`.
+
 ### DNS
 
 This [example](documentation/example/inf/dns) uses the [dns/zone module](dns/zone) to generate multiple hosted zones.
@@ -213,6 +235,10 @@ It also shows some reusable request and caching policies for Cloudfront.
 
 Notably, the output from this example app can be imported and passed to modules as `cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data`.
 
+### CDN
+
+A CDN and signing keys are [created here](documentation/example/inf/cdn). This example also demonstrates how to create a CDN for private content.
+
 ### Communications
 
 [This example](documentation/example/inf/comms) uses the [Domain identity](ses/domain_identity) and [Email identity](ses/email_identity) modules to create SES email resources for use in alerting and user-facing emails.
@@ -225,15 +251,19 @@ Notably, the output from this example can be passed to modules as `comms_data = 
 
 Notably, the output from this example app can be passed to modules as `cognito_data_map = data.terraform_remote_state.core.outputs.data.user_pool`.
 
-### ECR images
+### ECR, ECS, and Batch
 
 This [small example](documentation/example/inf/ecr) uses the [ecr/repo module](ecr/repo) to generate `ecr_data` as expected by modules that use a container.
 
 Notably, the output from this example app can be imported and passed as `ecr_data = data.terraform_remote_state.ecr.outputs.data`.
 
-### ECS and Batch
-
 The [ECS example](documentation/example/inf/ecs) uses the [ecs/ami_map](ecs/ami_map) module to generate a record of the latest ECS AMIs, as well as the [ecs/aws_account](ecs/aws_account) module to set account options for ECS. The [batch/compute](batch/compute) module is used to create several Batch clusters.
+
+### CI/CD
+
+[This example](documentation/example/inf/ci_cd) demonstrates creation of the account-level resources that are needed for CI/CD. These resources include CodeStar connection, S3 bucket, log groups, and reusable roles. Notably, the output from this module is suitable for passing to CI/CD modules as `ci_cd_account_data = data.terraform_remote_state.ci_cd.outputs.data`.
+
+Creation of CI/CD for a repository is [demonstrated here](documentation/example/code/tf). This includes a pipeline and public build log.
 
 ### S3 object ingestion
 
@@ -279,7 +309,11 @@ Stage mapping by path is shown in this example.
 ### ECS service
 
 The example [app/web_backend](documentation/example/app/web_backend)
-shows the creation of a web backend service behind a load balancer using the high-level [app/ecs_app module](app/ecs_app).
+shows the creation of a web backend service including DNS, load balancing, auto scaling, monitoring, alerting, CI/CD in one module using the high-level [app/ecs_app module](app/ecs_app).
+
+### Static web app
+
+A frontend website is deployed in example [app/web_static](documentation/example/app/web_static). This makes use of the high-level [app/web_static module](app/web_static) to create the CDN and CI/CD in few lines of code.
 
 ## Development scripts
 
@@ -288,7 +322,7 @@ This library provides some scripts to improve quality of life for the Terraform 
 ### Auto move
 
 Terraform provides a programmatic `move` resource, but these do not support `for_each`.
-The [script/tf_move.py](script/tf_move.py) provides a CLI for interactive movement of all resources after a refactor.
+The [script/tf_move.py](script/tf_move.py) provides a CLI for interactive movement of all resources after a refactor or upgrading this library.
 
 ### Auto import of S3 buckets
 

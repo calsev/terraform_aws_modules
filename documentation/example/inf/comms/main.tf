@@ -45,6 +45,17 @@ module "ses_email" {
   std_map = module.com_lib.std_map
 }
 
+module "budget" {
+  source = "path/to/modules/budget/budget"
+  budget_map = {
+    account = {
+      limit_amount = 100
+    }
+  }
+  budget_notification_subscriber_email_address_list_default = ["example@example.com"]
+  std_map                                                   = module.com_lib.std_map
+}
+
 module "local_config" {
   source  = "path/to/modules/local_config"
   content = local.output_data

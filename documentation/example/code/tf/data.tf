@@ -1,8 +1,17 @@
-data "terraform_remote_state" "dns" {
+data "terraform_remote_state" "ci_cd" {
   backend = "s3"
   config = {
     bucket = "example-deploy"
-    key    = "tf-backend/inf-dns.tfstate"
+    key    = "tf-backend/inf-ci-cd.tfstate"
+    region = local.std_var.aws_region_name
+  }
+}
+
+data "terraform_remote_state" "net" {
+  backend = "s3"
+  config = {
+    bucket = "example-deploy"
+    key    = "tf-backend/inf-net.tfstate"
     region = local.std_var.aws_region_name
   }
 }
