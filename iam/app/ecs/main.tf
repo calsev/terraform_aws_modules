@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "ecs_start_task_policy" {
       "ecs:RunTask",
     ]
     # This seems a bit loose, but the managed policy for batch is analogous
-    resources = ["arn:aws:ecs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:task-definition/*"]
+    resources = ["arn:${var.std_map.iam_partition}:ecs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:task-definition/*"]
   }
   statement {
     actions = [

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.61.0
+
+### New modules
+
+* KMS key identity policy
+* KMS key resource policy
+* KMS Key
+
+### General
+
+* Support KMS encryption for Cloudtrail trail
+
 ## 0.60.1
 
 ### General

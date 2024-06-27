@@ -1,3 +1,12 @@
+variable "kms_data_map" {
+  type = map(object({
+    iam_policy_arn_map = map(string)
+    key_arn            = string
+  }))
+  default     = null
+  description = "Must be provided if any trail specifies a key."
+}
+
 variable "log_retention_days_default" {
   type    = number
   default = 14
@@ -58,7 +67,7 @@ variable "trail_map" {
     })))
     include_global_service_events = optional(bool)
     insight_type_list             = optional(list(string))
-    kms_key_id                    = optional(string)
+    kms_key_key                   = optional(string)
     log_bucket_key                = optional(string)
     log_bucket_object_prefix      = optional(string)
     log_file_validation_enabled   = optional(bool)
@@ -142,7 +151,7 @@ variable "trail_insight_type_list_default" {
   }
 }
 
-variable "trail_kms_key_id_default" {
+variable "trail_kms_key_key_default" {
   type    = string
   default = null
 }

@@ -7,6 +7,18 @@ module "name_map" {
 }
 
 locals {
+  create_role_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      role_policy_attach_arn_map_default = merge(
+        {
+          log_write = module.log_group.data[k].iam_policy_arn_map["write"]
+        },
+        v.kms_key_policy_arn == null ? {} : {
+          encrypt_log_object = v.kms_key_policy_arn
+        }
+      )
+    })
+  }
   l0_map = {
     for k, v in var.trail_map : k => v
   }
@@ -16,7 +28,7 @@ locals {
       event_selector_map            = v.event_selector_map == null ? var.trail_event_selector_map_default : v.event_selector_map
       include_global_service_events = v.include_global_service_events == null ? var.trail_include_global_service_events_default : v.include_global_service_events
       insight_type_list             = v.insight_type_list == null ? var.trail_insight_type_list_default : v.insight_type_list
-      kms_key_id                    = v.kms_key_id == null ? var.trail_kms_key_id_default : v.kms_key_id
+      kms_key_key                   = v.kms_key_key == null ? var.trail_kms_key_key_default : v.kms_key_key
       log_bucket_key                = v.log_bucket_key == null ? var.trail_log_bucket_key_default : v.log_bucket_key
       log_bucket_object_prefix      = v.log_bucket_object_prefix == null ? var.trail_log_bucket_object_prefix_default : v.log_bucket_object_prefix
       log_file_validation_enabled   = v.log_file_validation_enabled == null ? var.trail_log_file_validation_enabled_default : v.log_file_validation_enabled
@@ -37,7 +49,9 @@ locals {
           read_write_type                      = v_event.read_write_type == null ? var.trail_event_selector_read_write_type_default : v_event.read_write_type
         })
       }
-      log_bucket_name = var.s3_data_map[local.l1_map[k].log_bucket_key].name_effective
+      kms_key_arn        = local.l1_map[k].kms_key_key == null ? null : var.kms_data_map[local.l1_map[k].kms_key_key].key_arn
+      kms_key_policy_arn = local.l1_map[k].kms_key_key == null ? null : var.kms_data_map[local.l1_map[k].kms_key_key].iam_policy_arn_map["read_write"]
+      log_bucket_name    = var.s3_data_map[local.l1_map[k].log_bucket_key].name_effective
     }
   }
   lx_map = {

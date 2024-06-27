@@ -20,9 +20,11 @@ import hcl2
 
 NAME_PREFIXES = ["name_", "tags"]
 NAME_VARIABLES = {
+    "name_append": "bool",
     "name_include_app_fields": "bool",
     "name_infix": "bool",
     "name_prefix": "string",
+    "name_prepend": "bool",
     "name_suffix": "string",
 }
 VPC_PREFIXES = ["security_group_", "subnet_", "vpc_"]
@@ -171,8 +173,10 @@ def get_or_create_resource_map(
 
 
 def default_type_for_variable(variable: str) -> str:
-    if any(variable.endswith(suffix) for suffix in ["allowed", "enabled"]):
+    if any(variable.endswith(suffix) for suffix in ["allowed", "disabled", "enabled"]):
         return "bool"
+    if any(variable.endswith(suffix) for suffix in ["days", "hours", "seconds"]):
+        return "number"
     if variable.endswith("list"):
         return "list(string)"
     if variable.endswith("map"):
@@ -195,16 +199,16 @@ def generate_variables(
             textwrap.dedent(
                 f"""
                 variable "{variable_prefix}_map" {{
-                    type = map(object({{
+                  type = map(object({{
                 """
             )
         )
         for k_var, t_var in variable_map.items():
-            f.write(f"        {k_var} = optional({t_var})\n")
+            f.write(f"    {k_var} = optional({t_var})\n")
         f.write(
             textwrap.dedent(
                 """
-                    }))
+                  }))
                 }
                 """
             )
@@ -219,17 +223,17 @@ def generate_variables(
                 textwrap.dedent(
                     f"""
                     variable "{variable_name}" {{
-                        type = {t_var}
-                        default = null"""
+                      type = {t_var}
+                      default = null"""
                 )
             )
             if t_var != "bool":
                 f.write(
                     f"""
-    validation {{
-        condition     = contains([], var.{variable_prefix}_{k_var}_default)
-        error_message = "Invalid {k_var.replace('_', ' ')}"
-    }}"""
+  validation {{
+      condition     = contains([], var.{variable_prefix}_{k_var}_default)
+      error_message = "Invalid {k_var.replace('_', ' ')}"
+  }}"""
                 )
             f.write("\n}\n")
 
