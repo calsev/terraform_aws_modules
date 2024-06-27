@@ -220,15 +220,18 @@ def generate_variables(
                     f"""
                     variable "{variable_name}" {{
                         type = {t_var}
-                        default = null
-                        validation {{
-                            condition     = contains([], var.{variable_prefix}_{k_var}_default)
-                            error_message = "Invalid {k_var.replace('_', ' ')}"
-                        }}
-                    }}
-                    """
+                        default = null"""
                 )
             )
+            if t_var != "bool":
+                f.write(
+                    f"""
+    validation {{
+        condition     = contains([], var.{variable_prefix}_{k_var}_default)
+        error_message = "Invalid {k_var.replace('_', ' ')}"
+    }}"""
+                )
+            f.write("\n}\n")
 
 
 def generate_locals(

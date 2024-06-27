@@ -19,37 +19,33 @@ resource "aws_subnet" "this_subnet" {
 
 resource "aws_network_acl" "this_nacl" {
   for_each = local.lx_map
-  egress {
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    protocol   = -1
-    rule_no    = 100
-    to_port    = 0
+  dynamic "egress" {
+    for_each = each.value.nacl_egress_map
+    content {
+      action          = egress.value.action
+      cidr_block      = egress.value.cidr_block
+      from_port       = egress.value.from_port
+      icmp_code       = egress.value.icmp_code
+      icmp_type       = egress.value.icmp_type
+      ipv6_cidr_block = egress.value.ipv6_cidr_block
+      protocol        = egress.value.protocol
+      rule_no         = egress.value.rule_number
+      to_port         = egress.value.to_port
+    }
   }
-  egress {
-    action          = "allow"
-    from_port       = 0
-    ipv6_cidr_block = "::/0"
-    protocol        = -1
-    rule_no         = 101
-    to_port         = 0
-  }
-  ingress {
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    protocol   = -1
-    rule_no    = 100
-    to_port    = 0
-  }
-  ingress {
-    action          = "allow"
-    from_port       = 0
-    ipv6_cidr_block = "::/0"
-    protocol        = -1
-    rule_no         = 101
-    to_port         = 0
+  dynamic "ingress" {
+    for_each = each.value.nacl_ingress_map
+    content {
+      action          = ingress.value.action
+      cidr_block      = ingress.value.cidr_block
+      from_port       = ingress.value.from_port
+      icmp_code       = ingress.value.icmp_code
+      icmp_type       = ingress.value.icmp_type
+      ipv6_cidr_block = ingress.value.ipv6_cidr_block
+      protocol        = ingress.value.protocol
+      rule_no         = ingress.value.rule_number
+      to_port         = ingress.value.to_port
+    }
   }
   subnet_ids = [for k_az in each.value.k_az_list : aws_subnet.this_subnet[k_az].id]
   tags       = each.value.tags

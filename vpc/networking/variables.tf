@@ -46,12 +46,34 @@ variable "vpc_map" {
     # Subnets can be added after creation, but not segments
     availability_zone_map_key_list      = optional(list(string))
     ec2_connect_security_group_key_list = optional(list(string))
-    name_context                        = string
-    name_simple                         = string
-    nat_gateway_enabled                 = optional(bool)
-    nat_instance_enabled                = optional(bool)
-    nat_multi_az                        = optional(bool)
-    security_group_id_map               = map(string)
+    nacl_egress_map = optional(map(object({
+      action          = string
+      cidr_block      = string
+      from_port       = number
+      icmp_code       = number
+      icmp_type       = number
+      ipv6_cidr_block = string
+      protocol        = string
+      rule_number     = number
+      to_port         = number
+    })))
+    nacl_ingress_map = optional(map(object({
+      action          = string
+      cidr_block      = string
+      from_port       = number
+      icmp_code       = number
+      icmp_type       = number
+      ipv6_cidr_block = string
+      protocol        = string
+      rule_number     = number
+      to_port         = number
+    })))
+    name_context          = string
+    name_simple           = string
+    nat_gateway_enabled   = optional(bool)
+    nat_instance_enabled  = optional(bool)
+    nat_multi_az          = optional(bool)
+    security_group_id_map = map(string)
     segment_map = optional(map(object({
       route_internal = optional(bool)
       route_public   = optional(bool)
@@ -69,6 +91,281 @@ variable "vpc_availability_zone_map_key_list_default" {
   type        = list(string)
   default     = ["a", "b"]
   description = "AZs a, ... will be created for each key, mapped to these AWS AZs"
+}
+
+variable "vpc_nacl_egress_map_default" {
+  type = map(object({
+    action          = string
+    cidr_block      = string
+    from_port       = number
+    icmp_code       = number
+    icmp_type       = number
+    ipv6_cidr_block = string
+    protocol        = string
+    rule_number     = number
+    to_port         = number
+  }))
+  default = {
+    allow_ipv4 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 0
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "-1"
+      rule_number     = 32100
+      to_port         = 0
+    }
+    allow_ipv6 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 0
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "-1"
+      rule_number     = 32200
+      to_port         = 0
+    }
+  }
+}
+
+variable "vpc_nacl_ingress_map_default" {
+  type = map(object({
+    action          = string
+    cidr_block      = string
+    from_port       = number
+    icmp_code       = number
+    icmp_type       = number
+    ipv6_cidr_block = string
+    protocol        = string
+    rule_number     = number
+    to_port         = number
+  }))
+  default = {
+    allow_rdp_10 = {
+      action          = "allow"
+      cidr_block      = "10.0.0.0/8"
+      from_port       = 3389
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 10000
+      to_port         = 3389
+    }
+    allow_rdp_172 = {
+      action          = "allow"
+      cidr_block      = "172.16.0.0/12"
+      from_port       = 3389
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 10100
+      to_port         = 3389
+    }
+    allow_rdp_192 = {
+      action          = "allow"
+      cidr_block      = "192.168.0.0/16"
+      from_port       = 3389
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 10200
+      to_port         = 3389
+    }
+    allow_ssh_10 = {
+      action          = "allow"
+      cidr_block      = "10.0.0.0/8"
+      from_port       = 22
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 11000
+      to_port         = 22
+    }
+    allow_ssh_172 = {
+      action          = "allow"
+      cidr_block      = "172.16.0.0/12"
+      from_port       = 22
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 11100
+      to_port         = 22
+    }
+    allow_ssh_192 = {
+      action          = "allow"
+      cidr_block      = "192.168.0.0/16"
+      from_port       = 22
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 11200
+      to_port         = 22
+    }
+    allow_tcp_v4_1 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 0
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 30000
+      to_port         = 21
+    }
+    allow_tcp_v4_2 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 23
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 30100
+      to_port         = 3388
+    }
+    allow_tcp_v4_3 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 3390
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "tcp"
+      rule_number     = 30200
+      to_port         = 65535
+    }
+    allow_udp_v4_1 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 0
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "udp"
+      rule_number     = 30300
+      to_port         = 21
+    }
+    allow_udp_v4_2 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 23
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "udp"
+      rule_number     = 30400
+      to_port         = 3388
+    }
+    allow_udp_v4_3 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 3390
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = null
+      protocol        = "udp"
+      rule_number     = 30500
+      to_port         = 65535
+    }
+    allow_tcp_v6_1 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 0
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "tcp"
+      rule_number     = 31000
+      to_port         = 21
+    }
+    allow_tcp_v6_2 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 23
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "tcp"
+      rule_number     = 31100
+      to_port         = 3388
+    }
+    allow_tcp_v6_3 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 3390
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "tcp"
+      rule_number     = 31200
+      to_port         = 65535
+    }
+    allow_udp_v6_1 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 0
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "udp"
+      rule_number     = 31300
+      to_port         = 21
+    }
+    allow_udp_v6_2 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 23
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "udp"
+      rule_number     = 31400
+      to_port         = 3388
+    }
+    allow_udp_v6_3 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 3390
+      icmp_code       = null
+      icmp_type       = null
+      ipv6_cidr_block = "::/0"
+      protocol        = "udp"
+      rule_number     = 31500
+      to_port         = 65535
+    }
+    allow_icmp4 = {
+      action          = "allow"
+      cidr_block      = "0.0.0.0/0"
+      from_port       = 0
+      icmp_code       = -1
+      icmp_type       = -1
+      ipv6_cidr_block = null
+      protocol        = "icmp"
+      rule_number     = 32000
+      to_port         = 0
+    }
+    allow_icmp6 = {
+      action          = "allow"
+      cidr_block      = null
+      from_port       = 0
+      icmp_code       = -1
+      icmp_type       = -1
+      ipv6_cidr_block = "::/0"
+      protocol        = "ipv6-icmp"
+      rule_number     = 32100
+      to_port         = 0
+    }
+  }
+  description = "Allowing ingress on 0.0.0.0/0 for SSH and RDP is a medium-level security finding. Using deny for this is futile as the Config rules do not account for it."
 }
 
 variable "vpc_nat_gateway_enabled_default" {

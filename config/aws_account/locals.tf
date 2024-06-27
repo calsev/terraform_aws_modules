@@ -1,5 +1,5 @@
 locals {
   output_data = {
-    role = module.config_role.data
+    role = module.service_role.data["config"]
   }
 }

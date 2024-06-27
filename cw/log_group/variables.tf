@@ -4,7 +4,9 @@ variable "log_map" {
     kms_key_id          = optional(string)
     log_group_class     = optional(string)
     log_retention_days  = optional(number)
+    name_append         = optional(string)
     name_prefix         = optional(string)
+    name_prepend        = optional(string)
     policy_access_list  = optional(list(string))
     policy_create       = optional(bool)
     policy_name         = optional(string)
@@ -50,10 +52,22 @@ variable "log_skip_destroy_default" {
   default = false
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
 variable "name_prefix_default" {
   type        = string
   default     = ""
   description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended after key"
 }
 
 variable "policy_access_list_default" {

@@ -1,8 +1,10 @@
 module "name_map" {
-  source              = "../../name_map"
-  name_map            = var.log_map
-  name_prefix_default = var.name_prefix_default
-  std_map             = var.std_map
+  source               = "../../name_map"
+  name_append_default  = var.name_append_default
+  name_map             = var.log_map
+  name_prefix_default  = var.name_prefix_default
+  name_prepend_default = var.name_prepend_default
+  std_map              = var.std_map
 }
 
 module "policy_map" {

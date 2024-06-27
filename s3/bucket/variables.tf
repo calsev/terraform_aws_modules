@@ -1,6 +1,7 @@
 variable "bucket_map" {
   type = map(object({
     allow_access_point                = optional(bool)
+    allow_config_recording            = optional(bool)
     allow_insecure_access             = optional(bool)
     allow_public                      = optional(bool)
     allow_service_logging             = optional(bool)
@@ -53,6 +54,11 @@ variable "bucket_map" {
 variable "bucket_allow_access_point_default" {
   type    = bool
   default = true
+}
+
+variable "bucket_allow_config_recording_default" {
+  type    = bool
+  default = false
 }
 
 variable "bucket_allow_insecure_access_default" {

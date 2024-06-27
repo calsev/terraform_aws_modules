@@ -1,13 +1,7 @@
-variable "s3_data_map" {
-  type = map(object({
-    policy = object({
-      iam_policy_arn_map = map(string)
-    })
-  }))
-}
-
-variable "log_bucket_key" {
-  type = string
+variable "record_retention_period_days" {
+  type        = number
+  default     = 2557
+  description = "This should be set to 7 years for legal discovery"
 }
 
 variable "std_map" {

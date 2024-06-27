@@ -1,9 +1,9 @@
 variable "ap_map" {
   type = map(object({
-    allow_public          = optional(bool)
-    bucket_name_effective = string
-    name_infix            = optional(bool)
-    policy_create         = optional(bool)
+    allow_public  = optional(bool)
+    bucket_key    = optional(string) # Defaults to key
+    name_infix    = optional(bool)
+    policy_create = optional(bool)
     sid_map = optional(map(object({
       access = string
       condition_map = optional(map(object({
@@ -57,6 +57,12 @@ variable "ap_sid_identifier_type_default" {
 variable "ap_sid_object_key_list_default" {
   type    = list(string)
   default = ["*"]
+}
+
+variable "s3_data_map" {
+  type = map(object({
+    name_effective = string
+  }))
 }
 
 variable "std_map" {
