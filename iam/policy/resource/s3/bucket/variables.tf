@@ -3,6 +3,11 @@ variable "allow_access_point" {
   default = true
 }
 
+variable "allow_config_recording" {
+  type    = bool
+  default = false
+}
+
 variable "allow_insecure_access" {
   type    = bool
   default = false

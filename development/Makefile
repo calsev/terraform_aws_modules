@@ -80,6 +80,8 @@ tf-fmt-lint: tf-fmt git-lint
 tf-lint: tflint-install
 	$(LINT) --config=.tflint.hcl --init
 	cd .. && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../account/alternate_contact && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../api_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../api_gateway/api && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../api_gateway/authorizer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -103,6 +105,8 @@ tf-lint: tflint-install
 	cd ../batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/compute && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/job && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../budget && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../budget/budget && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cdn && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cdn/cache_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cdn/distribution && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -124,6 +128,8 @@ tf-lint: tflint-install
 	cd ../ci_cd/remote/account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/remote/connection && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ci_cd/remote/host && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cloudtrail && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cloudtrail/trail && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/client_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/user_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -145,6 +151,7 @@ tf-lint: tflint-install
 	cd ../ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/auto_scaling_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/elastic_ip && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ec2/flow_log && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/instance_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/key_pair && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/network_interface && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -190,6 +197,7 @@ tf-lint: tflint-install
 	cd ../iam/app/lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/mobile_analytics && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/rds && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/app/support && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/assume_role && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/assume_role_external && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -254,6 +262,7 @@ tf-lint: tflint-install
 	cd ../iam/role/ecs/task_execution && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/policy_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/rds_monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/service_linked && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/workspaces && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/workspaces/default && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

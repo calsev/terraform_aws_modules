@@ -81,6 +81,57 @@ data "aws_iam_policy_document" "transport_policy" {
   }
 }
 
+data "aws_iam_policy_document" "config_policy" {
+  for_each = var.allow_config_recording ? { this = {} } : {}
+  statement {
+    actions = ["s3:ListBucket"]
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "AWS:SourceAccount"
+    }
+    principals {
+      identifiers = ["config.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = [local.bucket_arn]
+    sid       = "AllowConfigBucketExistenceCheck"
+  }
+  statement {
+    actions = ["s3:GetBucketAcl"]
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "AWS:SourceAccount"
+    }
+    principals {
+      identifiers = ["config.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = [local.bucket_arn]
+    sid       = "AllowConfigBucketPermissionCheck"
+  }
+  statement {
+    actions = ["s3:PutObject"]
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "AWS:SourceAccount"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = ["bucket-owner-full-control"]
+      variable = "s3:x-amz-acl"
+    }
+    principals {
+      identifiers = ["config.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = [local.log_object_prefix]
+    sid       = "AllowConfigBucketDelivery"
+  }
+}
+
 data "aws_elb_service_account" "lb" {}
 
 data "aws_iam_policy_document" "elb_policy" {
@@ -196,6 +247,7 @@ data "aws_iam_policy_document" "final_policy" {
   source_policy_documents = concat(flatten([
     local.has_empty_policy ? [data.aws_iam_policy_document.empty_policy["this"].json] : [],
     var.allow_access_point ? [data.aws_iam_policy_document.ap_policy["this"].json] : [],
+    var.allow_config_recording ? [data.aws_iam_policy_document.config_policy["this"].json] : [],
     var.allow_insecure_access ? [] : [data.aws_iam_policy_document.transport_policy["this"].json],
     var.allow_service_logging ? [data.aws_iam_policy_document.elb_policy["this"].json] : [],
     local.has_custom_policy ? [jsonencode(module.this_policy["this"].iam_policy_doc)] : [],

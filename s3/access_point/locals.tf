@@ -22,12 +22,14 @@ locals {
   l1_map = {
     for k, v in var.ap_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
       allow_public  = v.allow_public == null ? var.ap_allow_public_default : v.allow_public
+      bucket_key    = v.bucket_key == null ? k : v.bucket_key
       policy_create = v.policy_create == null ? var.ap_policy_create_default : v.policy_create
       sid_map_l1    = v.sid_map == null ? {} : v.sid_map
     })
   }
   l2_map = {
     for k, _ in var.ap_map : k => {
+      bucket_name_effective = var.s3_data_map[local.l1_map[k].bucket_key].name_effective
       sid_map = {
         for k_sid, v_sid in local.l1_map[k].sid_map_l1 : k_sid => {
           access          = v_sid.access

@@ -43,6 +43,7 @@ locals {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       acceleration_enabled              = length(split(".", k)) == 1 # TODO: Why not dot buckets?
       allow_access_point                = v.allow_access_point == null ? var.bucket_allow_access_point_default : v.allow_access_point
+      allow_config_recording            = v.allow_config_recording == null ? var.bucket_allow_config_recording_default : v.allow_config_recording
       allow_insecure_access             = v.allow_insecure_access == null ? var.bucket_allow_insecure_access_default : v.allow_insecure_access
       allow_public                      = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
       allow_service_logging             = v.allow_service_logging == null ? var.bucket_allow_service_logging_default : v.allow_service_logging
@@ -128,7 +129,7 @@ locals {
         for k_bucket, v_bucket in v : k_bucket => v_bucket if !contains(["policy_create", "sid_map", "sid_map_l1", "sid_map_l2"], k_bucket)
       },
       {
-        arn                     = aws_s3_bucket.this_bucket[k].arn
+        bucket_arn              = aws_s3_bucket.this_bucket[k].arn
         bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
         bucket_policy_doc       = v.policy_resource_create ? module.this_bucket_policy[k].iam_policy_doc : null
         bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint

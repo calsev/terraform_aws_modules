@@ -23,6 +23,14 @@ variable "monitor_data" {
   description = "Must be provided if using a nat instance"
 }
 
+variable "s3_data_map" {
+  type = map(object({
+    bucket_arn = string
+  }))
+  default     = null
+  description = "Must be provided if a log bucket key is specified"
+}
+
 variable "std_map" {
   type = object({
     aws_account_id       = string
@@ -47,8 +55,9 @@ variable "vpc_map" {
       route_internal = optional(bool)
       route_public   = optional(bool)
     })))
-    subnet_bit_length = optional(number) # The number of bits to add to the mask, defaults to ceil(log(#segments * #azs, 2)), set higher to accommodate future AZs
-    vpc_cidr_block    = string
+    subnet_bit_length                   = optional(number) # The number of bits to add to the mask, defaults to ceil(log(#segments * #azs, 2)), set higher to accommodate future AZs
+    vpc_cidr_block                      = string
+    vpc_flow_log_destination_bucket_key = optional(string)
   }))
 }
 
@@ -56,6 +65,12 @@ variable "vpc_availability_zone_map_key_list_default" {
   type        = list(string)
   default     = ["a", "b"]
   description = "AZs a, ... will be created for each key, mapped to these AWS AZs"
+}
+
+variable "vpc_flow_log_destination_bucket_key_default" {
+  type        = string
+  default     = null
+  description = "If true, flow logs will be enabled for the VPC"
 }
 
 variable "vpc_nat_multi_az_default" {

@@ -9,6 +9,8 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, {
       availability_zone_map_key_list = v.availability_zone_map_key_list == null ? var.vpc_availability_zone_map_key_list_default : v.availability_zone_map_key_list
+      nacl_egress_map                = v.nacl_egress_map == null ? var.vpc_nacl_egress_map_default : v.nacl_egress_map
+      nacl_ingress_map               = v.nacl_ingress_map == null ? var.vpc_nacl_ingress_map_default : v.nacl_ingress_map
       nat_multi_az                   = v.nat_multi_az == null ? var.vpc_nat_multi_az_default : v.nat_multi_az
       segment_map                    = v.segment_map == null ? var.vpc_segment_map_default : v.segment_map
     })

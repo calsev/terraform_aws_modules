@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.60.0
+
+### New modules
+
+* Account alternate contact
+* Budgets budget
+* Cloudtrail trail
+* EC2 flow log
+* IAM app for AWS support
+* IAM service-linked role
+
+### General
+
+* Config service-linked role created by default
+* S3 resource policy for Config recording
+* Default requirements for passwords hardened
+* Update S3 access point
+* VPC NACL deny external SSH and RDP by default
+* VPC flow log by default
+
 ## 0.59.0
 
 ### General
