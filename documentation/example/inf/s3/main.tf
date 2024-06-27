@@ -32,6 +32,7 @@ module "oregon_bucket" {
     example_data          = {}
     example_deploy        = {}
     example_log = {
+      allow_config_recording    = true
       allow_service_logging     = true
       lifecycle_expiration_days = 30
     }
@@ -61,22 +62,6 @@ module "milan_bucket" {
   bucket_dns_from_zone_key_default = "example.com"
   dns_data                         = data.terraform_remote_state.dns.outputs.data
   std_map                          = module.milan_lib.std_map
-}
-
-module "oregon_ap" {
-  source = "path/to/modules/s3/access_point"
-  ap_map = {
-    example_data_ap = {
-      bucket_name_effective = module.oregon_bucket.data["example_data"].name_effective
-      vpc_key               = "main"
-    }
-    example_deploy_ap = {
-      bucket_name_effective = module.oregon_bucket.data["example_deploy"].name_effective
-    }
-  }
-  ap_name_infix_default = false
-  std_map               = module.com_lib.std_map
-  vpc_data_map          = data.terraform_remote_state.net.outputs.data.vpc_map
 }
 
 module "tf_lock" {

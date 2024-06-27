@@ -1,8 +1,5 @@
 locals {
   output_data = {
-    ap = {
-      (module.com_lib.std_map.aws_region_name) = module.oregon_ap.data
-    }
     bucket = {
       (module.milan_lib.std_map.aws_region_name) = module.milan_bucket.data
       (module.com_lib.std_map.aws_region_name)   = module.oregon_bucket.data

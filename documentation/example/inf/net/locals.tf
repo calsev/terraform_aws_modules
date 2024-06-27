@@ -8,6 +8,9 @@ locals {
     module.vpc_stack.data,
     {
       elb_map = module.load_balancer.data
+      s3_ap = {
+        (module.com_lib.std_map.aws_region_name) = module.oregon_ap.data
+      }
     }
   )
 }

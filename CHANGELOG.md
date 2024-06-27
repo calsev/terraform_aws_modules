@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.60.1
+
+### General
+
+* Add several examples
+
 ## 0.60.0
 
 ### New modules
