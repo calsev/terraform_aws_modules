@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.62.0
+
+### New modules
+
+* Config recorder
+* S3 public access block
+
+### General
+
+* Config AWS account creates recorder
+* Combine policies for assume role
+
 ## 0.61.0
 
 ### New modules

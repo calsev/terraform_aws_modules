@@ -72,6 +72,7 @@ locals {
       requester_pays                    = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
       sid_map_l1                        = v.sid_map == null ? {} : v.sid_map
       versioning_enabled                = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
+      versioning_mfa_delete_enabled     = v.versioning_mfa_delete_enabled == null ? var.bucket_versioning_mfa_delete_enabled_default : v.versioning_mfa_delete_enabled
       website_enabled                   = v.website_enabled == null ? var.bucket_website_enabled_default : v.website_enabled
     })
   }

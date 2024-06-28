@@ -173,14 +173,17 @@ def get_or_create_resource_map(
 
 
 def default_type_for_variable(variable: str) -> str:
-    if any(variable.endswith(suffix) for suffix in ["allowed", "disabled", "enabled"]):
+    if any(
+        variable.endswith(suffix)
+        for suffix in ["allowed", "disabled", "enabled", "excluded", "included", "only"]
+    ):
         return "bool"
     if any(variable.endswith(suffix) for suffix in ["days", "hours", "seconds"]):
         return "number"
     if variable.endswith("list"):
         return "list(string)"
     if variable.endswith("map"):
-        return "map(string)"
+        return "map(object({}))"
     return "string"
 
 
