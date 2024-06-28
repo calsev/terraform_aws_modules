@@ -31,7 +31,7 @@ resource "aws_s3_bucket_versioning" "this_bucket_versioning" {
   for_each = local.lx_map
   bucket   = aws_s3_bucket.this_bucket[each.key].id
   versioning_configuration {
-    mfa_delete = "Disabled"
+    mfa_delete = each.value.versioning_mfa_delete_enabled ? "Enabled" : "Disabled"
     status     = each.value.versioning_enabled ? "Enabled" : "Suspended"
   }
 }

@@ -45,9 +45,10 @@ variable "bucket_map" {
       identifier_type = optional(string)
       object_key_list = optional(list(string))
     })))
-    tags               = optional(map(string))
-    versioning_enabled = optional(bool)
-    website_enabled    = optional(bool)
+    tags                          = optional(map(string))
+    versioning_enabled            = optional(bool)
+    versioning_mfa_delete_enabled = optional(bool)
+    website_enabled               = optional(bool)
   }))
 }
 
@@ -258,6 +259,12 @@ variable "bucket_versioning_enabled_default" {
   type        = bool
   default     = true
   description = "A medium-level security finding if disabled. Prevents accidental and forced deletion of the bucket while enabled."
+}
+
+variable "bucket_versioning_mfa_delete_enabled_default" {
+  type        = bool
+  default     = false
+  description = "Ignored unless versioning_enabled. Versioning satisfies typical security controls without this. Cannot actually be set true with Terraform, see https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html."
 }
 
 variable "bucket_website_enabled_default" {

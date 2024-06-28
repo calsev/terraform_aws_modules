@@ -1,5 +1,5 @@
 module "assume_role_policy" {
-  source = "../../../iam/policy/assume_role_external"
+  source = "../../../iam/policy/assume_role"
   account_map = {
     SupportAccount = {
       aws_account_id_list = local.support_account_id_list

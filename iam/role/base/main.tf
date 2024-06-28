@@ -2,6 +2,7 @@ module "assume_role_policy" {
   source       = "../../../iam/policy/assume_role"
   for_each     = local.l1_map.enable_assume_role ? { this = {} } : {}
   service_list = local.l1_map.assume_role_service_list
+  std_map      = var.std_map
 }
 
 resource "aws_iam_policy" "this_created_policy" {

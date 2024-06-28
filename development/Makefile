@@ -136,6 +136,7 @@ tf-lint: tflint-install
 	cd ../common && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../config/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../config/recorder && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/config_ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -200,7 +201,6 @@ tf-lint: tflint-install
 	cd ../iam/app/support && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/assume_role && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../iam/policy/assume_role_external && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/access_resource && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -294,6 +294,7 @@ tf-lint: tflint-install
 	cd ../s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../s3/access_point && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../s3/public_access_block && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/data && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/init_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
