@@ -223,6 +223,7 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity/event && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/event/bus && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/lambda/net && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -245,6 +246,8 @@ tf-lint: tflint-install
 	cd ../iam/policy/resource/cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/ecr/repo && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/resource/kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/resource/kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/sns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -269,6 +272,8 @@ tf-lint: tflint-install
 	cd ../iam/user && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user/password_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

@@ -5,6 +5,7 @@ module "assume_role_policy" {
       aws_account_id_list = local.support_account_id_list
     }
   }
+  std_map = var.std_map
 }
 
 module "support_access_role" {

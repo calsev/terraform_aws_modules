@@ -7,14 +7,12 @@ module "log_group" {
 }
 
 module "logging_role" {
-  source                   = "../../iam/role/base"
-  for_each                 = local.lx_map
-  assume_role_service_list = ["cloudtrail"]
-  name                     = "${each.key}_trail"
-  role_policy_attach_arn_map_default = {
-    log_write = module.log_group.data[each.key].iam_policy_arn_map["write"]
-  }
-  std_map = var.std_map
+  source                             = "../../iam/role/base"
+  for_each                           = local.create_role_map
+  assume_role_service_list           = ["cloudtrail"]
+  name                               = "${each.key}_trail"
+  role_policy_attach_arn_map_default = each.value.role_policy_attach_arn_map_default
+  std_map                            = var.std_map
 }
 
 resource "aws_cloudtrail" "this_trail" {
@@ -62,7 +60,7 @@ resource "aws_cloudtrail" "this_trail" {
   }
   is_multi_region_trail = each.value.multi_region_trail_enabled
   is_organization_trail = each.value.organization_trail_enabled
-  kms_key_id            = each.value.kms_key_id
+  kms_key_id            = each.value.kms_key_arn # Must be an ARN
   name                  = each.value.name_effective
   s3_bucket_name        = each.value.log_bucket_name
   s3_key_prefix         = each.value.log_bucket_object_prefix

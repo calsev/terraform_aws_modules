@@ -591,29 +591,39 @@ locals {
       }
     }
     kms = {
+      alias = {
+        public_read  = []
+        read         = []
+        public_write = []
+        write        = []
+      }
       key = {
         public_read = []
         read = [
-          "Decrypt",
+          "DescribeKey", # Required for encryption
           "GetPublicKey",
           "ListResourceTags",
-          "Verify",
-          "VerifyMac",
         ]
         public_write = []
         write = [
+          "Decrypt",
           "Encrypt",
+          "GenerateDataKey", # Required for encryption
           "GenerateMac",
           "ReEncryptFrom",
           "ReEncryptTo",
           "Sign",
           "TagResource",
           "UntagResource",
+          "Verify",
+          "VerifyMac",
         ]
       }
       star = {
         public_read = []
         read = [
+          "ListAliases",
+          "ListKeys",
         ]
         public_write = []
         write = [

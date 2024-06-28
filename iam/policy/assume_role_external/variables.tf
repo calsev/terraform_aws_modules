@@ -4,3 +4,9 @@ variable "account_map" {
     external_id_list    = optional(list(string), [])
   }))
 }
+
+variable "std_map" {
+  type = object({
+    iam_partition = string
+  })
+}

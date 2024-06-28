@@ -3,7 +3,7 @@ locals {
     for k, v in var.account_map : title(k) => merge(
       {
         identifier_list = [
-          for aws_account_id in v.aws_account_id_list : "arn:aws:iam::${aws_account_id}:root"
+          for aws_account_id in v.aws_account_id_list : "arn:${var.std_map.iam_partition}:iam::${aws_account_id}:root"
         ]
       },
       length(v.external_id_list) != 0 ? {
