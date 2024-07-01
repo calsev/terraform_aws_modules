@@ -45,8 +45,10 @@ locals {
       allow_access_point                = v.allow_access_point == null ? var.bucket_allow_access_point_default : v.allow_access_point
       allow_config_recording            = v.allow_config_recording == null ? var.bucket_allow_config_recording_default : v.allow_config_recording
       allow_insecure_access             = v.allow_insecure_access == null ? var.bucket_allow_insecure_access_default : v.allow_insecure_access
+      allow_log_cloudtrail              = v.allow_log_cloudtrail == null ? var.bucket_allow_log_cloudtrail_default : v.allow_log_cloudtrail
+      allow_log_elb                     = v.allow_log_elb == null ? var.bucket_allow_log_elb_default : v.allow_log_elb
+      allow_log_waf                     = v.allow_log_waf == null ? var.bucket_allow_log_waf_default : v.allow_log_waf
       allow_public                      = v.allow_public == null ? var.bucket_allow_public_default : v.allow_public
-      allow_service_logging             = v.allow_service_logging == null ? var.bucket_allow_service_logging_default : v.allow_service_logging
       cloudfront_origin_access_identity = v.cloudfront_origin_access_identity
       cors_allowed_headers              = v.cors_allowed_headers == null ? var.bucket_cors_allowed_headers_default : v.cors_allowed_headers
       cors_allowed_methods              = v.cors_allowed_methods == null ? var.bucket_cors_allowed_methods_default : v.cors_allowed_methods

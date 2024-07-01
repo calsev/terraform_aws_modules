@@ -3,8 +3,10 @@ variable "bucket_map" {
     allow_access_point                = optional(bool)
     allow_config_recording            = optional(bool)
     allow_insecure_access             = optional(bool)
+    allow_log_cloudtrail              = optional(bool)
+    allow_log_elb                     = optional(bool)
+    allow_log_waf                     = optional(bool)
     allow_public                      = optional(bool)
-    allow_service_logging             = optional(bool)
     cloudfront_origin_access_identity = optional(string)
     cors_allowed_headers              = optional(list(string))
     cors_allowed_methods              = optional(list(string))
@@ -67,15 +69,25 @@ variable "bucket_allow_insecure_access_default" {
   default = false
 }
 
+variable "bucket_allow_log_cloudtrail_default" {
+  type    = bool
+  default = false
+}
+
+variable "bucket_allow_log_elb_default" {
+  type    = bool
+  default = false
+}
+
+variable "bucket_allow_log_waf_default" {
+  type    = bool
+  default = false
+}
+
 variable "bucket_allow_public_default" {
   type        = bool
   default     = false
   description = "There are 2 ways to access an S3 object: S3 URI and S3 website. 3 settings govern public access. allow_public is required for ANY public access."
-}
-
-variable "bucket_allow_service_logging_default" {
-  type    = bool
-  default = false
 }
 
 variable "bucket_cors_allowed_headers_default" {

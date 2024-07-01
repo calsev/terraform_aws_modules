@@ -178,7 +178,9 @@ def default_type_for_variable(variable: str) -> str:
         for suffix in ["allowed", "disabled", "enabled", "excluded", "included", "only"]
     ):
         return "bool"
-    if any(variable.endswith(suffix) for suffix in ["days", "hours", "seconds"]):
+    if any(
+        variable.endswith(suffix) for suffix in ["days", "hours", "seconds", "value"]
+    ):
         return "number"
     if variable.endswith("list"):
         return "list(string)"
@@ -219,7 +221,10 @@ def generate_variables(
         for k_var, t_var in variable_map.items():
             variable_name = (
                 f"{k_var}_default"
-                if any(k_var.startswith(prefix) for prefix in ALL_PREFIXES)
+                if (
+                    any(k_var.startswith(prefix) for prefix in ALL_PREFIXES)
+                    or k_var.startswith(variable_prefix)
+                )
                 else f"{variable_prefix}_{k_var}_default"
             )
             f.write(
@@ -247,8 +252,13 @@ def generate_locals(
     path = os.path.abspath(os.path.join("development", "module_gen", "locals.tf"))
     with open(path, "w") as f:
         for variable in variable_list:
+            def_name = (
+                variable
+                if variable.startswith(variable_prefix)
+                else f"{variable_prefix}_{variable}"
+            )
             f.write(
-                f"      {variable} = v.{variable} == null ? var.{variable_prefix}_{variable}_default : v.{variable}\n"
+                f"      {variable} = v.{variable} == null ? var.{def_name}_default : v.{variable}\n"
             )
 
 

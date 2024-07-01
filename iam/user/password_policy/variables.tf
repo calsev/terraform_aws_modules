@@ -18,7 +18,7 @@ variable "age_max_days" {
 variable "length_min" {
   type        = number
   default     = 16
-  description = "Less than 12 will be a finding in some security frameworks"
+  description = "Less than 12 will be a finding in some security frameworks, less than 14 in others."
 }
 
 variable "require_lowercase_character" {
