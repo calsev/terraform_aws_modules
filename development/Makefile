@@ -92,6 +92,7 @@ tf-lint: tflint-install
 	cd ../api_gateway/stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../api_gateway/stage && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/alert_aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -140,6 +141,8 @@ tf-lint: tflint-install
 	cd ../cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/config_ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cw/metric_alarm && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cw/metric_filter && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../directory/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -313,7 +316,6 @@ tf-lint: tflint-install
 	cd ../sms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sms/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
-	cd ../sns/alert_aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sns/topic && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sqs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sqs/dead_letter_queue && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -333,6 +335,7 @@ tf-lint: tflint-install
 	cd ../vpc/stack && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../waf && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../waf/acl && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces/workspace && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

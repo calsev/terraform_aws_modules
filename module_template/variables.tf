@@ -1,8 +1,16 @@
 variable "resource_map" {
   type = map(object({
-    name_include_app_fields = optional(bool)
-    name_infix              = optional(bool)
+    name_append   = optional(string)
+    name_infix    = optional(bool)
+    name_override = optional(string)
+    name_prepend  = optional(string)
   }))
+}
+
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
 }
 
 variable "name_include_app_fields_default" {
@@ -14,6 +22,12 @@ variable "name_include_app_fields_default" {
 variable "name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended after key"
 }
 
 variable "std_map" {

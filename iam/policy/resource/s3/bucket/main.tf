@@ -134,20 +134,8 @@ data "aws_iam_policy_document" "config_policy" {
 
 data "aws_elb_service_account" "lb" {}
 
-data "aws_iam_policy_document" "elb_policy" {
-  for_each = var.allow_service_logging ? { this = {} } : {}
-  statement {
-    # See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#attach-bucket-policy
-    actions = ["s3:PutObject"]
-    principals {
-      identifiers = [data.aws_elb_service_account.lb.arn]
-      type        = "AWS"
-    }
-    resources = [
-      local.log_object_prefix
-    ]
-    sid = "AllowAlbLogging"
-  }
+data "aws_iam_policy_document" "trail_policy" {
+  for_each = var.allow_log_cloudtrail ? { this = {} } : {}
   statement {
     actions = ["s3:GetBucketAcl"]
     condition {
@@ -185,8 +173,29 @@ data "aws_iam_policy_document" "elb_policy" {
     ]
     sid = "AllowCloudTrailLoggingObject"
   }
+}
+
+data "aws_iam_policy_document" "alb_policy" {
+  for_each = var.allow_log_elb ? { this = {} } : {}
+  # See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#attach-bucket-policy
   statement {
-    # See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+    actions = ["s3:PutObject"]
+    principals {
+      identifiers = [data.aws_elb_service_account.lb.arn]
+      type        = "AWS"
+    }
+    resources = [
+      local.log_object_prefix
+    ]
+    sid = "AllowAlbLogging"
+  }
+}
+
+data "aws_iam_policy_document" "log_delivery_policy" {
+  for_each = var.allow_log_elb || var.allow_log_waf ? { this = {} } : {}
+  # See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+  # See https://docs.aws.amazon.com/waf/latest/developerguide/logging-s3.html
+  statement {
     actions = ["s3:GetBucketAcl"]
     condition {
       test     = "ArnLike"
@@ -249,7 +258,9 @@ data "aws_iam_policy_document" "final_policy" {
     var.allow_access_point ? [data.aws_iam_policy_document.ap_policy["this"].json] : [],
     var.allow_config_recording ? [data.aws_iam_policy_document.config_policy["this"].json] : [],
     var.allow_insecure_access ? [] : [data.aws_iam_policy_document.transport_policy["this"].json],
-    var.allow_service_logging ? [data.aws_iam_policy_document.elb_policy["this"].json] : [],
+    var.allow_log_cloudtrail ? [data.aws_iam_policy_document.trail_policy["this"].json] : [],
+    var.allow_log_elb ? [data.aws_iam_policy_document.alb_policy["this"].json] : [],
+    var.allow_log_elb || var.allow_log_waf ? [data.aws_iam_policy_document.log_delivery_policy["this"].json] : [],
     local.has_custom_policy ? [jsonencode(module.this_policy["this"].iam_policy_doc)] : [],
   ]))
 }

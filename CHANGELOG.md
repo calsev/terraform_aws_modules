@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.63.0
+
+### New modules
+
+* App alert AWS account (was SNS alert AWS account)
+* Cloudwatch log metric filter
+* Cloudwatch metric alarm
+
+### General
+
+* Policy map parameterize default policies
+* S3 support for WAF logging
+* Subnets do not map public IPs by default
+
 ## 0.62.0
 
 ### New modules

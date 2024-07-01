@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "this_created_policy" {
-  for_each = local.policy_create_flattened_map
+  for_each = local.create_policy_x_map
   lifecycle {
     create_before_destroy = true
   }

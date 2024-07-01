@@ -4,8 +4,10 @@ module "this_bucket_policy" {
   source                 = "../../iam/policy/resource/s3/bucket"
   allow_access_point     = each.value.allow_access_point
   allow_config_recording = each.value.allow_config_recording
+  allow_log_cloudtrail   = each.value.allow_log_cloudtrail
+  allow_log_elb          = each.value.allow_log_elb
+  allow_log_waf          = each.value.allow_log_waf
   allow_public           = each.value.allow_public
-  allow_service_logging  = each.value.allow_service_logging
   bucket_name            = each.value.name_effective
   sid_map                = each.value.sid_map
   std_map                = var.std_map

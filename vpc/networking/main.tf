@@ -10,7 +10,7 @@ resource "aws_subnet" "this_subnet" {
   ipv6_cidr_block                                = cidrsubnet(each.value.vpc_ipv6_cidr_block, 8, each.value.cidr_block_index) # Must be /64
   ipv6_native                                    = false
   map_customer_owned_ip_on_launch                = null # Cannot be false without other specs
-  map_public_ip_on_launch                        = each.value.route_public
+  map_public_ip_on_launch                        = each.value.assign_public_ip_on_launch
   outpost_arn                                    = null
   private_dns_hostname_type_on_launch            = each.value.dns_private_hostname_type
   tags                                           = each.value.tags

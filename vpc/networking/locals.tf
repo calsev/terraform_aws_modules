@@ -8,11 +8,12 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, {
-      availability_zone_map_key_list = v.availability_zone_map_key_list == null ? var.vpc_availability_zone_map_key_list_default : v.availability_zone_map_key_list
-      nacl_egress_map                = v.nacl_egress_map == null ? var.vpc_nacl_egress_map_default : v.nacl_egress_map
-      nacl_ingress_map               = v.nacl_ingress_map == null ? var.vpc_nacl_ingress_map_default : v.nacl_ingress_map
-      nat_multi_az                   = v.nat_multi_az == null ? var.vpc_nat_multi_az_default : v.nat_multi_az
-      segment_map                    = v.segment_map == null ? var.vpc_segment_map_default : v.segment_map
+      availability_zone_map_key_list           = v.availability_zone_map_key_list == null ? var.vpc_availability_zone_map_key_list_default : v.availability_zone_map_key_list
+      nacl_egress_map                          = v.nacl_egress_map == null ? var.vpc_nacl_egress_map_default : v.nacl_egress_map
+      nacl_ingress_map                         = v.nacl_ingress_map == null ? var.vpc_nacl_ingress_map_default : v.nacl_ingress_map
+      nat_multi_az                             = v.nat_multi_az == null ? var.vpc_nat_multi_az_default : v.nat_multi_az
+      public_subnet_assign_public_ip_on_launch = v.public_subnet_assign_public_ip_on_launch == null ? var.vpc_public_subnet_assign_public_ip_on_launch_default : v.public_subnet_assign_public_ip_on_launch
+      segment_map                              = v.segment_map == null ? var.vpc_segment_map_default : v.segment_map
     })
   }
   l2_map = {
@@ -60,10 +61,11 @@ locals {
           route_public_v6 = local.l1_map[k].vpc_assign_ipv6_cidr && v_seg.route_public
           subnet_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
-              cidr_block_index = length(local.l3_map[k].segment_map) * v_az.i_az + local.l3_map[k].segment_index_map[k_seg]
-              k_az_full        = "${k}_${k_seg}_${k_az}"
-              k_az_nat         = local.l1_map[k].nat_multi_az ? "${k}_${k_az}" : "${k}_${local.l3_map[k].nat_availability_zone_list[0]}"
-              k_az_only        = "${k}_${k_az}"
+              assign_public_ip_on_launch = local.l1_map[k].public_subnet_assign_public_ip_on_launch && v_seg.route_public
+              cidr_block_index           = length(local.l3_map[k].segment_map) * v_az.i_az + local.l3_map[k].segment_index_map[k_seg]
+              k_az_full                  = "${k}_${k_seg}_${k_az}"
+              k_az_nat                   = local.l1_map[k].nat_multi_az ? "${k}_${k_az}" : "${k}_${local.l3_map[k].nat_availability_zone_list[0]}"
+              k_az_only                  = "${k}_${k_az}"
               tags = merge(
                 var.std_map.tags,
                 {

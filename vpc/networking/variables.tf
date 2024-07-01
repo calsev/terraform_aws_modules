@@ -68,12 +68,13 @@ variable "vpc_map" {
       rule_number     = number
       to_port         = number
     })))
-    name_context          = string
-    name_simple           = string
-    nat_gateway_enabled   = optional(bool)
-    nat_instance_enabled  = optional(bool)
-    nat_multi_az          = optional(bool)
-    security_group_id_map = map(string)
+    name_context                             = string
+    name_simple                              = string
+    nat_gateway_enabled                      = optional(bool)
+    nat_instance_enabled                     = optional(bool)
+    nat_multi_az                             = optional(bool)
+    public_subnet_assign_public_ip_on_launch = optional(bool)
+    security_group_id_map                    = map(string)
     segment_map = optional(map(object({
       route_internal = optional(bool)
       route_public   = optional(bool)
@@ -384,6 +385,12 @@ variable "vpc_nat_multi_az_default" {
   type        = bool
   default     = true
   description = "If false, a single NAT will be created"
+}
+
+variable "vpc_public_subnet_assign_public_ip_on_launch_default" {
+  type        = bool
+  default     = false
+  description = "A medium-severity security finding if enabled."
 }
 
 variable "vpc_segment_map_default" {

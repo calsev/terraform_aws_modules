@@ -46,10 +46,10 @@ variable "user_map" {
     name_override           = optional(string)
     path                    = optional(string)
     pgp_key                 = optional(string)
-    policy_attach_arn_map   = optional(map(string), {})
-    policy_create_json_map  = optional(map(string), {})
-    policy_inline_json_map  = optional(map(string), {})
-    policy_managed_name_map = optional(map(string), {})
+    policy_attach_arn_map   = optional(map(string))
+    policy_create_json_map  = optional(map(string))
+    policy_inline_json_map  = optional(map(string))
+    policy_managed_name_map = optional(map(string))
     tags                    = optional(map(string))
   }))
 }
@@ -83,6 +83,30 @@ variable "user_pgp_key_default" {
   type        = string
   default     = null
   description = "A base-64 encoded PGP public key"
+}
+
+variable "user_policy_attach_arn_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "Attaching a policy directly to a user is a low-level security violation"
+}
+
+variable "user_policy_create_json_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "Attaching a policy directly to a user is a low-level security violation"
+}
+
+variable "user_policy_inline_json_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "Attaching a policy directly to a user is a low-level security violation"
+}
+
+variable "user_policy_managed_name_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "Attaching a policy directly to a user is a low-level security violation"
 }
 
 variable "user_tags_default" {

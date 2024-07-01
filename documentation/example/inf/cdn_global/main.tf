@@ -8,7 +8,7 @@ module "com_lib" {
 }
 
 module "waf" {
-  source = "path/to/modules/waf"
+  source = "path/to/modules/waf/acl"
   waf_map = {
     basic_rate_limit = {
     }

@@ -228,14 +228,12 @@ Finally, the [cert module](cert) is used to create multiple ACM certificates.
 
 Notably, the output from this example app can be imported and passed to many modules as `dns_data = data.terraform_remote_state.dns.outputs.data`.
 
-### Global CDN
+### CDN
 
-This [example](documentation/example/inf/cdn_global) uses the [cert module](cert) and [waf module](waf) to generate multiple hosted zones.
+[This example](documentation/example/inf/cdn_global) uses the [cert module](cert) and [waf module](waf) to generate multiple hosted zones.
 It also shows some reusable request and caching policies for Cloudfront.
 
 Notably, the output from this example app can be imported and passed to modules as `cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data`.
-
-### CDN
 
 A CDN and signing keys are [created here](documentation/example/inf/cdn). This example also demonstrates how to create a CDN for private content.
 

@@ -7,6 +7,26 @@ variable "policy_map" {
   }))
 }
 
+variable "policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
+}
+
 variable "policy_name_infix_default" {
   type    = bool
   default = true

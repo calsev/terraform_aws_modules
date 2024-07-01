@@ -37,11 +37,15 @@ locals {
   }
   u1_map = {
     for k, v in var.user_map : k => merge(v, module.user_name_map.data[k], module.user_policy_map.policy_map[k], {
-      create_access_key     = v.create_access_key == null ? var.user_create_access_key_default : v.create_access_key
-      enable_console_access = v.enable_console_access == null ? var.user_enable_console_access_default : v.enable_console_access
-      force_destroy         = v.force_destroy == null ? var.user_force_destroy_default : v.force_destroy
-      path                  = v.path == null ? var.user_path_default : v.path
-      pgp_key               = v.pgp_key == null ? var.user_pgp_key_default : v.pgp_key
+      create_access_key       = v.create_access_key == null ? var.user_create_access_key_default : v.create_access_key
+      enable_console_access   = v.enable_console_access == null ? var.user_enable_console_access_default : v.enable_console_access
+      force_destroy           = v.force_destroy == null ? var.user_force_destroy_default : v.force_destroy
+      path                    = v.path == null ? var.user_path_default : v.path
+      pgp_key                 = v.pgp_key == null ? var.user_pgp_key_default : v.pgp_key
+      policy_attach_arn_map   = v.policy_attach_arn_map == null ? var.user_policy_attach_arn_map_default : v.policy_attach_arn_map
+      policy_create_json_map  = v.policy_create_json_map == null ? var.user_policy_create_json_map_default : v.policy_create_json_map
+      policy_inline_json_map  = v.policy_inline_json_map == null ? var.user_policy_inline_json_map_default : v.policy_inline_json_map
+      policy_managed_name_map = v.policy_managed_name_map == null ? var.user_policy_managed_name_map_default : v.policy_managed_name_map
     })
   }
   user_console_map = {

@@ -13,12 +13,22 @@ variable "allow_insecure_access" {
   default = false
 }
 
-variable "allow_public" {
+variable "allow_log_cloudtrail" {
   type    = bool
   default = false
 }
 
-variable "allow_service_logging" {
+variable "allow_log_elb" {
+  type    = bool
+  default = false
+}
+
+variable "allow_log_waf" {
+  type    = bool
+  default = false
+}
+
+variable "allow_public" {
   type    = bool
   default = false
 }
