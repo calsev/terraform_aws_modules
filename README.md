@@ -59,7 +59,7 @@ variable "item_map" {
 
 variable "item_some_attribute_default" {
   type =        string
-  description = "I am injected into items for which a corresponding attribute is not set. Generally I default to the most conservative value."
+  description = "I am injected into items for which a corresponding attribute is not set. Typically I default to the most common or conservative value."
 }
 ```
 
@@ -101,17 +101,66 @@ Modules default to `name_infix = true`.
 This is usually appropriate for internal and "glue" resources so they are easy to track down,
 but is usually changed for external-facing resources or resources with lifetimes that transcend management in Terraform.
 
+### Deep embedding
+
+__The what__
+
+Most modules embed all resources necessary to not just create, but use the resource that is logically created by the module.
+For example, the [ci_cd/pipe module](ci_cd/pipe) creates not just the pipeline, but also the webhook to invoke it and the secret for that webhook.
+
+Higher-level modules are demarcated by the suffix `_stack`.
+These create the entire ecosystem for a resource.
+Continuing with the pipeline example, the module [ci_cd/pipe_stack](ci_cd/pipe_stack) creates not just the pipeline and webhook, but also the role that pipe assumes.
+This grants the pipeline permission to access a code connection, read and write artifacts in the [S3 build bucket](ci_cd/aws_account), and start all of the build projects in the pipeline.
+
+The highest-level modules are referred to as apps and are located in the [app directory](app).
+These create resources for several services and often deploy a feature or component in its entirety, for example 'VPN server' or 'API'.
+
+__The why__
+
+Deeply embedding resources allows for easier and more consistent usage and, ironically, normalization of resources.
+For example, ECR repos, log groups, S3 buckets, and other resources that are typically used by other resources embed the identity-based policies necessary to use them.
+Rarely will a user of this module library need to write out a policy document to utilize a resource.
+This pushing of policy to creation site rather than usage site vastly de-duplicates policies across a codebase for things like general-purpose S3 buckets.
+
+Security compliance is also strengthened.
+Many resource types have both configuration and monitoring requirements under various security standards.
+With default settings, modules in this library adhere to and cause no additional findings in all of the AWS Security Hub standards:
+
+* AWS Foundational Security Best Practices
+* AWS Resource Tagging Standard
+* CIS AWS Foundations Benchmarks
+* NIST Special Publication 800-53
+* PCI DSS
+
+To enable this guarantee while simultaneously reducing egregious levels of glue code to pipe things together, log groups, KMS keys, Cloudtrail trails, etc. are embedded with the resources they secure.
+
+__The how__
+
+Common paradigms that support deep embedding include:
+
+* `iam_policy_arn_attach_map` and other policy map variables allow passing the special sauce for a module.
+For example, a Lambda function embeds a role that provides permission to access VPC resources, log to the embedded log group, and push to the embedded deal-letter queue.
+Role policies provide the peculiar permissions needed by a specific Lambda function.
+* `iam_policy_arn_map` is returned from resources that embed an identity-based policy.
+
 ### Trivial, structured output
 
+The companion to deep embedding is structured output.
 The vast majority of modules provide a single output object named `data`.
-Thus outputs from modules are easy to aggregate.
 
-This is done for two reasons. First, the internal structure of the modules is largely opaque to clients.
+This is done for two reasons.
+First, the internal structure of the module outputs is largely opaque to clients.
 Many modules will consume output from other modules as a 'data map' and a key into that map.
-The consuming module handles extraction of low-level strings, lists, etc. from the structured output of its dependencies.
-As a result, upgrading typically requires only remapping inputs to root modules.
+Most often a data map is the single output from another module or app.
+In cases where a data map is an output from a terraform app, it can be one attribute of `data` returned from that module.
+In the examples below apps output a single `data` structure per environment.
 
-Second, a JSON record of all resources created by an app and their configurations can usually be generated with little difficulty.
+The consuming module handles extraction of low-level strings, lists, etc. from the structured output of its data map dependencies.
+Because the vast majority of glue code is uplifted to the modules, upgrading this library typically requires remapping fairly few inputs to root modules.
+
+Second, outputs from modules are easy to aggregate.
+A JSON record of all resources created by an app and their configurations can usually be generated with little difficulty.
 
 ```terraform
 locals {
@@ -134,7 +183,35 @@ This paradigm is used extensively in the examples.
 
 One notable exception is modules that create secrets. These provide separate outputs for secret content to avoid inadvertent aggregation of sensitive data.
 
-### Networking from vpc_data_map
+While this library is optimized for holistic usage, interoperability can be attained by mapping resources to structured outputs.
+For example, data for a VPC created elsewhere is typically synthesized in and exported from a net app so this fact is opaque elsewhere in the codebase.
+
+```terraform
+output "data" {
+  value = {
+    vpc_data_map = {
+      main = {
+        security_group_id_map = {
+          open_vpn = "sg-..."
+        }
+        segment_map = {
+          internal = {
+            route_public  = false
+            subnet_id_map = {
+              internal-a = "subnet-..."
+            }
+          }
+        }
+        vpc_id = "vpc-..."
+      }
+    }
+  }
+}
+```
+
+Common examples of data maps used frequently are given below.
+
+__Networking from vpc_data_map__
 
 Rather than lists of CIDRs and subnet IDs and security group IDs,
 modules that require networking take a `vpc_data_map` and each item in the list takes a
@@ -143,7 +220,8 @@ modules that require networking take a `vpc_data_map` and each item in the list 
 * `vpc_segment_key` to identify the network segment
 * `vpc_az_key_list` to identify which AZs to deploy to, corresponding to the `a`, `b`, `c`, ... AZs for the AWS account
 
-Low-level lists of IDs are synthesized.
+Keys are the user-defined keys of the `item_map` passed to the VPC module, and are usually short and human-friendly.
+Low-level lists of ARNs, IDs and other not-so-friendly strings are synthesized.
 
 ### Permissions by access level
 
@@ -282,7 +360,9 @@ shows examples of lambda functions from several sources
 * Use existing archive and create S3 archive
 * Use existing S3 archive
 
-### API Gateway Integrations
+### API Gateway
+
+#### Integrations
 
 The example [app/api](documentation/example/app/api)
 provides code to create several targets:
@@ -294,7 +374,7 @@ provides code to create several targets:
 Integrations for each of these with API Gateway are also shown.
 Stage mapping by hostname is shown in this example.
 
-### API Gateway Auth
+#### Auth
 
 The example [app/api_auth](documentation/example/app/api_auth)
 provides an example of integrating authorization with API Gateway:
@@ -304,12 +384,14 @@ provides an example of integrating authorization with API Gateway:
 
 Stage mapping by path is shown in this example.
 
-### ECS service
+### Full-stack Web app
+
+#### ECS service
 
 The example [app/web_backend](documentation/example/app/web_backend)
 shows the creation of a web backend service including DNS, load balancing, auto scaling, monitoring, alerting, CI/CD in one module using the high-level [app/ecs_app module](app/ecs_app).
 
-### Static web app
+#### Static web app
 
 A frontend website is deployed in example [app/web_static](documentation/example/app/web_static). This makes use of the high-level [app/web_static module](app/web_static) to create the CDN and CI/CD in few lines of code.
 

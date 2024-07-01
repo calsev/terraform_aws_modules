@@ -10,6 +10,8 @@ module "com_lib" {
 module "config_account" {
   source                       = "path/to/modules/config/aws_account"
   record_retention_period_days = 30
+  s3_bucket_key                = "example_log"
+  s3_data_map                  = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
   std_map                      = module.com_lib.std_map
 }
 
@@ -41,30 +43,14 @@ module "event_account" {
 }
 
 module "alert_account" {
-  source = "path/to/modules/sns/alert_aws_account"
-  email_list = [
+  source = "path/to/modules/app/alert_aws_account"
+  alert_email_address_list_default = [
     "example@example.com",
   ]
-  std_map = module.com_lib.std_map
-}
-
-module "cloudtrail" {
-  source                       = "path/to/modules/cloudtrail/trail"
-  s3_data_map                  = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
-  std_map                      = module.com_lib.std_map
-  trail_log_bucket_key_default = "example_log"
-  trail_map = {
-    management_event = {
-      advanced_event_selector_map = {
-        "Management event selector" = {
-          management_category_selector = {
-            equal_list = ["Management"]
-            field      = "eventCategory"
-          }
-        }
-      }
-    }
-  }
+  encrypt_trail_with_kms = false
+  s3_data_map            = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
+  std_map                = module.com_lib.std_map
+  trail_log_bucket_key   = "example_log"
 }
 
 module "local_config" {

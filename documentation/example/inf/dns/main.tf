@@ -73,10 +73,18 @@ module "dns_record" {
   dns_data                         = local.o1_map
   record_dns_from_zone_key_default = "example.com"
   record_map = {
-    google_workspace_validation = {
-      dns_from_fqdn   = "example.com"
-      dns_record_list = ["google-site-verification=some-hash"]
+    email_dkim = {
+      dns_from_fqdn   = "google._domainkey"
+      dns_record_list = ["v=DKIM1; k=rsa; p=some\"\"key"]
       dns_type        = "TXT"
+    }
+    root_txt = {
+      dns_from_fqdn = "example.com"
+      dns_record_list = [
+        "google-site-verification=some-hash",  # Google Workspace validation
+        "v=spf1 include:_spf.google.com ~all", # Email SPF
+      ]
+      dns_type = "TXT"
     }
   }
   std_map = module.oregon_lib.std_map

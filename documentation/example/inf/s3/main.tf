@@ -22,6 +22,11 @@ module "milan_lib" {
   })
 }
 
+module "public_access_block" {
+  source  = "path/to/modules/s3/public_access_block"
+  std_map = module.com_lib.std_map
+}
+
 module "oregon_bucket" {
   source                                = "path/to/modules/s3/bucket"
   bucket_log_target_bucket_name_default = "example-log"
@@ -33,7 +38,8 @@ module "oregon_bucket" {
     example_deploy        = {}
     example_log = {
       allow_config_recording    = true
-      allow_service_logging     = true
+      allow_log_cloudtrail      = true
+      allow_log_elb             = true
       lifecycle_expiration_days = 30
     }
     example_log_public = {
@@ -42,6 +48,10 @@ module "oregon_bucket" {
       lifecycle_expiration_days = 30
     }
     example_package = {}
+    aws_waf_logs_example = { # Must start with prefix
+      allow_log_waf             = true
+      lifecycle_expiration_days = 7 # This is for a CDN
+    }
   }
   name_infix_default = false
   std_map            = module.com_lib.std_map
