@@ -76,7 +76,7 @@ module "ecs_cluster" {
   vpc_az_key_list_default                           = var.vpc_az_key_list_default
   vpc_data_map                                      = var.vpc_data_map
   vpc_key_default                                   = var.vpc_key_default
-  vpc_security_group_key_list_default               = var.vpc_security_group_key_list_default
+  vpc_security_group_key_list_default               = var.vpc_security_group_key_list_instance_default
   vpc_segment_key_default                           = var.vpc_segment_key_default
 }
 
@@ -221,7 +221,7 @@ module "image_build" {
   vpc_az_key_list_default                  = var.vpc_az_key_list_default
   vpc_data_map                             = var.vpc_data_map
   vpc_key_default                          = var.vpc_key_default
-  vpc_security_group_key_list_default      = var.vpc_security_group_key_list_default
+  vpc_security_group_key_list_default      = var.vpc_security_group_key_list_instance_default
   vpc_segment_key_default                  = var.vpc_segment_key_default
 }
 
@@ -230,12 +230,12 @@ module "code_build" {
   ci_cd_account_data                  = var.ci_cd_account_data
   name_include_app_fields_default     = var.name_include_app_fields_default
   name_infix_default                  = var.name_infix_default
-  repo_map                            = local.create_cicd_build_map
+  repo_map                            = local.create_ci_cd_build_map
   std_map                             = var.std_map
   vpc_az_key_list_default             = var.vpc_az_key_list_default
   vpc_data_map                        = var.vpc_data_map
   vpc_key_default                     = var.vpc_key_default
-  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_instance_default
   vpc_segment_key_default             = var.vpc_segment_key_default
 }
 

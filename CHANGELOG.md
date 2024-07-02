@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.64.0
+
+### General
+
+* Separate security groups for ECS app service and instance
+
 ## 0.63.0
 
 ### New modules

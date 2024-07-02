@@ -15,15 +15,16 @@ locals {
       )
     }
   }
-  create_cicd_build_map = {
+  create_ci_cd_build_map = {
     for k, v in local.lx_map : k => merge(v, {
       build_map = {
         pipe_deploy = {
-          environment_type    = "cpu-arm-amazon-small"
-          iam_role_arn        = module.code_build_role[k].data.iam_role_arn
-          input_artifact_list = [v.build_artifact_name]
-          source_build_spec   = v.path_repo_root_to_deploy_spec
-          source_type         = "CODEPIPELINE"
+          environment_type            = "cpu-arm-amazon-small"
+          iam_role_arn                = module.code_build_role[k].data.iam_role_arn
+          input_artifact_list         = [v.build_artifact_name]
+          source_build_spec           = v.path_repo_root_to_deploy_spec
+          source_type                 = "CODEPIPELINE"
+          vpc_security_group_key_list = v.vpc_security_group_key_list_instance
         }
       }
     })
@@ -34,6 +35,7 @@ locals {
       role_policy_create_json_map  = v.build_role_policy_create_json_map
       role_policy_inline_json_map  = v.build_role_policy_inline_json_map
       role_policy_managed_name_map = v.build_role_policy_managed_name_map
+      vpc_security_group_key_list  = v.vpc_security_group_key_list_instance
     }) if v.image_build_enabled
   }
   create_cicd_pipe_map = {
@@ -80,7 +82,9 @@ locals {
     }) if !v.deployment_uses_codedeploy
   }
   create_cluster_map = {
-    for k, v in local.lx_map : k => v if !var.use_fargate
+    for k, v in local.lx_map : k => merge(v, {
+      vpc_security_group_key_list = v.vpc_security_group_key_list_instance
+    }) if !var.use_fargate
   }
   create_deployment_map = {
     for k, v in local.lx_map : k => merge(v, {

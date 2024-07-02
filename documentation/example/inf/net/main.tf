@@ -7,10 +7,10 @@ module "com_lib" {
   std_var = local.std_var
 }
 
-module "vpc_default" {
-  source  = "path/to/modules/vpc/default"
-  std_map = module.com_lib.std_map
-}
+# module "vpc_default" {
+#   source  = "path/to/modules/vpc/default"
+#   std_map = module.com_lib.std_map
+# }
 
 module "vpc_stack" {
   source                                      = "path/to/modules/vpc/stack"
