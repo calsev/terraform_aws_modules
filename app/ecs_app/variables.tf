@@ -167,10 +167,11 @@ variable "app_map" {
       event_list    = optional(list(string))
       sns_topic_arn = optional(string)
     })))
-    vpc_az_key_list             = optional(list(string))
-    vpc_key                     = optional(string)
-    vpc_security_group_key_list = optional(list(string))
-    vpc_segment_key             = optional(string)
+    vpc_az_key_list                      = optional(list(string))
+    vpc_key                              = optional(string)
+    vpc_security_group_key_list          = optional(list(string))
+    vpc_security_group_key_list_instance = optional(list(string))
+    vpc_segment_key                      = optional(string)
   }))
 }
 
@@ -1124,6 +1125,15 @@ variable "vpc_security_group_key_list_default" {
     "internal_http_in",
     "world_all_out",
   ]
+  description = "Security groups for the service"
+}
+
+variable "vpc_security_group_key_list_instance_default" {
+  type = list(string)
+  default = [
+    "world_all_out",
+  ]
+  description = "Security groups for cluster instances and build projects"
 }
 
 variable "vpc_segment_key_default" {

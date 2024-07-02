@@ -8,7 +8,6 @@ locals {
       config = module.config_account.data
       event  = module.event_account.data
       sms    = module.sms_account.data
-      trail  = module.cloudtrail.data
     },
   )
   std_var = {
