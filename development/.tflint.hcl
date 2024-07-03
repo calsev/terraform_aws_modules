@@ -1,7 +1,7 @@
 plugin "aws" {
   enabled = true
   source  = "github.com/terraform-linters/tflint-ruleset-aws"
-  version = "0.31.0" #TODO: Sync with spec files or find better way
+  version = "0.32.0" #TODO: Sync with spec files or find better way
 }
 plugin "terraform" {
   enabled = true
