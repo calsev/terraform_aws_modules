@@ -1,6 +1,6 @@
 variable "record_retention_period_days" {
   type        = number
-  default     = 2557
+  default     = 365 * 7 + 2 # Leap years
   description = "This should be set to 7 years for legal discovery"
 }
 

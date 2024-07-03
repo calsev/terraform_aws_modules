@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.65.0
+
+### New modules
+
+* GuardDuty detector
+* Inspector enabler
+
 ## 0.64.0
 
 ### General

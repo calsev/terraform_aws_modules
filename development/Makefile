@@ -190,6 +190,8 @@ tf-lint: tflint-install
 	cd ../event/trigger/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/trigger/s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/trigger/s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../guard_duty && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../guard_duty/detector && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/access_analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/access_analyzer/analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -275,6 +277,8 @@ tf-lint: tflint-install
 	cd ../iam/user && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user/password_policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../inspect && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../inspect/enabler && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
