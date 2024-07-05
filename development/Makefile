@@ -103,6 +103,8 @@ tf-lint: tflint-install
 	cd ../athena && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena/database && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena/named_query && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../backup && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../backup/vault && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/compute && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/job && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -196,6 +198,7 @@ tf-lint: tflint-install
 	cd ../iam/access_analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/access_analyzer/analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/app/backup && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

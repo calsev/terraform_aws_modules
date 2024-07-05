@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.66.0
+
+### New modules
+
+* Backup vault
+* IAM app for Backup
+
 ## 0.65.0
 
 ### New modules

@@ -120,7 +120,7 @@ variable "db_backup_retention_period_day_default" {
     condition     = 0 <= var.db_backup_retention_period_day_default && var.db_backup_retention_period_day_default <= 35
     error_message = "Invalid retention period"
   }
-  description = "Must be greater than zero for a replication source"
+  description = "Must be greater than zero for a replication source. A medium-severity security finding if set less than 7."
 }
 
 variable "db_backup_window_utc_default" {

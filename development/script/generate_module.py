@@ -193,7 +193,7 @@ def generate_variables(
     variable_prefix: str, module_data: ModuleData, variable_list: list[str]
 ) -> None:
     variable_map = {
-        **NAME_VARIABLES,
+        # **NAME_VARIABLES,
         **(VPC_VARIABLES if module_data.uses_vpc else {}),
         **{variable: default_type_for_variable(variable) for variable in variable_list},
     }
