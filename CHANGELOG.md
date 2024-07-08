@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.67.0
+
+### New modules
+
+* Backup plan
+* Backup selection
+
 ## 0.66.0
 
 ### New modules

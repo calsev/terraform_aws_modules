@@ -174,8 +174,9 @@ variable "db_delete_automated_backups_default" {
 }
 
 variable "db_deletion_protection_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "A medium-severity security finding if disabled."
 }
 
 variable "db_engine_default" {
