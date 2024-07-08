@@ -74,6 +74,7 @@ variable "vault_max_retention_days_default" {
 }
 
 variable "vault_min_retention_days_default" {
-  type    = number
-  default = null
+  type        = number
+  default     = null
+  description = "Applies to continuous backups as well"
 }

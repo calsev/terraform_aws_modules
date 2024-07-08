@@ -104,6 +104,8 @@ tf-lint: tflint-install
 	cd ../athena/database && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena/named_query && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../backup && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../backup/plan && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../backup/selection && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../backup/vault && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../batch/compute && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
