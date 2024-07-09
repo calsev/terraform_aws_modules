@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.68.0
+
+### General
+
+* Default host pattern for ALB listeners
+* Lambda support for ALB target
+* RDS secret per-instance name append
+
+### Bugfix
+
+* Units for default ELB stickiness duration
+
 ## 0.67.0
 
 ### New modules

@@ -55,6 +55,7 @@ variable "db_map" {
     nchar_character_set_name                  = optional(string) # Oracle and MSSQL only
     network_type                              = optional(string)
     option_group_name                         = optional(string)
+    password_secret_name_append               = optional(string)
     parameter_group_name                      = optional(string)
     performance_insights_kms_key_arn          = optional(string)
     performance_insights_retention_period_day = optional(number)
@@ -125,8 +126,8 @@ variable "db_backup_retention_period_day_default" {
 
 variable "db_backup_window_utc_default" {
   type        = string
-  default     = "06:00-07:00"
-  description = "Backup and maintenance windows cannot overlap"
+  default     = "05:00-07:00"
+  description = "Backup and maintenance windows cannot overlap. This must match backup window for a Backup plan or will conflict."
 }
 
 variable "db_blue_green_update_enabled_default" {

@@ -173,24 +173,27 @@ variable "target_nlb_terminate_connection_on_unhealthy_default" {
 }
 
 variable "target_sticky_cookie_duration_seconds_default" {
-  type    = number
-  default = 60 * 60 * 24
+  type        = number
+  default     = 60 * 60 * 24
+  description = "Ignored for Lambda targets"
 }
 
 variable "target_sticky_cookie_enabled_default" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "Ignored for Lambda targets"
 }
 
 variable "target_sticky_cookie_name_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Ignored for Lambda targets"
 }
 
 variable "target_sticky_type_default" {
   type        = string
   default     = null
-  description = "Defaults to lb_cookie for target_protocol HTTP/HTTPS, source_ip otherwise. Cookie type is set, but not enabled by default"
+  description = "Defaults to lb_cookie for target_protocol HTTP/HTTPS, source_ip otherwise. Cookie type is set, but not enabled by default. Ignored for Lambda targets."
   validation {
     condition = var.target_sticky_type_default == null ? true : contains([
       "lb_cookie", "app_cookie",                      # ALB

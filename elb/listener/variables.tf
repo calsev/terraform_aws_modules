@@ -177,7 +177,7 @@ variable "listener_action_fixed_response_status_code_default" {
 
 variable "listener_action_forward_stickiness_duration_seconds_default" {
   type    = number
-  default = 60
+  default = 60 * 60
   validation {
     condition     = var.listener_action_forward_stickiness_duration_seconds_default >= 1 && var.listener_action_forward_stickiness_duration_seconds_default <= 60 * 60 * 24 * 7
     error_message = "Invalid stickiness duration"
@@ -437,8 +437,9 @@ variable "rule_condition_map_default" {
 }
 
 variable "rule_host_header_pattern_list_default" {
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
+  description = "Defaults to fqdn for cert if no other condition is specified"
 }
 
 variable "rule_http_header_map_default" {

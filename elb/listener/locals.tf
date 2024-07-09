@@ -87,7 +87,8 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      acm_certificate_arn = local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn : null
+      acm_certificate_arn  = local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn : null
+      acm_certificate_fqdn = local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].name_simple : null
       action_map = {
         for k_act, v_act in local.l2_map[k].action_map : k_act => merge(v_act, {
           action_forward_target_group_map = v_act.action_forward_target_group_map == null ? var.listener_action_forward_target_group_map_default == null ? v_act.action_type == "forward" ? { (k) = { target_group_weight = null } } : {} : var.listener_action_forward_target_group_map_default : v_act.action_forward_target_group_map
@@ -99,6 +100,11 @@ locals {
         })
       }
       listen_ssl_policy = local.l2_map[k].certificate_supported ? v.listen_ssl_policy == null ? var.listener_listen_ssl_policy_default : v.listen_ssl_policy : null
+      rule_condition_map = {
+        for k_rule, v_rule in local.l2_map[k].rule_condition_map : k_rule => merge(v_rule, {
+          has_default_host_header_pattern = length(v_rule.host_header_pattern_list) == 0 && length(v_rule.http_header_map) == 0 && length(v_rule.http_request_method_list) == 0 && length(v_rule.path_pattern_list) == 0 && length(v_rule.query_string_map) == 0 && length(v_rule.source_ip_list) == 0
+        })
+      }
     }
   }
   l4_map = {
@@ -112,6 +118,11 @@ locals {
               target_group_weight = var.elb_target_data_map[k_fwd].is_nlb ? null : v_fwd.target_group_weight == null ? var.listener_action_forward_target_group_weight_default : v_fwd.target_group_weight
             })
           }
+        })
+      }
+      rule_condition_map = {
+        for k_rule, v_rule in local.l3_map[k].rule_condition_map : k_rule => merge(v_rule, {
+          host_header_pattern_list = v_rule.has_default_host_header_pattern ? [local.l3_map[k].acm_certificate_fqdn] : v_rule.host_header_pattern_list
         })
       }
     }
