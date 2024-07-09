@@ -282,9 +282,7 @@ locals {
             }
           })
           rule_condition_map = merge(v_lt.rule_condition_map == null ? var.rule_condition_map_default : v_lt.rule_condition_map, {
-            host_match = merge({
-              host_header_pattern_list = [var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][v_lt.acm_certificate_key].name_simple]
-            })
+            host_match = {}
           })
         })
       }

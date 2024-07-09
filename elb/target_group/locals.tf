@@ -48,6 +48,7 @@ locals {
       nlb_terminate_connection_on_deregistration_timeout = local.l1_map[k].target_protocol == "UDP" ? true : v.nlb_terminate_connection_on_deregistration_timeout == null ? var.target_nlb_terminate_connection_on_deregistration_timeout_default : v.nlb_terminate_connection_on_deregistration_timeout
       nlb_terminate_connection_on_unhealthy              = local.l1_map[k].target_protocol == "UDP" ? false : v.nlb_terminate_connection_on_unhealthy == null ? var.target_nlb_terminate_connection_on_unhealthy_default : v.nlb_terminate_connection_on_unhealthy
       sticky_type                                        = v.sticky_type == null ? var.target_sticky_type_default == null ? startswith(local.l1_map[k].target_protocol, "HTTP") ? "lb_cookie" : "source_ip" : var.target_sticky_type_default : v.sticky_type
+      sticky_supported                                   = local.l1_map[k].target_type != "lambda"
       target_protocol_http_version                       = startswith(local.l1_map[k].target_protocol, "HTTP") ? v.target_protocol_http_version == null ? var.target_protocol_http_version_default : v.target_protocol_http_version : null
     }
   }

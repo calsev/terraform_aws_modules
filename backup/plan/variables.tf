@@ -114,7 +114,7 @@ variable "plan_rule_map_default" {
       continuous_backup_enabled               = true
       lifecycle_cold_storage_after_days       = null
       lifecycle_cold_storage_opt_in_enabled   = null
-      lifecycle_delete_after_days             = 2
+      lifecycle_delete_after_days             = 7 # Less than 7 is a medium-severity security finding
       name_append                             = null
       name_display                            = "ContinuousBackupForPointInTimeRecovery"
       name_infix                              = null
@@ -214,7 +214,7 @@ variable "plan_rule_recovery_point_tag_map_default" {
 
 variable "plan_rule_schedule_cron_expression_default" {
   type    = string
-  default = "cron(0 7 ? * * *)" # every day at 8am UTC
+  default = "cron(0 7 ? * * *)" # every day at 7am UTC
 }
 
 variable "plan_rule_start_delay_minutes_default" {

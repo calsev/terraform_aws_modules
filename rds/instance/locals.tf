@@ -12,6 +12,11 @@ locals {
   create_instance_map = {
     for k, v in local.lx_map : k => v if v.create_instance
   }
+  create_password_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      name_append = v.password_secret_name_append
+    })
+  }
   l0_map = {
     for k, v in var.db_map : k => v
   }
@@ -51,6 +56,7 @@ locals {
       network_type                              = v.network_type == null ? var.db_network_type_default : v.network_type
       option_group_name                         = v.option_group_name == null ? var.db_option_group_name_default : v.option_group_name
       parameter_group_name                      = v.parameter_group_name == null ? var.db_parameter_group_name_default : v.parameter_group_name
+      password_secret_name_append               = v.password_secret_name_append == null ? var.password_secret_name_append_default : v.password_secret_name_append
       performance_insights_kms_key_arn          = v.performance_insights_kms_key_arn == null ? var.db_performance_insights_kms_key_arn_default : v.performance_insights_kms_key_arn
       performance_insights_retention_period_day = v.performance_insights_retention_period_day == null ? var.db_performance_insights_retention_period_day_default : v.performance_insights_retention_period_day
       port                                      = v.port == null ? var.db_port_default : v.port

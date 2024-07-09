@@ -33,7 +33,7 @@ resource "aws_lb_target_group" "this_target" {
   proxy_protocol_v2  = each.value.nlb_enable_proxy_protocol_v2
   slow_start         = each.value.target_warm_up_seconds
   dynamic "stickiness" {
-    for_each = { this = {} }
+    for_each = each.value.sticky_supported ? { this = {} } : {}
     content {
       cookie_duration = each.value.sticky_cookie_duration_seconds
       cookie_name     = each.value.sticky_cookie_name
