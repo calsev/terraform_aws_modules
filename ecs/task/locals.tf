@@ -107,8 +107,8 @@ locals {
   }
   l4_map = {
     for k, v in local.l0_map : k => {
-      # This is fit on max(host memory for t4g and t3a) for all instance sizes 0.5 - 32 GiB with a slack of 48 MiB
-      resource_memory_host_gib_default = local.l2_map[k].capability_type == "FARGATE" ? null : ceil(151 + 0.0341 * local.l3_map[k].resource_instance_type_memory_gib * 1024 + -0.00000013 * pow(local.l3_map[k].resource_instance_type_memory_gib * 1024, 2)) / 1024
+      # This is fit on max(host memory for t4g, t3a, m7a) for all instance sizes 0.5 to 768 GiB with a slack of at least 20 MiB.
+      resource_memory_host_gib_default = local.l2_map[k].capability_type == "FARGATE" ? null : ceil(92 + 0.063 * local.l3_map[k].resource_instance_type_memory_gib * 1024 + -0.000000022 * pow(local.l3_map[k].resource_instance_type_memory_gib * 1024, 2)) / 1024
       resource_num_vcpu                = v.resource_num_vcpu == null ? var.task_resource_num_vcpu_default == null ? local.l3_map[k].resource_num_vcpu_default : var.task_resource_num_vcpu_default : v.resource_num_vcpu
     }
   }
