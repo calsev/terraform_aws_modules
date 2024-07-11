@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.69.0
+
+### General
+
+* Refit default host memory for ECS task
+
 ## 0.68.0
 
 ### General
