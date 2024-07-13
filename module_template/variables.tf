@@ -1,9 +1,10 @@
 variable "resource_map" {
   type = map(object({
-    name_append   = optional(string)
-    name_infix    = optional(bool)
-    name_override = optional(string)
-    name_prepend  = optional(string)
+    name_append             = optional(string)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_override           = optional(string)
+    name_prepend            = optional(string)
   }))
 }
 

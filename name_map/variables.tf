@@ -1,7 +1,7 @@
 variable "name_map" {
   type = map(object({
-    name_include_app_fields = optional(bool)
     name_append             = optional(string)
+    name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
     name_override           = optional(string)
     name_prefix             = optional(string)

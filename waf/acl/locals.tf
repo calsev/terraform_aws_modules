@@ -5,6 +5,11 @@ module "name_map" {
 }
 
 locals {
+  create_log_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      waf_acl_arn = aws_wafv2_web_acl.this_waf_acl[k].arn
+    })
+  }
   l0_map = {
     for k, v in var.waf_map : k => v
   }
@@ -73,7 +78,8 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        waf_arn = aws_wafv2_web_acl.this_waf_acl[k].arn
+        waf_log     = module.log.data[k]
+        waf_acl_arn = aws_wafv2_web_acl.this_waf_acl[k].arn
       }
     )
   }

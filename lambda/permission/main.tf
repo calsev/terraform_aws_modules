@@ -1,5 +1,5 @@
 resource "aws_lambda_permission" "this_permission" {
-  for_each               = local.lx_map
+  for_each               = local.create_permission_map
   action                 = each.value.action
   event_source_token     = null # Alexa
   function_name          = each.value.name

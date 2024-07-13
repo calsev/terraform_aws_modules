@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.70.0
+
+### New modules
+
+* Athena workgroup
+* Lambda ALB target
+* WAF logging configuration
+
+### General
+
+* Extend lambda permission naming
+* WAF ACL support for logging
+
 ## 0.69.0
 
 ### General

@@ -1,5 +1,6 @@
 locals {
   output_data = merge(
+    module.backup_iam.data,
     module.batch_iam.data,
     module.ec2_iam.data,
     module.ecr_iam.data,

@@ -11,6 +11,11 @@ resource "aws_iam_account_alias" "account_alias" {
   account_alias = "example"
 }
 
+module "backup_iam" {
+  source  = "path/to/modules/iam/app/backup"
+  std_map = module.com_lib.std_map
+}
+
 module "batch_iam" {
   source  = "path/to/modules/iam/app/batch"
   std_map = module.com_lib.std_map
