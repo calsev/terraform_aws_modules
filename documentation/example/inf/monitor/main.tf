@@ -53,6 +53,17 @@ module "alert_account" {
   trail_log_bucket_key   = "example_log"
 }
 
+module "athena_workgroup" {
+  source = "path/to/modules/athena/workgroup"
+  group_map = {
+    primary = {
+      # This must be imported
+      name_infix = false
+    }
+  }
+  std_map = module.com_lib.std_map
+}
+
 module "local_config" {
   source  = "path/to/modules/local_config"
   content = local.output_data

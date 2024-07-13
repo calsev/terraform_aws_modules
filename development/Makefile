@@ -103,6 +103,7 @@ tf-lint: tflint-install
 	cd ../athena && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena/database && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena/named_query && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../athena/workgroup && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../backup && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../backup/plan && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../backup/selection && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -287,6 +288,7 @@ tf-lint: tflint-install
 	cd ../kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../lambda/alb_target && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../local_config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -345,6 +347,7 @@ tf-lint: tflint-install
 	cd ../vpc/vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../waf && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../waf/acl && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../waf/logging_configuration && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../workspaces/workspace && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

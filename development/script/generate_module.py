@@ -175,7 +175,15 @@ def get_or_create_resource_map(
 def default_type_for_variable(variable: str) -> str:
     if any(
         variable.endswith(suffix)
-        for suffix in ["allowed", "disabled", "enabled", "excluded", "included", "only"]
+        for suffix in [
+            "allowed",
+            "disabled",
+            "enabled",
+            "enforced",
+            "excluded",
+            "included",
+            "only",
+        ]
     ):
         return "bool"
     if any(

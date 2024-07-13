@@ -216,3 +216,24 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
     sampled_requests_enabled   = each.value.metric_sampled_requests_enabled
   }
 }
+
+module "log" {
+  source                                         = "../../waf/logging_configuration"
+  firehose_data_map                              = var.firehose_data_map
+  log_data_map                                   = var.log_data_map
+  log_destination_log_group_key_list_default     = var.log_destination_log_group_key_list_default
+  log_destination_firehose_key_list_default      = var.log_destination_firehose_key_list_default
+  log_destination_s3_bucket_key_list_default     = var.log_destination_s3_bucket_key_list_default
+  log_filter_map_default                         = var.log_filter_map_default
+  log_filter_default_behavior_default            = var.log_filter_default_behavior_default
+  log_filter_filter_map_default                  = var.log_filter_filter_map_default
+  log_filter_filter_behavior_default             = var.log_filter_filter_behavior_default
+  log_filter_filter_condition_map_default        = var.log_filter_filter_condition_map_default
+  log_filter_filter_condition_action_default     = var.log_filter_filter_condition_action_default
+  log_filter_filter_condition_label_name_default = var.log_filter_filter_condition_label_name_default
+  log_filter_filter_requirement_default          = var.log_filter_filter_requirement_default
+  log_map                                        = local.create_log_map
+  log_redacted_field_map_default                 = var.log_redacted_field_map_default
+  s3_data_map                                    = var.s3_data_map
+  std_map                                        = var.std_map
+}
