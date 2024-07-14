@@ -20,7 +20,7 @@ locals {
   associate_waf_map = {
     for k, v in local.lx_map : k => merge(v, {
       elb_id = aws_lb.this_lb[k].id
-    }) if v.waf_arn != null
+    }) if v.waf_acl_arn != null
   }
   create_db_access_map = {
     for k, v in local.lx_map : k => merge(v, {
@@ -201,7 +201,7 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      waf_arn = local.l2_map[k].waf_key == null ? null : var.waf_data_map[local.l2_map[k].waf_key].waf_arn
+      waf_acl_arn = local.l2_map[k].waf_key == null ? null : var.waf_data_map[local.l2_map[k].waf_key].waf_acl_arn
     }
   }
   lx_map = {

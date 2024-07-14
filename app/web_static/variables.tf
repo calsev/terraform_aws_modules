@@ -15,7 +15,7 @@ variable "cdn_global_data" {
       policy_id = string
     }))
     web_acl_map = map(object({
-      waf_arn = string
+      waf_acl_arn = string
     }))
   })
 }
@@ -74,9 +74,30 @@ variable "domain_dns_alias_enabled_default" {
   default = true
 }
 
+variable "domain_dns_alias_san_list_default" {
+  type        = list(string)
+  default     = []
+  description = "Subject alternate names on the DNS certficate to add as aliases. Ignored if DNS alias not enabled."
+}
+
 variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
+}
+
+variable "domain_logging_bucket_key_default" {
+  type    = string
+  default = null
+}
+
+variable "domain_logging_include_cookies_default" {
+  type    = bool
+  default = false
+}
+
+variable "domain_logging_object_prefix_default" {
+  type    = string
+  default = ""
 }
 
 variable "domain_origin_dns_enabled_default" {
@@ -120,14 +141,29 @@ variable "site_map" {
       }))
       name = string
     }))
-    cdn_invalidation_path                  = optional(string)
-    ci_cd_pipeline_webhook_secret_is_param = optional(bool)
-    dns_alias_enabled                      = optional(bool)
-    dns_from_zone_key                      = optional(string)
-    name_include_app_fields                = optional(bool)
-    name_infix                             = optional(bool)
-    origin_dns_enabled                     = optional(bool)
-    origin_fqdn                            = string
+    cdn_invalidation_path                                 = optional(string)
+    ci_cd_pipeline_webhook_secret_is_param                = optional(bool)
+    dns_alias_enabled                                     = optional(bool)
+    dns_alias_san_list                                    = optional(list(string))
+    dns_from_zone_key                                     = optional(string)
+    logging_bucket_key                                    = optional(string)
+    logging_include_cookies                               = optional(bool)
+    logging_object_prefix                                 = optional(string)
+    name_include_app_fields                               = optional(bool)
+    name_infix                                            = optional(bool)
+    origin_dns_enabled                                    = optional(bool)
+    origin_fqdn                                           = string
+    response_security_header_content_policy_origin_map    = optional(map(list(string)))
+    response_security_header_content_override             = optional(bool)
+    response_security_header_content_type_override        = optional(bool)
+    response_security_header_frame_option                 = optional(string)
+    response_security_header_frame_override               = optional(bool)
+    response_security_header_referrer_override            = optional(bool)
+    response_security_header_referrer_policy              = optional(string)
+    response_security_header_transport_max_age_seconds    = optional(number)
+    response_security_header_transport_include_subdomains = optional(bool)
+    response_security_header_transport_override           = optional(bool)
+    response_security_header_transport_preload            = optional(bool)
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
     role_policy_attach_arn_map      = optional(map(string))
     role_policy_create_json_map     = optional(map(string))
@@ -171,6 +207,74 @@ variable "pipe_webhook_secret_is_param_default" {
   type        = bool
   default     = false
   description = "If true, an SSM param will be created, otherwise a SM secret"
+}
+
+variable "domain_response_security_header_content_policy_origin_map_default" {
+  type = map(list(string))
+  default = {
+    default-src = []
+  }
+  description = "'self' and https://dns_from_zone_key will be prepended to all lists"
+}
+
+variable "domain_response_security_header_content_override_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_response_security_header_content_type_override_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_response_security_header_frame_option_default" {
+  type    = string
+  default = "DENY"
+}
+
+variable "domain_response_security_header_frame_override_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_response_security_header_referrer_override_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_response_security_header_referrer_policy_default" {
+  type    = string
+  default = "same-origin"
+}
+
+variable "domain_response_security_header_transport_max_age_seconds_default" {
+  type        = number
+  default     = 60 * 60 * 24 * 365
+  description = "Must be at least one year for preloading, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security"
+}
+
+variable "domain_response_security_header_transport_include_subdomains_default" {
+  type        = bool
+  default     = true
+  description = "Must be true for preloading"
+}
+
+variable "domain_response_security_header_transport_override_default" {
+  type    = bool
+  default = true
+}
+
+variable "domain_response_security_header_transport_preload_default" {
+  type    = bool
+  default = true
+}
+
+variable "s3_data_map" {
+  type = map(object({
+    name_effective = string
+  }))
+  default     = null
+  description = "Must be provided if any CDN specifies a log bucket"
 }
 
 variable "site_build_artifact_sync_path_default" {

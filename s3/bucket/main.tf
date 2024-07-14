@@ -37,14 +37,10 @@ resource "aws_s3_bucket_versioning" "this_bucket_versioning" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "this_bucket_ownership" {
-  for_each = local.create_owner_map
+  for_each = local.lx_map
   bucket   = aws_s3_bucket.this_bucket[each.key].id
-  # This will disable creation of the ACL
-  depends_on = [
-    aws_s3_bucket_acl.this_bucket_acl,
-  ]
   rule {
-    object_ownership = "BucketOwnerEnforced"
+    object_ownership = each.value.enforce_object_ownership ? "BucketOwnerEnforced" : "BucketOwnerPreferred"
   }
 }
 

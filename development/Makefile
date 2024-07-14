@@ -292,6 +292,8 @@ tf-lint: tflint-install
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../local_config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../macie && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../macie/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../module_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../name_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../pinpoint && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

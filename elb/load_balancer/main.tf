@@ -52,7 +52,7 @@ resource "aws_lb" "this_lb" {
 resource "aws_wafv2_web_acl_association" "waf" {
   for_each     = local.associate_waf_map
   resource_arn = each.value.elb_id
-  web_acl_arn  = each.value.waf_arn
+  web_acl_arn  = each.value.waf_acl_arn
 }
 
 module "elb_listener" {

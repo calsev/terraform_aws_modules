@@ -361,7 +361,7 @@ variable "vpc_segment_key_default" {
 
 variable "waf_data_map" {
   type = map(object({
-    waf_arn = string
+    waf_acl_arn = string
   }))
   default     = null
   description = "Must be provided if any ELB is configured to use a WAF"
