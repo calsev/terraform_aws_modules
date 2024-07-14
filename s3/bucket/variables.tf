@@ -104,8 +104,9 @@ variable "bucket_cors_allowed_methods_default" {
 }
 
 variable "bucket_cors_allowed_origins_default" {
-  type    = list(string)
-  default = ["*"]
+  type        = list(string)
+  default     = []
+  description = "Will have the bucket FQDN prepended if dns_enabled and bucket website_endpoint if website_enabled"
 }
 
 variable "bucket_cors_expose_headers_default" {

@@ -15,7 +15,7 @@ variable "cdn_global_data" {
       policy_id = string
     }))
     web_acl_map = map(object({
-      waf_arn = string
+      waf_acl_arn = string
     }))
   })
 }
@@ -34,11 +34,12 @@ variable "domain_map" {
     cache_viewer_protocol_policy      = optional(string)
     default_root_object               = optional(string)
     dns_alias_enabled                 = optional(bool)
+    dns_alias_san_list                = optional(list(string))
     dns_from_zone_key                 = optional(string)
     enabled                           = optional(bool)
     http_version_max_supported        = optional(string)
     ipv6_enabled                      = optional(bool)
-    logging_bucket_name               = optional(string)
+    logging_bucket_key                = optional(string)
     logging_include_cookies           = optional(bool)
     logging_object_prefix             = optional(string)
     name_include_app_fields           = optional(bool)
@@ -63,7 +64,7 @@ variable "domain_map" {
       value    = string
     })))
     response_remove_header_list                           = optional(list(string))
-    response_security_header_content_policy               = optional(string)
+    response_security_header_content_policy_origin_map    = optional(map(list(string)))
     response_security_header_content_override             = optional(bool)
     response_security_header_content_type_override        = optional(bool)
     response_security_header_frame_option                 = optional(string)
@@ -121,6 +122,12 @@ variable "domain_dns_alias_enabled_default" {
   default = true
 }
 
+variable "domain_dns_alias_san_list_default" {
+  type        = list(string)
+  default     = []
+  description = "Subject alternate names on the DNS certficate to add as aliases. Ignored if DNS alias not enabled."
+}
+
 variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
@@ -145,7 +152,7 @@ variable "domain_ipv6_enabled_default" {
   default = true
 }
 
-variable "domain_logging_bucket_name_default" {
+variable "domain_logging_bucket_key_default" {
   type    = string
   default = null
 }
@@ -157,7 +164,7 @@ variable "domain_logging_include_cookies_default" {
 
 variable "domain_logging_object_prefix_default" {
   type    = string
-  default = "cdn_access_log"
+  default = ""
 }
 
 variable "domain_origin_allow_public_default" {
@@ -221,7 +228,7 @@ variable "domain_response_cors_allowed_method_list_default" {
 variable "domain_response_cors_allowed_origin_list_default" {
   type        = list(string)
   default     = []
-  description = "This is list concatenated to the https://domain alias of the CDN"
+  description = "This is list concatenated to the https://aliases of the CDN"
 }
 
 variable "domain_response_cors_expose_header_list_default" {
@@ -260,10 +267,12 @@ variable "domain_response_remove_header_list_default" {
   default = []
 }
 
-variable "domain_response_security_header_content_policy_default" {
-  type        = string
-  default     = "default-src 'self'"
-  description = "Allowed origins will be appended to this value"
+variable "domain_response_security_header_content_policy_origin_map_default" {
+  type = map(list(string))
+  default = {
+    default-src = []
+  }
+  description = "'self' and https://dns_from_zone_key will be prepended to all lists"
 }
 
 variable "domain_response_security_header_content_override_default" {
@@ -386,6 +395,14 @@ variable "name_include_app_fields_default" {
 variable "name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "s3_data_map" {
+  type = map(object({
+    name_effective = string
+  }))
+  default     = null
+  description = "Must be provided if any CDN specifies a log bucket"
 }
 
 variable "std_map" {

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.71.0
+
+### New modules
+
+* Macie AWS account
+
+### General
+
+* CDN logging support for static web app
+* SANs for static web app and CDN
+* Improved content security policy for static web app and CDN
+* Tighter default CORS origin for S3 bucket
+* Always set S3 bucket ownership control
+
 ## 0.70.0
 
 ### New modules

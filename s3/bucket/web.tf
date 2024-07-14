@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_cors_configuration" "this_cors" {
-  for_each = local.lx_map
+  for_each = local.create_cors_map
   bucket   = aws_s3_bucket.this_bucket[each.key].bucket
   cors_rule {
     allowed_headers = each.value.cors_allowed_headers

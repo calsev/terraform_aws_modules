@@ -21,11 +21,13 @@ locals {
       dns_alias_zone_id = aws_s3_bucket.this_bucket[k].hosted_zone_id
     }) if v.dns_enabled
   }
+  create_cors_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      cors_allowed_origins = concat(v.cors_allowed_origins, v.website_enabled ? ["http://${aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint}"] : [])
+    })
+  }
   create_log_map = {
     for k, v in local.lx_map : k => v if v.log_target_bucket_name != null
-  }
-  create_owner_map = {
-    for k, v in local.lx_map : k => v if v.enforce_object_ownership
   }
   create_policy_identity_map = {
     for k, v in local.lx_map : k => v if v.policy_identity_create
@@ -80,6 +82,7 @@ locals {
   }
   l2_map = {
     for k, _ in local.l0_map : k => {
+      cors_allowed_origins         = concat(local.l1_map[k].dns_enabled ? ["http://${local.l1_map[k].name_simple}"] : [], local.l1_map[k].cors_allowed_origins)
       lifecycle_has_version_policy = local.l1_map[k].lifecycle_version_count != null || local.l1_map[k].lifecycle_version_expiration_days != null
       lifecycle_transition_map = {
         for k_life, v_life in local.l1_map[k].lifecycle_transition_map : k_life => merge(v_life, {

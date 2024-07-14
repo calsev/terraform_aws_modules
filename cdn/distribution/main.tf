@@ -85,7 +85,7 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
 
 resource "aws_cloudfront_distribution" "this_distribution" {
   for_each                        = local.lx_map
-  aliases                         = each.value.alias_name_list
+  aliases                         = each.value.alias_name_list_final
   continuous_deployment_policy_id = null # TODO
   dynamic "custom_error_response" {
     for_each = {} # TODO
@@ -125,7 +125,7 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   dynamic "logging_config" {
     for_each = each.value.logging_bucket_name == null ? {} : { this = {} }
     content {
-      bucket          = each.value.logging_bucket_name
+      bucket          = "${each.value.logging_bucket_name}.s3.amazonaws.com"
       include_cookies = each.value.logging_include_cookies
       prefix          = each.value.logging_object_prefix
     }
