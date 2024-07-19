@@ -7,6 +7,17 @@ module "com_lib" {
   std_var = local.std_var
 }
 
+module "budget" {
+  source = "path/to/modules/budget/budget"
+  budget_map = {
+    account = {
+      limit_amount = 100
+    }
+  }
+  budget_notification_subscriber_email_address_list_default = ["example@example.com"]
+  std_map                                                   = module.com_lib.std_map
+}
+
 module "config_account" {
   source                       = "path/to/modules/config/aws_account"
   record_retention_period_days = 30

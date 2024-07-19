@@ -36,15 +36,18 @@ module "cdn_example" {
   source                                = "path/to/modules/cdn/distribution"
   bucket_log_target_bucket_name_default = "example-log"
   cdn_global_data                       = data.terraform_remote_state.cdn_global.outputs.data
+  domain_logging_bucket_key_default     = "aws_waf_logs_example_global"
   domain_map = {
     "cdn.example.com" : {
-      origin_fqdn = "cdn-bucket.example.com"
+      origin_fqdn                       = "cdn-bucket.example.com"
+      response_cors_allowed_origin_list = ["https://example.com"]
       # trusted_key_group_key_list = ["signing_group"] # This makes the CDN private
     }
   }
   domain_dns_from_zone_key_default = "example.com"
   dns_data                         = data.terraform_remote_state.dns.outputs.data
   key_group_data_map               = module.key_group.data
+  s3_data_map                      = data.terraform_remote_state.cdn_global.outputs.data.s3_bucket
   std_map                          = module.com_lib.std_map
 }
 

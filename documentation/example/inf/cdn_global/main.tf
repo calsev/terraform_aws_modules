@@ -7,13 +7,29 @@ module "com_lib" {
   std_var = local.std_var
 }
 
+module "s3_bucket" {
+  source                                = "path/to/modules/s3/bucket"
+  bucket_log_target_bucket_name_default = "aws-waf-logs-example-global"
+  bucket_map = {
+    aws_waf_logs_example_global = { # Must start with prefix
+      allow_log_waf             = true
+      enforce_object_ownership  = false # Not allowed for CDN logging
+      lifecycle_expiration_days = 7     # This is for CDN logs, so keep it short
+      name_infix                = false
+    }
+  }
+  std_map = module.com_lib.std_map
+}
+
 module "waf" {
   source = "path/to/modules/waf/acl"
+  # log_destination_s3_bucket_key_list_default = ["aws_waf_logs_example_global"]
   waf_map = {
     basic_rate_limit = {
     }
   }
-  std_map = module.com_lib.std_map
+  s3_data_map = module.s3_bucket.data
+  std_map     = module.com_lib.std_map
 }
 
 module "cache_policy" {

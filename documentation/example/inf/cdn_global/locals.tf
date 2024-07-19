@@ -3,6 +3,7 @@ locals {
     cache_policy_map          = module.cache_policy.data
     domain_cert_map           = module.cert.data
     origin_request_policy_map = module.origin_policy.data
+    s3_bucket                 = module.s3_bucket.data
     web_acl_map               = module.waf.data
   }
   std_var = {
