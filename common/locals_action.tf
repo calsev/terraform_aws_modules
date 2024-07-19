@@ -67,6 +67,39 @@ locals {
       }
     }
     bedrock = {
+      agent = {
+        public_read = []
+        read = [
+          "GetAgent",
+          "GetAgentActionGroup",
+          "GetAgentKnowledgeBase",
+          "GetAgentVersion",
+          "ListAgentActionGroups",
+          "ListAgentAliases",
+          "ListAgentKnowledgeBases",
+          "ListAgentVersions",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      agent-alias = {
+        public_read = []
+        read = [
+          "GetAgentAlias",
+          "GetAgentMemory",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "InvokeAgent",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
       custom-model = {
         public_read = []
         read = [
@@ -162,6 +195,14 @@ locals {
           "TagResource",
           "UntagResource",
         ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "ListAgents",
+        ]
+        public_write = []
+        write        = []
       }
     }
     cloudfront = {

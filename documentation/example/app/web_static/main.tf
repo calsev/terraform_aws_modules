@@ -30,10 +30,12 @@ module "web_app" {
   cdn_global_data                              = data.terraform_remote_state.cdn_global.outputs.data
   ci_cd_account_data                           = data.terraform_remote_state.ci_cd.outputs.data
   ci_cd_build_data_map                         = module.code_build.data
-  domain_dns_from_zone_key_default             = "example.com"
   dns_data                                     = data.terraform_remote_state.dns.outputs.data
+  domain_dns_from_zone_key_default             = "example.com"
+  domain_logging_bucket_key_default            = "aws_waf_logs_example_global"
   pipe_source_code_star_connection_key_default = "github_example"
   pipe_webhook_secret_is_param_default         = true
+  s3_data_map                                  = data.terraform_remote_state.cdn_global.outputs.data.s3_bucket
   site_map = {
     "example.com" = {
       build_stage_list = [

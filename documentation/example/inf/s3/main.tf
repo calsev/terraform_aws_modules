@@ -31,6 +31,13 @@ module "oregon_bucket" {
   source                                = "path/to/modules/s3/bucket"
   bucket_log_target_bucket_name_default = "example-log"
   bucket_map = {
+    aws_waf_logs_example = { # Must start with prefix
+      allow_log_waf             = true
+      enforce_object_ownership  = false # Not allowed for CDN logging
+      lifecycle_expiration_days = 7     # This is for CDN logs, so keep it short
+      name_include_app_fields   = false # Must start with prefix
+      name_infix                = true
+    }
     example_backup_cal    = {}
     example_backup_marina = {}
     example_cf_template   = {}
@@ -48,10 +55,6 @@ module "oregon_bucket" {
       lifecycle_expiration_days = 30
     }
     example_package = {}
-    aws_waf_logs_example = { # Must start with prefix
-      allow_log_waf             = true
-      lifecycle_expiration_days = 7 # This is for a CDN
-    }
   }
   name_infix_default = false
   std_map            = module.com_lib.std_map

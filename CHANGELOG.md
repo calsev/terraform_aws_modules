@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.0
+
+### New modules
+
+* IAM policy for Bedrock agent and alias
+
 ## 0.71.0
 
 ### New modules
