@@ -151,6 +151,7 @@ tf-lint: tflint-install
 	cd ../directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../directory/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../dns/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/record && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/sd_public && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/zone && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

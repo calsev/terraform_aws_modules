@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.73.0
+
+### New modules
+
+* DNS AWS account
+
+### General
+
+* DNS for CDN distribution SANs
+* Logging for DNS zones
+
 ## 0.72.0
 
 ### New modules

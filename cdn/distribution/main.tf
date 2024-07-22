@@ -169,6 +169,6 @@ module "this_dns_alias" {
   source                           = "../../dns/record"
   dns_data                         = var.dns_data
   record_dns_from_zone_key_default = var.domain_dns_from_zone_key_default
-  record_map                       = local.create_alias_map
+  record_map                       = local.create_alias_x_map
   std_map                          = var.std_map
 }
