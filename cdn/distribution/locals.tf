@@ -35,11 +35,18 @@ locals {
       )
     })
   }
-  create_alias_map = {
-    for k, v in local.lx_map : k => merge(v, {
-      dns_alias_name    = aws_cloudfront_distribution.this_distribution[k].domain_name
-      dns_alias_zone_id = aws_cloudfront_distribution.this_distribution[k].hosted_zone_id
-    }) if v.dns_alias_enabled
+  create_alias_1_list = flatten([
+    for k, v in local.lx_map : [
+      for alias in v.alias_name_list_final : merge(v, {
+        dns_alias_name    = aws_cloudfront_distribution.this_distribution[k].domain_name
+        dns_alias_zone_id = aws_cloudfront_distribution.this_distribution[k].hosted_zone_id
+        dns_from_fqdn     = alias
+        k_dns             = "${k}_${alias}"
+      })
+    ]
+  ])
+  create_alias_x_map = {
+    for v in local.create_alias_1_list : v.k_dns => v
   }
   l0_map = {
     for k, v in var.domain_map : k => v
@@ -142,9 +149,11 @@ locals {
             bucket_policy_doc = module.bucket_policy[v.bucket_key].iam_policy_doc
           },
         )
-        cdn_arn   = aws_cloudfront_distribution.this_distribution[k].arn
-        cdn_id    = aws_cloudfront_distribution.this_distribution[k].id
-        dns_alias = v.dns_alias_enabled ? module.this_dns_alias.data[k] : null
+        cdn_arn = aws_cloudfront_distribution.this_distribution[k].arn
+        cdn_id  = aws_cloudfront_distribution.this_distribution[k].id
+        dns_alias = {
+          for alias in v.alias_name_list_final : "${k}_${alias}" => module.this_dns_alias.data["${k}_${alias}"]
+        }
       }
     )
   }
