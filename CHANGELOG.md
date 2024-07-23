@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.74.0
+
+### General
+
+* DNS logging for Service Discovery zones
+
 ## 0.73.0
 
 ### New modules

@@ -3,6 +3,11 @@ provider "aws" {
   region = "us-west-2"
 }
 
+provider "aws" {
+  alias  = "virginia"
+  region = "us-east-1"
+}
+
 module "oregon_lib" {
   source = "path/to/modules/common"
   providers = {
@@ -13,10 +18,28 @@ module "oregon_lib" {
   })
 }
 
+module "virginia_lib" {
+  source = "path/to/modules/common"
+  providers = {
+    aws = aws.virginia
+  }
+  std_var = merge(local.std_var, {
+    aws_region_name = "us-east-1"
+  })
+}
+
+module "dns_account" {
+  source = "path/to/modules/dns/aws_account"
+  providers = {
+    aws = aws.virginia
+  }
+  std_map = module.virginia_lib.std_map
+}
+
 module "dns_zone" {
   source = "path/to/modules/dns/zone"
   providers = {
-    aws = aws.oregon
+    aws = aws.virginia
   }
   domain_mx_url_list_default = [
     "5 gmr-smtp-in.l.google.com",
@@ -34,6 +57,20 @@ module "dns_zone" {
     "example2.net" : {},
     "example3.com" : {},
   }
+  std_map = module.virginia_lib.std_map
+}
+
+module "log_group" {
+  source = "path/to/modules/cw/log_group"
+  providers = {
+    aws = aws.virginia
+  }
+  log_map = {
+    "io.example.com" = {}
+  }
+  log_retention_days_default = 3
+  name_prefix_default        = "/aws/route53/"
+  std_map                    = module.virginia_lib.std_map
 }
 
 module "sd_zone_public" {
@@ -41,11 +78,13 @@ module "sd_zone_public" {
   providers = {
     aws = aws.oregon
   }
-  dns_data = local.o1_map
-  std_map  = module.oregon_lib.std_map
+  dns_data                       = local.o1_map
+  log_data_map                   = module.log_group.data
+  std_map                        = module.oregon_lib.std_map
+  zone_dns_from_zone_key_default = "example.com"
   zone_map = {
     "io.example.com" = {
-      dns_from_zone_key = "example.com"
+      log_group_key = "io.example.com"
     }
   }
 }
@@ -92,7 +131,7 @@ module "dns_record" {
       dns_type = "TXT"
     }
   }
-  std_map = module.oregon_lib.std_map
+  std_map = module.virginia_lib.std_map
 }
 
 module "local_config" {

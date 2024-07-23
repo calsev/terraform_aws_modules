@@ -9,6 +9,12 @@ data "aws_route53_zone" "this_zone" {
   zone_id  = aws_service_discovery_public_dns_namespace.this_namespace[each.key].hosted_zone
 }
 
+resource "aws_route53_query_log" "this_log" {
+  for_each                 = local.create_log_map
+  cloudwatch_log_group_arn = each.value.log_group_arn
+  zone_id                  = data.aws_route53_zone.this_zone[each.key].zone_id
+}
+
 module "this_ns" {
   source                           = "../../dns/record"
   dns_data                         = var.dns_data
