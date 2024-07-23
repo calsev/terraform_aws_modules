@@ -18,7 +18,7 @@ variable "alarm_rollback_enabled_default" {
 variable "dns_data" {
   type = object({
     domain_to_sd_zone_map = map(object({
-      id = string
+      namespace_id = string
     }))
   })
   default     = null

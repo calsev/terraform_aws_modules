@@ -41,7 +41,7 @@ locals {
         dns_alias_name    = aws_cloudfront_distribution.this_distribution[k].domain_name
         dns_alias_zone_id = aws_cloudfront_distribution.this_distribution[k].hosted_zone_id
         dns_from_fqdn     = alias
-        k_dns             = "${k}_${alias}"
+        k_dns             = replace("${k}_${alias}", "-", "_")
       })
     ]
   ])
@@ -152,7 +152,7 @@ locals {
         cdn_arn = aws_cloudfront_distribution.this_distribution[k].arn
         cdn_id  = aws_cloudfront_distribution.this_distribution[k].id
         dns_alias = {
-          for alias in v.alias_name_list_final : "${k}_${alias}" => module.this_dns_alias.data["${k}_${alias}"]
+          for alias in v.alias_name_list_final : replace("${k}_${alias}", "-", "_") => module.this_dns_alias.data[replace("${k}_${alias}", "-", "_")]
         }
       }
     )

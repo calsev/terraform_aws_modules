@@ -84,7 +84,7 @@ locals {
           type  = "spread"
         },
       ]
-      sd_namespace_id = v.sd_hostname == null ? null : var.dns_data.domain_to_sd_zone_map[local.l1_map[k].sd_namespace_key].id
+      sd_namespace_id = v.sd_hostname == null ? null : var.dns_data.domain_to_sd_zone_map[local.l1_map[k].sd_namespace_key].namespace_id
     }
   }
   l3_map = {
