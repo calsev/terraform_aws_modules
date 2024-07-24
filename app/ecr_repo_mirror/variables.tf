@@ -8,6 +8,7 @@ variable "iam_data" {
     iam_instance_profile_arn_ecs    = string
     iam_policy_arn_batch_submit_job = string
     iam_policy_arn_ecr_get_token    = string
+    iam_policy_arn_ecs_exec_ssm     = string
     iam_policy_arn_ecs_start_task   = string
     iam_role_arn_ecs_task_execution = string
     key_pair_map = map(object({

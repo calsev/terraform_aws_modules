@@ -24,6 +24,26 @@ module "ecs_task_execution_role" {
   std_map     = var.std_map
 }
 
+data "aws_iam_policy_document" "ecs_exec_ssm_policy" {
+  statement {
+    actions = [
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel",
+    ]
+    resources = ["*"] # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html#ecs-exec-required-iam-permissions
+  }
+}
+
+module "ecs_exec_ssm_policy" {
+  source          = "../../../iam/policy/identity/base"
+  iam_policy_json = data.aws_iam_policy_document.ecs_exec_ssm_policy.json
+  name            = "ecs_exec"
+  name_prefix     = var.name_prefix
+  std_map         = var.std_map
+}
+
 data "aws_iam_policy_document" "ecs_start_task_policy" {
   statement {
     actions = [

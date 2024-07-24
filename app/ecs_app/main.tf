@@ -112,6 +112,7 @@ module "ecs_task" {
   task_container_reserved_num_vcpu_default          = var.task_container_reserved_num_vcpu_default
   task_container_secret_map_default                 = var.task_container_secret_map_default
   task_container_username_default                   = var.task_container_username_default
+  task_ecs_exec_enabled_default                     = var.task_ecs_exec_enabled_default
   task_docker_volume_map_default                    = var.task_docker_volume_map_default
   task_docker_volume_auto_provision_enabled_default = var.task_docker_volume_auto_provision_enabled_default
   task_docker_volume_driver_default                 = var.task_docker_volume_driver_default

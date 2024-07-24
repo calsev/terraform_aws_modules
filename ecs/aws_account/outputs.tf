@@ -1,3 +1,3 @@
 output "data" {
-  value = var.setting_map
+  value = local.output_data
 }

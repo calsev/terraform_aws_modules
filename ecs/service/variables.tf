@@ -182,8 +182,9 @@ variable "service_elb_target_container_port_default" {
 }
 
 variable "service_execute_command_enabled_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "To troubleshoot, see https://github.com/aws-containers/amazon-ecs-exec-checker"
 }
 
 variable "service_force_new_deployment_default" {

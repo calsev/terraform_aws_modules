@@ -77,6 +77,10 @@ variable "build_image_build_arch_list_default" {
     "amd",
     "arm",
   ]
+  validation {
+    condition     = length(setsubtract(toset(var.build_image_build_arch_list_default), toset(["amd", "arm"]))) == 0
+    error_message = "Invalid architectures"
+  }
 }
 
 variable "build_image_ecr_repo_key_default" {

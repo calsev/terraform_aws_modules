@@ -41,24 +41,7 @@ locals {
   create_cicd_pipe_map = {
     for k, v in local.lx_map : k => merge(v, {
       deploy_stage_list = concat(
-        v.image_build_enabled ? [
-          {
-            action_map = {
-              for arch in v.image_build_arch_list : title(arch) => {
-                configuration_build_project_key = "pipe_image_${lower(arch)}"
-              }
-            }
-            name = "ImageBuild"
-          },
-          {
-            action_map = {
-              Deploy = {
-                configuration_build_project_key = "pipe_image_manifest"
-              }
-            }
-            name = "ImageManifest"
-          },
-        ] : [],
+        v.image_build_enabled ? module.image_build.data[k].build_stage_list : [],
         [
           {
             action_map = {

@@ -23,6 +23,7 @@ variable "ecs_cluster_data" {
 variable "iam_data" {
   type = object({
     iam_policy_arn_batch_submit_job = string
+    iam_policy_arn_ecs_exec_ssm     = string
     iam_policy_arn_ecs_start_task   = string
     iam_role_arn_ecs_task_execution = string
   })
@@ -105,7 +106,8 @@ variable "task_map" {
       label_map              = optional(map(string))
       scope                  = optional(string)
     })))
-    ecs_cluster_key = optional(string)
+    ecs_cluster_key  = optional(string)
+    ecs_exec_enabled = optional(bool)
     efs_volume_map = optional(map(object({
       authorization_access_point_id = optional(string)
       authorization_iam_enabled     = optional(bool)
@@ -157,7 +159,8 @@ variable "task_container_mount_point_map_default" {
     container_path = string
     read_only      = optional(bool)
   }))
-  default = {}
+  default     = {}
+  description = "If ECS ecs_exec_enabled, this will be merged with volumes at /var/lib/amazon and /var/log/amazon"
 }
 
 variable "task_container_mount_read_only_default" {
@@ -226,6 +229,11 @@ variable "task_ecs_cluster_key_default" {
   description = "Defaults to the key for the task"
 }
 
+variable "task_ecs_exec_enabled_default" {
+  type    = bool
+  default = false
+}
+
 variable "task_efs_volume_map_default" {
   type = map(object({
     authorization_access_point_id = optional(string)
@@ -274,7 +282,8 @@ variable "task_docker_volume_map_default" {
     label_map              = optional(map(string))
     scope                  = optional(string)
   }))
-  default = {}
+  default     = {}
+  description = "If ECS ecs_exec_enabled, this will be merged with volumes at /var/lib/amazon and /var/log/amazon"
 }
 
 variable "task_docker_volume_auto_provision_enabled_default" {

@@ -52,7 +52,7 @@ locals {
           })
         } : {},
         contains(local.l1_map[k].image_build_arch_list, "arm") ? {
-          pipe_image_arm = merge(local.repo_build_image_common, {
+          pipe_image_arm = merge(local.l1_map[k], local.repo_build_image_common, {
             environment_type = "cpu-arm-amazon-small"
             environment_variable_map = {
               (local.l1_map[k].image_environment_key_arch) = {
@@ -91,6 +91,24 @@ locals {
       },
       module.code_build.data[k],
       {
+        build_stage_list = [
+          {
+            action_map = {
+              for arch in v.image_build_arch_list : title(arch) => {
+                configuration_build_project_key = "pipe_image_${lower(arch)}"
+              }
+            }
+            name = "ImageBuild"
+          },
+          {
+            action_map = {
+              Deploy = {
+                configuration_build_project_key = "pipe_image_manifest"
+              }
+            }
+            name = "ImageManifest"
+          },
+        ]
         role = module.image_build_role[k].data
       }
     )
