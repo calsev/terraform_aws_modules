@@ -102,6 +102,7 @@ variable "app_map" {
       label_map              = optional(map(string))
       scope                  = optional(string)
     })))
+    ecs_exec_enabled = optional(bool)
     efs_volume_map = optional(map(object({
       authorization_access_point_id = optional(string)
       authorization_iam_enabled     = optional(bool)
@@ -429,6 +430,7 @@ variable "iam_data" {
   type = object({
     iam_instance_profile_arn_ecs    = string
     iam_policy_arn_batch_submit_job = string
+    iam_policy_arn_ecs_exec_ssm     = string
     iam_policy_arn_ecs_start_task   = string
     iam_role_arn_ecs_task_execution = string
     key_pair_map = map(object({
@@ -1060,6 +1062,11 @@ variable "task_docker_volume_label_map_default" {
 variable "task_docker_volume_scope_default" {
   type    = string
   default = "task"
+}
+
+variable "task_ecs_exec_enabled_default" {
+  type    = bool
+  default = false
 }
 
 variable "task_efs_volume_map_default" {

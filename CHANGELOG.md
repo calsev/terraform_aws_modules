@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.75.0
+
+### General
+
+* Pipeline build list in image build outputs
+* New ECS account settings to IAM app for ECS
+* ECS exec support for task and app
+
 ## 0.74.0
 
 ### General

@@ -30,6 +30,7 @@ locals {
       EOT
       docker_volume_map      = v.docker_volume_map == null ? var.task_docker_volume_map_default : v.docker_volume_map
       ecs_cluster_key        = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
+      ecs_exec_enabled       = v.ecs_exec_enabled == null ? var.task_ecs_exec_enabled_default : v.ecs_exec_enabled
       efs_volume_map         = v.efs_volume_map == null ? var.task_efs_volume_map_default : v.efs_volume_map
       iam_role_arn_execution = v.iam_role_arn_execution == null ? var.task_iam_role_arn_execution_default == null ? var.iam_data.iam_role_arn_ecs_task_execution : var.task_iam_role_arn_execution_default : v.iam_role_arn_execution
       network_mode           = v.network_mode == null ? var.task_network_mode_default : v.network_mode
@@ -69,14 +70,30 @@ locals {
         ]
       })
       capability_type = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].capability_type
-      docker_volume_map = {
-        for k_vol, v_vol in local.l1_map[k].docker_volume_map : k_vol => merge(v_vol, {
-          driver            = v_vol.driver == null ? var.task_docker_volume_driver_default : v_vol.driver
-          driver_option_map = v_vol.driver_option_map == null ? var.task_docker_volume_driver_option_map_default : v_vol.driver_option_map
-          label_map         = v_vol.label_map == null ? var.task_docker_volume_label_map_default : v_vol.label_map
-          scope             = v_vol.scope == null ? var.task_docker_volume_scope_default : v_vol.scope
-        })
-      }
+      docker_volume_map = merge(
+        {
+          for k_vol, v_vol in local.l1_map[k].docker_volume_map : k_vol => merge(v_vol, {
+            driver            = v_vol.driver == null ? var.task_docker_volume_driver_default : v_vol.driver
+            driver_option_map = v_vol.driver_option_map == null ? var.task_docker_volume_driver_option_map_default : v_vol.driver_option_map
+            label_map         = v_vol.label_map == null ? var.task_docker_volume_label_map_default : v_vol.label_map
+            scope             = v_vol.scope == null ? var.task_docker_volume_scope_default : v_vol.scope
+          })
+        },
+        local.l1_map[k].ecs_exec_enabled ? {
+          "var_lib_amazon" = {
+            driver            = "local"
+            driver_option_map = {}
+            label_map         = {}
+            scope             = "task"
+          }
+          "var_log_amazon" = {
+            driver            = "local"
+            driver_option_map = {}
+            label_map         = {}
+            scope             = "task"
+          }
+        } : {}
+      )
       ecs_cluster_arn = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].ecs_cluster_arn
       efs_volume_map = {
         for name, volume_data in local.l1_map[k].efs_volume_map : name => merge(volume_data, {
@@ -164,13 +181,27 @@ locals {
             }
           }
           memoryReservation = (v_def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.l7_map[k].resource_memory_gib / length(v.container_definition_map) : var.task_container_reserved_memory_gib_default : v_def.reserved_memory_gib) * 1024
-          mountPoints = [
-            for name, mount_data in v_def.mount_point_map == null ? var.task_container_mount_point_map_default : v_def.mount_point_map : {
-              containerPath = mount_data.container_path
-              readOnly      = mount_data.read_only != null ? mount_data.read_only : var.task_container_mount_read_only_default
-              sourceVolume  = name
-            }
-          ]
+          mountPoints = concat(
+            [
+              for name, mount_data in v_def.mount_point_map == null ? var.task_container_mount_point_map_default : v_def.mount_point_map : {
+                containerPath = mount_data.container_path
+                readOnly      = mount_data.read_only != null ? mount_data.read_only : var.task_container_mount_read_only_default
+                sourceVolume  = name
+              }
+            ],
+            local.l1_map[k].ecs_exec_enabled ? [
+              {
+                containerPath = "/var/lib/amazon"
+                readOnly      = false
+                sourceVolume  = "var_lib_amazon"
+              },
+              {
+                containerPath = "/var/log/amazon"
+                readOnly      = false
+                sourceVolume  = "var_log_amazon"
+              },
+            ] : [],
+          )
           name = k_def
           portMappings = [
             for k_port, v_port in v_def.port_map == null ? var.task_container_port_map_default : v_def.port_map : {

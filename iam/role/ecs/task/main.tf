@@ -2,6 +2,10 @@ module "this_role" {
   source                   = "../../../../iam/role/base"
   assume_role_service_list = ["ecs-tasks"]
   embedded_role_policy_attach_arn_map = {
+    exec_ssm = {
+      condition = var.ecs_exec_enabled
+      policy    = var.ecs_exec_enabled ? var.iam_data.iam_policy_arn_ecs_exec_ssm : null
+    }
     log_write = {
       policy = var.log_data.iam_policy_arn_map.write
     }

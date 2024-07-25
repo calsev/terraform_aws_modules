@@ -1,3 +1,16 @@
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_ecs_exec_ssm = string
+  })
+  default     = null
+  description = "Must be provided if ecs_exec_enabled"
+}
+
+variable "ecs_exec_enabled" {
+  type    = bool
+  default = false
+}
+
 variable "log_data" {
   type = object({
     iam_policy_arn_map = object({
