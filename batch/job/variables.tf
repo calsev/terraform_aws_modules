@@ -26,19 +26,30 @@ variable "iam_data" {
 
 variable "job_map" {
   type = map(object({
-    alert_enabled              = optional(bool)
-    alert_level                = optional(string)
-    batch_cluster_key          = optional(string)
-    command_list               = optional(list(string))
-    entry_point                = optional(list(string))
-    environment_map            = optional(map(string))
+    alert_enabled     = optional(bool)
+    alert_level       = optional(string)
+    batch_cluster_key = optional(string)
+    command_list      = optional(list(string))
+    entry_point       = optional(list(string))
+    efs_volume_map = optional(map(object({
+      authorization_access_point_id = optional(string)
+      authorization_iam_enabled     = optional(bool)
+      file_system_id                = optional(string)
+      root_directory                = optional(string)
+      transit_encryption_enabled    = optional(bool)
+      transit_encryption_port       = optional(string)
+    })))
+    environment_map = optional(map(string))
+    host_volume_map = optional(map(object({
+      host_path = string
+    })))
     iam_role_arn_job_container = optional(string)
     iam_role_arn_job_execution = optional(string)
     image_id                   = optional(string)
     image_tag                  = optional(string)
     mount_map = optional(map(object({
       container_path = string
-      source_path    = string
+      volume_key     = optional(string)
     })))
     parameter_map              = optional(map(string))
     privileged                 = optional(bool)
@@ -67,6 +78,51 @@ variable "job_command_list_default" {
   default = ["echo Hello World!"]
 }
 
+variable "job_efs_volume_map_default" {
+  type = map(object({
+    authorization_access_point_id = optional(string)
+    authorization_iam_enabled     = optional(bool)
+    file_system_id                = optional(string)
+    root_directory                = optional(string)
+    transit_encryption_enabled    = optional(bool)
+    transit_encryption_port       = optional(number)
+  }))
+  default = {}
+}
+
+variable "job_efs_authorization_access_point_id_default" {
+  type    = string
+  default = null
+}
+
+variable "job_efs_authorization_iam_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Requires transit encryption"
+}
+
+variable "job_efs_file_system_id_default" {
+  type    = string
+  default = null
+}
+
+variable "job_efs_root_directory_default" {
+  type        = string
+  default     = "/"
+  description = "Forced to root if an access point is configured"
+}
+
+variable "job_efs_transit_encryption_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Must be true if IAM is enabled"
+}
+
+variable "job_efs_transit_encryption_port_default" {
+  type    = number
+  default = null
+}
+
 variable "job_entry_point_default" {
   type        = list(string)
   default     = ["/bin/bash", "-cex"]
@@ -75,6 +131,13 @@ variable "job_entry_point_default" {
 
 variable "job_environment_map_default" {
   type    = map(string)
+  default = {}
+}
+
+variable "job_host_volume_map_default" {
+  type = map(object({
+    host_path = string
+  }))
   default = {}
 }
 
@@ -102,7 +165,7 @@ variable "job_image_tag_default" {
 variable "job_mount_map_default" {
   type = map(object({
     container_path = string
-    source_path    = string
+    volume_key     = optional(string) # Defaults to mount key
   }))
   default = {}
 }
