@@ -127,6 +127,7 @@ locals {
       nat_enabled = local.l5_map[k].nat_instance_enabled || local.l6_map[k].nat_gateway_enabled
       segment_map = {
         for k_seg, v_seg in local.l6_map[k].segment_map : k_seg => merge(v_seg, {
+          dns_v6_enabled    = local.l1_map[k].vpc_assign_ipv6_cidr && local.l6_map[k].nat_gateway_enabled # Must have ipv6 route to NAT or dnsv6 blackholes AWS endpoint requests
           route_nat_gateway = local.l6_map[k].nat_gateway_enabled && !v_seg.route_public
         })
       }
@@ -203,6 +204,9 @@ locals {
   }
   subnet_flattened_nat_instance_map = {
     for k, v in local.subnet_flattened_map : k => v if v.route_nat_instance
+  }
+  subnet_flattened_nat_ipv6_map = {
+    for k, v in local.subnet_flattened_map : k => v if v.dns_v6_enabled # Synonomous with ipv6 route because you can't have one without the other
   }
   subnet_flattened_public_map = {
     for k, v in local.subnet_flattened_map : k => v if v.route_public

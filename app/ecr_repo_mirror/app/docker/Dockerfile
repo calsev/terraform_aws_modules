@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     apt-get -qq update && \
-    $pkg curl make python-is-python3 python3-pip python3-venv skopeo unzip && \
+    $pkg curl less make python-is-python3 python3-pip python3-venv skopeo unzip && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o 'awscliv2.zip' && \
     unzip -q awscliv2.zip && \
     rm awscliv2.zip && \

@@ -22,6 +22,7 @@ locals {
       EOT
       batch_cluster_key     = v.batch_cluster_key == null ? var.job_batch_cluster_key_default == null ? k : var.job_batch_cluster_key_default : v.batch_cluster_key
       command_list          = v.command_list == null ? var.job_command_list_default : v.command_list
+      efs_volume_map        = v.efs_volume_map == null ? var.job_efs_volume_map_default : v.efs_volume_map
       entry_point           = v.entry_point == null ? var.job_entry_point_default : v.entry_point
       environment_map = merge(
         {
@@ -29,6 +30,7 @@ locals {
         },
         v.environment_map == null ? var.job_environment_map_default : v.environment_map
       )
+      host_volume_map            = v.host_volume_map == null ? var.job_host_volume_map_default : v.host_volume_map
       iam_role_arn_job_container = v.iam_role_arn_job_container == null ? var.job_iam_role_arn_job_container_default : v.iam_role_arn_job_container
       iam_role_arn_job_execution = v.iam_role_arn_job_execution == null ? var.job_iam_role_arn_job_execution_default == null ? var.iam_data.iam_role_arn_ecs_task_execution : var.job_iam_role_arn_job_execution_default : v.iam_role_arn_job_execution
       image_id                   = v.image_id == null ? var.job_image_id_default : v.image_id
@@ -67,6 +69,20 @@ locals {
         sharedMemorySize = local.l1_map[k].resource_memory_shared_gib * 1024
         tmpfs            = []
       }
+      efs_volume_map = {
+        for k_vol, v_vol in local.l1_map[k].efs_volume_map : k_vol => merge(v_vol, {
+          authorization_access_point_id = v_vol.authorization_access_point_id == null ? var.job_efs_authorization_access_point_id_default : v_vol.authorization_access_point_id
+          authorization_iam_enabled     = v_vol.authorization_iam_enabled == null ? var.job_efs_authorization_iam_enabled_default : v_vol.authorization_iam_enabled
+          file_system_id                = v_vol.file_system_id == null ? var.job_efs_file_system_id_default : v_vol.file_system_id
+          transit_encryption_enabled    = v_vol.transit_encryption_enabled == null ? var.job_efs_transit_encryption_enabled_default : v_vol.transit_encryption_enabled
+          transit_encryption_port       = v_vol.transit_encryption_port == null ? var.job_efs_transit_encryption_port_default : v_vol.transit_encryption_port
+        })
+      }
+      mount_map = {
+        for k_mount, v_mount in local.l1_map[k].mount_map : k_mount => merge(v_mount, {
+          volume_key = v_mount.volume_key == null ? k_mount : v_mount.volume_key
+        })
+      }
       resource_memory_host_gib_default = 13 / 32 + var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib / 64
       resource_num_gpu_default         = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_gpu
       resource_num_vcpu_default        = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_vcpu
@@ -74,6 +90,11 @@ locals {
   }
   l3_map = {
     for k, v in var.job_map : k => {
+      efs_volume_map = {
+        for k_vol, v_vol in local.l2_map[k].efs_volume_map : k_vol => merge(v_vol, {
+          root_directory = v_vol.authorization_access_point_id != null ? "/" : v_vol.root_directory == null ? var.job_efs_root_directory_default : v_vol.root_directory
+        })
+      }
       resource_memory_host_gib = v.resource_memory_host_gib == null ? var.job_resource_memory_host_gib_default == null ? local.l2_map[k].resource_memory_host_gib_default : var.job_resource_memory_host_gib_default : v.resource_memory_host_gib
       resource_num_gpu         = v.resource_num_gpu == null ? var.job_resource_num_gpu_default == null ? local.l2_map[k].resource_num_gpu_default : var.job_resource_num_gpu_default : v.resource_num_gpu
       resource_num_vcpu        = v.resource_num_vcpu == null ? var.job_resource_num_vcpu_default == null ? local.l2_map[k].resource_num_vcpu_default : var.job_resource_num_vcpu_default : v.resource_num_vcpu
@@ -152,14 +173,31 @@ locals {
           }
         ]
         user = local.l1_map[k].username
-        volumes = [
-          for k_mount, v_mount in local.l1_map[k].mount_map : {
-            host = {
-              sourcePath = v_mount.source_path
+        volumes = concat(
+          [
+            for k_mount, v_mount in local.l1_map[k].host_volume_map : {
+              host = {
+                sourcePath = v_mount.host_path
+              }
+              name = k_mount
             }
-            name = k_mount
-          }
-        ]
+          ],
+          [
+            for k_mount, v_mount in local.l3_map[k].efs_volume_map : {
+              efsVolumeConfiguration = {
+                authorizationConfig = {
+                  accessPointId = v_mount.authorization_access_point_id
+                  iam           = v_mount.authorization_iam_enabled ? "ENABLED" : "DISABLED"
+                }
+                fileSystemId          = v_mount.file_system_id
+                rootDirectory         = v_mount.root_directory
+                transitEncryption     = v_mount.transit_encryption_enabled ? "ENABLED" : "DISABLED"
+                transitEncryptionPort = v_mount.transit_encryption_port
+              }
+              name = k_mount
+            }
+          ],
+        )
       }
     }
   }

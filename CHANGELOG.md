@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.76.0
+
+### General
+
+* EFS support for Batch jobs
+
+### Bugfix
+
+* Fix connection to IPv4-only AWS services from duplex networks
+
 ## 0.75.0
 
 ### General

@@ -4,7 +4,7 @@ resource "aws_subnet" "this_subnet" {
   availability_zone                              = each.value.availability_zone_name
   cidr_block                                     = each.value.subnet_cidr_block
   customer_owned_ipv4_pool                       = null
-  enable_dns64                                   = each.value.assign_ipv6_address
+  enable_dns64                                   = each.value.dns_v6_enabled
   enable_resource_name_dns_aaaa_record_on_launch = each.value.assign_ipv6_address
   enable_resource_name_dns_a_record_on_launch    = true
   ipv6_cidr_block                                = cidrsubnet(each.value.vpc_ipv6_cidr_block, 8, each.value.cidr_block_index) # Must be /64
@@ -118,6 +118,15 @@ resource "aws_route" "internal_to_nat_gateway" {
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = module.nat_gateway.data[each.value.k_az_nat].nat_gateway_id
   route_table_id         = aws_route_table.this_route_table[each.key].id
+}
+
+resource "aws_route" "internal_to_nat_gateway_v6" {
+  # This article is for IPv6-only networking, but a long session with an AWS network engineer proved it is necessary for duplex networks
+  # https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-nat64-dns64.html#nat-gateway-nat64-dns64-walkthrough-internet
+  for_each                    = local.subnet_flattened_nat_ipv6_map
+  destination_ipv6_cidr_block = "64:ff9b::/96"
+  nat_gateway_id              = module.nat_gateway.data[each.value.k_az_nat].nat_gateway_id
+  route_table_id              = aws_route_table.this_route_table[each.key].id
 }
 
 resource "aws_route" "internal_to_nat_instance" {
