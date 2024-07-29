@@ -40,11 +40,11 @@ locals {
     for k, v in var.fs_map : k => merge(module.vpc_map.data[k], {
       access_point_map = {
         for k_ap, v_ap in local.l1_map[k].access_point_map : k_ap => merge(v_ap, {
-          access_point_path       = k_ap
           k_fs_ap                 = "${k}-${k_ap}"
           k_fs                    = k
           owner_gid               = v_ap.owner_gid == null ? var.fs_access_point_owner_gid_default : v_ap.owner_gid
           owner_uid               = v_ap.owner_uid == null ? var.fs_access_point_owner_uid_default : v_ap.owner_uid
+          path                    = v_ap.path == null ? k_ap : v_ap.path
           permission_mode         = v_ap.permission_mode == null ? var.fs_access_point_permission_mode_default : v_ap.permission_mode
           user_gid                = v_ap.user_gid == null ? var.fs_access_point_user_gid_default : v_ap.user_gid
           user_gid_secondary_list = v_ap.user_gid_secondary_list == null ? var.fs_access_point_user_gid_secondary_list_default : v_ap.user_gid_secondary_list

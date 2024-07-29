@@ -49,6 +49,7 @@ variable "job_map" {
     image_tag                  = optional(string)
     mount_map = optional(map(object({
       container_path = string
+      read_only      = optional(bool, false)
       volume_key     = optional(string)
     })))
     parameter_map              = optional(map(string))
@@ -165,6 +166,7 @@ variable "job_image_tag_default" {
 variable "job_mount_map_default" {
   type = map(object({
     container_path = string
+    read_only      = optional(bool, false)
     volume_key     = optional(string) # Defaults to mount key
   }))
   default = {}

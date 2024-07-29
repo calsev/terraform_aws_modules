@@ -13,7 +13,8 @@ module "latest_ami_map" {
 }
 
 module "account_settings" {
-  source = "path/to/modules/ecs/aws_account"
+  source  = "path/to/modules/ecs/aws_account"
+  std_map = module.com_lib["com"].std_map
 }
 
 module "batch_compute" {

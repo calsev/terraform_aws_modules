@@ -3,6 +3,7 @@ variable "fs_map" {
     access_point_map = optional(map(object({
       owner_gid               = optional(number)
       owner_uid               = optional(number)
+      path                    = optional(string)
       permission_mode         = optional(string)
       user_gid                = optional(number)
       user_gid_secondary_list = optional(list(number))
@@ -28,6 +29,7 @@ variable "fs_access_point_map_default" {
   type = map(object({
     owner_gid               = optional(number)
     owner_uid               = optional(number)
+    path                    = optional(string) # Defaults to key
     permission_mode         = optional(string)
     user_gid                = optional(number)
     user_gid_secondary_list = optional(list(number))

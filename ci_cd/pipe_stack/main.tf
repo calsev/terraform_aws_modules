@@ -8,6 +8,7 @@ module "code_pipe" {
   pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
   pipe_source_repository_id_default            = var.pipe_source_repository_id_default
   pipe_stage_category_default                  = var.pipe_stage_category_default
+  pipe_webhook_enabled_default                 = var.pipe_webhook_enabled_default
   pipe_webhook_enable_github_hook_default      = var.pipe_webhook_enable_github_hook_default
   pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
   std_map                                      = var.std_map
