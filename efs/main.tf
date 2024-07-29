@@ -82,7 +82,7 @@ resource "aws_efs_access_point" "this_access_point" {
       owner_uid   = each.value.owner_uid
       permissions = each.value.permission_mode
     }
-    path = each.value.access_point_path
+    path = each.value.path
   }
   tags = each.value.tags
 }

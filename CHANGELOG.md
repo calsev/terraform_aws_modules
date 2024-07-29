@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.76.1
+
+### General
+
+* Read-only EFS mount for Batch jobs
+* CI/CD Pipeline webhook toggle
+
 ## 0.76.0
 
 ### General

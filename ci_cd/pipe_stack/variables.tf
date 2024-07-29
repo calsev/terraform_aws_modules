@@ -119,6 +119,7 @@ variable "pipe_map" {
     source_code_star_connection_key = optional(string)
     source_detect_changes           = optional(bool)
     source_repository_id            = optional(string)
+    webhook_enabled                 = optional(bool)
     webhook_enable_github_hook      = optional(bool)
   }))
 }
@@ -161,6 +162,11 @@ variable "pipe_source_repository_id_default" {
 variable "pipe_stage_category_default" {
   type    = string
   default = "Build"
+}
+
+variable "pipe_webhook_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "pipe_webhook_enable_github_hook_default" {

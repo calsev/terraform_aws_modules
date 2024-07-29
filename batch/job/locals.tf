@@ -152,9 +152,10 @@ locals {
         jobRoleArn       = local.l1_map[k].iam_role_arn_job_container
         linuxParameters  = local.l2_map[k].linux_param_map
         mountPoints = [
-          for k_mount, v_mount in local.l1_map[k].mount_map : {
+          for k_mount, v_mount in local.l2_map[k].mount_map : {
             containerPath = v_mount.container_path
-            sourceVolume  = k_mount
+            readOnly      = v_mount.read_only
+            sourceVolume  = v_mount.volume_key
           }
         ]
         privileged           = local.l1_map[k].privileged
