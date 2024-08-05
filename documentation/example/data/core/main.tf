@@ -93,8 +93,16 @@ module "user_pool" {
       generate_secret   = true
     }
   }
-  pool_dns_from_zone_key_default            = "example.com"
-  pool_email_from_username_default          = "ExampleApp"
+  pool_dns_from_zone_key_default   = "example.com"
+  pool_email_from_username_default = "ExampleApp"
+  pool_group_map_default = {
+    user = {
+      precedence = 200
+    }
+    admin = {
+      precedence = 100
+    }
+  }
   pool_lambda_arn_post_confirmation_default = null # TODO
   pool_map = {
     app = {

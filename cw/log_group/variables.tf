@@ -67,7 +67,7 @@ variable "name_prefix_default" {
 variable "name_prepend_default" {
   type        = string
   default     = ""
-  description = "Prepended after key"
+  description = "Prepended before key"
 }
 
 variable "policy_access_list_default" {

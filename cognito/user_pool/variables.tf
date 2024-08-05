@@ -46,6 +46,29 @@ variable "dns_data" {
   })
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
 variable "pool_map" {
   type = map(object({
     account_recovery_admin_priority                   = optional(number)
@@ -73,14 +96,23 @@ variable "pool_map" {
       supported_identity_provider_list              = optional(list(string))
       write_attribute_list                          = optional(list(string))
     })))
-    deletion_protection                       = optional(bool)
-    device_challenge_required_on_new          = optional(bool)
-    device_only_remembered_on_user_prompt     = optional(bool)
-    dns_from_zone_key                         = optional(string)
-    dns_subdomain_key                         = optional(string)
-    email_from_username                       = optional(string)
-    email_reply_to_address                    = optional(string)
-    email_ses_key                             = optional(string)
+    deletion_protection                   = optional(bool)
+    device_challenge_required_on_new      = optional(bool)
+    device_only_remembered_on_user_prompt = optional(bool)
+    dns_from_zone_key                     = optional(string)
+    dns_subdomain_key                     = optional(string)
+    email_from_username                   = optional(string)
+    email_reply_to_address                = optional(string)
+    email_ses_key                         = optional(string)
+    group_map = optional(map(object({
+      iam_role_arn            = optional(string)
+      name_append             = optional(string)
+      name_include_app_fields = optional(bool)
+      name_infix              = optional(bool)
+      name_override           = optional(string)
+      name_prepend            = optional(string)
+      precedence              = optional(number)
+    })))
     invite_email_message_template             = optional(string)
     invite_email_subject                      = optional(string)
     invite_sms_message_template               = optional(string)
@@ -97,6 +129,11 @@ variable "pool_map" {
     lambda_kms_key_id                         = optional(string)
     mfa_configuration                         = optional(string)
     mfa_software_token_enabled                = optional(bool)
+    name_append                               = optional(string)
+    name_include_app_fields                   = optional(bool)
+    name_infix                                = optional(bool)
+    name_override                             = optional(string)
+    name_prepend                              = optional(string)
     only_admin_create_user                    = optional(bool)
     password_minimum_length                   = optional(number)
     password_require_lowercase                = optional(bool)
@@ -220,6 +257,29 @@ variable "pool_email_reply_to_address_default" {
 variable "pool_email_ses_key_default" {
   type    = string
   default = null
+}
+
+variable "pool_group_map_default" {
+  type = map(object({
+    iam_role_arn  = optional(string)
+    name_override = optional(string)
+    precedence    = optional(number)
+  }))
+  default = {}
+}
+
+variable "pool_group_iam_role_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_group_precedence_default" {
+  type    = number
+  default = null
+  validation {
+    condition     = var.pool_group_precedence_default == null ? true : var.pool_group_precedence_default >= 0
+    error_message = "Invalid group precedence"
+  }
 }
 
 variable "pool_invite_email_message_template_default" {
