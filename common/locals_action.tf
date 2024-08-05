@@ -432,6 +432,82 @@ locals {
         ]
       }
     }
+    dynamodb = {
+      global-table = {
+        public_read = []
+        read = [
+          "DescribeGlobalTable",
+        ]
+        public_write = []
+        write        = []
+      }
+      import = {
+        public_read = []
+        read = [
+          "DescribeImport",
+        ]
+        public_write = []
+        write        = []
+      }
+      index = {
+        public_read = []
+        read = [
+          "PartiQLInsert",
+          "Query",
+          "Scan",
+        ]
+        public_write = []
+        write        = []
+      }
+      star = {
+        public_read = []
+        read = [
+          "DescribeEndpoints",
+          "ListGlobalTables",
+          "ListStreams",
+          "ListTables",
+        ]
+        public_write = []
+        write        = []
+      }
+      stream = {
+        public_read = []
+        read = [
+          "GetRecords",
+          "GetShardIterator",
+        ]
+        public_write = []
+        write        = []
+      }
+      table = {
+        public_read = []
+        read = [
+          "BatchGetItem",
+          "ConditionCheckItem",
+          "DescribeExport",
+          "DescribeTable",
+          "GetItem",
+          "ListTagsOfResource",
+          "Query",
+          "Scan",
+        ]
+        public_write = []
+        write = [
+          "BatchWriteItem",
+          "DeleteItem",
+          "ExportTableToPointInTime",
+          "ImportTable",
+          "PartiQLDelete",
+          "PartiQLInsert",
+          "PartiQLUpdate",
+          "PutItem",
+          "RestoreTableToPointInTime",
+          "TagResource",
+          "UntagResource",
+          "UpdateItem",
+        ]
+      }
+    }
     ecr = {
       repo = {
         public_read = []

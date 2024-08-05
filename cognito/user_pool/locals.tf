@@ -1,7 +1,11 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = var.pool_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prepend_default            = var.name_prepend_default
+  std_map                         = var.std_map
 }
 
 locals {
@@ -44,8 +48,11 @@ locals {
       })
     }
   }
+  l0_map = {
+    for k, v in var.pool_map : k => v
+  }
   l1_map = {
-    for k, v in var.pool_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       account_recovery_admin_priority                   = v.account_recovery_admin_priority == null ? var.pool_account_recovery_admin_priority_default : v.account_recovery_admin_priority
       account_recovery_email_priority                   = v.account_recovery_email_priority == null ? var.pool_account_recovery_email_priority_default : v.account_recovery_email_priority
       account_recovery_phone_priority                   = v.account_recovery_phone_priority == null ? var.pool_account_recovery_phone_priority_default : v.account_recovery_phone_priority
@@ -89,7 +96,7 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.pool_map : k => {
+    for k, v in local.l0_map : k => {
       account_recovery_map = merge(
         # There is a maximum of 2, so disable admin if two factors are configured
         local.l1_map[k].account_recovery_admin_priority == null ? null : local.l1_map[k].account_recovery_email_priority != null && local.l1_map[k].account_recovery_phone_priority != null ? null : {
@@ -150,13 +157,13 @@ locals {
     }
   }
   l3_map = {
-    for k, v in var.pool_map : k => {
+    for k, v in local.l0_map : k => {
       acm_certificate_arn = local.l1_map[k].dns_from_zone_key == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].acm_certificate_key].certificate_arn
       dns_from_fqdn       = local.l1_map[k].dns_from_zone_key == null ? null : var.cdn_global_data.domain_cert_map[local.l2_map[k].acm_certificate_key].name_simple
     }
   }
   lx_map = {
-    for k, v in var.pool_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(
@@ -167,6 +174,7 @@ locals {
       {
         dns_alias          = v.dns_from_zone_key == null ? null : module.domain_alias.data[k]
         lambda_permission  = module.lambda_permission[k].data
+        user_group         = module.pool_group.data[k]
         user_pool_arn      = aws_cognito_user_pool.this_pool[k].arn
         user_pool_client   = module.pool_client.data[k]
         user_pool_endpoint = aws_cognito_user_pool.this_pool[k].endpoint

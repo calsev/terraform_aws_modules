@@ -24,7 +24,7 @@ variable "name_prefix_default" {
 variable "name_prepend_default" {
   type        = string
   default     = ""
-  description = "Prepended after key"
+  description = "Prepended before key"
 }
 
 variable "name_suffix_default" {

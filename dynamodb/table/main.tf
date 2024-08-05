@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "this_table" {
-  for_each = local.table_map
+  for_each = local.lx_map
   dynamic "attribute" {
     for_each = each.value.attribute_map
     content {
@@ -57,4 +57,14 @@ resource "aws_dynamodb_table" "this_table" {
     }
   }
   write_capacity = each.value.write_capacity
+}
+
+module "policy" {
+  source   = "../../iam/policy/identity/dynamodb/table"
+  for_each = local.create_policy_map
+  name     = each.value.policy_name
+  name_map_table = {
+    (each.value.name_effective) = {}
+  }
+  std_map = var.std_map
 }

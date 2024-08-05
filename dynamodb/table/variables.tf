@@ -1,9 +1,14 @@
 variable "std_map" {
   type = object({
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
 
@@ -11,6 +16,7 @@ variable "table_map" {
   type = map(object({
     attribute_map                  = optional(map(string))
     billing_mode                   = optional(string)
+    create_policy                  = optional(bool)
     deletion_protection_enabled    = optional(bool)
     gsi_hash_key                   = optional(string)
     gsi_name                       = optional(string)
@@ -50,6 +56,11 @@ variable "table_billing_mode_default" {
     condition     = contains(["PAY_PER_REQUEST", "PROVISIONED"], var.table_billing_mode_default)
     error_message = "Invalid billing mode"
   }
+}
+
+variable "table_create_policy_default" {
+  type    = bool
+  default = true
 }
 
 variable "table_deletion_protection_enabled_default" {

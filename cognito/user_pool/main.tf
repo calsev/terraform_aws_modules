@@ -144,3 +144,16 @@ module "pool_client" {
   pool_map                                     = local.create_client_map
   std_map                                      = var.std_map
 }
+
+module "pool_group" {
+  source                          = "../../cognito/user_group"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prepend_default            = var.name_prepend_default
+  pool_group_map_default          = var.pool_group_map_default
+  pool_group_iam_role_arn_default = var.pool_group_iam_role_arn_default
+  pool_group_precedence_default   = var.pool_group_precedence_default
+  pool_map                        = local.create_client_map
+  std_map                         = var.std_map
+}

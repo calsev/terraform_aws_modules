@@ -2,15 +2,22 @@ module "name_map" {
   source                          = "../../name_map"
   name_include_app_fields_default = var.table_name_include_app_fields_default
   name_infix_default              = var.table_name_infix_default
-  name_map                        = var.table_map
+  name_map                        = local.l0_map
   std_map                         = var.std_map
 }
 
 locals {
+  create_policy_map = {
+    for k, v in local.lx_map : k => v
+  }
+  l0_map = {
+    for k, v in var.table_map : k => v
+  }
   l1_map = {
-    for k, v in var.table_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       attribute_map                  = v.attribute_map == null ? var.table_attribute_map_default : v.attribute_map
       billing_mode                   = v.billing_mode == null ? var.table_billing_mode_default : v.billing_mode
+      create_policy                  = v.create_policy == null ? var.table_create_policy_default : v.create_policy
       deletion_protection_enabled    = v.deletion_protection_enabled == null ? var.table_deletion_protection_enabled_default : v.deletion_protection_enabled
       gsi_hash_key                   = v.gsi_hash_key == null ? var.table_gsi_hash_key_default : v.gsi_hash_key
       gsi_name                       = v.gsi_name == null ? var.table_gsi_name_default : v.gsi_name
@@ -35,21 +42,23 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.table_map : k => {
+    for k, v in local.l0_map : k => {
       has_gsi     = local.l1_map[k].gsi_hash_key != null && local.l1_map[k].gsi_name != null
       has_lsi     = local.l1_map[k].lsi_name != null && local.l1_map[k].lsi_range_key != null
+      policy_name = "${k}_dynamodb"
       ttl_enabled = local.l1_map[k].ttl_attribute_name != null
     }
   }
+  lx_map = {
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
   output_data = {
-    for k, v_table in local.table_map : k => merge(
-      v_table,
+    for k, v in local.lx_map : k => merge(
+      v,
       {
+        policy    = v.create_policy ? module.policy[k].data : null
         table_arn = aws_dynamodb_table.this_table[k].arn
       },
     )
-  }
-  table_map = {
-    for k, v in var.table_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
 }

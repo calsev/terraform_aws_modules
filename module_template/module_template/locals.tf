@@ -1,5 +1,5 @@
 module "name_map" {
-  source                          = "../name_map"
+  source                          = "../../name_map"
   name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default

@@ -138,6 +138,8 @@ tf-lint: tflint-install
 	cd ../cloudtrail/trail && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/client_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cognito/identity_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cognito/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/user_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../common && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -204,6 +206,7 @@ tf-lint: tflint-install
 	cd ../iam/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/backup && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/batch && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/app/bedrock && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -229,6 +232,8 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity/codestar/connection && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/dynamodb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/dynamodb/table && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/ecs/service && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -270,6 +275,8 @@ tf-lint: tflint-install
 	cd ../iam/role/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/code_build && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/code_pipe && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/cognito && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/cognito/identity_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ec2 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ec2/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -297,6 +304,7 @@ tf-lint: tflint-install
 	cd ../macie && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../macie/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../module_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../module_template/module_template && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../name_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../pinpoint && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../pinpoint/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

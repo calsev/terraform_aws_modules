@@ -67,7 +67,7 @@ variable "name_infix_default" {
 variable "name_prepend_default" {
   type        = string
   default     = ""
-  description = "Prepended after key"
+  description = "Prepended before key"
 }
 
 variable "rule_condition_map_default" {

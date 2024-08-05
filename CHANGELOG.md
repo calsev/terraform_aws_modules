@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.77.0
+
+### New modules
+
+* Cognito identity pool
+* Cognito user group
+* IAM app for Bedrock
+* IAM policy for DynamoDB
+* IAM role for Cognito identity pool
+
+### General
+
+* Embed policy for DynamoDB table
+
 ## 0.76.1
 
 ### General
