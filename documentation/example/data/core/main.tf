@@ -10,7 +10,7 @@ module "com_lib" {
 
 module "db_sub" {
   source   = "path/to/modules/rds/subnet_group"
-  for_each = local.env_list_db
+  for_each = local.env_list_instance
   group_map = {
     default = {
       vpc_key = "main"
@@ -22,7 +22,7 @@ module "db_sub" {
 
 module "db" {
   source                     = "path/to/modules/rds/instance"
-  for_each                   = local.env_list_db
+  for_each                   = local.env_list_instance
   db_create_instance_default = false
   db_map = {
     dev = {
@@ -54,7 +54,7 @@ module "db" {
 
 module "db_proxy" {
   source                                  = "path/to/modules/rds/proxy"
-  for_each                                = local.env_list_db
+  for_each                                = local.env_list_instance
   db_data_map                             = module.db[each.key].data
   proxy_auth_client_password_type_default = "POSTGRES_SCRAM_SHA_256"
   proxy_create_instance_default           = false
@@ -79,13 +79,17 @@ module "db_proxy" {
 
 module "user_pool" {
   source          = "path/to/modules/cognito/user_pool"
+  for_each        = local.env_list_instance
   cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data
   comms_data      = data.terraform_remote_state.comms.outputs.data
   dns_data        = data.terraform_remote_state.dns.outputs.data
   pool_client_app_map_default = {
     app = {
       # No secret, suitable for implicit grant flow on client side (Amplify)
-      callback_url_list = ["https://web.example.com"] # This is never used
+      callback_url_list = [{
+        dev = "https://web-dev.example.com"
+        prd = "https://web.example.com"
+      }[each.key]] # This is never used
     }
     web = {
       # Secret, suitable for authorization code grant flow on server side (ELB)
@@ -111,7 +115,21 @@ module "user_pool" {
   }
   pool_only_admin_create_user_default  = false
   pool_username_attribute_list_default = ["email", ]
-  std_map                              = module.com_lib["com"].std_map
+  std_map                              = module.com_lib[each.key].std_map
+}
+
+module "identity_pool" {
+  source                                       = "path/to/modules/cognito/identity_pool"
+  for_each                                     = local.env_list_instance
+  cognito_data_map                             = module.user_pool[each.key].data
+  pool_cognito_provider_client_app_key_default = "app"
+  pool_cognito_provider_map_default = {
+    app = {}
+  }
+  pool_map = {
+    app_user = {}
+  }
+  std_map = module.com_lib[each.key].std_map
 }
 
 module "local_config" {

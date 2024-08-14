@@ -1,6 +1,6 @@
 locals {
   aws_region_name = "us-west-2"
-  env_list        = toset(["dev", "prd"])
+  env_list        = toset(["prd"])
   output_data = {
     for env in local.env_list : env => {
       app = module.ecs_app[env].data

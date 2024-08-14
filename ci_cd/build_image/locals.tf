@@ -21,6 +21,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      build_environment_size     = v.build_environment_size == null ? var.build_environment_size_default : v.build_environment_size
       code_star_connection_key   = v.code_star_connection_key == null ? var.build_code_star_connection_key_default : v.code_star_connection_key
       image_build_arch_list      = v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
       image_ecr_repo_key         = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
@@ -38,6 +39,7 @@ locals {
         # Create a build array for each repo, injecting common values for the repo
         contains(local.l1_map[k].image_build_arch_list, "amd") ? {
           pipe_image_amd = merge(local.l1_map[k], local.repo_build_image_common, {
+            environment_type = "cpu-amd-amazon-${local.l1_map[k].build_environment_size}"
             environment_variable_map = {
               (local.l1_map[k].image_environment_key_arch) = {
                 type  = "PLAINTEXT"
@@ -53,7 +55,7 @@ locals {
         } : {},
         contains(local.l1_map[k].image_build_arch_list, "arm") ? {
           pipe_image_arm = merge(local.l1_map[k], local.repo_build_image_common, {
-            environment_type = "cpu-arm-amazon-small"
+            environment_type = "cpu-arm-amazon-${local.l1_map[k].build_environment_size}"
             environment_variable_map = {
               (local.l1_map[k].image_environment_key_arch) = {
                 type  = "PLAINTEXT"

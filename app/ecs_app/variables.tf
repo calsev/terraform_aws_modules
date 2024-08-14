@@ -44,6 +44,7 @@ variable "app_map" {
     blue_green_timeout_wait_minutes     = optional(number)
     build_artifact_name                 = optional(string)
     build_data_key                      = optional(string)
+    build_environment_size              = optional(string) # e.g. small, medium, large
     build_role_policy_attach_arn_map    = optional(map(string))
     build_role_policy_create_json_map   = optional(map(string))
     build_role_policy_inline_json_map   = optional(map(string))
@@ -200,6 +201,15 @@ variable "app_path_repo_root_to_spec_directory_default" {
 variable "app_path_terraform_app_to_repo_root_default" {
   type    = string
   default = null
+}
+
+variable "build_environment_size_default" {
+  type    = string
+  default = "small"
+  validation {
+    condition     = contains(["small", "medium", "large", "xlarge", "2xlarge"], var.build_environment_size_default)
+    error_message = "Invalid environment size"
+  }
 }
 
 variable "build_image_build_arch_list_default" {

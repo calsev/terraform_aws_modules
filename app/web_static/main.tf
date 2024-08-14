@@ -30,6 +30,7 @@ module "cdn" {
 
 module "code_build" {
   source                          = "../../ci_cd/build"
+  build_environment_type_default  = var.build_environment_type_default
   ci_cd_account_data              = var.ci_cd_account_data
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default

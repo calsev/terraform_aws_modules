@@ -30,7 +30,7 @@ module "ecs_app" {
   build_image_build_arch_list_default          = []
   ci_cd_account_data                           = data.terraform_remote_state.ci_cd.outputs.data
   ci_cd_build_data_map                         = {}
-  cognito_data_map                             = data.terraform_remote_state.core.outputs.data["com"].user_pool
+  cognito_data_map                             = data.terraform_remote_state.core.outputs.data[each.key].user_pool
   dns_data                                     = data.terraform_remote_state.dns.outputs.data
   elb_data_map                                 = data.terraform_remote_state.net.outputs.data.elb_map
   iam_data                                     = data.terraform_remote_state.iam.outputs.data

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.78.0
+
+### General
+
+* Parameterize build environment for ECS app, static web app, image build
+
 ## 0.77.0
 
 ### New modules

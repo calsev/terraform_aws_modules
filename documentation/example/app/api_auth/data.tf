@@ -4,7 +4,7 @@ data "terraform_remote_state" "core" {
   config = {
     bucket = "example-deploy"
     key    = "tf-backend/data-core.tfstate"
-    region = local.std_var.aws_region_name
+    region = local.aws_region_name
   }
 }
 
@@ -14,7 +14,7 @@ data "terraform_remote_state" "dns" {
   config = {
     bucket = "example-deploy"
     key    = "tf-backend/inf-dns.tfstate"
-    region = local.std_var.aws_region_name
+    region = local.aws_region_name
   }
 }
 
@@ -23,6 +23,6 @@ data "terraform_remote_state" "iam" {
   config = {
     bucket = "example-deploy"
     key    = "tf-backend/inf-iam.tfstate"
-    region = local.std_var.aws_region_name
+    region = local.aws_region_name
   }
 }

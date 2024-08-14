@@ -3,6 +3,11 @@ variable "bucket_log_target_bucket_name_default" {
   default = null
 }
 
+variable "build_environment_type_default" {
+  type    = string
+  default = "cpu-arm-amazon-small"
+}
+
 variable "cdn_global_data" {
   type = object({
     cache_policy_map = map(object({
@@ -120,6 +125,7 @@ variable "site_map" {
   type = map(object({
     build_artifact_name      = optional(string)
     build_artifact_sync_path = optional(string) # The local root path to sync to S3 bucket root
+    build_environment_type   = optional(string)
     build_stage_list = list(object({
       action_map = map(object({
         category      = optional(string)

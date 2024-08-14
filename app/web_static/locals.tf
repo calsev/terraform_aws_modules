@@ -3,7 +3,7 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       build_map = {
         pipe_deploy = {
-          environment_type    = "cpu-arm-amazon-small"
+          environment_type    = v.build_environment_type
           iam_role_arn        = module.code_build_role[k].data.iam_role_arn
           input_artifact_list = [v.build_artifact_name]
           source_build_spec = templatefile("${path.module}/deploy_spec.yml", {
