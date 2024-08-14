@@ -89,7 +89,7 @@ locals {
       cache_location                          = local.l1_map[k].cache_type == "S3" ? "${var.ci_cd_account_data.bucket.bucket_name}/cache/${local.l1_map[k].name_effective}" : null
       cache_modes                             = local.l1_map[k].cache_type == "LOCAL" ? v.cache_modes == null ? var.build_cache_modes_default : v.cache_modes : []
       environment_compute_type                = "BUILD_GENERAL1_${upper(split("-", local.l1_map[k].environment_type)[3])}"
-      environment_image_standard              = local.compute_env_map[join("-", slice(split("-", local.l1_map[k].environment_type), 0, 3))].image
+      environment_image_standard              = var.compute_env_map[join("-", slice(split("-", local.l1_map[k].environment_type), 0, 3))].image
       environment_image_pull_credentials_type = local.l1_map[k].environment_image_custom == null ? "CODEBUILD" : "SERVICE_ROLE"
       environment_privileged_mode             = length(local.l1_map[k].file_system_map) > 0 ? true : v.environment_privileged_mode == null ? var.build_environment_privileged_mode_default : v.environment_privileged_mode
       environment_type_tag                    = split("-", local.l1_map[k].environment_type)[0] == "cpu" ? split("-", local.l1_map[k].environment_type)[1] == "amd" ? "LINUX_CONTAINER" : "ARM_CONTAINER" : "LINUX_GPU_CONTAINER"
@@ -136,23 +136,6 @@ locals {
   }
   lx_map = {
     for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
-  }
-  compute_env_map = {
-    # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
-    # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
-    # Ubuntu is only built for amd64: https://github.com/aws/aws-codebuild-docker-images/blob/master/ubuntu/standard/7.0/Dockerfile
-    cpu-amd-amazon = {
-      image = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
-    }
-    cpu-amd-ubuntu = {
-      image = "aws/codebuild/standard:7.0"
-    }
-    cpu-arm-amazon = {
-      image = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
-    }
-    gpu-amd-ubuntu = {
-      image = "aws/codebuild/standard:7.0"
-    }
   }
   output_data = {
     for k_repo, v_repo in var.repo_map : k_repo => {

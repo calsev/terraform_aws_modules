@@ -21,6 +21,11 @@ module "batch_iam" {
   std_map = module.com_lib.std_map
 }
 
+module "bedrock_iam" {
+  source  = "path/to/modules/iam/app/bedrock"
+  std_map = module.com_lib.std_map
+}
+
 module "ec2_iam" {
   source  = "path/to/modules/iam/app/ec2"
   std_map = module.com_lib.std_map

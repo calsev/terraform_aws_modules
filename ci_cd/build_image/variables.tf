@@ -45,6 +45,7 @@ variable "ecr_data_map" {
 variable "repo_map" {
   type = map(object({
     code_star_connection_key     = optional(string)
+    build_environment_size       = optional(string) # e.g. small, medium, large
     image_build_arch_list        = optional(list(string))
     image_ecr_repo_key           = optional(string)
     image_environment_key_arch   = optional(string)
@@ -69,6 +70,15 @@ variable "repo_map" {
 variable "build_code_star_connection_key_default" {
   type    = string
   default = null
+}
+
+variable "build_environment_size_default" {
+  type    = string
+  default = "small"
+  validation {
+    condition     = contains(["small", "medium", "large", "xlarge", "2xlarge"], var.build_environment_size_default)
+    error_message = "Invalid environment size"
+  }
 }
 
 variable "build_image_build_arch_list_default" {

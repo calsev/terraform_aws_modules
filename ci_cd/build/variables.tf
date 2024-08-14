@@ -19,6 +19,29 @@ variable "ci_cd_account_data" {
   })
 }
 
+variable "compute_env_map" {
+  type = map(object({
+    image = string
+  }))
+  default = {
+    # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+    # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+    # Ubuntu is only built for amd64: https://github.com/aws/aws-codebuild-docker-images/blob/master/ubuntu/standard/7.0/Dockerfile
+    cpu-amd-amazon = {
+      image = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
+    }
+    cpu-amd-ubuntu = {
+      image = "aws/codebuild/standard:7.0"
+    }
+    cpu-arm-amazon = {
+      image = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
+    }
+    gpu-amd-ubuntu = {
+      image = "aws/codebuild/standard:7.0"
+    }
+  }
+}
+
 variable "repo_map" {
   type = map(object({
     build_map = map(object({

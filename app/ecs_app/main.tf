@@ -203,6 +203,7 @@ resource "local_file" "deploy_spec" {
 module "image_build" {
   source                                   = "../../ci_cd/build_image"
   build_code_star_connection_key_default   = var.pipe_source_code_star_connection_key_default
+  build_environment_size_default           = var.build_environment_size_default
   build_image_build_arch_list_default      = var.build_image_build_arch_list_default
   build_image_ecr_repo_key_default         = var.build_image_ecr_repo_key_default
   build_image_environment_key_arch_default = var.build_image_environment_key_arch_default
