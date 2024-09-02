@@ -84,6 +84,7 @@ variable "task_map" {
       environment_map       = optional(map(string))
       entry_point           = optional(list(string))
       image                 = optional(string)
+      is_essential          = optional(bool)
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -111,7 +112,7 @@ variable "task_map" {
     efs_volume_map = optional(map(object({
       authorization_access_point_id = optional(string)
       authorization_iam_enabled     = optional(bool)
-      file_system_id                = string
+      file_system_id                = optional(string)
       root_directory                = optional(string)
       transit_encryption_enabled    = optional(bool)
       transit_encryption_port       = optional(string)
@@ -152,6 +153,11 @@ variable "task_container_environment_map_default" {
 variable "task_container_image_default" {
   type    = string
   default = "public.ecr.aws/lts/ubuntu:latest"
+}
+
+variable "task_container_is_essential_default" {
+  type    = bool
+  default = true
 }
 
 variable "task_container_mount_point_map_default" {
@@ -223,57 +229,6 @@ variable "task_container_username_default" {
   default = "ubuntu"
 }
 
-variable "task_ecs_cluster_key_default" {
-  type        = string
-  default     = null
-  description = "Defaults to the key for the task"
-}
-
-variable "task_ecs_exec_enabled_default" {
-  type    = bool
-  default = false
-}
-
-variable "task_efs_volume_map_default" {
-  type = map(object({
-    authorization_access_point_id = optional(string)
-    authorization_iam_enabled     = optional(bool)
-    file_system_id                = string
-    root_directory                = optional(string)
-    transit_encryption_enabled    = optional(bool)
-    transit_encryption_port       = optional(number)
-  }))
-  default = {}
-}
-
-variable "task_efs_authorization_access_point_id_default" {
-  type    = string
-  default = null
-}
-
-variable "task_efs_authorization_iam_enabled_default" {
-  type        = bool
-  default     = true
-  description = "Requires transit encryption"
-}
-
-variable "task_efs_root_directory_default" {
-  type        = string
-  default     = "/"
-  description = "Forced to root if an access point is configured"
-}
-
-variable "task_efs_transit_encryption_enabled_default" {
-  type        = bool
-  default     = true
-  description = "Must be true if IAM is enabled"
-}
-
-variable "task_efs_transit_encryption_port_default" {
-  type    = number
-  default = null
-}
-
 variable "task_docker_volume_map_default" {
   type = map(object({
     auto_provision_enabled = optional(bool)
@@ -314,6 +269,62 @@ variable "task_docker_volume_scope_default" {
     condition     = contains(["shared", "task"], var.task_docker_volume_scope_default)
     error_message = "invalid volume scope"
   }
+}
+
+variable "task_ecs_cluster_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to the key for the task"
+}
+
+variable "task_ecs_exec_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "task_efs_volume_map_default" {
+  type = map(object({
+    authorization_access_point_id = optional(string)
+    authorization_iam_enabled     = optional(bool)
+    file_system_id                = optional(string)
+    root_directory                = optional(string)
+    transit_encryption_enabled    = optional(bool)
+    transit_encryption_port       = optional(number)
+  }))
+  default = {}
+}
+
+variable "task_efs_authorization_access_point_id_default" {
+  type    = string
+  default = null
+}
+
+variable "task_efs_authorization_iam_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Requires transit encryption"
+}
+
+variable "task_efs_file_system_id_default" {
+  type    = string
+  default = null
+}
+
+variable "task_efs_root_directory_default" {
+  type        = string
+  default     = "/"
+  description = "Forced to root if an access point is configured"
+}
+
+variable "task_efs_transit_encryption_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Must be true if IAM is enabled"
+}
+
+variable "task_efs_transit_encryption_port_default" {
+  type    = number
+  default = null
 }
 
 variable "task_iam_role_arn_execution_default" {

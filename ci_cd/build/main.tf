@@ -90,6 +90,7 @@ resource "aws_codebuild_project" "this_build_project" {
 
 resource "aws_codebuild_webhook" "this_web_hook" {
   for_each   = local.create_webhook_map
+  depends_on = [aws_codebuild_project.this_build_project]
   build_type = "BUILD"
   dynamic "filter_group" {
     for_each = each.value.webhook_filter_map

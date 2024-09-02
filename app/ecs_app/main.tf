@@ -61,8 +61,8 @@ module "elb_listener" {
 module "ecs_cluster" {
   source                                            = "../../ecs/compute"
   compute_auto_scaling_num_instances_max_default    = var.compute_auto_scaling_num_instances_max_default
-  compute_health_check_type_default                 = "ELB"
   compute_auto_scaling_num_instances_min_default    = var.compute_auto_scaling_num_instances_min_default
+  compute_health_check_type_default                 = "ELB"
   compute_image_id_default                          = var.compute_image_id_default
   compute_instance_storage_gib_default              = var.compute_instance_storage_gib_default
   compute_instance_type_default                     = var.compute_instance_type_default
@@ -112,17 +112,24 @@ module "ecs_task" {
   task_container_reserved_num_vcpu_default          = var.task_container_reserved_num_vcpu_default
   task_container_secret_map_default                 = var.task_container_secret_map_default
   task_container_username_default                   = var.task_container_username_default
-  task_ecs_exec_enabled_default                     = var.task_ecs_exec_enabled_default
   task_docker_volume_map_default                    = var.task_docker_volume_map_default
   task_docker_volume_auto_provision_enabled_default = var.task_docker_volume_auto_provision_enabled_default
   task_docker_volume_driver_default                 = var.task_docker_volume_driver_default
   task_docker_volume_driver_option_map_default      = var.task_docker_volume_driver_option_map_default
   task_docker_volume_label_map_default              = var.task_docker_volume_label_map_default
   task_docker_volume_scope_default                  = var.task_docker_volume_scope_default
+  task_ecs_exec_enabled_default                     = var.task_ecs_exec_enabled_default
   task_efs_volume_map_default                       = var.task_efs_volume_map_default
+  task_efs_authorization_access_point_id_default    = var.task_efs_authorization_access_point_id_default
+  task_efs_authorization_iam_enabled_default        = var.task_efs_authorization_iam_enabled_default
+  task_efs_file_system_id_default                   = var.task_efs_file_system_id_default
+  task_efs_root_directory_default                   = var.task_efs_root_directory_default
+  task_efs_transit_encryption_enabled_default       = var.task_efs_transit_encryption_enabled_default
+  task_efs_transit_encryption_port_default          = var.task_efs_transit_encryption_port_default
   task_iam_role_arn_execution_default               = var.task_iam_role_arn_execution_default
   task_map                                          = local.create_task_map
   task_resource_memory_gib_default                  = var.task_resource_memory_gib_default
+  task_resource_memory_host_gib_default             = var.task_resource_memory_host_gib_default
   task_resource_num_vcpu_default                    = var.task_resource_num_vcpu_default
 }
 

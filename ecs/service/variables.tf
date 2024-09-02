@@ -30,6 +30,7 @@ variable "ecs_cluster_data" {
     capability_type        = string
     capacity_provider_name = string
     ecs_cluster_id         = string
+    name_effective         = string
   }))
   description = "Instance values must be provided for EC2 capacity type"
 }

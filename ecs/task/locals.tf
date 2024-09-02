@@ -99,7 +99,7 @@ locals {
         for name, volume_data in local.l1_map[k].efs_volume_map : name => merge(volume_data, {
           authorization_access_point_id = volume_data.authorization_access_point_id == null ? var.task_efs_authorization_access_point_id_default : volume_data.authorization_access_point_id
           authorization_iam_enabled     = volume_data.authorization_iam_enabled == null ? var.task_efs_authorization_iam_enabled_default : volume_data.authorization_iam_enabled
-          file_system_id                = volume_data.file_system_id
+          file_system_id                = volume_data.file_system_id == null ? var.task_efs_file_system_id_default : volume_data.file_system_id
           transit_encryption_enabled    = volume_data.transit_encryption_enabled == null ? var.task_efs_transit_encryption_enabled_default : volume_data.transit_encryption_enabled
           transit_encryption_port       = volume_data.transit_encryption_port == null ? var.task_efs_transit_encryption_port_default : volume_data.transit_encryption_port
         })
@@ -167,7 +167,7 @@ locals {
           environmentFiles = [
             for file in v_def.environment_file_list == null ? var.task_container_environment_file_list_default : v_def.environment_file_list : file
           ]
-          essential = true
+          essential = v_def.is_essential == null ? var.task_container_is_essential_default : v_def.is_essential
           image     = v_def.image != null ? v_def.image : var.task_container_image_default
           linuxParameters = {
             initProcessEnabled = true

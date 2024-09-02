@@ -36,6 +36,7 @@ variable "function_map" {
     role_policy_create_json_map           = optional(map(string))
     role_policy_inline_json_map           = optional(map(string))
     role_policy_managed_name_map          = optional(map(string))
+    source_content                        = optional(string)
     source_image_command                  = optional(list(string))
     source_image_entry_point              = optional(list(string))
     source_image_repo_key                 = optional(string)
@@ -116,6 +117,11 @@ variable "function_publish_numbered_version_default" {
 variable "function_reserved_concurrent_executions_default" {
   type    = number
   default = -1
+}
+
+variable "function_source_content_default" {
+  type    = string
+  default = null
 }
 
 variable "function_source_image_command_default" {
