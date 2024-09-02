@@ -108,7 +108,7 @@ variable "app_map" {
     efs_volume_map = optional(map(object({
       authorization_access_point_id = optional(string)
       authorization_iam_enabled     = optional(bool)
-      file_system_id                = string
+      file_system_id                = optional(string)
       root_directory                = optional(string)
       transit_encryption_enabled    = optional(bool)
       transit_encryption_port       = optional(string)
@@ -1084,12 +1084,45 @@ variable "task_efs_volume_map_default" {
   type = map(object({
     authorization_access_point_id = optional(string)
     authorization_iam_enabled     = optional(bool)
-    file_system_id                = string
+    file_system_id                = optional(string)
     root_directory                = optional(string)
     transit_encryption_enabled    = optional(bool)
     transit_encryption_port       = optional(number)
   }))
   default = {}
+}
+
+variable "task_efs_authorization_access_point_id_default" {
+  type    = string
+  default = null
+}
+
+variable "task_efs_authorization_iam_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Requires transit encryption"
+}
+
+variable "task_efs_file_system_id_default" {
+  type    = string
+  default = null
+}
+
+variable "task_efs_root_directory_default" {
+  type        = string
+  default     = "/"
+  description = "Forced to root if an access point is configured"
+}
+
+variable "task_efs_transit_encryption_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Must be true if IAM is enabled"
+}
+
+variable "task_efs_transit_encryption_port_default" {
+  type    = number
+  default = null
 }
 
 variable "task_iam_role_arn_execution_default" {
@@ -1102,12 +1135,26 @@ variable "task_resource_memory_gib_default" {
   type        = number
   default     = null
   description = "Required for Fargate, for EC2 defaults to instance_type_memory_gib - task_memory_host_gib_default"
+  validation {
+    condition     = var.task_resource_memory_gib_default == null ? true : var.task_resource_memory_gib_default >= 0.5
+    error_message = "Invalid memory requirement: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size"
+  }
+}
+
+variable "task_resource_memory_host_gib_default" {
+  type        = number
+  default     = null
+  description = "Memory remaining for host OS. Defaults to an empirical fit that is suitable for most applications."
 }
 
 variable "task_resource_num_vcpu_default" {
   type        = number
   default     = null
   description = "Required for Fargate, for EC2 defaults to number of CPUs for the instance x 1024"
+  validation {
+    condition     = var.task_resource_num_vcpu_default == null ? true : var.task_resource_num_vcpu_default >= 0.25
+    error_message = "Invalid vCPU requirement: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size"
+  }
 }
 
 variable "use_fargate" {

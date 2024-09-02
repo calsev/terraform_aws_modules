@@ -6,6 +6,7 @@ module "this_policy" {
   name_prefix = var.name_prefix
   resource_map = {
     queue = [local.queue_arn]
+    star  = ["*"]
   }
   service_name = "sqs"
   std_map      = var.std_map

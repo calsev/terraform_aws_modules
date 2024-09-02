@@ -37,6 +37,7 @@ module "lambda_permission" {
 
 resource "aws_lb_target_group_attachment" "this_attachment" {
   for_each          = local.create_lambda_permission_map
+  depends_on        = [module.lambda_permission] # Fails first time without this
   availability_zone = null
   port              = null
   target_group_arn  = each.value.source_arn

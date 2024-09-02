@@ -14,7 +14,14 @@ data "archive_file" "package" {
   for_each    = local.create_archive_map
   type        = "zip"
   output_path = each.value.source_package_directory_archive_path
-  source_dir  = each.value.source_package_directory_local_path
+  dynamic "source" {
+    for_each = each.value.source_is_content ? { this = {} } : {}
+    content {
+      content  = each.value.source_content
+      filename = each.value.source_content_filename
+    }
+  }
+  source_dir = each.value.source_package_directory_local_path
 }
 
 resource "aws_s3_object" "package" {
@@ -66,15 +73,15 @@ resource "aws_lambda_function" "this_function" {
   s3_key                         = each.value.source_final_is_s3_object ? each.value.source_package_s3_object_key : null
   s3_object_version              = each.value.source_package_s3_object_version
   skip_destroy                   = false
-  source_code_hash               = local.create_hash_map[each.key]
   dynamic "snap_start" {
     for_each = each.value.source_package_snap_start_enabled ? { this = {} } : {}
     content {
       apply_on = "PublishedVersions"
     }
   }
-  tags    = each.value.tags
-  timeout = each.value.timeout_seconds
+  source_code_hash = local.create_hash_map[each.key]
+  tags             = each.value.tags
+  timeout          = each.value.timeout_seconds
   dynamic "tracing_config" {
     for_each = each.value.tracing_mode == null ? {} : { this = {} }
     content {

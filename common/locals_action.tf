@@ -936,9 +936,9 @@ locals {
       queue = {
         public_read = []
         read = [
+          "GetQueueAttributes",
           "GetQueueUrl",
           "ListQueueTags",
-          "ListQueues",
         ]
         public_write = []
         write = [
@@ -949,6 +949,14 @@ locals {
           "TagQueue",
           "UntagQueue",
         ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "ListQueues",
+        ]
+        public_write = []
+        write        = []
       }
     }
     ssm = {

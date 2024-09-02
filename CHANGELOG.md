@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.79.0
+
+### General
+
+* EFS support for ECS app
+* Improve parameterization of ECS task
+* Support content for Lambda function
+
+### Bugfix
+
+* IAM permission SQS ListQueues applied to '*' rather than queue
+
 ## 0.78.0
 
 ### General

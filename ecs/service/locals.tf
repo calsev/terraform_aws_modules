@@ -63,6 +63,7 @@ locals {
       deployment_minimum_healthy_percent_effective             = local.l1_map[k].scheduling_strategy == "DAEMON" ? null : local.l1_map[k].deployment_minimum_healthy_percent
       desired_count_effective                                  = local.l1_map[k].scheduling_strategy == "DAEMON" ? null : local.l1_map[k].desired_count
       ecs_cluster_id                                           = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].ecs_cluster_id
+      ecs_cluster_name                                         = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].name_effective
       ecs_task_definition_arn                                  = var.ecs_task_definition_data_map[local.l1_map[k].ecs_task_definition_key].task_definition_arn_latest_rev
       elb_target_map = {
         for k_targ, v_targ in local.l1_map[k].elb_target_map : k_targ => merge(v_targ, {
@@ -91,6 +92,7 @@ locals {
     for k, v in local.l0_map : k => {
       elb_health_check_grace_period_seconds_effective = local.l2_map[k].is_attached_to_elb ? local.l1_map[k].elb_health_check_grace_period_seconds : null
       iam_role_arn_elb_calls_effective                = local.l2_map[k].network_mode == "awsvpc" ? null : local.l1_map[k].iam_role_arn_elb_calls
+      service_resource_id                             = "service/${local.l2_map[k].ecs_cluster_name}/${local.l1_map[k].name_effective}"
     }
   }
 
