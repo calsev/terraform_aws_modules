@@ -8,7 +8,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, {
       ec2_connect_security_group_key_list = v.ec2_connect_security_group_key_list == null ? var.ec2_connect_security_group_key_list_default : v.ec2_connect_security_group_key_list
-      k_az                                = v.availability_zone_map_key_list[0]
+      instance_connect_vpc_az_key         = v.instance_connect_vpc_az_key == null ? var.instance_connect_vpc_az_key_default : v.instance_connect_vpc_az_key
       k_seg                               = v.non_public_segment_list[0]
     })
   }
@@ -17,7 +17,7 @@ locals {
       ec2_connect_security_group_id_list = [
         for k_sg in local.l1_map[k].ec2_connect_security_group_key_list : var.vpc_map[k].security_group_id_map[k_sg]
       ]
-      k_az_full = "${k}_${local.l1_map[k].k_seg}_${local.l1_map[k].k_az}"
+      k_az_full = "${k}_${local.l1_map[k].k_seg}_${local.l1_map[k].instance_connect_vpc_az_key}"
     }
   }
   l3_map = {

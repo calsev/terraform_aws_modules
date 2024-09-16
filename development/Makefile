@@ -66,6 +66,9 @@ make:
 
 make-lint: make git-lint
 
+worker-metric:
+	$(PY) python script/worker_metric.py
+
 py-lint:
 	$(PY) black --check ..
 	$(PY) isort --check ..
@@ -349,6 +352,7 @@ tf-lint: tflint-install
 	cd ../step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/default && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../vpc/endpoint && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/id_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/instance_connect_endpoint && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/nat_gateway && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

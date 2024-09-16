@@ -48,7 +48,8 @@ locals {
           )
         })
       }
-      subnet_bit_length = v.subnet_bit_length == null ? ceil(log(length(local.l1_map[k].segment_map) * local.l2_map[k].availability_zone_count, 2)) : v.subnet_bit_length
+      subnet_bit_length                 = v.subnet_bit_length == null ? ceil(log(length(local.l1_map[k].segment_map) * local.l2_map[k].availability_zone_count, 2)) : v.subnet_bit_length
+      vpc_availability_zone_letter_list = slice(local.availability_zone_letter_list, 0, local.l2_map[k].availability_zone_count)
     }
   }
   l4_map = {

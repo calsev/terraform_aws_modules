@@ -33,6 +33,13 @@ module "vpc_peer" {
   vpc_data_map = local.create_3_vpc_peer_map
 }
 
+module "vpc_endpoint" {
+  source               = "../../vpc/endpoint"
+  endpoint_map_default = var.endpoint_map_default
+  vpc_map              = local.create_3_vpc_peer_map
+  std_map              = var.std_map
+}
+
 module "vpc_flow_log" {
   source  = "../../ec2/flow_log"
   log_map = local.create_flow_log_map

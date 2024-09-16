@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.80.0
+
+### New modules
+
+* VPC endpoint
+
 ## 0.79.0
 
 ### General

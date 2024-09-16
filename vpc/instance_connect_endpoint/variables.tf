@@ -13,12 +13,17 @@ variable "subnet_data_map" {
 
 variable "vpc_map" {
   type = map(object({
-    availability_zone_map_key_list      = list(string)
     ec2_connect_security_group_key_list = list(string)
     name_context                        = string
     name_simple                         = string
     non_public_segment_list             = list(string)
     security_group_id_map               = map(string)
     tags                                = map(string)
+    instance_connect_vpc_az_key         = optional(string)
   }))
+}
+
+variable "instance_connect_vpc_az_key_default" {
+  type    = string
+  default = "a"
 }
