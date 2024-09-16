@@ -66,6 +66,9 @@ make:
 
 make-lint: make git-lint
 
+worker-metric:
+	$(PY) python script/worker_metric.py
+
 py-lint:
 	$(PY) black --check ..
 	$(PY) isort --check ..

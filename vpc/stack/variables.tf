@@ -1,3 +1,50 @@
+variable "endpoint_map_default" {
+  type = map(object({
+    auto_accept_enabled  = optional(bool)
+    dns_record_ip_type   = optional(string)
+    endpoint_segment_key = optional(string)
+    endpoint_subnet_map = optional(map(object({
+      # Optional addresses, for Gateway endpoints only
+      ipv4_address = optional(string)
+      ipv6_address = optional(string)
+    })), {})
+    endpoint_type                                  = optional(string)
+    iam_policy_json                                = optional(string)
+    ip_address_type                                = optional(string)
+    name_append                                    = optional(string)
+    name_include_app_fields                        = optional(bool)
+    name_infix                                     = optional(bool)
+    name_override                                  = optional(string)
+    name_prepend                                   = optional(string)
+    private_dns_enabled                            = optional(bool)
+    private_dns_for_inbound_resolver_endpoint_only = optional(bool)
+    service_name_override                          = optional(string)
+    service_name_short                             = optional(string)
+    vpc_security_group_key_list                    = optional(list(string))
+  }))
+  default = {
+    "ec2" = {
+      auto_accept_enabled                            = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = null
+      iam_policy_json                                = null
+      ip_address_type                                = "ipv4"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_override                                  = null
+      name_prepend                                   = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+  }
+}
+
 variable "iam_data" {
   type = object({
     key_pair_map = map(object({
@@ -47,8 +94,36 @@ variable "vpc_map" {
   type = map(object({
     # Subnets can be added after creation, but not segments
     availability_zone_map_key_list = optional(list(string))
-    nat_gateway_enabled            = optional(bool)
-    nat_multi_az                   = optional(bool)
+    endpoint_map = optional(map(object({
+      auto_accept_enabled                            = optional(bool)
+      dns_record_ip_type                             = optional(string)
+      endpoint_type                                  = optional(string)
+      iam_policy_json                                = optional(string)
+      ip_address_type                                = optional(string)
+      name_append                                    = optional(string)
+      name_include_app_fields                        = optional(bool)
+      name_infix                                     = optional(bool)
+      name_override                                  = optional(string)
+      name_prepend                                   = optional(string)
+      private_dns_enabled                            = optional(bool)
+      private_dns_for_inbound_resolver_endpoint_only = optional(bool)
+      service_name_override                          = optional(string)
+      service_name_short                             = optional(string)
+      subnet_configuration_map = optional(map(object({
+        # Optional, for Gateway endpoints only
+        ipv4_address    = optional(string)
+        ipv6_address    = optional(string)
+        vpc_segment_key = optional(string)
+      })), {})
+      subnet_ipv4_address         = optional(string)
+      subnet_ipv6_address         = optional(string)
+      vpc_az_key_list             = optional(list(string))
+      vpc_security_group_key_list = optional(list(string))
+      vpc_segment_key             = optional(string)
+      vpc_segment_key_list        = optional(list(string))
+    })))
+    nat_gateway_enabled = optional(bool)
+    nat_multi_az        = optional(bool)
     peer_map = optional(map(object({ # Key can be a VPC key or VPC ID
     })))
     segment_map = optional(map(object({

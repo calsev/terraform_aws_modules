@@ -34,9 +34,10 @@ locals {
     # Non-standard: vpc contains multiple data maps
     module.vpc_net.data,
     {
-      vpc_log  = module.vpc_flow_log.data
-      vpc_map  = local.create_3_vpc_peer_map
-      vpc_peer = module.vpc_peer.data
+      vpc_endpoint = module.vpc_endpoint.data
+      vpc_log      = module.vpc_flow_log.data
+      vpc_map      = local.create_3_vpc_peer_map
+      vpc_peer     = module.vpc_peer.data
     }
   )
 }
