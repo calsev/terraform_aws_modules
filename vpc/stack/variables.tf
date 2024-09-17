@@ -95,8 +95,13 @@ variable "vpc_map" {
     # Subnets can be added after creation, but not segments
     availability_zone_map_key_list = optional(list(string))
     endpoint_map = optional(map(object({
-      auto_accept_enabled                            = optional(bool)
-      dns_record_ip_type                             = optional(string)
+      auto_accept_enabled  = optional(bool)
+      dns_record_ip_type   = optional(string)
+      endpoint_segment_key = optional(string)
+      endpoint_subnet_map = optional(map(object({
+        ipv4_address = optional(string) # Optional, ignored except for Gateway endpoints
+        ipv6_address = optional(string) # Optional, ignored except for Gateway endpoints
+      })), {})
       endpoint_type                                  = optional(string)
       iam_policy_json                                = optional(string)
       ip_address_type                                = optional(string)
@@ -109,18 +114,7 @@ variable "vpc_map" {
       private_dns_for_inbound_resolver_endpoint_only = optional(bool)
       service_name_override                          = optional(string)
       service_name_short                             = optional(string)
-      subnet_configuration_map = optional(map(object({
-        # Optional, for Gateway endpoints only
-        ipv4_address    = optional(string)
-        ipv6_address    = optional(string)
-        vpc_segment_key = optional(string)
-      })), {})
-      subnet_ipv4_address         = optional(string)
-      subnet_ipv6_address         = optional(string)
-      vpc_az_key_list             = optional(list(string))
-      vpc_security_group_key_list = optional(list(string))
-      vpc_segment_key             = optional(string)
-      vpc_segment_key_list        = optional(list(string))
+      vpc_security_group_key_list                    = optional(list(string))
     })))
     nat_gateway_enabled = optional(bool)
     nat_multi_az        = optional(bool)

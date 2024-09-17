@@ -267,6 +267,8 @@ tf-lint: tflint-install
 	cd ../iam/policy/resource/cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/ecr/repo && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/resource/event && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/resource/event/bus && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/resource/s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
