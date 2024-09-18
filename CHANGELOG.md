@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.81.0
+
+### New modules
+
+* Resource policy for event bus
+
+### General
+
+* Manage resource policy for default event bus
+* Embed resource policy in event bus
+
 ## 0.80.0
 
 ### New modules

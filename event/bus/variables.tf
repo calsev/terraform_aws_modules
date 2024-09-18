@@ -1,10 +1,15 @@
 variable "bus_map" {
   type = map(object({
     archive_retention_days        = optional(number)
-    event_bus_name                = optional(string) # "If provided, a bus will not be created
+    event_bus_name                = optional(string) # If provided, a bus will not be created
     logging_enabled               = optional(bool)
     logging_excluded_detail_types = optional(list(string))
     log_retention_days            = optional(number)
+    name_append                   = optional(string)
+    name_include_app_fields       = optional(bool)
+    name_infix                    = optional(bool)
+    name_override                 = optional(string)
+    name_prepend                  = optional(string)
     policy_access_list            = optional(list(string))
     policy_create                 = optional(bool)
     policy_name                   = optional(string)
@@ -13,6 +18,16 @@ variable "bus_map" {
     policy_name_prefix            = optional(string)
     policy_name_prepend           = optional(string)
     policy_name_suffix            = optional(string)
+    sid_map = optional(map(object({
+      access = string
+      condition_map = optional(map(object({
+        test       = string
+        value_list = list(string)
+        variable   = string
+      })))
+      identifier_list = optional(list(string))
+      identifier_type = optional(string)
+    })))
   }))
 }
 
@@ -38,6 +53,29 @@ variable "bus_logging_excluded_detail_types_default" {
   default = [
     "AWS API Call via CloudTrail"
   ]
+}
+
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
 }
 
 variable "policy_access_list_default" {
@@ -73,6 +111,25 @@ variable "policy_name_prepend_default" {
 variable "policy_name_suffix_default" {
   type    = string
   default = ""
+}
+
+variable "sid_condition_map_default" {
+  type = map(object({
+    test       = string
+    value_list = list(string)
+    variable   = string
+  }))
+  default = {}
+}
+
+variable "sid_identifier_list_default" {
+  type    = list(string)
+  default = ["*"]
+}
+
+variable "sid_identifier_type_default" {
+  type    = string
+  default = "*"
 }
 
 variable "std_map" {
