@@ -149,8 +149,10 @@ locals {
             bucket_policy_doc = module.bucket_policy[v.bucket_key].iam_policy_doc
           },
         )
-        cdn_arn = aws_cloudfront_distribution.this_distribution[k].arn
-        cdn_id  = aws_cloudfront_distribution.this_distribution[k].id
+        cdn_arn            = aws_cloudfront_distribution.this_distribution[k].arn
+        cdn_domain_name    = aws_cloudfront_distribution.this_distribution[k].domain_name
+        cdn_hosted_zone_id = aws_cloudfront_distribution.this_distribution[k].hosted_zone_id
+        cdn_id             = aws_cloudfront_distribution.this_distribution[k].id
         dns_alias = {
           for alias in v.alias_name_list_final : replace("${k}_${alias}", "-", "_") => module.this_dns_alias.data[replace("${k}_${alias}", "-", "_")]
         }

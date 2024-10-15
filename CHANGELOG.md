@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.81.1
+
+### General
+
+* Add domain outputs to CDN distribution
+* Add domain outputs to Cognito user pool
+
 ## 0.81.0
 
 ### New modules

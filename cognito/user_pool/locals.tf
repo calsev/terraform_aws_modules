@@ -172,13 +172,15 @@ locals {
         if !contains([], k_attr)
       },
       {
-        dns_alias          = v.dns_from_zone_key == null ? null : module.domain_alias.data[k]
-        lambda_permission  = module.lambda_permission[k].data
-        user_group         = module.pool_group.data[k]
-        user_pool_arn      = aws_cognito_user_pool.this_pool[k].arn
-        user_pool_client   = module.pool_client.data[k]
-        user_pool_endpoint = aws_cognito_user_pool.this_pool[k].endpoint
-        user_pool_fqdn     = v.dns_from_zone_key == null ? aws_cognito_user_pool.this_pool[k].endpoint : v.dns_from_fqdn
+        dns_alias               = v.dns_from_zone_key == null ? null : module.domain_alias.data[k]
+        lambda_permission       = module.lambda_permission[k].data
+        user_group              = module.pool_group.data[k]
+        user_pool_arn           = aws_cognito_user_pool.this_pool[k].arn
+        user_pool_client        = module.pool_client.data[k]
+        user_pool_custom_domain = aws_cognito_user_pool.this_pool[k].custom_domain
+        user_pool_domain        = aws_cognito_user_pool.this_pool[k].domain
+        user_pool_endpoint      = aws_cognito_user_pool.this_pool[k].endpoint
+        user_pool_fqdn          = v.dns_from_zone_key == null ? aws_cognito_user_pool.this_pool[k].endpoint : v.dns_from_fqdn
       }
     )
   }
