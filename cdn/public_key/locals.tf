@@ -29,7 +29,7 @@ locals {
       {
         key_id = aws_cloudfront_public_key.this_key[k].id
         secret = module.key_secret.data[k]
-      }
+      },
     )
   }
 }
