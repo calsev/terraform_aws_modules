@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.82.0
+
+### General
+
+* Remove deprecated inline_policies from aws_iam_role, use aws_iam_role_policies_exclusive
+
 ## 0.81.1
 
 ### General
