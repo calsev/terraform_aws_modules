@@ -9,7 +9,7 @@ module "com_lib" {
 
 module "lambda" {
   source                                 = "path/to/modules/lambda/function"
-  ecr_data                               = data.terraform_remote_state.ecr.outputs.data
+  ecr_data                               = data.terraform_remote_state.ecs.outputs.data["com"]
   function_ephemeral_storage_mib_default = 512
   function_map = {
     dir_create_local_archive_only = {

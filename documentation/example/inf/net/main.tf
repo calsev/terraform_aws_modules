@@ -14,6 +14,7 @@ module "com_lib" {
 
 module "vpc_stack" {
   source                                      = "path/to/modules/vpc/stack"
+  endpoint_map_default                        = {}
   s3_data_map                                 = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
   std_map                                     = module.com_lib.std_map
   vpc_flow_log_destination_bucket_key_default = "example_log"

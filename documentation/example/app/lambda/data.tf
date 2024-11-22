@@ -1,8 +1,8 @@
-data "terraform_remote_state" "ecr" {
+data "terraform_remote_state" "ecs" {
   backend = "s3"
   config = {
     bucket = "example-deploy"
-    key    = "tf-backend/inf-ecr.tfstate"
+    key    = "tf-backend/inf-ecs.tfstate"
     region = local.std_var.aws_region_name
   }
 }

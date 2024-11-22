@@ -171,6 +171,7 @@ tf-lint: tflint-install
 	cd ../ec2/key_pair && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ec2/network_interface && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ecr/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecr/repo && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ecs/ami_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
