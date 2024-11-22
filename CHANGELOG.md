@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.83.0
+
+### New modules
+
+* ECR AWS account
+
 ## 0.82.0
 
 ### General

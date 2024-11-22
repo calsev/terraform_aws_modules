@@ -8,8 +8,11 @@ locals {
       },
       {
         com = {
-          latest_ami_map = module.latest_ami_map.data
-          setting        = module.account_settings.data
+          ecr_account_settings = module.ecr_account_settings.data
+          ecr_repo_dns_alias   = module.dns_alias.data
+          ecs_account_settings = module.ecs_account_settings.data
+          latest_ami_map       = module.latest_ami_map.data
+          repo_map             = module.repo.data
         }
         dev = {}
         prd = {}

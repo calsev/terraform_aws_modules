@@ -330,13 +330,11 @@ Notably, the output from this example app can be passed to modules as `cognito_d
 
 ### ECR, ECS, and Batch
 
-This [small example](documentation/example/inf/ecr) uses the [ecr/repo module](ecr/repo) to generate `ecr_data` as expected by modules that use a container.
+The [ECS example](documentation/example/inf/ecs) uses the [ecr/repo module](ecr/repo) to generate `ecr_data` as expected by modules that use a container. It also uses the [ecs/ami_map](ecs/ami_map) module to generate a record of the latest ECS AMIs, as well as the [ecs/aws_account](ecs/aws_account) module to set account options for ECS. The [batch/compute](batch/compute) module is used to create several Batch clusters.
 
-Notably, the output from this example app can be imported and passed as `ecr_data = data.terraform_remote_state.ecr.outputs.data`.
+Notably, the output from this example app can be imported and passed as `ecr_data = data.terraform_remote_state.ecs.outputs.data`.
 
 A small maintenance task for mirroring upstream repos to ECR to avoid rate limits is show in [this example](documentation/example/inf/task) and uses the high-level [ECR repo mirror app](app/ecr_repo_mirror) to implement this with a single module.
-
-The [ECS example](documentation/example/inf/ecs) uses the [ecs/ami_map](ecs/ami_map) module to generate a record of the latest ECS AMIs, as well as the [ecs/aws_account](ecs/aws_account) module to set account options for ECS. The [batch/compute](batch/compute) module is used to create several Batch clusters.
 
 ### CI/CD
 
