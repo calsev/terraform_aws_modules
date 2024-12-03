@@ -336,6 +336,7 @@ tf-lint: tflint-install
 	cd ../ses/configuration_set && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/domain_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/email_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ses/ip_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg/group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
