@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.84.0
+
+### New modules
+
+* SES IP pool
+
+### General
+
+* Improve support for IP pools for SES configurations
+
 ## 0.83.0
 
 ### New modules

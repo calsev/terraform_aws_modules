@@ -2,7 +2,7 @@ resource "aws_sesv2_configuration_set" "this_config" {
   for_each               = local.config_map
   configuration_set_name = each.value.name_effective
   delivery_options {
-    sending_pool_name = each.value.sending_pool_name
+    sending_pool_name = each.value.ip_pool_name
     tls_policy        = each.value.tls_required ? "REQUIRE" : "OPTIONAL"
   }
   reputation_options {
