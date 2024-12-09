@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_event_rule" "this_rule" {
-  for_each            = local.event_map
+  for_each            = local.lx_map
   name                = each.value.name_effective
   event_bus_name      = each.value.event_bus_name
   event_pattern       = each.value.event_pattern_json
@@ -10,12 +10,12 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
 
 module "dead_letter_queue" {
   source    = "../../../sqs/dead_letter_queue"
-  queue_map = local.event_map
+  queue_map = local.lx_map
   std_map   = var.std_map
 }
 
 resource "aws_cloudwatch_event_target" "this_target" {
-  for_each = local.event_map
+  for_each = local.lx_map
   arn      = each.value.target_arn
   dynamic "batch_target" {
     for_each = each.value.batch_targets

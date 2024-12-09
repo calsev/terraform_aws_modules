@@ -1,6 +1,6 @@
 module "s3_prefix_pattern" {
   source          = "../../../../event/pattern/s3/bucket"
-  for_each        = local.event_map
+  for_each        = local.create_bus_map
   bucket_name     = each.value.s3_bucket_name
   object_key_list = each.value.s3_object_key_prefix_list
   std_map         = var.std_map
@@ -8,7 +8,7 @@ module "s3_prefix_pattern" {
 
 module "s3_suffix_pattern" {
   source               = "../../../../event/pattern/s3/bucket"
-  for_each             = local.event_map
+  for_each             = local.lx_map
   bucket_name          = each.value.s3_bucket_name
   object_key_is_prefix = false
   object_key_list      = each.value.s3_object_key_suffix_list
@@ -17,13 +17,13 @@ module "s3_suffix_pattern" {
 
 module "event_bus" {
   source  = "../../../../event/bus"
-  bus_map = local.bus_map
+  bus_map = local.create_bus_map
   std_map = var.std_map
 }
 
 module "trigger_prefix" {
   source    = "../../../../event/trigger/base"
-  event_map = local.trigger_prefix_map
+  event_map = local.create_prefix_map
   iam_data  = var.iam_data
   std_map   = var.std_map
 }
@@ -39,7 +39,7 @@ module "trigger_suffix" {
   event_input_transformer_template_json_default   = var.event_input_transformer_template_json_default
   event_input_transformer_template_string_default = var.event_input_transformer_template_string_default
   event_is_enabled_default                        = var.event_is_enabled_default
-  event_map                                       = local.trigger_suffix_map
+  event_map                                       = local.create_suffix_map
   event_retry_attempts_default                    = var.event_retry_attempts_default
   event_target_arn_default                        = var.event_target_arn_default
   event_target_service_default                    = var.event_target_service_default

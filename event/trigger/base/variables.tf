@@ -12,6 +12,11 @@ variable "event_map" {
     input_transformer_template_json   = optional(string)
     input_transformer_template_string = optional(string)
     is_enabled                        = optional(bool)
+    name_append                       = optional(string)
+    name_include_app_fields           = optional(bool)
+    name_infix                        = optional(bool)
+    name_override                     = optional(string)
+    name_prepend                      = optional(string)
     retry_attempts                    = optional(number)
     role_policy_attach_arn_map        = optional(map(string))
     role_policy_create_json_map       = optional(map(string))
@@ -137,6 +142,29 @@ variable "iam_data" {
   })
   default     = null
   description = "Must be provided for Batch and ECS targets"
+}
+
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
+}
+
+variable "name_infix_default" {
+  type    = bool
+  default = true
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
 }
 
 variable "role_policy_attach_arn_map_default" {

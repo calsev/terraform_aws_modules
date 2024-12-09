@@ -1,6 +1,6 @@
 module "trigger_role" {
   source                   = "../../../iam/role/base"
-  for_each                 = local.role_map
+  for_each                 = local.create_role_map
   assume_role_service_list = ["events"]
   embedded_role_policy_attach_arn_map = {
     batch_submit_job = {
