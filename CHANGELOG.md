@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.85.0
+
+### General
+
+* Prefix now optional for S3 trigger
+
 ## 0.84.0
 
 ### New modules
