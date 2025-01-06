@@ -10,9 +10,11 @@ module "agent_invoke_policy" {
 }
 
 module "model_invoke_policy" {
-  source                     = "../../../iam/policy/identity/bedrock/model_job"
-  name                       = "bedrock_model"
-  name_list_model_foundation = ["*"]
-  name_prefix                = var.name_prefix
-  std_map                    = var.std_map
+  source                                  = "../../../iam/policy/identity/bedrock/model_job"
+  name                                    = "bedrock_model"
+  name_list_application_inference_profile = ["*"]
+  name_list_inference_profile             = ["*"]
+  name_list_model_foundation              = ["*"]
+  name_prefix                             = var.name_prefix
+  std_map                                 = var.std_map
 }

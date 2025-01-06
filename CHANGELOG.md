@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.86.0
+
+### General
+
+* Support IAM for Bedrock inference profile
+
 ## 0.85.0
 
 ### General
