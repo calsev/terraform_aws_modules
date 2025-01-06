@@ -3,6 +3,11 @@ variable "access_list" {
   default = ["read_write"]
 }
 
+variable "name_list_application_inference_profile" {
+  type    = list(string)
+  default = []
+}
+
 variable "name_list_job_evaluation" {
   type    = list(string)
   default = []
@@ -19,6 +24,11 @@ variable "name_list_job_model_evaluation" {
 }
 
 variable "name_list_job_model_invocation" {
+  type    = list(string)
+  default = []
+}
+
+variable "name_list_inference_profile" {
   type    = list(string)
   default = []
 }

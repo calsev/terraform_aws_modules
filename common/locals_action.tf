@@ -100,6 +100,20 @@ locals {
           "UntagResource",
         ]
       }
+      application-inference-profile = {
+        public_read = []
+        read = [
+          "GetInferenceProfile",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          "InvokeModel",
+          "InvokeModelWithResponseStream",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
       custom-model = {
         public_read = []
         read = [
@@ -141,6 +155,17 @@ locals {
           "CreateModelEvaluationJob",
           "CreateModelInvocationJob",
           "DetectGeneratedContent",
+          "InvokeModel",
+          "InvokeModelWithResponseStream",
+        ]
+      }
+      inference-profile = {
+        public_read = []
+        read = [
+          "GetInferenceProfile",
+        ]
+        public_write = []
+        write = [
           "InvokeModel",
           "InvokeModelWithResponseStream",
         ]
