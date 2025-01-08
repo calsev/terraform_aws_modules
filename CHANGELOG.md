@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.86.1
+
+### General
+
+* Cross-region IAM for Bedrock models
+
 ## 0.86.0
 
 ### General
