@@ -3,7 +3,7 @@ SHELL := /bin/bash
 DEV_ROOT = $(shell pwd)
 REQ := requirements/requirements.ci
 VER_REGEX := sed -nre 's/.*?([0-9]+\.[0-9]+)\.[0-9]+.*/\1/p'
-PY_VER ?= $(shell echo 3.11.0 | $(VER_REGEX))
+PY_VER ?= $(shell echo 3.12.0 | $(VER_REGEX))
 SYS_PY_BIN := $(shell command -v python) # Go ahead and diagnose env issues now
 SYS_PY_VER := $(shell $(SYS_PY_BIN) --version | $(VER_REGEX))
 PYENV_ROOT ?= /usr/local/pyenv
@@ -327,6 +327,8 @@ tf-lint: tflint-install
 	cd ../s3/access_point && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../s3/public_access_block && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../sagemaker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../sagemaker/domain && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/data && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/init_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
