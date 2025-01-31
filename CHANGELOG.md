@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.87.0
+
+### New modules
+
+* Sagemaker domain
+
 ## 0.86.1
 
 ### General
