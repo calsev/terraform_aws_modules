@@ -31,30 +31,25 @@ ci-deps:
 	$(PY) cd .. && python -m development.script.download_ci_dependencies
 
 $(VENV):
-	@echo Application Python version is $(PY_VER)
-	@echo System Python binary is $(SYS_PY_BIN)
-	@echo System Python version is $(SYS_PY_VER)
-	@echo Pyenv binary, if needed, is $(PYENV_BIN)
-	@echo Auto-detected Python binary is $(BASE_PY_BIN)
+	@echo Application Python version is \'$(PY_VER)\'
+	@echo System Python binary is \'$(SYS_PY_BIN)\'
+	@echo System Python version is \'$(SYS_PY_VER)\'
+	@echo Pyenv binary, if needed, is \'$(PYENV_BIN)\'
+	@echo Auto-detected Python binary is \'$(BASE_PY_BIN)\'
 	@echo $(BASE_PY) | grep -q '*' && echo ERROR: $(BASE_PY) not found, install Python $(PY_VER) with Pyenv or override, as in BASE_PY=my/special/python make env-install && exit 1 || echo Using base Python at $(BASE_PY)
-	$(BASE_PY) $(PY_INIT)
 	$(BASE_PY) -m venv $(VENV)
 
 env-clean:
 	rm -rf $(VENV)
 
 env-install: $(VENV)
-	$(ACTIVATE) && \
-	$(ENV_INIT) # Break here to get new tools in the next command
-	$(ACTIVATE) && \
-	python $(PIP) -r $(REQ).lock.txt
+	$(PY) $(ENV_INIT)
+	$(PY) python $(PIP) -r $(REQ).lock.txt
 
 env-update: $(VENV)
-	$(ACTIVATE) && \
-	$(ENV_INIT) # Break here to get new tools in the next command
-	$(ACTIVATE) && \
-	python $(PIP) --no-cache-dir -r $(REQ).txt && \
-	python -m pip freeze --all > $(REQ).lock.txt
+	$(PY) $(ENV_INIT)
+	$(PY) python $(PIP) --no-cache-dir -r $(REQ).txt
+	$(PY) python -m pip freeze --all > $(REQ).lock.txt
 
 git-lint:
 	git diff --exit-code

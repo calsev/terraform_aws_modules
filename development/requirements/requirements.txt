@@ -1,4 +1,5 @@
 InquirerPy>=0.3.4
-Jinja2>=3.1.5
-matplotlib>=3.10.0
-numpy>=2.2.2
+Jinja2>=3.1.6
+matplotlib>=3.10.1
+numpy>=2.2.3
+typer>=0.15.2

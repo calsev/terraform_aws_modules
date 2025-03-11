@@ -18,6 +18,7 @@ variable "domain_map" {
   type = map(object({
     configuration_set_key       = optional(string)
     dkim_signing_key_length     = optional(string)
+    dmarc_record_string         = string # This should be something like "v=DMARC1; p=none; rua=mailto:dmarc@domain.com; ruf=mailto:dmarc@domain.com; sp=none; aspf=s; adkim=s; fo=1;"
     dns_from_zone_key           = optional(string)
     email_forwarding_enabled    = optional(bool)
     fallback_to_ses_send_domain = optional(bool)

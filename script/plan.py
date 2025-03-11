@@ -113,7 +113,7 @@ def process_plan_line(
 
 def get_plan_resources(
     rel_path: str,
-    var_file: typing.Optional[str],
+    var_file: str | None,
     resource_type_ignore_regex_map: dict[str, re.Pattern[typing.Any]],
     resource_ignore_list: list[str],
 ) -> tuple[dict[str, list[str]], str]:

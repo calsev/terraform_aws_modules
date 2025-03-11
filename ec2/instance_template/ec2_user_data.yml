@@ -74,10 +74,13 @@ write_files:
       if [ -x "$(command -v amazon-cloudwatch-agent-ctl)" ]; then
         echo AWS CLI installed, skipping
       else
-        wget -q --secure-protocol=TLSv1_2 --timeout=20 https://amazoncloudwatch-agent-${aws_region_name}.s3.${aws_region_name}.amazonaws.com/ubuntu/${arch == "x86_64" ? "amd64" : "arm64"}/latest/amazon-cloudwatch-agent.deb
-        $DPKG ./amazon-cloudwatch-agent.deb
+        if [ -f /etc/debian_version ]; then
+          wget -q --secure-protocol=TLSv1_2 --timeout=20 https://amazoncloudwatch-agent-${aws_region_name}.s3.${aws_region_name}.amazonaws.com/ubuntu/${arch == "x86_64" ? "amd64" : "arm64"}/latest/amazon-cloudwatch-agent.deb
+          $DPKG ./amazon-cloudwatch-agent.deb
+        else
+          $INST amazon-cloudwatch-agent
+        fi
       fi
-
       if [ -x "$(command -v aws)" ]; then
         echo AWS CLI installed, skipping
       else

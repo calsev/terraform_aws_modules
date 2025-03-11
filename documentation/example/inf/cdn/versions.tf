@@ -5,6 +5,7 @@ terraform {
     encrypt        = true
     key            = "tf-backend/inf-cdn.tfstate"
     region         = "us-west-2"
+    use_lockfile   = true
   }
   required_providers {
     aws = {

@@ -74,6 +74,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
         days = each.value.lifecycle_expiration_days
       }
     }
+    filter {
+      prefix = ""
+    }
     id = "basic_lifetime"
     dynamic "noncurrent_version_expiration" {
       for_each = each.value.lifecycle_has_version_policy ? { this = {} } : {}
@@ -82,6 +85,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
         noncurrent_days           = each.value.lifecycle_version_expiration_days
       }
     }
+    status = "Enabled"
     dynamic "transition" {
       for_each = each.value.lifecycle_transition_map_effective
       content {
@@ -90,7 +94,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
         storage_class = transition.value.storage_class
       }
     }
-    status = "Enabled"
   }
 }
 

@@ -4,48 +4,21 @@ Example
 python -m development.script.download_ci_dependencies
 """
 
-import argparse
 import json
 import os
 import shutil
-from typing import Any, Optional, Tuple, cast
+import typing
 
 import hcl2
 import s3path  # type: ignore
+import typer
 
 from script.plan import run_command_as_process  # type:ignore
 
 BUCKET = "cdn-bucket.calsev.com"
 
 
-def parse_args(
-    args_in: Optional[list[str]] = None,
-) -> argparse.Namespace:
-    args = argparse.ArgumentParser()
-    args.add_argument(
-        "--profile",
-        type=str,
-        default="default",
-        help="The name of the AWS profile to use",
-    )
-    args.add_argument(
-        "--system",
-        type=str,
-        default="linux",
-        help="The name of the AWS profile to use",
-    )
-    args.add_argument(
-        "--arch",
-        type=str,
-        default="amd64",
-        choices=["amd64", "arm64"],
-        help="The name of the AWS profile to use",
-    )
-    parsed_args = args.parse_args(args_in)
-    return parsed_args
-
-
-def get_bin_versions() -> Tuple[str, str]:
+def get_bin_versions() -> tuple[str, str]:
     with open("development/ver_tf") as f:
         tf_ver = f.read()
     with open("development/ver_tflint") as f:
@@ -55,7 +28,7 @@ def get_bin_versions() -> Tuple[str, str]:
 
 def get_linters(system: str, arch: str) -> dict[str, dict[str, str]]:
     with open("development/.tflint.hcl") as f:
-        linter_data = cast(
+        linter_data = typing.cast(
             dict[str, list[dict[str, dict[str, str]]]],
             hcl2.load(f),  # type: ignore
         )
@@ -81,7 +54,7 @@ def get_linters(system: str, arch: str) -> dict[str, dict[str, str]]:
     return linter_map
 
 
-def get_release_info_for_repo(repo: str) -> dict[Any, Any]:
+def get_release_info_for_repo(repo: str) -> dict[typing.Any, typing.Any]:
     """This can be used to get release info, including browser_download_url"""
     api_ver = "-H 'X-GitHub-Api-Version: 2022-11-28'"
     accept = "-H 'Accept: application/vnd.github+json'"
@@ -146,34 +119,40 @@ def download_linters(arch: str, system: str) -> None:
 
 def download_ci_dependencies(
     profile: str,
-    arch: str,
     system: str,
 ) -> None:
     os.environ["AWS_PROFILE"] = profile
     tf_ver, tflint_ver = get_bin_versions()
-    download_linters(arch, system)
-    transfer_binary_archive(
-        "terraform",
-        system,
-        arch,
-        tf_ver,
-        f"https://releases.hashicorp.com/terraform/{tf_ver}/terraform_{tf_ver}_{system}_{arch}.zip",
-    )
-    transfer_binary_archive(
-        "tflint",
-        system,
-        arch,
-        tflint_ver,
-        f"https://github.com/terraform-linters/tflint/releases/download/v{tflint_ver}/tflint_{system}_{arch}.zip",
-    )
+    for arch in ["amd64", "arm64"]:
+        download_linters(arch, system)
+        transfer_binary_archive(
+            "terraform",
+            system,
+            arch,
+            tf_ver,
+            f"https://releases.hashicorp.com/terraform/{tf_ver}/terraform_{tf_ver}_{system}_{arch}.zip",
+        )
+        transfer_binary_archive(
+            "tflint",
+            system,
+            arch,
+            tflint_ver,
+            f"https://github.com/terraform-linters/tflint/releases/download/v{tflint_ver}/tflint_{system}_{arch}.zip",
+        )
 
 
 def main(
-    args_in: Optional[list[str]] = None,
+    profile: str = typer.Option(
+        "default",
+        help="The name of the AWS profile to use",
+    ),
+    system: str = typer.Option(
+        "linux",
+        help="The platform name",
+    ),
 ) -> None:
-    args = parse_args(args_in)
-    download_ci_dependencies(**vars(args))
+    download_ci_dependencies(**locals())
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

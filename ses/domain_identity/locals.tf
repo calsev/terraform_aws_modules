@@ -24,7 +24,7 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       # See AWs console for verified identities > DMARC > "Publish DNS records"
       dns_from_fqdn   = "_dmarc.${v.name_simple}"
-      dns_record_list = ["v=DMARC1; p=none;"]
+      dns_record_list = [v.dmarc_record_string]
     })
   }
   create_dns_mx_map = {
