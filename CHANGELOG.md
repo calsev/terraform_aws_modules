@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.88.0
+
+### General
+
+* Add DMARC config string to SES domain identity
+
+### Bugfix
+
+* Install missing Cloudwatch Agent on AL2023
+
 ## 0.87.0
 
 ### New modules

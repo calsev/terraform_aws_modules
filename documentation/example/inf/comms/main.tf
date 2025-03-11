@@ -28,6 +28,7 @@ module "ses_domain" {
   domain_dns_from_zone_key_default     = "example.com"
   domain_map = {
     "example.com" = {
+      dmarc_record_string = "v=DMARC1; p=none; rua=mailto:dmarc@example.com; ruf=mailto:dmarc@example.com; sp=none; aspf=s; adkim=s; fo=1;"
     }
   }
   std_map = module.com_lib.std_map

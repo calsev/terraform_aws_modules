@@ -1,8 +1,8 @@
 -r requirements.txt
 
 black>=25.1.0
-flake8>=7.1.1
-isort>=6.0.0
-pyright>=1.1.393
-python-hcl2>=6.1.0
+flake8>=7.1.2
+isort>=6.0.1
+pyright>=1.1.396
+python-hcl2>=6.1.1
 s3path>=0.6.0
