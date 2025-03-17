@@ -43,7 +43,6 @@ variable "job_map" {
     host_volume_map = optional(map(object({
       host_path = string
     })))
-    iam_role_arn_job_container = optional(string)
     iam_role_arn_job_execution = optional(string)
     image_id                   = optional(string)
     image_tag                  = optional(string)
@@ -52,14 +51,18 @@ variable "job_map" {
       read_only      = optional(bool, false)
       volume_key     = optional(string)
     })))
-    parameter_map              = optional(map(string))
-    privileged                 = optional(bool)
-    resource_memory_gib        = optional(number)
-    resource_memory_host_gib   = optional(number)
-    resource_memory_shared_gib = optional(number)
-    resource_num_gpu           = optional(number)
-    resource_num_vcpu          = optional(number)
-    secret_map                 = optional(map(string))
+    parameter_map                = optional(map(string))
+    privileged                   = optional(bool)
+    resource_memory_gib          = optional(number)
+    resource_memory_host_gib     = optional(number)
+    resource_memory_shared_gib   = optional(number)
+    resource_num_gpu             = optional(number)
+    resource_num_vcpu            = optional(number)
+    role_policy_attach_arn_map   = optional(map(string))
+    role_policy_create_json_map  = optional(map(string))
+    role_policy_inline_json_map  = optional(map(string))
+    role_policy_managed_name_map = optional(map(string))
+    secret_map                   = optional(map(string))
     ulimit_map = optional(map(object({
       hard_limit = number
       soft_limit = number
@@ -140,11 +143,6 @@ variable "job_host_volume_map_default" {
     host_path = string
   }))
   default = {}
-}
-
-variable "job_iam_role_arn_job_container_default" {
-  type    = string
-  default = null
 }
 
 variable "job_iam_role_arn_job_execution_default" {
@@ -237,6 +235,26 @@ variable "monitor_data" {
       }))
     })
   })
+}
+
+variable "role_policy_attach_arn_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "role_policy_managed_name_map_default" {
+  type    = map(string)
+  default = {}
 }
 
 variable "std_map" {
