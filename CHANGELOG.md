@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.89.0
+
+### General
+
+* Embed role for Batch job
+
 ## 0.88.0
 
 ### General

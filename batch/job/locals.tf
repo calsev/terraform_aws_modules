@@ -1,12 +1,22 @@
 module "name_map" {
   source   = "../../name_map"
-  name_map = var.job_map
+  name_map = local.l0_map
   std_map  = var.std_map
 }
 
 locals {
+  create_job_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      container_properties = merge(v.container_properties, {
+        jobRoleArn = module.container_role[k].data.iam_role_arn
+      })
+    })
+  }
+  l0_map = {
+    for k, v in var.job_map : k => v
+  }
   l1_map = {
-    for k, v in var.job_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       alert_target_path_map = {
         job_id          = "$.detail.jobId"
         job_name        = "$.detail.jobName"
@@ -31,7 +41,6 @@ locals {
         v.environment_map == null ? var.job_environment_map_default : v.environment_map
       )
       host_volume_map            = v.host_volume_map == null ? var.job_host_volume_map_default : v.host_volume_map
-      iam_role_arn_job_container = v.iam_role_arn_job_container == null ? var.job_iam_role_arn_job_container_default : v.iam_role_arn_job_container
       iam_role_arn_job_execution = v.iam_role_arn_job_execution == null ? var.job_iam_role_arn_job_execution_default == null ? var.iam_data.iam_role_arn_ecs_task_execution : var.job_iam_role_arn_job_execution_default : v.iam_role_arn_job_execution
       image_id                   = v.image_id == null ? var.job_image_id_default : v.image_id
       image_tag                  = v.image_tag == null ? var.job_image_tag_default : v.image_tag
@@ -45,7 +54,7 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       alert_event_pattern_json = jsonencode({
         detail = {
           jobDefinition = [
@@ -89,7 +98,7 @@ locals {
     }
   }
   l3_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       efs_volume_map = {
         for k_vol, v_vol in local.l2_map[k].efs_volume_map : k_vol => merge(v_vol, {
           root_directory = v_vol.authorization_access_point_id != null ? "/" : v_vol.root_directory == null ? var.job_efs_root_directory_default : v_vol.root_directory
@@ -101,7 +110,7 @@ locals {
     }
   }
   l4_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       requirement_list_gpu = [
         {
           type  = "GPU"
@@ -112,12 +121,12 @@ locals {
     }
   }
   l5_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       resource_memory_gib = v.resource_memory_gib == null ? var.job_resource_memory_gib_default == null ? local.l4_map[k].resource_memory_gib_default : var.job_resource_memory_gib_default : v.resource_memory_gib
     }
   }
   l6_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       requirement_list_cpu = [
         {
           type  = "VCPU"
@@ -131,12 +140,12 @@ locals {
     }
   }
   l7_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       requirement_list = local.l3_map[k].resource_num_gpu > 0 ? concat(local.l6_map[k].requirement_list_cpu, local.l4_map[k].requirement_list_gpu) : local.l6_map[k].requirement_list_cpu
     }
   }
   l8_map = {
-    for k, v in var.job_map : k => {
+    for k, v in local.l0_map : k => {
       container_properties = {
         # args does not work as advertised
         command = concat(local.l1_map[k].entry_point == null ? [] : local.l1_map[k].entry_point, local.l1_map[k].command_list)
@@ -149,7 +158,6 @@ locals {
         ]
         executionRoleArn = local.l1_map[k].iam_role_arn_job_execution
         image            = "${local.l1_map[k].image_id}:${local.l1_map[k].image_tag}"
-        jobRoleArn       = local.l1_map[k].iam_role_arn_job_container
         linuxParameters  = local.l2_map[k].linux_param_map
         mountPoints = [
           for k_mount, v_mount in local.l2_map[k].mount_map : {
@@ -202,12 +210,12 @@ locals {
       }
     }
   }
-  job_map = {
-    for k, v in var.job_map : k =>
+  lx_map = {
+    for k, v in local.l0_map : k =>
     merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k], local.l7_map[k], local.l8_map[k])
   }
   output_data = {
-    for k, v in local.job_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       {
         for k_job, v_job in v : k_job => v_job
         if !contains(["alert_event_pattern_json", "requirement_list", "requirement_list_cpu", "requirement_list_gpu"], k_job)
@@ -216,6 +224,7 @@ locals {
         alert               = module.alert_trigger.data[k]
         job_definition_arn  = aws_batch_job_definition.this_job[k].arn
         job_definition_name = aws_batch_job_definition.this_job[k].name
+        role                = module.container_role[k].data
       }
     )
   }

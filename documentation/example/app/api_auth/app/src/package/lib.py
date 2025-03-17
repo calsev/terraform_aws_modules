@@ -14,7 +14,6 @@ def extract_allowed_origin(event: dict[str, typing.Any]) -> str:
     # Header keys are lower case in the event
     referrer = headers.get("origin", headers.get("referer", ""))
     if not referrer:
-        print(f"Invalid headers, no referer:\n{json.dumps(headers, indent='')}")
         return ORIGIN_DEFAULT
 
     referrer_parsed = typing.cast(
