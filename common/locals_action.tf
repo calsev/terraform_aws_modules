@@ -928,15 +928,20 @@ locals {
         ]
         public_write = []
         write = [
+          "CancelRotateSecret",
           "PutSecretValue",
+          "RotateSecret",
           "TagResource",
           "UntagResource",
           "UpdateSecret",
+          "UpdateSecretVersionStage",
         ]
       }
       star = {
         public_read = []
         read = [
+          # "BatchGetSecretValue",
+          "GetRandomPassword",
           "ListSecrets",
         ]
         public_write = []

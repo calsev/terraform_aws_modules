@@ -53,7 +53,7 @@ locals {
       memory_size_mib                     = v.memory_size_mib == null ? var.function_memory_size_mib_default : v.memory_size_mib
       publish_numbered_version            = v.publish_numbered_version == null ? var.function_publish_numbered_version_default : v.publish_numbered_version
       reserved_concurrent_executions      = v.reserved_concurrent_executions == null ? var.function_reserved_concurrent_executions_default : v.reserved_concurrent_executions
-      source_content                      = v.source_content == null ? var.function_source_content_default : v.source_content
+      source_content_local_path           = v.source_content_local_path == null ? var.function_source_content_local_path_default : v.source_content_local_path
       source_image_command                = v.source_image_command == null ? var.function_source_image_command_default : v.source_image_command
       source_image_entry_point            = v.source_image_entry_point == null ? var.function_source_image_entry_point_default : v.source_image_entry_point
       source_image_repo_key               = v.source_image_repo_key == null ? var.function_source_image_repo_key_default : v.source_image_repo_key
@@ -72,11 +72,11 @@ locals {
   l2_map = {
     for k, v in local.l0_map : k => {
       is_in_vpc                         = length(local.l1_map[k].vpc_subnet_id_list) != 0
-      source_is_content                 = v.source_content != null                                                                                                                                                                              # P1
-      source_is_image                   = v.source_content == null && local.l1_map[k].source_image_repo_key != null                                                                                                                             # P2
-      source_is_local_archive           = v.source_content == null && local.l1_map[k].source_image_repo_key == null && local.l1_map[k].source_package_archive_local_path != null                                                                # P3
-      source_is_local_directory         = v.source_content == null && local.l1_map[k].source_image_repo_key == null && local.l1_map[k].source_package_archive_local_path == null && local.l1_map[k].source_package_directory_local_path != null # P4
-      source_package_content_hash       = local.l1_map[k].source_content == null ? null : sha256(local.l1_map[k].source_is_content)
+      source_content_content            = local.l1_map[k].source_content_local_path == null ? null : replace(replace(file(local.l1_map[k].source_content_local_path), "\r\n", "\n"), "\r", "\n")
+      source_is_content                 = v.source_content_local_path != null                                                                                                                                                                              # P1
+      source_is_image                   = v.source_content_local_path == null && local.l1_map[k].source_image_repo_key != null                                                                                                                             # P2
+      source_is_local_archive           = v.source_content_local_path == null && local.l1_map[k].source_image_repo_key == null && local.l1_map[k].source_package_archive_local_path != null                                                                # P3
+      source_is_local_directory         = v.source_content_local_path == null && local.l1_map[k].source_image_repo_key == null && local.l1_map[k].source_package_archive_local_path == null && local.l1_map[k].source_package_directory_local_path != null # P4
       source_package_local_archive_hash = local.l1_map[k].source_package_archive_local_path == null ? null : filebase64sha256(local.l1_map[k].source_package_archive_local_path)
       source_package_s3_path_provided   = local.l1_map[k].source_package_s3_bucket_name != null && local.l1_map[k].source_package_s3_object_key != null
     }
@@ -85,7 +85,9 @@ locals {
     for k, v in local.l0_map : k => {
       create_archive                   = local.l2_map[k].source_is_content || local.l2_map[k].source_is_local_directory
       iam_policy_arn_source_image_read = local.l2_map[k].source_is_image ? var.ecr_data.repo_map[local.l1_map[k].source_image_repo_key].iam_policy_arn_map["read"] : null
+      source_content_archive_path      = local.l2_map[k].source_is_content ? v.source_content_archive_path == null ? var.function_source_content_archive_path_default == null ? basename(local.l1_map[k].source_content_local_path) : var.function_source_content_archive_path_default : v.source_content_archive_path : null
       source_image_uri                 = local.l2_map[k].source_is_image ? "${var.ecr_data.repo_map[local.l1_map[k].source_image_repo_key].repo_url}:${local.l1_map[k].source_image_repo_tag}" : null
+      source_package_content_hash      = local.l1_map[k].source_content_local_path == null ? null : sha256(local.l2_map[k].source_content_content)
       source_package_handler           = local.l2_map[k].source_is_image ? null : v.source_package_handler == null ? var.function_source_package_handler_default : v.source_package_handler
       source_package_type              = local.l2_map[k].source_is_image ? "Image" : "Zip"
       source_package_runtime           = local.l2_map[k].source_is_image ? null : v.source_package_runtime == null ? var.function_source_package_runtime_default : v.source_package_runtime
@@ -94,21 +96,20 @@ locals {
   }
   l4_map = {
     for k, v in local.l0_map : k => {
-      source_content_filename               = local.l2_map[k].source_is_content ? split(".", local.l3_map[k].source_package_handler)[0] : null
-      source_is_s3_object                   = local.l2_map[k].source_is_content || local.l2_map[k].source_is_image || local.l2_map[k].source_is_local_archive || local.l2_map[k].source_is_local_directory ? false : local.l2_map[k].source_package_s3_path_provided ? true : file("Must provide a code source") # P5
-      source_package_directory_archive_path = local.l2_map[k].source_is_local_directory ? v.source_package_directory_archive_path == null ? "${local.l1_map[k].source_package_directory_local_path}.zip" : v.source_package_directory_archive_path : null
-      source_package_snap_start_enabled     = local.l3_map[k].source_package_runtime == null ? false : startswith(local.l3_map[k].source_package_runtime, "java") ? v.source_package_snap_start_enabled == null ? var.function_package_snap_start_enabled_default : v.source_package_snap_start_enabled : false
+      source_is_s3_object                 = local.l2_map[k].source_is_content || local.l2_map[k].source_is_image || local.l2_map[k].source_is_local_archive || local.l2_map[k].source_is_local_directory ? false : local.l2_map[k].source_package_s3_path_provided ? true : file("Must provide a code source") # P5
+      source_package_created_archive_path = local.l3_map[k].create_archive ? v.source_package_created_archive_path == null ? local.l2_map[k].source_is_content ? "${dirname(local.l1_map[k].source_content_local_path)}/package.zip" : "${local.l1_map[k].source_package_directory_local_path}.zip" : v.source_package_created_archive_path : null
+      source_package_snap_start_enabled   = local.l3_map[k].source_package_runtime == null ? false : startswith(local.l3_map[k].source_package_runtime, "java") ? v.source_package_snap_start_enabled == null ? var.function_package_snap_start_enabled_default : v.source_package_snap_start_enabled : false
     }
   }
   l5_map = {
     for k, v in local.l0_map : k => {
       create_s3_object                        = !local.l4_map[k].source_is_s3_object && local.l2_map[k].source_package_s3_path_provided
-      source_package_final_archive_local_path = local.l2_map[k].source_is_local_archive ? local.l1_map[k].source_package_archive_local_path : local.l2_map[k].source_is_local_directory ? local.l4_map[k].source_package_directory_archive_path : null
+      source_package_final_archive_local_path = local.l2_map[k].source_is_local_archive ? local.l1_map[k].source_package_archive_local_path : local.l2_map[k].source_is_content || local.l2_map[k].source_is_local_directory ? local.l4_map[k].source_package_created_archive_path : null
     }
   }
   l6_map = {
     for k, v in local.l0_map : k => {
-      source_final_is_local_path = (local.l2_map[k].source_is_local_archive || local.l2_map[k].source_is_local_directory) && !local.l5_map[k].create_s3_object
+      source_final_is_local_path = (local.l2_map[k].source_is_content || local.l2_map[k].source_is_local_archive || local.l2_map[k].source_is_local_directory) && !local.l5_map[k].create_s3_object
       source_final_is_s3_object  = local.l4_map[k].source_is_s3_object || local.l5_map[k].create_s3_object
     }
   }
@@ -125,7 +126,7 @@ locals {
     for k, v in local.lx_map : k => merge(
       {
         for k_attr, v_attr in v : k_attr => v_attr
-        if !contains([], k_attr)
+        if !contains(["source_content_content"], k_attr)
       },
       module.function_policy[k].data,
       {

@@ -149,7 +149,7 @@ variable "pipe_webhook_enabled_default" {
 
 variable "pipe_webhook_enable_github_hook_default" {
   type        = bool
-  default     = true
+  default     = false
   description = "Ignored if webhook is not enabled"
 }
 

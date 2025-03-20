@@ -13,59 +13,60 @@ variable "ecr_data" {
 
 variable "function_map" {
   type = map(object({
-    architecture_list                     = optional(list(string))
-    code_signing_config_arn               = optional(string)
-    dead_letter_queue_enabled             = optional(bool)
-    environment_variable_map              = optional(map(string))
-    ephemeral_storage_mib                 = optional(number)
-    kms_key_arn                           = optional(string)
-    layer_version_arn_list                = optional(list(string))
-    memory_size_mib                       = optional(number)
-    name_infix                            = optional(bool)
-    policy_access_list                    = optional(list(string))
-    policy_create                         = optional(bool)
-    policy_name                           = optional(string)
-    policy_name_append                    = optional(string)
-    policy_name_infix                     = optional(bool)
-    policy_name_prefix                    = optional(string)
-    policy_name_prepend                   = optional(string)
-    policy_name_suffix                    = optional(string)
-    publish_numbered_version              = optional(bool)
-    reserved_concurrent_executions        = optional(number)
-    role_policy_attach_arn_map            = optional(map(string))
-    role_policy_create_json_map           = optional(map(string))
-    role_policy_inline_json_map           = optional(map(string))
-    role_policy_managed_name_map          = optional(map(string))
-    source_content                        = optional(string)
-    source_image_command                  = optional(list(string))
-    source_image_entry_point              = optional(list(string))
-    source_image_repo_key                 = optional(string)
-    source_image_repo_tag                 = optional(string)
-    source_image_working_directory        = optional(string)
-    source_package_archive_local_path     = optional(string)
-    source_package_directory_local_path   = optional(string)
-    source_package_directory_archive_path = optional(string) # Defaults to the directory with .zip appended
-    source_package_handler                = optional(string)
-    source_package_runtime                = optional(string)
-    source_package_s3_bucket_name         = optional(string)
-    source_package_s3_object_hash         = optional(string) # TODO: Calc for local, this for S3
-    source_package_s3_object_key          = optional(string) # Defaults to ${var.function_source_package_s3_object_key_base_default}/deployment_package_${key}zip
-    source_package_s3_object_version      = optional(number)
-    source_package_snap_start_enabled     = optional(bool)
-    timeout_seconds                       = optional(number)
-    tracing_mode                          = optional(string)
-    vpc_az_key_list                       = optional(list(string))
-    vpc_ipv6_allowed                      = optional(bool)
-    vpc_key                               = optional(string)
-    vpc_security_group_key_list           = optional(list(string))
-    vpc_segment_key                       = optional(string)
+    architecture_list                   = optional(list(string))
+    code_signing_config_arn             = optional(string)
+    dead_letter_queue_enabled           = optional(bool)
+    environment_variable_map            = optional(map(string))
+    ephemeral_storage_mib               = optional(number)
+    kms_key_arn                         = optional(string)
+    layer_version_arn_list              = optional(list(string))
+    memory_size_mib                     = optional(number)
+    name_infix                          = optional(bool)
+    policy_access_list                  = optional(list(string))
+    policy_create                       = optional(bool)
+    policy_name                         = optional(string)
+    policy_name_append                  = optional(string)
+    policy_name_infix                   = optional(bool)
+    policy_name_prefix                  = optional(string)
+    policy_name_prepend                 = optional(string)
+    policy_name_suffix                  = optional(string)
+    publish_numbered_version            = optional(bool)
+    reserved_concurrent_executions      = optional(number)
+    role_policy_attach_arn_map          = optional(map(string))
+    role_policy_create_json_map         = optional(map(string))
+    role_policy_inline_json_map         = optional(map(string))
+    role_policy_managed_name_map        = optional(map(string))
+    source_content_archive_path         = optional(string)
+    source_content_local_path           = optional(string)
+    source_image_command                = optional(list(string))
+    source_image_entry_point            = optional(list(string))
+    source_image_repo_key               = optional(string)
+    source_image_repo_tag               = optional(string)
+    source_image_working_directory      = optional(string)
+    source_package_archive_local_path   = optional(string)
+    source_package_created_archive_path = optional(string) # Defaults to the directory with .zip appended or content file parent with pakage.zip appended
+    source_package_directory_local_path = optional(string)
+    source_package_handler              = optional(string) # Also used for source_content
+    source_package_runtime              = optional(string)
+    source_package_s3_bucket_name       = optional(string)
+    source_package_s3_object_hash       = optional(string) # TODO: Calc for local, this for S3
+    source_package_s3_object_key        = optional(string) # Defaults to ${var.function_source_package_s3_object_key_base_default}/deployment_package_${key}zip
+    source_package_s3_object_version    = optional(number)
+    source_package_snap_start_enabled   = optional(bool)
+    timeout_seconds                     = optional(number)
+    tracing_mode                        = optional(string)
+    vpc_az_key_list                     = optional(list(string))
+    vpc_ipv6_allowed                    = optional(bool)
+    vpc_key                             = optional(string)
+    vpc_security_group_key_list         = optional(list(string))
+    vpc_segment_key                     = optional(string)
   }))
 }
 
 variable "function_architecture_list_default" {
   type        = list(string)
-  default     = ["x86_64"]
-  description = "Also valid is ['arm64']"
+  default     = ["arm64"]
+  description = "Also valid is ['x86_64']"
 }
 
 variable "function_code_signing_config_arn_default" {
@@ -119,7 +120,13 @@ variable "function_reserved_concurrent_executions_default" {
   default = -1
 }
 
-variable "function_source_content_default" {
+variable "function_source_content_archive_path_default" {
+  type        = string
+  default     = null
+  description = "Defaults to basename of source_content_local_path"
+}
+
+variable "function_source_content_local_path_default" {
   type    = string
   default = null
 }

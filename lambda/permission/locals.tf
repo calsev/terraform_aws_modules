@@ -12,7 +12,7 @@ module "name_map" {
 
 locals {
   create_permission_map = {
-    for k, v in local.lx_map : k => v if v.lambda_arn != null
+    for k, v in local.lx_map : k => v
   }
   l0_map = {
     for k, v in var.permission_map : k => v

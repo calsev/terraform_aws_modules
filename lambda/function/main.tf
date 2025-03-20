@@ -13,12 +13,12 @@ module "dead_letter_queue" {
 data "archive_file" "package" {
   for_each    = local.create_archive_map
   type        = "zip"
-  output_path = each.value.source_package_directory_archive_path
+  output_path = each.value.source_package_created_archive_path
   dynamic "source" {
     for_each = each.value.source_is_content ? { this = {} } : {}
     content {
-      content  = each.value.source_content
-      filename = each.value.source_content_filename
+      content  = each.value.source_content_content
+      filename = each.value.source_content_archive_path
     }
   }
   source_dir = each.value.source_package_directory_local_path

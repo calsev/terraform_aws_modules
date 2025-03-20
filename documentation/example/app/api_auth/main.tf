@@ -25,7 +25,6 @@ module "lambda" {
       source_package_handler = "trigger.main"
     }
   }
-  function_architecture_list_default                   = ["arm64"]
   function_ephemeral_storage_mib_default               = 512
   function_dead_letter_queue_enabled_default           = false
   function_source_package_directory_local_path_default = "app/src"
