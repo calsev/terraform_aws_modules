@@ -45,7 +45,7 @@ locals {
     for k, v in local.create_lambda_permission_1_map : k => {
       for k_perm, arn_perm in v.permission_map : k_perm => merge(v, {
         lambda_arn = arn_perm
-      })
+      }) if arn_perm != null
     }
   }
   l0_map = {

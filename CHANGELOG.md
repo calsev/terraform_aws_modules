@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.90.0
+
+### New modules
+
+* Secrets Manager secret rotation
+
+### General
+
+* Disable Github webhooks by default
+* Default arch for Lambda is now arm64
+
+### Bugfix
+
+* Content support for Lambda function
+
 ## 0.89.0
 
 ### General

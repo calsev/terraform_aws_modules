@@ -205,7 +205,7 @@ variable "pipe_source_repository_id_default" {
 
 variable "pipe_webhook_enable_github_hook_default" {
   type        = bool
-  default     = true
+  default     = false
   description = "Ignored if webhook is not enabled"
 }
 

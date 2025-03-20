@@ -339,6 +339,7 @@ tf-lint: tflint-install
 	cd ../sg/group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg/rule_set && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sm && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../sm/rotation && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sm/secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sms/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

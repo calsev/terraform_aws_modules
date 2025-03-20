@@ -18,7 +18,6 @@ module "lambda" {
       source_package_directory_local_path   = "app"
     }
     dir_create_local_and_s3_archive = {
-      architecture_list = ["arm64"]
       environment_variable_map = {
         RUN_IT = 1
       }
