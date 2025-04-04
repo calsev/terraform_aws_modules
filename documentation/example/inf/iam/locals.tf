@@ -11,7 +11,9 @@ locals {
     module.support_iam.data,
     module.users.data,
     {
+      account         = module.account.data
       key_pair_map    = module.key_pair.data
+      organization    = module.organization.data
       password_policy = module.password_policy.data
     }
   )

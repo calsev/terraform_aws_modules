@@ -9,9 +9,6 @@ locals {
       policy = {
         param_secret_temp = module.param_secret_temp.data
       }
-      role = {
-        job_container = module.job_role.data
-      }
     }
     job     = module.job.data
     trigger = module.s3_trigger.data

@@ -87,8 +87,8 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      acm_certificate_arn  = local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn : null
-      acm_certificate_fqdn = local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].name_simple : null
+      acm_certificate_arn  = local.l2_map[k].is_listener && local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn : null
+      acm_certificate_fqdn = local.l2_map[k].is_listener && local.l2_map[k].certificate_supported ? var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].name_simple : null
       action_map = {
         for k_act, v_act in local.l2_map[k].action_map : k_act => merge(v_act, {
           action_forward_target_group_map = v_act.action_forward_target_group_map == null ? var.listener_action_forward_target_group_map_default == null ? v_act.action_type == "forward" ? { (k) = { target_group_weight = null } } : {} : var.listener_action_forward_target_group_map_default : v_act.action_forward_target_group_map

@@ -22,6 +22,8 @@ variable "dns_data" {
       name_simple     = string
     })))
   })
+  default     = null
+  description = "Must be provided if any listener is not a rule"
 }
 
 variable "elb_data_map" {

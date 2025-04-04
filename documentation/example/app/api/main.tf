@@ -35,7 +35,7 @@ module "lambda" {
   function_dead_letter_queue_enabled_default           = false
   function_source_package_directory_local_path_default = "app"
   function_source_package_handler_default              = "function.main"
-  function_source_package_runtime_default              = "python3.11"
+  function_source_package_runtime_default              = "python3.13"
   iam_data                                             = data.terraform_remote_state.iam.outputs.data
   std_map                                              = module.com_lib.std_map
   vpc_data_map                                         = data.terraform_remote_state.net.outputs.data.vpc_map

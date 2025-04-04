@@ -40,15 +40,17 @@ module "job" {
       batch_cluster_key = local.compute_name
     }
   }
-  job_command_list_default               = ["echo", "Ref::bucket_name", "/", "Ref::object_key"]
-  job_entry_point_default                = null
-  job_iam_role_arn_job_container_default = module.job_role.data.iam_role_arn
+  job_command_list_default = ["echo", "Ref::bucket_name", "/", "Ref::object_key"]
+  job_entry_point_default  = null
   job_parameter_map_default = {
     bucket_name = "unknown-bucket"
     object_key  = "unknown-object"
   }
   monitor_data = data.terraform_remote_state.monitor.outputs.data
-  std_map      = module.com_lib.std_map
+  role_policy_attach_arn_map_default = {
+    read_source_object = module.s3.data[local.bucket_key].policy.iam_policy_arn_map["read"]
+  }
+  std_map = module.com_lib.std_map
 }
 
 module "s3_trigger" {

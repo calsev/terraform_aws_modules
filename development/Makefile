@@ -213,6 +213,9 @@ tf-lint: tflint-install
 	cd ../iam/app/mobile_analytics && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/rds && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/support && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/organization && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/organization/account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/organization/organization && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/assume_role && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
