@@ -13,9 +13,9 @@ module "lambda" {
   function_ephemeral_storage_mib_default = 512
   function_map = {
     dir_create_local_archive_only = {
-      dead_letter_queue_enabled             = false
-      source_package_directory_archive_path = "app_dir_no.zip" # Non-default archive path
-      source_package_directory_local_path   = "app"
+      dead_letter_queue_enabled           = false
+      source_package_created_archive_path = "app_dir_no.zip" # Non-default archive path
+      source_package_directory_local_path = "app"
     }
     dir_create_local_and_s3_archive = {
       environment_variable_map = {
@@ -46,7 +46,7 @@ module "lambda" {
     }
   }
   function_source_package_handler_default = "function.main"
-  function_source_package_runtime_default = "python3.11"
+  function_source_package_runtime_default = "python3.13"
   iam_data                                = data.terraform_remote_state.iam.outputs.data
   std_map                                 = module.com_lib.std_map
   vpc_data_map                            = data.terraform_remote_state.net.outputs.data.vpc_map

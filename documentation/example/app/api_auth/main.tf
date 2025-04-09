@@ -28,7 +28,7 @@ module "lambda" {
   function_ephemeral_storage_mib_default               = 512
   function_dead_letter_queue_enabled_default           = false
   function_source_package_directory_local_path_default = "app/src"
-  function_source_package_runtime_default              = "python3.11"
+  function_source_package_runtime_default              = "python3.13"
   iam_data                                             = data.terraform_remote_state.iam.outputs.data
   std_map                                              = module.com_lib[each.key].std_map
 }

@@ -50,8 +50,9 @@ module "name_map" {
 
 locals {
   l1_map = merge(module.name_map.data[var.name], {
+    assume_role_account_map  = var.assume_role_account_map
     assume_role_service_list = var.assume_role_service_list
-    enable_assume_role       = var.assume_role_service_list == null ? false : length(var.assume_role_service_list) == 0 ? false : true
+    enable_assume_role       = length(var.assume_role_account_map) > 0 || length(var.assume_role_service_list) > 0
     create_instance_profile  = var.create_instance_profile
     max_session_duration_m   = var.max_session_duration_m
     role_policy_attach_arn_map = {
@@ -84,7 +85,7 @@ locals {
     )
   }
   # tflint-ignore: terraform_unused_declarations
-  mutual_exclusion_assume_role = var.assume_role_json == null && var.assume_role_service_list != null || var.assume_role_json != null && var.assume_role_service_list == null ? null : file("ERROR: Exactly one specification of assuming the role is required")
+  mutual_exclusion_assume_role = local.l1_map.enable_assume_role && var.assume_role_json == null || !local.l1_map.enable_assume_role && var.assume_role_json != null ? null : file("ERROR: Exactly one specification of assuming the role is required")
   output_data = merge(local.l1_map, local.l2_map, local.l3_map, local.l4_map, {
     iam_instance_profile_arn = var.create_instance_profile ? aws_iam_instance_profile.instance_profile["this"].arn : null
     iam_role_arn             = aws_iam_role.this_iam_role.arn

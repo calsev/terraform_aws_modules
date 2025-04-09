@@ -11,6 +11,26 @@ resource "aws_iam_account_alias" "account_alias" {
   account_alias = "example"
 }
 
+module "organization" {
+  source = "path/to/modules/iam/organization/organization"
+  organization_map = {
+    example = {}
+  }
+  std_map = module.com_lib.std_map
+}
+
+module "account" {
+  source                        = "path/to/modules/iam/organization/account"
+  account_email_address_default = "cal@example.com"
+  account_map = {
+    example_simple_deploy_sandbox = {
+      iam_user_access_to_billing_null = true
+      name_override                   = "example_simple_deploy_sandbox"
+    }
+  }
+  std_map = module.com_lib.std_map
+}
+
 module "backup_iam" {
   source  = "path/to/modules/iam/app/backup"
   std_map = module.com_lib.std_map
