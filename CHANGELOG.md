@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.91.0
+
+### New modules
+
+* IAM identity policy for assume role
+* Organization organization
+* Organization account
+
+### General
+
+* Add assume_role_account_map to base role
+
 ## 0.90.0
 
 ### New modules

@@ -1,6 +1,7 @@
 module "assume_role_policy" {
   source       = "../../../iam/policy/assume_role"
   for_each     = local.l1_map.enable_assume_role ? { this = {} } : {}
+  account_map  = local.l1_map.assume_role_account_map
   service_list = local.l1_map.assume_role_service_list
   std_map      = var.std_map
 }

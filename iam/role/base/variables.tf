@@ -1,3 +1,11 @@
+variable "assume_role_account_map" {
+  type = map(object({
+    aws_account_id_list = list(string)
+    external_id_list    = optional(list(string), [])
+  }))
+  default = {}
+}
+
 variable "assume_role_json" {
   type    = string
   default = null
@@ -5,7 +13,7 @@ variable "assume_role_json" {
 
 variable "assume_role_service_list" {
   type    = list(string)
-  default = null
+  default = []
 }
 
 variable "create_instance_profile" {
