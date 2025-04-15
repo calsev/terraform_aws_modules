@@ -3,6 +3,28 @@ variable "bucket_log_target_bucket_name_default" {
   default = null
 }
 
+variable "bucket_notification_lambda_event_list_default" {
+  type = list(string)
+  default = [
+    "s3:ObjectCreated:*",
+  ]
+}
+
+variable "bucket_notification_lambda_filter_prefix_default" {
+  type    = string
+  default = null
+}
+
+variable "bucket_notification_lambda_filter_suffix_default" {
+  type    = string
+  default = null
+}
+
+variable "bucket_notification_lambda_function_arn_default" {
+  type    = string
+  default = null
+}
+
 variable "cdn_global_data" {
   type = object({
     cache_policy_map = map(object({
@@ -30,20 +52,26 @@ variable "dns_data" {
 
 variable "domain_map" {
   type = map(object({
-    cache_policy_key                  = optional(string)
-    cache_viewer_protocol_policy      = optional(string)
-    default_root_object               = optional(string)
-    dns_alias_enabled                 = optional(bool)
-    dns_alias_san_list                = optional(list(string))
-    dns_from_zone_key                 = optional(string)
-    enabled                           = optional(bool)
-    http_version_max_supported        = optional(string)
-    ipv6_enabled                      = optional(bool)
-    logging_bucket_key                = optional(string)
-    logging_include_cookies           = optional(bool)
-    logging_object_prefix             = optional(string)
-    name_include_app_fields           = optional(bool)
-    name_infix                        = optional(bool)
+    cache_policy_key             = optional(string)
+    cache_viewer_protocol_policy = optional(string)
+    default_root_object          = optional(string)
+    dns_alias_enabled            = optional(bool)
+    dns_alias_san_list           = optional(list(string))
+    dns_from_zone_key            = optional(string)
+    enabled                      = optional(bool)
+    http_version_max_supported   = optional(string)
+    ipv6_enabled                 = optional(bool)
+    logging_bucket_key           = optional(string)
+    logging_include_cookies      = optional(bool)
+    logging_object_prefix        = optional(string)
+    name_include_app_fields      = optional(bool)
+    name_infix                   = optional(bool)
+    notification_lambda_map = optional(map(object({
+      event_list          = optional(list(string))
+      filter_prefix       = optional(string)
+      filter_suffix       = optional(string)
+      lambda_function_arn = optional(string)
+    })), {})
     origin_allow_public               = optional(bool)
     origin_connection_attempts        = optional(number)
     origin_connection_timeout_seconds = optional(number)
