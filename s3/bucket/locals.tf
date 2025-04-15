@@ -71,19 +71,28 @@ locals {
       log_target_bucket_name            = v.log_target_bucket_name == null ? var.bucket_log_target_bucket_name_default : v.log_target_bucket_name
       log_target_prefix                 = v.log_target_prefix == null ? var.bucket_log_target_prefix_default : v.log_target_prefix
       notification_enable_event_bridge  = v.notification_enable_event_bridge == null ? var.bucket_notification_enable_event_bridge_default : v.notification_enable_event_bridge
-      policy_identity_create            = v.policy_identity_create == null ? var.bucket_policy_identity_create_default : v.policy_identity_create
-      policy_resource_create            = v.policy_resource_create == null ? var.bucket_policy_resource_create_default : v.policy_resource_create
-      requester_pays                    = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
-      sid_map_l1                        = v.sid_map == null ? {} : v.sid_map
-      versioning_enabled                = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
-      versioning_mfa_delete_enabled     = v.versioning_mfa_delete_enabled == null ? var.bucket_versioning_mfa_delete_enabled_default : v.versioning_mfa_delete_enabled
-      website_enabled                   = v.website_enabled == null ? var.bucket_website_enabled_default : v.website_enabled
+      notification_lambda_map = {
+        for k_n, v_n in v.notification_lambda_map : k_n => merge(v_n, {
+          event_list          = v_n.event_list == null ? var.bucket_notification_lambda_event_list_default : v_n.event_list
+          filter_prefix       = v_n.filter_prefix == null ? var.bucket_notification_lambda_filter_prefix_default : v_n.xxfilter_prefixx
+          filter_suffix       = v_n.filter_suffix == null ? var.bucket_notification_lambda_filter_suffix_default : v_n.filter_suffix
+          lambda_function_arn = v_n.lambda_function_arn == null ? var.bucket_notification_lambda_function_arn_default : v_n.lambda_function_arn
+        })
+      }
+      policy_identity_create        = v.policy_identity_create == null ? var.bucket_policy_identity_create_default : v.policy_identity_create
+      policy_resource_create        = v.policy_resource_create == null ? var.bucket_policy_resource_create_default : v.policy_resource_create
+      requester_pays                = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
+      sid_map_l1                    = v.sid_map == null ? {} : v.sid_map
+      versioning_enabled            = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
+      versioning_mfa_delete_enabled = v.versioning_mfa_delete_enabled == null ? var.bucket_versioning_mfa_delete_enabled_default : v.versioning_mfa_delete_enabled
+      website_enabled               = v.website_enabled == null ? var.bucket_website_enabled_default : v.website_enabled
     })
   }
   l2_map = {
-    for k, _ in local.l0_map : k => {
-      cors_allowed_origins         = concat(local.l1_map[k].dns_enabled ? ["http://${local.l1_map[k].name_simple}"] : [], local.l1_map[k].cors_allowed_origins)
-      lifecycle_has_version_policy = local.l1_map[k].lifecycle_version_count != null || local.l1_map[k].lifecycle_version_expiration_days != null
+    for k, v in local.l0_map : k => {
+      cors_allowed_origins               = concat(local.l1_map[k].dns_enabled ? ["http://${local.l1_map[k].name_simple}"] : [], local.l1_map[k].cors_allowed_origins)
+      lifecycle_expiration_delete_marker = local.l1_map[k].lifecycle_expiration_days == null ? v.lifecycle_expiration_delete_marker == null ? var.bucket_lifecycle_expiration_delete_marker_default : v.lifecycle_expiration_delete_marker : null
+      lifecycle_has_version_policy       = local.l1_map[k].lifecycle_version_count != null || local.l1_map[k].lifecycle_version_expiration_days != null
       lifecycle_transition_map = {
         for k_life, v_life in local.l1_map[k].lifecycle_transition_map : k_life => merge(v_life, {
           date          = v_life.date == null ? var.bucket_lifecycle_transition_date_default : v_life.date
@@ -105,7 +114,7 @@ locals {
     }
   }
   l3_map = {
-    for k, _ in local.l0_map : k => {
+    for k, v in local.l0_map : k => {
       lifecycle_transition_map_effective = {
         for k_life, v_life in local.l2_map[k].lifecycle_transition_map : k_life => v_life if(
           local.l1_map[k].lifecycle_expiration_days == null || v_life.date != null ? true : ( # If objects never expire then include all rules; punt for dates

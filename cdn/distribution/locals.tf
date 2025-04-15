@@ -10,8 +10,9 @@ module "name_map" {
 locals {
   create_bucket_map = {
     for k, v in local.lx_map : v.bucket_key => {
-      dns_enabled  = v.origin_dns_enabled
-      allow_public = v.origin_allow_public
+      allow_public            = v.origin_allow_public
+      dns_enabled             = v.origin_dns_enabled
+      notification_lambda_map = v.notification_lambda_map
     }
   }
   create_bucket_policy_map = {

@@ -71,7 +71,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
     dynamic "expiration" {
       for_each = each.value.lifecycle_expiration_days == null ? {} : { this = {} }
       content {
-        days = each.value.lifecycle_expiration_days
+        days                         = each.value.lifecycle_expiration_days
+        expired_object_delete_marker = each.value.lifecycle_expiration_delete_marker
       }
     }
     filter {
@@ -108,6 +109,18 @@ resource "aws_s3_bucket_notification" "this_notification" {
   for_each    = local.lx_map
   bucket      = aws_s3_bucket.this_bucket[each.key].id
   eventbridge = each.value.notification_enable_event_bridge
+  dynamic "lambda_function" {
+    for_each = each.value.notification_lambda_map
+    content {
+      events              = lambda_function.value.event_list
+      filter_prefix       = lambda_function.value.filter_prefix
+      filter_suffix       = lambda_function.value.filter_suffix
+      id                  = lambda_function.key
+      lambda_function_arn = lambda_function.value.lambda_function_arn
+    }
+  }
+  # queue
+  # topic
 }
 
 resource "aws_s3_bucket_logging" "this_logging" {

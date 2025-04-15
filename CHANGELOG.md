@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.92.0
+
+### General
+
+* Add S3 Lambda notifications
+* Enable Lambda notifications for CDN origin
+
 ## 0.91.0
 
 ### New modules

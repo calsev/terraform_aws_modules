@@ -1,26 +1,27 @@
 variable "bucket_map" {
   type = map(object({
-    allow_access_point                = optional(bool)
-    allow_config_recording            = optional(bool)
-    allow_insecure_access             = optional(bool)
-    allow_log_cloudtrail              = optional(bool)
-    allow_log_elb                     = optional(bool)
-    allow_log_waf                     = optional(bool)
-    allow_public                      = optional(bool)
-    cloudfront_origin_access_identity = optional(string)
-    cors_allowed_headers              = optional(list(string))
-    cors_allowed_methods              = optional(list(string))
-    cors_allowed_origins              = optional(list(string))
-    cors_expose_headers               = optional(list(string))
-    dns_enabled                       = optional(string)
-    dns_from_zone_key                 = optional(string)
-    enable_acceleration               = optional(bool)
-    encryption_algorithm              = optional(string)
-    encryption_disabled               = optional(bool)
-    encryption_kms_master_key_id      = optional(string)
-    enforce_object_ownership          = optional(bool)
-    lifecycle_expiration_days         = optional(number)
-    lifecycle_upload_expiration_days  = optional(number)
+    allow_access_point                 = optional(bool)
+    allow_config_recording             = optional(bool)
+    allow_insecure_access              = optional(bool)
+    allow_log_cloudtrail               = optional(bool)
+    allow_log_elb                      = optional(bool)
+    allow_log_waf                      = optional(bool)
+    allow_public                       = optional(bool)
+    cloudfront_origin_access_identity  = optional(string)
+    cors_allowed_headers               = optional(list(string))
+    cors_allowed_methods               = optional(list(string))
+    cors_allowed_origins               = optional(list(string))
+    cors_expose_headers                = optional(list(string))
+    dns_enabled                        = optional(string)
+    dns_from_zone_key                  = optional(string)
+    enable_acceleration                = optional(bool)
+    encryption_algorithm               = optional(string)
+    encryption_disabled                = optional(bool)
+    encryption_kms_master_key_id       = optional(string)
+    enforce_object_ownership           = optional(bool)
+    lifecycle_expiration_days          = optional(number)
+    lifecycle_expiration_delete_marker = optional(bool)
+    lifecycle_upload_expiration_days   = optional(number)
     lifecycle_transition_map = optional(map(object({
       date          = optional(string)
       days          = optional(number)
@@ -33,9 +34,15 @@ variable "bucket_map" {
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     notification_enable_event_bridge  = optional(bool)
-    policy_identity_create            = optional(bool)
-    policy_resource_create            = optional(bool)
-    requester_pays                    = optional(bool)
+    notification_lambda_map = optional(map(object({
+      event_list          = optional(list(string))
+      filter_prefix       = optional(string)
+      filter_suffix       = optional(string)
+      lambda_function_arn = optional(string)
+    })), {})
+    policy_identity_create = optional(bool)
+    policy_resource_create = optional(bool)
+    requester_pays         = optional(bool)
     sid_map = optional(map(object({
       access = string
       condition_map = optional(map(object({
@@ -156,6 +163,12 @@ variable "bucket_lifecycle_expiration_days_default" {
   default = null
 }
 
+variable "bucket_lifecycle_expiration_delete_marker_default" {
+  type        = bool
+  default     = true
+  description = "Ignored if lifecycle_expiration_days is specified"
+}
+
 variable "bucket_lifecycle_upload_expiration_days_default" {
   type    = number
   default = 5
@@ -185,8 +198,8 @@ variable "bucket_lifecycle_transition_date_default" {
 
 variable "bucket_lifecycle_transition_days_default" {
   type        = number
-  default     = null
-  description = "Must be positive. If neither date nor days is specified the default is 0 days"
+  default     = 0
+  description = "If neither date nor days is specified the default is 0 days."
 }
 
 variable "bucket_lifecycle_transition_storage_class_default" {
@@ -222,6 +235,28 @@ variable "bucket_log_target_prefix_default" {
 variable "bucket_notification_enable_event_bridge_default" {
   type    = bool
   default = false
+}
+
+variable "bucket_notification_lambda_event_list_default" {
+  type = list(string)
+  default = [
+    "s3:ObjectCreated:*",
+  ]
+}
+
+variable "bucket_notification_lambda_filter_prefix_default" {
+  type    = string
+  default = null
+}
+
+variable "bucket_notification_lambda_filter_suffix_default" {
+  type    = string
+  default = null
+}
+
+variable "bucket_notification_lambda_function_arn_default" {
+  type    = string
+  default = null
 }
 
 variable "bucket_policy_identity_create_default" {
