@@ -7,7 +7,7 @@ module "encryption_key" {
 resource "aws_sagemaker_domain" "this_domain" {
   for_each                      = local.create_domain_map
   app_network_access_type       = each.value.app_network_access_type
-  app_security_group_management = each.value.app_security_group_management
+  app_security_group_management = each.value.app_security_group_management == "Customer" ? null : each.value.app_security_group_management # Default causes dirty diff
   auth_mode                     = each.value.auth_mode
   default_space_settings {
     dynamic "custom_file_system_config" {
@@ -44,7 +44,7 @@ resource "aws_sagemaker_domain" "this_domain" {
         }
       }
       dynamic "custom_image" {
-        for_each = each.value.custom_image_config_name != null && each.value.custom_image_name != null ? { this = {} } : {}
+        for_each = each.value.has_custom_image_spec ? { this = {} } : {}
         content {
           app_image_config_name = each.value.custom_image_config_name
           image_name            = each.value.custom_image_name
@@ -89,26 +89,29 @@ resource "aws_sagemaker_domain" "this_domain" {
         lifecycle_config_arns = length(each.value.jupyter_server_lifecycle_config_arn_list) == 0 ? null : each.value.jupyter_server_lifecycle_config_arn_list
       }
     }
-    kernel_gateway_app_settings {
-      dynamic "custom_image" {
-        for_each = each.value.custom_image_config_name != null && each.value.custom_image_name != null ? { this = {} } : {}
-        content {
-          app_image_config_name = each.value.custom_image_config_name
-          image_name            = each.value.custom_image_name
-          image_version_number  = each.value.custom_image_version_number
+    dynamic "kernel_gateway_app_settings" {
+      for_each = each.value.has_custom_image_spec || each.value.has_custom_resource_spec || each.value.has_kernel_gateway_lifecycle_config ? { this = {} } : {}
+      content {
+        dynamic "custom_image" {
+          for_each = each.value.has_custom_image_spec ? { this = {} } : {}
+          content {
+            app_image_config_name = each.value.custom_image_config_name
+            image_name            = each.value.custom_image_name
+            image_version_number  = each.value.custom_image_version_number
+          }
         }
-      }
-      dynamic "default_resource_spec" {
-        for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
-        content {
-          instance_type                 = each.value.resource_default_instance_type
-          lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
-          sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn
-          sagemaker_image_version_alias = each.value.resource_default_sagemaker_image_version_alias
-          sagemaker_image_version_arn   = each.value.resource_default_sagemaker_image_version_arn
+        dynamic "default_resource_spec" {
+          for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
+          content {
+            instance_type                 = each.value.resource_default_instance_type
+            lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
+            sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn
+            sagemaker_image_version_alias = each.value.resource_default_sagemaker_image_version_alias
+            sagemaker_image_version_arn   = each.value.resource_default_sagemaker_image_version_arn
+          }
         }
+        lifecycle_config_arns = each.value.has_kernel_gateway_lifecycle_config ? each.value.kernel_gateway_lifecycle_config_arn_list : null
       }
-      lifecycle_config_arns = length(each.value.kernel_gateway_lifecycle_config_arn_list) == 0 ? null : each.value.kernel_gateway_lifecycle_config_arn_list
     }
     security_groups = each.value.vpc_security_group_id_list
     space_storage_settings {
@@ -163,7 +166,7 @@ resource "aws_sagemaker_domain" "this_domain" {
       }
       built_in_lifecycle_config_arn = each.value.code_editor_built_in_lifecycle_config_arn
       dynamic "custom_image" {
-        for_each = each.value.custom_image_config_name != null && each.value.custom_image_name != null ? { this = {} } : {}
+        for_each = each.value.has_custom_image_spec ? { this = {} } : {}
         content {
           app_image_config_name = each.value.custom_image_config_name
           image_name            = each.value.custom_image_name
@@ -217,7 +220,7 @@ resource "aws_sagemaker_domain" "this_domain" {
         }
       }
       dynamic "custom_image" {
-        for_each = each.value.custom_image_config_name != null && each.value.custom_image_name != null ? { this = {} } : {}
+        for_each = each.value.has_custom_image_spec ? { this = {} } : {}
         content {
           app_image_config_name = each.value.custom_image_config_name
           image_name            = each.value.custom_image_name
@@ -262,50 +265,56 @@ resource "aws_sagemaker_domain" "this_domain" {
         lifecycle_config_arns = length(each.value.jupyter_server_lifecycle_config_arn_list) == 0 ? null : each.value.jupyter_server_lifecycle_config_arn_list
       }
     }
-    kernel_gateway_app_settings {
-      dynamic "custom_image" {
-        for_each = each.value.custom_image_config_name != null && each.value.custom_image_name != null ? { this = {} } : {}
-        content {
-          app_image_config_name = each.value.custom_image_config_name
-          image_name            = each.value.custom_image_name
-          image_version_number  = each.value.custom_image_version_number
+    dynamic "kernel_gateway_app_settings" {
+      for_each = each.value.has_custom_image_spec || each.value.has_custom_resource_spec || each.value.has_kernel_gateway_lifecycle_config ? { this = {} } : {}
+      content {
+        dynamic "custom_image" {
+          for_each = each.value.has_custom_image_spec ? { this = {} } : {}
+          content {
+            app_image_config_name = each.value.custom_image_config_name
+            image_name            = each.value.custom_image_name
+            image_version_number  = each.value.custom_image_version_number
+          }
         }
-      }
-      dynamic "default_resource_spec" {
-        for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
-        content {
-          instance_type                 = each.value.resource_default_instance_type
-          lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
-          sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn
-          sagemaker_image_version_alias = each.value.resource_default_sagemaker_image_version_alias
-          sagemaker_image_version_arn   = each.value.resource_default_sagemaker_image_version_arn
+        dynamic "default_resource_spec" {
+          for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
+          content {
+            instance_type                 = each.value.resource_default_instance_type
+            lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
+            sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn
+            sagemaker_image_version_alias = each.value.resource_default_sagemaker_image_version_alias
+            sagemaker_image_version_arn   = each.value.resource_default_sagemaker_image_version_arn
+          }
         }
+        lifecycle_config_arns = each.value.has_kernel_gateway_lifecycle_config ? each.value.kernel_gateway_lifecycle_config_arn_list : null
       }
-      lifecycle_config_arns = length(each.value.kernel_gateway_lifecycle_config_arn_list) == 0 ? null : each.value.kernel_gateway_lifecycle_config_arn_list
     }
-    r_session_app_settings {
-      dynamic "custom_image" {
-        for_each = each.value.custom_image_config_name != null && each.value.custom_image_name != null ? { this = {} } : {}
-        content {
-          app_image_config_name = each.value.custom_image_config_name
-          image_name            = each.value.custom_image_name
-          image_version_number  = each.value.custom_image_version_number
+    dynamic "r_session_app_settings" {
+      for_each = each.value.has_custom_image_spec || each.value.has_custom_resource_spec ? { this = {} } : {}
+      content {
+        dynamic "custom_image" {
+          for_each = each.value.has_custom_image_spec ? { this = {} } : {}
+          content {
+            app_image_config_name = each.value.custom_image_config_name
+            image_name            = each.value.custom_image_name
+            image_version_number  = each.value.custom_image_version_number
+          }
         }
-      }
-      dynamic "default_resource_spec" {
-        for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
-        content {
-          instance_type                 = each.value.resource_default_instance_type
-          lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
-          sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn
-          sagemaker_image_version_alias = each.value.resource_default_sagemaker_image_version_alias
-          sagemaker_image_version_arn   = each.value.resource_default_sagemaker_image_version_arn
+        dynamic "default_resource_spec" {
+          for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
+          content {
+            instance_type                 = each.value.resource_default_instance_type
+            lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
+            sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn
+            sagemaker_image_version_alias = each.value.resource_default_sagemaker_image_version_alias
+            sagemaker_image_version_arn   = each.value.resource_default_sagemaker_image_version_arn
+          }
         }
       }
     }
     r_studio_server_pro_app_settings {
       access_status = each.value.r_studio_server_pro_access_enabled ? "ENABLED" : "DISABLED"
-      user_group    = each.value.r_studio_server_pro_user_group
+      user_group    = each.value.r_studio_server_pro_user_group # This is dirty with admin, user, null
     }
     security_groups = each.value.vpc_security_group_id_list
     sharing_settings {
@@ -328,10 +337,10 @@ resource "aws_sagemaker_domain" "this_domain" {
         hidden_ml_tools       = each.value.user_studio_web_portal_hidden_ml_tool_list
       }
     }
-    tensor_board_app_settings {
-      dynamic "default_resource_spec" {
-        for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
-        content {
+    dynamic "tensor_board_app_settings" {
+      for_each = each.value.has_custom_resource_spec ? { this = {} } : {}
+      content {
+        default_resource_spec {
           instance_type                 = each.value.resource_default_instance_type
           lifecycle_config_arn          = each.value.resource_default_lifecycle_config_arn
           sagemaker_image_arn           = each.value.resource_default_sagemaker_image_arn

@@ -22,7 +22,7 @@ variable "policy_create_default" {
 
 variable "policy_name_append_default" {
   type    = string
-  default = ""
+  default = "image"
 }
 
 variable "policy_name_infix_default" {

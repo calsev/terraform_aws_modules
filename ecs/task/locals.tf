@@ -32,6 +32,7 @@ locals {
       ecs_cluster_key        = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_exec_enabled       = v.ecs_exec_enabled == null ? var.task_ecs_exec_enabled_default : v.ecs_exec_enabled
       efs_volume_map         = v.efs_volume_map == null ? var.task_efs_volume_map_default : v.efs_volume_map
+      host_volume_map        = v.host_volume_map == null ? var.task_host_volume_map_default : v.host_volume_map
       iam_role_arn_execution = v.iam_role_arn_execution == null ? var.task_iam_role_arn_execution_default == null ? var.iam_data.iam_role_arn_ecs_task_execution : var.task_iam_role_arn_execution_default : v.iam_role_arn_execution
       network_mode           = v.network_mode == null ? var.task_network_mode_default : v.network_mode
       schedule_expression    = v.schedule_expression == null ? var.task_schedule_expression_default : v.schedule_expression

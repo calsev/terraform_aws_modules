@@ -102,7 +102,7 @@ locals {
       listen_ssl_policy = local.l2_map[k].certificate_supported ? v.listen_ssl_policy == null ? var.listener_listen_ssl_policy_default : v.listen_ssl_policy : null
       rule_condition_map = {
         for k_rule, v_rule in local.l2_map[k].rule_condition_map : k_rule => merge(v_rule, {
-          has_default_host_header_pattern = length(v_rule.host_header_pattern_list) == 0 && length(v_rule.http_header_map) == 0 && length(v_rule.http_request_method_list) == 0 && length(v_rule.path_pattern_list) == 0 && length(v_rule.query_string_map) == 0 && length(v_rule.source_ip_list) == 0
+          has_default_host_header_pattern = v_rule.host_header_pattern_list == null && length(v_rule.http_header_map) == 0 && length(v_rule.http_request_method_list) == 0 && length(v_rule.path_pattern_list) == 0 && length(v_rule.query_string_map) == 0 && length(v_rule.source_ip_list) == 0
         })
       }
     }
@@ -122,7 +122,7 @@ locals {
       }
       rule_condition_map = {
         for k_rule, v_rule in local.l3_map[k].rule_condition_map : k_rule => merge(v_rule, {
-          host_header_pattern_list = v_rule.has_default_host_header_pattern ? [local.l3_map[k].acm_certificate_fqdn] : v_rule.host_header_pattern_list
+          host_header_pattern_list = v_rule.has_default_host_header_pattern ? [local.l3_map[k].acm_certificate_fqdn] : v_rule.host_header_pattern_list == null ? [] : v_rule.host_header_pattern_list
         })
       }
     }

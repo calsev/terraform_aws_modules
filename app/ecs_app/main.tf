@@ -1,13 +1,22 @@
 module "elb_target" {
-  source                                = "../../elb/target_group"
-  std_map                               = var.std_map
-  target_health_check_http_path_default = var.target_health_check_http_path_default
-  target_map                            = local.create_target_x_map
-  target_port_default                   = var.service_elb_target_container_port_default
-  target_protocol_http_version_default  = var.target_protocol_http_version_default
-  target_sticky_cookie_enabled_default  = var.target_sticky_cookie_enabled_default
-  vpc_data_map                          = var.vpc_data_map
-  vpc_key_default                       = var.vpc_key_default
+  source                                                    = "../../elb/target_group"
+  std_map                                                   = var.std_map
+  target_health_check_consecutive_fail_threshold_default    = var.target_health_check_consecutive_fail_threshold_default
+  target_health_check_consecutive_success_threshold_default = var.target_health_check_consecutive_success_threshold_default
+  target_health_check_enabled_default                       = var.target_health_check_enabled_default
+  target_health_check_http_path_default                     = var.target_health_check_http_path_default
+  target_health_check_interval_seconds_default              = var.target_health_check_interval_seconds_default
+  target_health_check_no_response_timeout_seconds_default   = var.target_health_check_no_response_timeout_seconds_default
+  target_health_check_port_default                          = var.target_health_check_port_default
+  target_health_check_protocol_default                      = var.target_health_check_protocol_default
+  target_health_check_success_code_list_default             = var.target_health_check_success_code_list_default
+  target_map                                                = local.create_target_x_map
+  target_port_default                                       = var.service_elb_target_container_port_default
+  target_protocol_default                                   = var.target_protocol_default
+  target_protocol_http_version_default                      = var.target_protocol_http_version_default
+  target_sticky_cookie_enabled_default                      = var.target_sticky_cookie_enabled_default
+  vpc_data_map                                              = var.vpc_data_map
+  vpc_key_default                                           = var.vpc_key_default
 }
 
 module "elb_listener" {
@@ -46,6 +55,7 @@ module "elb_listener" {
   listener_dns_alias_enabled_default                           = var.listener_dns_alias_enabled_default
   listener_dns_from_zone_key_default                           = var.listener_dns_from_zone_key_default
   listener_elb_key_default                                     = var.listener_elb_key_default
+  listener_listen_protocol_default                             = var.listener_listen_protocol_default
   listener_map                                                 = local.create_target_x_map
   rule_host_header_pattern_list_default                        = var.rule_host_header_pattern_list_default
   rule_http_header_map_default                                 = var.rule_http_header_map_default
@@ -69,6 +79,7 @@ module "ecs_cluster" {
   compute_key_pair_key_default                      = var.compute_key_pair_key_default
   compute_map                                       = local.create_cluster_map
   compute_provider_instance_warmup_period_s_default = var.compute_provider_instance_warmup_period_s_default
+  compute_user_data_command_list_default            = var.compute_user_data_command_list_default
   elb_target_data_map                               = module.elb_target.data
   iam_data                                          = var.iam_data
   monitor_data                                      = var.monitor_data
@@ -126,6 +137,7 @@ module "ecs_task" {
   task_efs_root_directory_default                   = var.task_efs_root_directory_default
   task_efs_transit_encryption_enabled_default       = var.task_efs_transit_encryption_enabled_default
   task_efs_transit_encryption_port_default          = var.task_efs_transit_encryption_port_default
+  task_host_volume_map_default                      = var.task_host_volume_map_default
   task_iam_role_arn_execution_default               = var.task_iam_role_arn_execution_default
   task_map                                          = local.create_task_map
   task_resource_memory_gib_default                  = var.task_resource_memory_gib_default
@@ -260,6 +272,7 @@ module "code_pipe" {
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
   pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
   pipe_source_repository_id_default            = var.pipe_source_repository_id_default
+  pipe_webhook_enabled_default                 = var.pipe_webhook_enabled_default
   pipe_webhook_enable_github_hook_default      = var.pipe_webhook_enable_github_hook_default
   pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
   pipe_map                                     = local.create_cicd_pipe_map

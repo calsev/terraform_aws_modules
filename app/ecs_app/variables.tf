@@ -134,8 +134,19 @@ variable "app_map" {
       })))
       rule_priority = optional(number)
     })))
-    elb_key                           = optional(string)
-    health_check_http_path            = optional(string)
+    elb_key                                    = optional(string)
+    health_check_consecutive_fail_threshold    = optional(number)
+    health_check_consecutive_success_threshold = optional(number)
+    health_check_enabled                       = optional(bool)
+    health_check_http_path                     = optional(string)
+    health_check_interval_seconds              = optional(number)
+    health_check_no_response_timeout_seconds   = optional(number)
+    health_check_port                          = optional(number)
+    health_check_protocol                      = optional(string)
+    health_check_success_code_list             = optional(list(number))
+    host_volume_map = optional(map(object({
+      host_path = optional(string)
+    })))
     iam_role_arn_execution            = optional(string)
     image_build_arch_list             = optional(list(string))
     image_ecr_repo_key                = optional(string)
@@ -146,6 +157,7 @@ variable "app_map" {
     instance_storage_gib              = optional(number)
     instance_type                     = optional(string)
     key_pair_key                      = optional(string)
+    listen_protocol                   = optional(string)
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
     path_include_env                  = optional(bool)
@@ -165,11 +177,13 @@ variable "app_map" {
     source_code_star_connection_key   = optional(string)
     source_detect_changes             = optional(bool)
     source_repository_id              = optional(string)
+    target_protocol                   = optional(string)
     target_protocol_http_version      = optional(string)
     trigger_map = optional(map(object({
       event_list    = optional(list(string))
       sns_topic_arn = optional(string)
     })))
+    user_data_command_list               = optional(list(string))
     vpc_az_key_list                      = optional(list(string))
     vpc_key                              = optional(string)
     vpc_security_group_key_list          = optional(list(string))
@@ -371,6 +385,11 @@ variable "compute_key_pair_key_default" {
 variable "compute_provider_instance_warmup_period_s_default" {
   type    = number
   default = 300
+}
+
+variable "compute_user_data_command_list_default" {
+  type    = list(string)
+  default = null
 }
 
 variable "deployment_blue_green_termination_wait_minutes_default" {
@@ -688,6 +707,18 @@ variable "listener_elb_key_default" {
   default = null
 }
 
+variable "listener_listen_protocol_default" {
+  type    = string
+  default = "HTTPS"
+  validation {
+    condition = contains([
+      "HTTP", "HTTPS",               # ALB
+      "TCP", "TCP_UDP", "TLS", "UDP" # NLB
+    ], var.listener_listen_protocol_default)
+    error_message = "Invalid protocol"
+  }
+}
+
 variable "monitor_data" {
   type = object({
     alert = object({
@@ -749,6 +780,11 @@ variable "pipe_source_repository_id_default" {
   default = null
 }
 
+variable "pipe_webhook_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "pipe_webhook_enable_github_hook_default" {
   type        = bool
   default     = false
@@ -800,7 +836,7 @@ variable "rule_condition_map_default" {
 
 variable "rule_host_header_pattern_list_default" {
   type        = list(string)
-  default     = []
+  default     = null
   description = "Defaults to fqdn for cert if no other condition is specified"
 }
 
@@ -925,9 +961,84 @@ variable "std_map" {
   })
 }
 
+variable "target_health_check_consecutive_fail_threshold_default" {
+  type    = number
+  default = 3
+  validation {
+    condition     = var.target_health_check_consecutive_fail_threshold_default >= 2 && var.target_health_check_consecutive_fail_threshold_default <= 10
+    error_message = "Invalid fail threshold"
+  }
+}
+
+variable "target_health_check_consecutive_success_threshold_default" {
+  type    = number
+  default = 3
+  validation {
+    condition     = var.target_health_check_consecutive_success_threshold_default >= 2 && var.target_health_check_consecutive_success_threshold_default <= 10
+    error_message = "Invalid success threshold"
+  }
+}
+
+variable "target_health_check_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "target_health_check_http_path_default" {
+  type        = string
+  default     = "/health"
+  description = "Ignored unless health check protocol is HTTP or HTTPS"
+}
+
+variable "target_health_check_interval_seconds_default" {
   type    = string
-  default = "/health"
+  default = 30
+  validation {
+    condition     = var.target_health_check_interval_seconds_default >= 5 && var.target_health_check_interval_seconds_default <= 300
+    error_message = "Invalid health check interval"
+  }
+}
+
+variable "target_health_check_no_response_timeout_seconds_default" {
+  type        = number
+  default     = 6
+  description = "Default is for HTTP"
+  validation {
+    condition     = var.target_health_check_no_response_timeout_seconds_default >= 2 && var.target_health_check_no_response_timeout_seconds_default <= 120
+    error_message = "Invalid health check interval"
+  }
+}
+
+variable "target_health_check_port_default" {
+  type        = number
+  default     = null
+  description = "defaults to traffic-port"
+}
+
+variable "target_health_check_protocol_default" {
+  type        = string
+  default     = null
+  description = "Defaults to HTTP for target_protocol HTTP/HTTPS, all others TCP. Ignored for lambda targets."
+  validation {
+    condition     = var.target_health_check_protocol_default == null ? true : contains(["TCP", "HTTP", "HTTPS"], var.target_health_check_protocol_default)
+    error_message = "Invalid health_check_protocol"
+  }
+}
+
+variable "target_health_check_success_code_list_default" {
+  type        = list(number)
+  default     = [200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 307, 308, 401, 402, 403, 404, 405, 410]
+  description = "Ingored unless health_check_protocol is HTTP/HTTPS"
+}
+
+variable "target_protocol_default" {
+  type        = string
+  default     = "HTTP"
+  description = "Ignored for lambda targets"
+  validation {
+    condition     = contains(["GENEVE", "HTTP", "HTTPS", "TCP", "TCP_UDP", "TLS", "UDP"], var.target_protocol_default)
+    error_message = "Invalid target protocol"
+  }
 }
 
 variable "target_protocol_http_version_default" {
@@ -1123,6 +1234,13 @@ variable "task_efs_transit_encryption_enabled_default" {
 variable "task_efs_transit_encryption_port_default" {
   type    = number
   default = null
+}
+
+variable "task_host_volume_map_default" {
+  type = map(object({
+    host_path = optional(string)
+  }))
+  default = {}
 }
 
 variable "task_iam_role_arn_execution_default" {

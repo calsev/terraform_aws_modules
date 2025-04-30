@@ -117,6 +117,9 @@ variable "task_map" {
       transit_encryption_enabled    = optional(bool)
       transit_encryption_port       = optional(string)
     })))
+    host_volume_map = optional(map(object({
+      host_path = optional(string)
+    })))
     iam_role_arn_execution       = optional(string)
     network_mode                 = optional(string)
     resource_memory_gib          = optional(number)
@@ -325,6 +328,13 @@ variable "task_efs_transit_encryption_enabled_default" {
 variable "task_efs_transit_encryption_port_default" {
   type    = number
   default = null
+}
+
+variable "task_host_volume_map_default" {
+  type = map(object({
+    host_path = optional(string)
+  }))
+  default = {}
 }
 
 variable "task_iam_role_arn_execution_default" {

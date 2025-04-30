@@ -438,8 +438,8 @@ variable "rule_condition_map_default" {
 
 variable "rule_host_header_pattern_list_default" {
   type        = list(string)
-  default     = []
-  description = "Defaults to fqdn for cert if no other condition is specified"
+  default     = null
+  description = "Defaults to fqdn for cert if no other condition is specified. Set to [] to disable."
 }
 
 variable "rule_http_header_map_default" {

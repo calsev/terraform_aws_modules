@@ -2,12 +2,6 @@
 # This file is managed with Terraform!
 
 echo "creating deployment ..."
-ID=$(aws deploy create-deployment \
-    --application-name ${codedeploy_application_name} \
-    --deployment-group-name ${deployment_group_name} \
-    --revision '{"revisionType": "AppSpecContent", "appSpecContent": {"content": "${app_spec_content}", "sha256": "${app_spec_sha256}"}}' \
-    --output text \
-    --query '[deploymentId]')
 
 wait=''
 
@@ -16,6 +10,13 @@ while getopts 'w' flag; do
     w) wait='true' ;;
   esac
 done
+
+ID=$(aws deploy create-deployment \
+    --application-name ${codedeploy_application_name} \
+    --deployment-group-name ${deployment_group_name} \
+    --revision '{"revisionType": "AppSpecContent", "appSpecContent": {"content": "${app_spec_content}", "sha256": "${app_spec_sha256}"}}' \
+    --output text \
+    --query '[deploymentId]')
 
 if [ ! -z "$wait" ]; then
     echo "waiting for deployment $deploymentId to finish ..."

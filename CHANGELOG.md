@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.93.0
+
+### General
+
+* ECS app pipeline deploy is now synchronous
+* ECS app protocols and health check are now parameterized
+* ECR repo policy name now has a default append
+* ECS task host volume support added
+* ELB listener host pattern now distinguishes default and empty set
+* ELB target now uses proxy protocol v1 by default
+* IAM identity-based policy now supports name suffix
+* S3 bucket now supports all name parameters
+* S3 import script now supports bucket name override
+* Bolt added to standard SG set
+
+### Bugfix
+
+* Sagemaker domain diff now cleaner. Due to provider issues, it remains impossible for the diff to be empty.
+
 ## 0.92.0
 
 ### General

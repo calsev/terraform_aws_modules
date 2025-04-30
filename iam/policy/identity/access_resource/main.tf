@@ -17,6 +17,7 @@ module "this_policy" {
   name            = "${var.name}_${each.key}"
   name_infix      = var.name_infix
   name_prefix     = var.name_prefix
+  name_suffix     = var.name_suffix
   std_map         = var.std_map
   tag             = var.tag
 }

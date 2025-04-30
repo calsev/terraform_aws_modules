@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "this_repo" {
-  for_each = local.repo_map
+  for_each = local.lx_map
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -9,7 +9,7 @@ resource "aws_ecr_repository" "this_repo" {
 }
 
 resource "aws_ecr_lifecycle_policy" "this_lifecycle" {
-  for_each = local.repo_map
+  for_each = local.lx_map
   policy = jsonencode(
     {
       rules = each.value.lifecycle_rule_list
@@ -19,7 +19,7 @@ resource "aws_ecr_lifecycle_policy" "this_lifecycle" {
 }
 
 data "aws_iam_policy_document" "base_policy" {
-  for_each                  = local.repo_map
+  for_each                  = local.lx_map
   override_policy_documents = each.value.iam_policy_json == null ? [] : [each.value.iam_policy_json]
   statement {
     actions = [
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "base_policy" {
 }
 
 resource "aws_ecr_repository_policy" "repo_policy" {
-  for_each   = local.repo_map
+  for_each   = local.lx_map
   policy     = each.value.iam_policy_json == null ? data.aws_iam_policy_document.base_policy[each.key].json : each.value.iam_policy_json
   repository = aws_ecr_repository.this_repo[each.key].id
 }
