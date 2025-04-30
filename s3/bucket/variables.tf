@@ -33,6 +33,10 @@ variable "bucket_map" {
     log_target_prefix                 = optional(string)
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
+    name_override                     = optional(string)
+    name_prefix                       = optional(string)
+    name_prepend                      = optional(string)
+    name_suffix                       = optional(string)
     notification_enable_event_bridge  = optional(bool)
     notification_lambda_map = optional(map(object({
       event_list          = optional(list(string))
@@ -330,14 +334,39 @@ variable "dns_data" {
   default = null
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
 variable "name_include_app_fields_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, the Terraform project context will be included in the name"
 }
 
 variable "name_infix_default" {
   type    = bool
   default = true
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "std_map" {

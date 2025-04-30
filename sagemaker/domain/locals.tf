@@ -100,7 +100,9 @@ locals {
   l2_map = {
     for k, v in local.l0_map : k => {
       has_custom_file_system_config       = local.l1_map[k].efs_custom_file_system_id != null && local.l1_map[k].efs_custom_file_system_path != null
+      has_custom_image_spec               = local.l1_map[k].custom_image_config_name != null && local.l1_map[k].custom_image_name != null
       has_custom_resource_spec            = local.l1_map[k].resource_default_instance_type != null || local.l1_map[k].resource_default_lifecycle_config_arn != null || local.l1_map[k].resource_default_sagemaker_image_arn != null || local.l1_map[k].resource_default_sagemaker_image_version_alias != null || local.l1_map[k].resource_default_sagemaker_image_version_arn != null
+      has_kernel_gateway_lifecycle_config = length(local.l1_map[k].kernel_gateway_lifecycle_config_arn_list) != 0
       has_studio_web_portal_settings      = length(local.l1_map[k].user_studio_web_portal_hidden_app_type_list) != 0 || length(local.l1_map[k].user_studio_web_portal_hidden_instance_type_list) != 0 || length(local.l1_map[k].user_studio_web_portal_hidden_ml_tool_list) != 0
       iam_policy_arn_s3_bucket_read_write = local.l1_map[k].s3_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].s3_bucket_key].policy.iam_policy_arn_map["read_write"]
       s3_bucket_name                      = local.l1_map[k].s3_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].s3_bucket_key].name_effective

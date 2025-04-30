@@ -191,6 +191,7 @@ locals {
       image_build_arch_list            = v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
       image_ecr_repo_key               = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
       image_tag_base                   = v.image_tag_base == null ? var.build_image_tag_base_default : v.image_tag_base
+      listen_protocol                  = v.listen_protocol == null ? var.listener_listen_protocol_default : v.listen_protocol
       path_include_env                 = v.path_include_env == null ? var.app_path_include_env_default : v.path_include_env
       path_repo_root_to_spec_directory = v.path_repo_root_to_spec_directory == null ? var.app_path_repo_root_to_spec_directory_default : v.path_repo_root_to_spec_directory
       path_terraform_app_to_repo_root  = trim(v.path_terraform_app_to_repo_root == null ? var.app_path_terraform_app_to_repo_root_default : v.path_terraform_app_to_repo_root, "/")
@@ -264,9 +265,9 @@ locals {
               action_type  = "forward"
             }
           })
-          rule_condition_map = merge(v_lt.rule_condition_map == null ? var.rule_condition_map_default : v_lt.rule_condition_map, {
+          rule_condition_map = merge(v_lt.rule_condition_map == null ? var.rule_condition_map_default : v_lt.rule_condition_map, startswith(local.l1_map[k].listen_protocol, "HTTP") ? {
             host_match = {}
-          })
+          } : {})
         })
       }
     }

@@ -21,8 +21,11 @@ module "policy_map" {
 }
 
 locals {
+  l0_map = {
+    for k, v in var.repo_map : k => v
+  }
   l1_map = {
-    for k, v in var.repo_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
       iam_policy_json     = v.iam_policy_json == null ? var.repo_iam_policy_json_default : v.iam_policy_json
       image_tag_list      = v.image_tag_list == null ? var.repo_image_tag_list_default : v.image_tag_list
       image_tag_max_count = v.image_tag_max_count == null ? var.repo_image_tag_max_count_default : v.image_tag_max_count
@@ -30,7 +33,7 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.repo_map : k => {
+    for k, v in local.l0_map : k => {
       iam_policy_doc = local.l1_map[k].iam_policy_json == null ? null : jsondecode(local.l1_map[k].iam_policy_json)
       lifecycle_rule_list = concat(local.l1_map[k].lifecycle_rule_list, [
         for i_tag, tag in local.l1_map[k].image_tag_list : {
@@ -56,19 +59,19 @@ locals {
       )
     }
   }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
   output_data = {
-    for k, v in local.repo_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       {
-        for k_repo, v_repo in v : k_repo => v_repo if !contains(["iam_policy_json"], k_repo)
+        for k_attr, v_attr in v : k_attr => v_attr if !contains(["iam_policy_json"], k_attr)
       },
       module.repo_policy[k].data,
       {
         repo_arn = aws_ecr_repository.this_repo[k].arn
         repo_url = aws_ecr_repository.this_repo[k].repository_url
-      },
+      }
     )
-  }
-  repo_map = {
-    for k, v in var.repo_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
 }

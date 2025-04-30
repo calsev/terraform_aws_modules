@@ -151,8 +151,9 @@ variable "target_load_balancing_cross_zone_mode_default" {
 }
 
 variable "target_nlb_enable_proxy_protocol_v2_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = false
+  description = "Make sure target supports protocol headers before enabling this."
 }
 
 variable "target_nlb_preserve_client_ip_default" {

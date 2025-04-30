@@ -53,6 +53,13 @@ resource "aws_ecs_task_definition" "this_task" {
       name = volume.key
     }
   }
+  dynamic "volume" {
+    for_each = each.value.host_volume_map
+    content {
+      host_path = volume.value.host_path
+      name      = volume.key
+    }
+  }
 }
 
 module "alert_trigger" {

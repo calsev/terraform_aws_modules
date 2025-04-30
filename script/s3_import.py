@@ -4,10 +4,11 @@ Example
 python script/s3_import.py stack/inf/s3 aws-profile-name
 """
 
-import argparse
 import os
 import shlex
-from typing import Optional
+import typing
+
+import typer
 
 from .plan import get_plan_resources, resource_regex, run_command_as_process
 
@@ -39,57 +40,61 @@ resource_type_priority_regex_map = {
 }
 
 
-def parse_args(args_in: Optional[list[str]] = None) -> argparse.Namespace:
-    args = argparse.ArgumentParser()
-    args.add_argument(
-        "path", type=str, help="The relative path to the app, e.g. stack/inf/s3"
-    )
-    args.add_argument("profile", type=str, help="The name of the AWS profile to use")
-    args.add_argument("--var-file", type=str)
-    parsed_args = args.parse_args(args_in)
-    return parsed_args
+def get_bucket_key(
+    resource_name: str,
+) -> str:
+    parser = shlex.shlex(resource_name)
+    parser.whitespace = "."
+    bucket_segments = list(parser)
+    print(bucket_segments)
+    bucket_index = bucket_segments.index("this_bucket")
+    bucket_key = bucket_segments[bucket_index + 2]  # [ then key
+    if bucket_key[0] != '"' or bucket_key[-1] != '"':
+        raise ValueError(
+            f"Could not understand bucket key '{resource_name}', {bucket_segments}, {bucket_key}"
+        )
+    bucket_key = bucket_key[1:-1]
+    print(f"Found bucket {bucket_key}")
+    return bucket_key
 
 
 def build_bucket_map(
+    bucket_name: str | None,
     resource_list: list[str],
-) -> dict[str, list[str]]:
-    bucket_map: dict[str, list[str]] = {}
+) -> dict[str, dict[str, typing.Any]]:
+    bucket_map: dict[str, dict[str, typing.Any]] = {}
     for resource_name in resource_list:
         if "aws_s3_bucket.this_bucket" in resource_name:
-            parser = shlex.shlex(resource_name)
-            parser.whitespace = "."
-            bucket_segments = list(parser)
-            print(bucket_segments)
-            bucket_index = bucket_segments.index("this_bucket")
-            bucket_name = bucket_segments[bucket_index + 2]  # [ then name
-            if bucket_name[0] != '"' or bucket_name[-1] != '"':
-                raise ValueError(
-                    f"Could not understand bucket name '{resource_name}', {bucket_segments}, {bucket_name}"
-                )
-            bucket_name = bucket_name[1:-1]
-            print(f"Found bucket {bucket_name}")
-            bucket_map[bucket_name] = []  # TODO: This handles only one name
+            bucket_key = get_bucket_key(resource_name=resource_name)
+            bucket_map[bucket_key] = {
+                "bucket_name": bucket_name or bucket_key,
+                "resource_list": [],
+            }
     return bucket_map
 
 
 def map_resources(
     rel_path: str,
-    var_file: Optional[str],
-) -> dict[str, list[str]]:
+    var_file: str | None,
+    bucket_name: str | None,
+) -> dict[str, dict[str, typing.Any]]:
     change_to_resource_list, _ = get_plan_resources(rel_path, var_file, {}, [])
     resource_list = change_to_resource_list["created"]
-    bucket_map = build_bucket_map(resource_list)
+    bucket_map = build_bucket_map(bucket_name, resource_list)
     for resource_name in resource_list:
-        for bucket_name, name_map in bucket_map.items():
-            if bucket_name in resource_name:
-                name_map.append(resource_name)
+        for bucket_key, bucket_data in bucket_map.items():
+            if bucket_key in resource_name:
+                bucket_data["resource_list"].append(resource_name)
                 break
     print(f"Bucket map:\n{bucket_map}")
     return bucket_map
 
 
 def import_one_resource(
-    rel_path: str, var_file: Optional[str], bucket_name: str, resource_name: str
+    rel_path: str,
+    var_file: str | None,
+    bucket_name: str,
+    resource_name: str,
 ) -> None:
     if "aws_s3_bucket_acl" in resource_name:
         bucket_name = f"{bucket_name},private"
@@ -101,28 +106,43 @@ def import_one_resource(
 
 
 def import_all_resources(
-    rel_path: str, var_file: Optional[str], bucket_map: dict[str, list[str]]
+    rel_path: str,
+    var_file: str | None,
+    bucket_map: dict[str, dict[str, typing.Any]],
 ) -> None:
     var_file = f"--var-file {var_file}.tfvars" if var_file else ""
-    for bucket_name, resource_list in bucket_map.items():
-        for resource_name in resource_list:
-            import_one_resource(rel_path, var_file, bucket_name, resource_name)
+    for bucket_data in bucket_map.values():
+        for resource_name in bucket_data["resource_list"]:
+            import_one_resource(
+                rel_path, var_file, bucket_data["bucket_name"], resource_name
+            )
 
 
 def import_buckets(
-    rel_path: str, aws_profile: str, var_file: Optional[str] = None
+    rel_path: str,
+    aws_profile: str,
+    var_file: str | None = None,
+    bucket_name: str | None = None,
 ) -> None:
     os.environ["AWS_PROFILE"] = aws_profile
     module_name = rel_path.split("/")[-1]
     print(f"Importing buckets for path {rel_path}, module {module_name}")
-    bucket_map = map_resources(rel_path, var_file)
+    bucket_map = map_resources(rel_path, var_file, bucket_name)
     import_all_resources(rel_path, var_file, bucket_map)
 
 
-def main(args_in: Optional[list[str]] = None) -> None:
-    args = parse_args(args_in)
-    import_buckets(args.path, args.profile, args.var_file)
+def main(
+    rel_path: str = typer.Argument(),
+    aws_profile: str = typer.Argument(),
+    var_file: str | None = typer.Option(
+        None,
+    ),
+    bucket_name: str | None = typer.Option(
+        None,
+    ),
+) -> None:
+    import_buckets(**locals())
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

@@ -213,6 +213,30 @@ variable "sg_map_internal" {
         }
       }
     }
+    bolt_in = {
+      rule_map = {
+        bolt = {
+          cidr_blocks      = null
+          from_port        = 7687
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
+    bolt_alt_in = {
+      rule_map = {
+        bolt = {
+          cidr_blocks      = null
+          from_port        = 7688
+          ipv6_cidr_blocks = null
+          protocol         = null
+          to_port          = null
+          type             = null
+        }
+      }
+    }
     http_in = {
       rule_map = {
         http = {

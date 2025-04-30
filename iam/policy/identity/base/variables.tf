@@ -11,13 +11,19 @@ variable "name" {
 variable "name_infix" {
   type        = bool
   default     = true
-  description = "If true, standard resource prefix and suffix will be applied to the role"
+  description = "If true, standard resource prefix and suffix context will be applied to the policy"
 }
 
 variable "name_prefix" {
   type        = string
   default     = ""
-  description = "If provided, will be put in front of the standard prefix for the role name."
+  description = "Prepended before context prefix"
+}
+
+variable "name_suffix" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "std_map" {

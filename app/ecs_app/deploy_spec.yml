@@ -3,4 +3,4 @@ version: 0.2
 phases:
   build:
     commands:
-      - ./${path_repo_root_to_deploy_script}
+      - ./${path_repo_root_to_deploy_script} -w
