@@ -1,3 +1,15 @@
+variable "bucket_lifecycle_version_count_default" {
+  type        = number
+  default     = 0
+  description = "Both version count and days must be satisfied to expire an object"
+}
+
+variable "bucket_lifecycle_version_expiration_days_default" {
+  type        = number
+  default     = 14
+  description = "Both version count and days must be satisfied to expire an object"
+}
+
 variable "bucket_log_target_bucket_name_default" {
   type    = string
   default = null
@@ -23,6 +35,16 @@ variable "bucket_notification_lambda_filter_suffix_default" {
 variable "bucket_notification_lambda_function_arn_default" {
   type    = string
   default = null
+}
+
+variable "bucket_website_error_document_default" {
+  type    = string
+  default = "error.html"
+}
+
+variable "bucket_website_index_document_default" {
+  type    = string
+  default = "index.html"
 }
 
 variable "cdn_global_data" {

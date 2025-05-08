@@ -63,7 +63,6 @@ locals {
       dns_enabled                       = v.dns_enabled == null ? var.bucket_dns_enabled_default : v.dns_enabled
       dns_from_zone_key                 = v.dns_from_zone_key == null ? var.bucket_dns_from_zone_key_default : v.dns_from_zone_key
       enable_acceleration               = v.enable_acceleration == null ? var.bucket_enable_acceleration_default : v.enable_acceleration
-      encryption_algorithm              = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default : v.encryption_algorithm
       encryption_kms_master_key_id      = v.encryption_kms_master_key_id == null ? var.bucket_encryption_kms_master_key_id_default : v.encryption_kms_master_key_id
       encryption_disabled               = v.encryption_disabled == null ? var.bucket_encryption_disabled_default : v.encryption_disabled
       enforce_object_ownership          = v.enforce_object_ownership == null ? var.bucket_enforce_object_ownership_default : v.enforce_object_ownership
@@ -90,11 +89,14 @@ locals {
       versioning_enabled            = v.versioning_enabled == null ? var.bucket_versioning_enabled_default : v.versioning_enabled
       versioning_mfa_delete_enabled = v.versioning_mfa_delete_enabled == null ? var.bucket_versioning_mfa_delete_enabled_default : v.versioning_mfa_delete_enabled
       website_enabled               = v.website_enabled == null ? var.bucket_website_enabled_default : v.website_enabled
+      website_error_document        = v.website_error_document == null ? var.bucket_website_error_document_default : v.website_error_document
+      website_index_document        = v.website_index_document == null ? var.bucket_website_index_document_default : v.website_index_document
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
       cors_allowed_origins               = concat(local.l1_map[k].dns_enabled ? ["http://${local.l1_map[k].name_simple}"] : [], local.l1_map[k].cors_allowed_origins)
+      encryption_algorithm               = v.encryption_algorithm == null ? var.bucket_encryption_algorithm_default == null ? local.l1_map[k].encryption_kms_master_key_id == null ? "AES256" : "aws:kms" : var.bucket_encryption_algorithm_default : v.encryption_algorithm
       lifecycle_expiration_delete_marker = local.l1_map[k].lifecycle_expiration_days == null ? v.lifecycle_expiration_delete_marker == null ? var.bucket_lifecycle_expiration_delete_marker_default : v.lifecycle_expiration_delete_marker : null
       lifecycle_has_version_policy       = local.l1_map[k].lifecycle_version_count != null || local.l1_map[k].lifecycle_version_expiration_days != null
       lifecycle_transition_map = {

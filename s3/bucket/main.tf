@@ -82,7 +82,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
     dynamic "noncurrent_version_expiration" {
       for_each = each.value.lifecycle_has_version_policy ? { this = {} } : {}
       content {
-        newer_noncurrent_versions = each.value.lifecycle_version_count
+        newer_noncurrent_versions = each.value.lifecycle_version_count == 0 ? null : each.value.lifecycle_version_count
         noncurrent_days           = each.value.lifecycle_version_expiration_days
       }
     }

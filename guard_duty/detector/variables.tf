@@ -1,30 +1,69 @@
 variable "detector_map" {
   type = map(object({
-    detect_ec2_ebs_malware_enabled      = optional(bool)
-    detect_kubernetes_audit_log_enabled = optional(bool)
-    detect_s3_log_enabled               = optional(bool)
-    finding_publishing_frequency        = optional(string)
-    is_enabled                          = optional(bool)
-    name_append                         = optional(bool)
-    name_include_app_fields             = optional(bool)
-    name_infix                          = optional(bool)
-    name_prepend                        = optional(bool)
+    feature_map = optional(map(object({
+      add_on_list = optional(list(object({
+        enabled = optional(bool, true)
+        name    = string
+      })), [])
+      enabled = optional(bool, true)
+    })))
+    finding_publishing_frequency = optional(string)
+    is_enabled                   = optional(bool)
+    name_append                  = optional(bool)
+    name_include_app_fields      = optional(bool)
+    name_infix                   = optional(bool)
+    name_prepend                 = optional(bool)
   }))
 }
 
-variable "detector_detect_ec2_ebs_malware_enabled_default" {
-  type    = bool
-  default = true
-}
-
-variable "detector_detect_kubernetes_audit_log_enabled_default" {
-  type    = bool
-  default = true
-}
-
-variable "detector_detect_s3_log_enabled_default" {
-  type    = bool
-  default = true
+variable "detector_feature_map_default" {
+  type = map(object({
+    add_on_list = optional(list(object({
+      enabled = optional(bool, true) # Ignored if the feature is not enabled
+      name    = string
+    })), [])
+    enabled = optional(bool, true)
+  }))
+  default = {
+    EBS_MALWARE_PROTECTION = {
+      add_on_list = []
+      enabled     = true
+    }
+    EKS_AUDIT_LOGS = {
+      add_on_list = []
+      enabled     = true
+    }
+    LAMBDA_NETWORK_LOGS = {
+      add_on_list = []
+      enabled     = true
+    }
+    RDS_LOGIN_EVENTS = {
+      add_on_list = []
+      enabled     = true
+    }
+    RUNTIME_MONITORING = {
+      add_on_list = [
+        # Order here is peculiar to provider
+        {
+          enabled = true
+          name    = "EKS_ADDON_MANAGEMENT"
+        },
+        {
+          enabled = true
+          name    = "ECS_FARGATE_AGENT_MANAGEMENT"
+        },
+        {
+          enabled = true
+          name    = "EC2_AGENT_MANAGEMENT"
+        },
+      ]
+      enabled = true
+    }
+    S3_DATA_EVENTS = {
+      add_on_list = []
+      enabled     = true
+    }
+  }
 }
 
 variable "detector_finding_publishing_frequency_default" {

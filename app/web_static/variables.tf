@@ -3,6 +3,16 @@ variable "bucket_log_target_bucket_name_default" {
   default = null
 }
 
+variable "bucket_website_error_document_default" {
+  type    = string
+  default = "error.html"
+}
+
+variable "bucket_website_index_document_default" {
+  type    = string
+  default = "index.html"
+}
+
 variable "build_environment_type_default" {
   type    = string
   default = "cpu-arm-amazon-small"
