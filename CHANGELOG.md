@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.95.1
+
+### General
+
+* ELB listener support for alias without cert
+
 ## 0.95.0
 
 ### General

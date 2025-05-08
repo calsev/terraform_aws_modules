@@ -184,6 +184,7 @@ locals {
         acm_certificate_key = null
         container_name      = null
         container_port      = null
+        dns_alias_fqdn      = null
         listen_port         = null
         rule_condition_map  = null
         rule_priority       = null

@@ -21,6 +21,7 @@ variable "listener_map" {
   type = map(object({
     acm_certificate_key     = string # If null, no cert will be created
     dns_alias_enabled       = optional(bool)
+    dns_alias_fqdn          = optional(string) # Defaults to DNS name of certificate
     elb_key                 = string
     elb_listener_arn        = optional(string)
     dns_from_zone_key       = optional(string)
