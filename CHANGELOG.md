@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.94.0
+
+### General
+
+* Guard Duty Detector module now uses aws_guardduty_detector_feature instead of obsolete datasources
+* S3 website docuemnts parameterized
+* S3 default encryption algorithm now synthesized per encryption method
+
+### Bugfix
+
+* S3 default lifecycle rules now actually expire non-current objects
+
 ## 0.93.0
 
 ### General

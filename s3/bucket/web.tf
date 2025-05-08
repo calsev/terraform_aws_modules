@@ -15,11 +15,11 @@ resource "aws_s3_bucket_website_configuration" "this_web_config" {
   for_each = local.create_web_map
   bucket   = aws_s3_bucket.this_bucket[each.key].bucket
   error_document {
-    key = "error.html"
+    key = each.value.website_error_document
   }
   expected_bucket_owner = var.std_map.aws_account_id
   index_document {
-    suffix = "index.html"
+    suffix = each.value.website_index_document
   }
 }
 

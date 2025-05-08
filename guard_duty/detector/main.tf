@@ -1,23 +1,22 @@
 resource "aws_guardduty_detector" "this_detector" {
   for_each = local.lx_map
-  datasources {
-    kubernetes {
-      audit_logs {
-        enable = each.value.detect_kubernetes_audit_log_enabled
-      }
-    }
-    malware_protection {
-      scan_ec2_instance_with_findings {
-        ebs_volumes {
-          enable = each.value.detect_ec2_ebs_malware_enabled
-        }
-      }
-    }
-    s3_logs {
-      enable = each.value.detect_s3_log_enabled
-    }
-  }
+  # datasources # obsolete
   enable                       = each.value.is_enabled
   finding_publishing_frequency = each.value.finding_publishing_frequency
   tags                         = each.value.tags
+}
+
+
+resource "aws_guardduty_detector_feature" "this_feature" {
+  for_each = local.create_feature_x_map
+  dynamic "additional_configuration" {
+    for_each = each.value.add_on_list
+    content {
+      name   = additional_configuration.value.name
+      status = additional_configuration.value.enabled ? "ENABLED" : "DISABLED"
+    }
+  }
+  detector_id = each.value.detector_id
+  name        = each.value.k_feat
+  status      = each.value.enabled ? "ENABLED" : "DISABLED"
 }

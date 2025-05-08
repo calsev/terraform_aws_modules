@@ -62,6 +62,8 @@ variable "bucket_map" {
     versioning_enabled            = optional(bool)
     versioning_mfa_delete_enabled = optional(bool)
     website_enabled               = optional(bool)
+    website_error_document        = optional(string)
+    website_index_document        = optional(string)
   }))
 }
 
@@ -142,8 +144,12 @@ variable "bucket_enable_acceleration_default" {
 
 variable "bucket_encryption_algorithm_default" {
   type        = string
-  default     = "AES256"
-  description = "The two options are AES256 and aws:kms. KMS entails additional charges."
+  default     = null
+  description = "Defaults to aws:kms is a kms key is specified, AES256 otherwise. KMS entails additional charges."
+  validation {
+    condition     = var.bucket_encryption_algorithm_default == null ? true : contains(["AES256", "aws:kms"], var.bucket_encryption_algorithm_default)
+    error_message = "Invalid storage class"
+  }
 }
 
 variable "bucket_encryption_disabled_default" {
@@ -216,13 +222,15 @@ variable "bucket_lifecycle_transition_storage_class_default" {
 }
 
 variable "bucket_lifecycle_version_count_default" {
-  type    = number
-  default = 1
+  type        = number
+  default     = 0
+  description = "Both version count and days must be satisfied to expire an object"
 }
 
 variable "bucket_lifecycle_version_expiration_days_default" {
-  type    = number
-  default = 7
+  type        = number
+  default     = 183
+  description = "Both version count and days must be satisfied to expire an object"
 }
 
 variable "bucket_log_target_bucket_name_default" {
@@ -323,6 +331,16 @@ variable "bucket_website_enabled_default" {
   type        = bool
   default     = true
   description = "allow_public AND website_enabled are required for public web access. Otherwise, if website_enabled then the website will be private (use resource policy for CIDR access). Website access automatically decrypts objects."
+}
+
+variable "bucket_website_error_document_default" {
+  type    = string
+  default = "error.html"
+}
+
+variable "bucket_website_index_document_default" {
+  type    = string
+  default = "index.html"
 }
 
 variable "dns_data" {
