@@ -46,10 +46,11 @@ variable "pipe_map" {
       }))
       name = string
     }))
-    variable_map               = optional(map(string))
-    webhook_enabled            = optional(bool)
-    webhook_enable_github_hook = optional(bool)
-    webhook_event_list         = optional(list(string))
+    trigger_pull_request_event_list = optional(list(string))
+    variable_map                    = optional(map(string))
+    webhook_enabled                 = optional(bool)
+    webhook_enable_github_hook      = optional(bool)
+    webhook_event_list              = optional(list(string))
     webhook_filter_map = optional(map(object({ # This will be merged over the filter for branch at source_branch
       json_path    = string
       match_equals = string
@@ -134,6 +135,15 @@ variable "pipe_stage_provider_default" {
 variable "pipe_stage_version_default" {
   type    = string
   default = "1"
+}
+
+variable "pipe_trigger_pull_request_event_list_default" {
+  type    = list(string)
+  default = []
+  validation {
+    condition     = length(setsubtract(toset(var.pipe_trigger_pull_request_event_list_default), toset(["CLOSED", "OPEN", "UPDATED"]))) == 0
+    error_message = "Invalid event list"
+  }
 }
 
 variable "pipe_variable_map_default" {

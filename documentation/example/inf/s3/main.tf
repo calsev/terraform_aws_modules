@@ -32,11 +32,12 @@ module "oregon_bucket" {
   bucket_log_target_bucket_name_default = "example-log"
   bucket_map = {
     aws_waf_logs_example = { # Must start with prefix
-      allow_log_waf             = true
-      enforce_object_ownership  = false # Not allowed for CDN logging
-      lifecycle_expiration_days = 7     # This is for CDN logs, so keep it short
-      name_include_app_fields   = false # Must start with prefix
-      name_infix                = true
+      allow_log_waf                     = true
+      enforce_object_ownership          = false # Not allowed for CDN logging
+      lifecycle_expiration_days         = 7     # This is for CDN logs, so keep it short
+      lifecycle_version_expiration_days = 1
+      name_include_app_fields           = false # Must start with prefix
+      name_infix                        = true
     }
     example_backup_cal    = {}
     example_backup_marina = {}
@@ -44,15 +45,17 @@ module "oregon_bucket" {
     example_data          = {}
     example_deploy        = {}
     example_log = {
-      allow_config_recording    = true
-      allow_log_cloudtrail      = true
-      allow_log_elb             = true
-      lifecycle_expiration_days = 30
+      allow_config_recording            = true
+      allow_log_cloudtrail              = true
+      allow_log_elb                     = true
+      lifecycle_expiration_days         = 30
+      lifecycle_version_expiration_days = 1
     }
     example_log_public = {
-      allow_public              = true
-      encryption_disabled       = false # Use only website to access
-      lifecycle_expiration_days = 30
+      allow_public                      = true
+      encryption_disabled               = false # Use only website to access
+      lifecycle_expiration_days         = 30
+      lifecycle_version_expiration_days = 1
     }
     example_package = {}
   }

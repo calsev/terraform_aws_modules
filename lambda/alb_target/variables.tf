@@ -22,6 +22,12 @@ variable "elb_data_map" {
   }))
 }
 
+variable "lambda_data_map" {
+  type = map(object({
+    lambda_arn = string
+  }))
+}
+
 variable "listener_acm_certificate_key_default" {
   type        = string
   default     = null
@@ -89,8 +95,8 @@ variable "rule_condition_map_default" {
 
 variable "rule_host_header_pattern_list_default" {
   type        = list(string)
-  default     = []
-  description = "Defaults to fqdn for cert if no other condition is specified"
+  default     = null
+  description = "Defaults to fqdn for cert if no other condition is specified. Set to [] to disable."
 }
 
 variable "rule_http_header_map_default" {
@@ -141,7 +147,7 @@ variable "target_map" {
     action_order                   = optional(number)
     dns_from_zone_key              = optional(string)
     elb_key                        = optional(string)
-    lambda_arn                     = string
+    lambda_key                     = string
     lambda_permission_name_prepend = optional(string)
     name_append                    = optional(string)
     name_infix                     = optional(bool)
