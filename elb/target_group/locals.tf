@@ -33,7 +33,6 @@ locals {
       sticky_cookie_enabled                       = v.sticky_cookie_enabled == null ? var.target_sticky_cookie_enabled_default : v.sticky_cookie_enabled
       sticky_cookie_name                          = v.sticky_cookie_name == null ? var.target_sticky_cookie_name_default : v.sticky_cookie_name
       target_ip_use_v6                            = v.target_ip_use_v6 == null ? var.target_ip_use_v6_default : v.target_ip_use_v6
-      target_port                                 = v.target_port == null ? var.target_port_default : v.target_port
       target_protocol                             = v.target_protocol == null ? var.target_protocol_default : v.target_protocol
       target_type                                 = v.target_type == null ? var.target_type_default : v.target_type
       target_warm_up_seconds                      = v.target_warm_up_seconds == null ? var.target_warm_up_seconds_default : v.target_warm_up_seconds
@@ -49,6 +48,7 @@ locals {
       nlb_terminate_connection_on_unhealthy              = local.l1_map[k].target_protocol == "UDP" ? false : v.nlb_terminate_connection_on_unhealthy == null ? var.target_nlb_terminate_connection_on_unhealthy_default : v.nlb_terminate_connection_on_unhealthy
       sticky_type                                        = v.sticky_type == null ? var.target_sticky_type_default == null ? startswith(local.l1_map[k].target_protocol, "HTTP") ? "lb_cookie" : "source_ip" : var.target_sticky_type_default : v.sticky_type
       sticky_supported                                   = local.l1_map[k].target_type != "lambda"
+      target_port                                        = local.l1_map[k].target_type == "lambda" ? null : v.target_port == null ? var.target_port_default : v.target_port
       target_protocol_http_version                       = startswith(local.l1_map[k].target_protocol, "HTTP") ? v.target_protocol_http_version == null ? var.target_protocol_http_version_default : v.target_protocol_http_version : null
     }
   }

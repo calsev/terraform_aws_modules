@@ -12,10 +12,11 @@ module "s3_bucket" {
   bucket_log_target_bucket_name_default = "aws-waf-logs-example-global"
   bucket_map = {
     aws_waf_logs_example_global = { # Must start with prefix
-      allow_log_waf             = true
-      enforce_object_ownership  = false # Not allowed for CDN logging
-      lifecycle_expiration_days = 7     # This is for CDN logs, so keep it short
-      name_infix                = false
+      allow_log_waf                     = true
+      enforce_object_ownership          = false # Not allowed for CDN logging
+      lifecycle_expiration_days         = 7     # This is for CDN logs, so keep it short
+      lifecycle_version_expiration_days = 1
+      name_infix                        = false
     }
   }
   std_map = module.com_lib.std_map

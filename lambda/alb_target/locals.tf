@@ -26,6 +26,7 @@ locals {
           action_type  = "forward"
         }
       }
+      lambda_arn = var.lambda_data_map[v.lambda_key].lambda_arn
     })
   }
   l2_map = {

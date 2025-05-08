@@ -361,6 +361,8 @@ shows examples of lambda functions from several sources
 * Use existing archive and create S3 archive
 * Use existing S3 archive
 
+Also demonstrated is a Lambda target for ALB.
+
 ### API Gateway
 
 #### Integrations

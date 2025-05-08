@@ -65,11 +65,12 @@ locals {
           }
         })
       ]
-      source_bucket      = var.ci_cd_account_data.bucket.name_effective
-      variable_map       = v.variable_map == null ? var.pipe_variable_map_default : v.variable_map
-      webhook_enabled    = v.webhook_enabled == null ? var.pipe_webhook_enabled_default : v.webhook_enabled
-      webhook_event_list = v.webhook_event_list == null ? var.pipe_webhook_event_list_default : v.webhook_event_list
-      webhook_filter_map = v.webhook_filter_map == null ? var.pipe_webhook_filter_map_default : v.webhook_filter_map
+      source_bucket                   = var.ci_cd_account_data.bucket.name_effective
+      trigger_pull_request_event_list = v.trigger_pull_request_event_list == null ? var.pipe_trigger_pull_request_event_list_default : v.trigger_pull_request_event_list
+      variable_map                    = v.variable_map == null ? var.pipe_variable_map_default : v.variable_map
+      webhook_enabled                 = v.webhook_enabled == null ? var.pipe_webhook_enabled_default : v.webhook_enabled
+      webhook_event_list              = v.webhook_event_list == null ? var.pipe_webhook_event_list_default : v.webhook_event_list
+      webhook_filter_map              = v.webhook_filter_map == null ? var.pipe_webhook_filter_map_default : v.webhook_filter_map
       webhook_filter_map_default = {
         source_branch = {
           json_path    = "$.ref"

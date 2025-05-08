@@ -34,7 +34,10 @@ resource "aws_codepipeline" "this_pipeline" {
       run_order = 1
       version   = "1"
     }
+    # before_entry
     name = "Source"
+    # on_failure
+    # on_success
   }
   dynamic "stage" {
     for_each = each.value.stage_list
@@ -56,10 +59,50 @@ resource "aws_codepipeline" "this_pipeline" {
           version          = action.value.version
         }
       }
+      # before_entry
       name = stage.value.name
+      # on_failure
+      # on_success
     }
   }
   tags = each.value.tags
+  dynamic "trigger" {
+    for_each = each.value.pipeline_type == "V2" ? { this = {} } : {}
+    content {
+      provider_type = "CodeStarSourceConnection"
+      git_configuration {
+        dynamic "pull_request" {
+          for_each = length(each.value.trigger_pull_request_event_list) > 0 ? { this = {} } : {}
+          content {
+            branches {
+              excludes = null                       # TRIGGER
+              includes = [each.value.source_branch] # TRIGGER
+            }
+            events = each.value.trigger_pull_request_event_list
+            file_paths {
+              excludes = null # TRIGGER
+              includes = null # TRIGGER
+            }
+          }
+        }
+        push {
+          branches {
+            excludes = null                       # TRIGGER
+            includes = [each.value.source_branch] # TRIGGER
+          }
+          file_paths {
+            excludes = null # TRIGGER
+            includes = null # TRIGGER
+          }
+          tags {
+            excludes = null # TRIGGER
+            includes = null # TRIGGER
+          }
+        }
+        source_action_name = "Source"
+      }
+    }
+  }
   dynamic "variable" {
     for_each = each.value.variable_map
     content {

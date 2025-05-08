@@ -2,7 +2,8 @@ locals {
   base_name = "codebuild"
   bucket_map = {
     (local.bucket_name) = {
-      lifecycle_expiration_days = var.bucket_lifecycle_expiration_days
+      lifecycle_expiration_days         = var.bucket_lifecycle_expiration_days
+      lifecycle_version_expiration_days = 1
     }
   }
   bucket_name = "build"

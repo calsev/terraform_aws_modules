@@ -52,6 +52,28 @@ module "lambda" {
   vpc_data_map                            = data.terraform_remote_state.net.outputs.data.vpc_map
 }
 
+module "lambda_target" {
+  source                               = "path/to/modules/lambda/alb_target"
+  dns_data                             = data.terraform_remote_state.dns.outputs.data
+  elb_data_map                         = data.terraform_remote_state.net.outputs.data.elb_map
+  lambda_data_map                      = module.lambda.data
+  listener_acm_certificate_key_default = "lambda.example.com"
+  listener_action_order_default        = 24000
+  listener_dns_from_zone_key_default   = "example.com"
+  listener_elb_key_default             = "main"
+  rule_condition_map_default = {
+    host_match = {}
+  }
+  std_map = module.com_lib.std_map
+  target_map = {
+    example = {
+      lambda_key = "dir_create_local_and_s3_archive"
+    }
+  }
+  vpc_data_map    = data.terraform_remote_state.net.outputs.data.vpc_map
+  vpc_key_default = "main"
+}
+
 module "local_config" {
   source  = "path/to/modules/local_config"
   content = local.output_data

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.95.0
+
+### General
+
+* CodePipeline trigger updated for new provider
+* Lambda ALB target now takes a lambda_data_map
+
 ## 0.94.0
 
 ### General

@@ -100,6 +100,7 @@ module "cert_oregon" {
     "api.example.com"      = {}
     "api_dev.example.com"  = {}
     "auth_api.example.com" = {}
+    "lambda.example.com"   = {}
     "web.example.com"      = {}
     "web_dev.example.com"  = {}
   }
