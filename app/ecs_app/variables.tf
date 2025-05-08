@@ -118,6 +118,7 @@ variable "app_map" {
       acm_certificate_key = optional(string)
       container_name      = optional(string)
       container_port      = optional(number)
+      dns_alias_fqdn      = optional(string)
       listen_port         = optional(number) # Defaults to prod/test ports
       rule_condition_map = optional(map(object({
         host_header_pattern_list = optional(list(string))
@@ -914,6 +915,7 @@ variable "service_elb_target_map_default" {
     acm_certificate_key = optional(string)
     container_name      = optional(string)
     container_port      = optional(number)
+    dns_alias_fqdn      = optional(string)
     listen_port         = optional(number)
     rule_condition_map = optional(map(object({
       host_header_pattern_list = optional(list(string))

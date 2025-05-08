@@ -81,6 +81,7 @@ variable "listener_map" {
     })))
     alpn_policy                                            = optional(string)
     dns_alias_enabled                                      = optional(bool)
+    dns_alias_fqdn                                         = optional(string) # Defaults to DNS name of certificate
     dns_from_zone_key                                      = optional(string)
     elb_key                                                = optional(string)
     listen_port                                            = optional(number)
