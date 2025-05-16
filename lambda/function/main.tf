@@ -18,7 +18,7 @@ data "archive_file" "package" {
     for_each = each.value.source_is_content ? { this = {} } : {}
     content {
       content  = each.value.source_content_content
-      filename = each.value.source_content_archive_path
+      filename = each.value.source_content_path_of_file_to_create_in_archive
     }
   }
   source_dir = each.value.source_package_directory_local_path
@@ -39,7 +39,7 @@ resource "aws_lambda_function" "this_function" {
   dynamic "dead_letter_config" {
     for_each = each.value.dead_letter_queue_enabled ? { this = {} } : {}
     content {
-      target_arn = module.dead_letter_queue.data[each.key].arn
+      target_arn = module.dead_letter_queue.data[each.key].queue_arn
     }
   }
   environment {

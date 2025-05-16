@@ -1,8 +1,10 @@
 module "ecr_mirror_policy" {
-  source      = "../../iam/policy/identity/ecr"
-  access_list = ["read_write"]
-  name        = var.task_name
-  repo_name   = "*"
-  std_map     = var.std_map
+  source                     = "../../iam/policy/identity/ecr"
+  policy_access_list_default = ["read_write"]
+  policy_map = {
+    ecr_mirror = {
+      repo_name = "*"
+    }
+  }
+  std_map = var.std_map
 }
-

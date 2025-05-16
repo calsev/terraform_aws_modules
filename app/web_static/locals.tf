@@ -32,6 +32,11 @@ locals {
       ]
     })
   }
+  create_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      cdn_arn = module.cdn.data[k].cdn_arn
+    })
+  }
   l0_map = {
     for k, v in var.site_map : k => v
   }
@@ -60,7 +65,7 @@ locals {
           code_build = module.code_build_role[k].data
         })
         policy = {
-          cdn_invalidate = module.cdn_invalidate[k].data
+          cdn_invalidate = module.cdn_invalidate.data[k]
         }
       }
     )

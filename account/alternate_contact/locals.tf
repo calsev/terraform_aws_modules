@@ -1,7 +1,14 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = local.l0_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {
@@ -15,8 +22,8 @@ locals {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       account_id             = v.account_id == null ? var.contact_account_id_default == null ? var.std_map.aws_account_id : var.contact_account_id_default : v.account_id
       alternate_contact_type = v.alternate_contact_type == null ? var.contact_alternate_contact_type_default == null ? k : var.contact_alternate_contact_type_default : v.alternate_contact_type
+      contact_name           = v.contact_name == null ? var.contact_name_default : v.contact_name
       email_address          = v.email_address == null ? var.contact_email_address_default : v.email_address
-      name                   = v.name == null ? var.contact_name_default : v.name
       phone_number           = v.phone_number == null ? var.contact_phone_number_default : v.phone_number
       title                  = v.title == null ? var.contact_title_default : v.title
     })

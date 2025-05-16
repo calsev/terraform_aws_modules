@@ -1,8 +1,13 @@
 module "name_map" {
   source                          = "../../name_map"
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -11,7 +16,7 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       role_policy_attach_arn_map_default = merge(
         {
-          log_write = module.log_group.data[k].iam_policy_arn_map["write"]
+          log_write = module.log_group.data[k].policy_map["write"].iam_policy_arn
         },
         v.kms_key_policy_arn == null ? {} : {
           encrypt_log_object = v.kms_key_policy_arn
@@ -50,7 +55,7 @@ locals {
         })
       }
       kms_key_arn        = local.l1_map[k].kms_key_key == null ? null : var.kms_data_map[local.l1_map[k].kms_key_key].key_arn
-      kms_key_policy_arn = local.l1_map[k].kms_key_key == null ? null : var.kms_data_map[local.l1_map[k].kms_key_key].iam_policy_arn_map["read_write"]
+      kms_key_policy_arn = local.l1_map[k].kms_key_key == null ? null : var.kms_data_map[local.l1_map[k].kms_key_key].policy_map["read_write"].iam_policy_arn
       log_bucket_name    = var.s3_data_map[local.l1_map[k].log_bucket_key].name_effective
     }
   }

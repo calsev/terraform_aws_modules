@@ -10,7 +10,7 @@ resource "aws_account_alternate_contact" "this_contact" {
   account_id             = each.value.account_id
   alternate_contact_type = each.value.alternate_contact_type
   email_address          = each.value.email_address
-  name                   = each.value.name
+  name                   = each.value.contact_name
   phone_number           = each.value.phone_number
   title                  = each.value.title
 }

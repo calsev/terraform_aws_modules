@@ -6,6 +6,7 @@ module "name_map" {
   name_map                        = local.l0_map
   name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
   name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
@@ -39,9 +40,8 @@ locals {
       {
         for k_secret, v_secret in v : k_secret => v_secret if !contains([], k_secret)
       },
+      v.secret_is_param ? module.this_param.data[k] : module.this_secret.data[k], # Merge these: the whole point is to obscure the implementation
       {
-        # Merge these: the whole point is to obscure the implementation
-        secret = v.secret_is_param ? module.this_param.data[k] : module.this_secret.data[k]
       },
     )
   }

@@ -2,7 +2,7 @@
 module "log_trust_policy" {
   source         = "../../iam/policy/resource/cw/log_group"
   log_group_name = "/*" # This could be /aws/events/* for events.amazonaws.com, but do not get frivolous with resource policies
-  policy_name    = "DefaultLogGroupAllowEvents"
+  name           = "DefaultLogGroupAllowEvents"
   sid_map = {
     EventAndLogDelivery = {
       # At some point the default AWS policy removed the conditions on SourceAccount and SourceArn

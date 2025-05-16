@@ -37,7 +37,7 @@ module "ecr_mirror_task" {
       ecs_cluster_arn          = module.computation.data[var.task_name].ecs_cluster_arn
       role_policy_attach_arn_map = {
         get_token        = var.iam_data.iam_policy_arn_ecr_get_token
-        image_read_write = module.ecr_mirror_policy.data.iam_policy_arn_map.read_write
+        image_read_write = module.ecr_mirror_policy.data["ecr_mirror"].policy_map["read_write"].iam_policy_arn
       }
     }
   }

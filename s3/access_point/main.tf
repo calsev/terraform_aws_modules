@@ -1,5 +1,5 @@
 resource "aws_s3_access_point" "this_ap" {
-  for_each          = local.ap_map
+  for_each          = local.lx_map
   account_id        = var.std_map.aws_account_id
   bucket            = each.value.bucket_name_effective
   bucket_account_id = var.std_map.aws_account_id
@@ -20,7 +20,7 @@ resource "aws_s3_access_point" "this_ap" {
 }
 
 module "this_bucket_policy" {
-  for_each              = local.ap_policy_map
+  for_each              = local.create_policy_map
   source                = "../../iam/policy/resource/s3/bucket"
   allow_access_point    = false
   allow_insecure_access = true
@@ -32,7 +32,7 @@ module "this_bucket_policy" {
 }
 
 resource "aws_s3control_access_point_policy" "this_policy" {
-  for_each         = local.ap_policy_map
+  for_each         = local.create_policy_map
   access_point_arn = aws_s3_access_point.this_ap[each.key].arn
   policy           = jsonencode(module.this_bucket_policy[each.key].iam_policy_doc)
 }

@@ -5,7 +5,7 @@ module "alert_trigger" {
   alert_level_default   = var.alert_level_default
   alert_map             = local.lx_map
   monitor_data          = var.monitor_data
-  name_append           = "deploy_failed"
+  name_append_default   = "deploy_failed"
   std_map               = var.std_map
 }
 

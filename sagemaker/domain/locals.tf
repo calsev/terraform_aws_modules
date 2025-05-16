@@ -4,7 +4,10 @@ module "name_map" {
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -30,7 +33,7 @@ locals {
   }
   create_role_map = {
     for k, v in local.lx_map : k => merge(v, {
-      iam_policy_arn_kms_key_read_write = v.create_kms_key ? module.encryption_key.data[k].iam_policy_arn_map["read_write"] : null
+      iam_policy_arn_kms_key_read_write = v.create_kms_key ? module.encryption_key.data[k].policy_map["read_write"].iam_policy_arn : null
     })
   }
   l0_map = {
@@ -104,7 +107,7 @@ locals {
       has_custom_resource_spec            = local.l1_map[k].resource_default_instance_type != null || local.l1_map[k].resource_default_lifecycle_config_arn != null || local.l1_map[k].resource_default_sagemaker_image_arn != null || local.l1_map[k].resource_default_sagemaker_image_version_alias != null || local.l1_map[k].resource_default_sagemaker_image_version_arn != null
       has_kernel_gateway_lifecycle_config = length(local.l1_map[k].kernel_gateway_lifecycle_config_arn_list) != 0
       has_studio_web_portal_settings      = length(local.l1_map[k].user_studio_web_portal_hidden_app_type_list) != 0 || length(local.l1_map[k].user_studio_web_portal_hidden_instance_type_list) != 0 || length(local.l1_map[k].user_studio_web_portal_hidden_ml_tool_list) != 0
-      iam_policy_arn_s3_bucket_read_write = local.l1_map[k].s3_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].s3_bucket_key].policy.iam_policy_arn_map["read_write"]
+      iam_policy_arn_s3_bucket_read_write = local.l1_map[k].s3_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].s3_bucket_key].policy.policy_map["read_write"].iam_policy_arn
       s3_bucket_name                      = local.l1_map[k].s3_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].s3_bucket_key].name_effective
     }
   }

@@ -1,5 +1,5 @@
 locals {
-  ami_map = {
+  output_data = {
     for tag, _ in local.ami_tag_to_parameter_path : tag => jsondecode(data.aws_ssm_parameter.ecs_optimized_ami[tag].value)
   }
   ami_tag_to_parameter_path = {

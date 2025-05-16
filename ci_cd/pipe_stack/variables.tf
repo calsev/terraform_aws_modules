@@ -3,18 +3,24 @@ variable "ci_cd_account_data" {
     bucket = object({
       name_effective = string
       policy = object({
-        iam_policy_arn_map = map(string)
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
       })
     })
     code_star = object({
       connection = map(object({
-        connection_arn     = string
-        iam_policy_arn_map = map(string)
+        connection_arn = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
       }))
     })
     log = object({
-      iam_policy_arn_map = map(string)
-      log_group_name     = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+      log_group_name = string
     })
     policy = object({
       vpc_net = object({
@@ -49,15 +55,47 @@ variable "ci_cd_deploy_data_map" {
   description = "Must be provided if any deployment (app) projects are included"
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
 variable "name_include_app_fields_default" {
   type        = bool
   default     = true
-  description = "If true, the Terraform project context will be included in the name"
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "pipe_map" {
@@ -107,13 +145,18 @@ variable "pipe_map" {
       }))
       name = string
     })), [])
+    name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
+    name_prefix             = optional(string)
+    name_prepend            = optional(string)
+    name_suffix             = optional(string)
     # The permissions below are the special sauce for the site build; log write and artifact read/write come free
     role_policy_attach_arn_map      = optional(map(string))
     role_policy_create_json_map     = optional(map(string))
     role_policy_inline_json_map     = optional(map(string))
     role_policy_managed_name_map    = optional(map(string))
+    role_path                       = optional(string)
     source_artifact_format          = optional(string)
     source_branch                   = optional(string)
     source_code_star_connection_key = optional(string)
@@ -186,6 +229,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string
