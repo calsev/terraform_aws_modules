@@ -2,7 +2,7 @@
 module "log_trust_policy" {
   source         = "../../iam/policy/resource/cw/log_group"
   log_group_name = "/aws/route53/*"
-  policy_name    = "LogGroupAllowDns"
+  name           = "LogGroupAllowDns"
   sid_map = {
     DnsDelivery = {
       access = "write"

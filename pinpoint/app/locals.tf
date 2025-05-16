@@ -1,26 +1,44 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = var.app_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {
-  app_map = {
-    for k, _ in var.app_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
-  }
-  email_flattened_list = flatten([
-    for k, v in local.app_map : [
+  create_email_1_list = flatten([
+    for k, v in local.lx_map : [
       for k_email, v_email in v.email_channel_map : merge(v_email, {
         k_app_email             = "${k}_${k_email}"
         pinpoint_application_id = aws_pinpoint_app.this_app[k].application_id
       })
     ]
   ])
-  email_flattened_map = {
-    for v in local.email_flattened_list : v.k_app_email => v
+  create_email_x_map = {
+    for v in local.create_email_1_list : v.k_app_email => v
+  }
+  create_sms_1_list = flatten([
+    for k, v in local.lx_map : [
+      for k_sms, v_sms in v.sms_channel_map : merge(v_sms, {
+        k_app_sms               = "${k}_${k_sms}"
+        pinpoint_application_id = aws_pinpoint_app.this_app[k].application_id
+      })
+    ]
+  ])
+  create_sms_x_map = {
+    for v in local.create_sms_1_list : v.k_app_sms => v
+  }
+  l0_map = {
+    for k, v in var.app_map : k => v
   }
   l1_map = {
-    for k, v in var.app_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       campaign_hook_lambda_function_arn = v.campaign_hook_lambda_function_arn == null ? var.app_campaign_hook_lambda_function_arn_default : v.campaign_hook_lambda_function_arn
       campaign_hook_web_url             = v.campaign_hook_web_url == null ? var.app_campaign_hook_web_url_default : v.campaign_hook_web_url
       email_channel_map                 = v.email_channel_map == null ? {} : v.email_channel_map
@@ -33,17 +51,20 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.app_map : k => {
+    for k, v in local.l0_map : k => {
       campaign_hook_valid = local.l1_map[k].campaign_hook_lambda_function_arn != null || local.l1_map[k].campaign_hook_web_url != null
     }
   }
   l3_map = {
-    for k, v in var.app_map : k => {
+    for k, v in local.l0_map : k => {
       campaign_hook_mode = local.l2_map[k].campaign_hook_valid ? v.campaign_hook_mode == null ? var.app_campaign_hook_mode_default : v.campaign_hook_mode : null
     }
   }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+  }
   output_data = {
-    for k, v in local.app_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
@@ -58,16 +79,5 @@ locals {
         }
       },
     )
-  }
-  sms_flattened_list = flatten([
-    for k, v in local.app_map : [
-      for k_sms, v_sms in v.sms_channel_map : merge(v_sms, {
-        k_app_sms               = "${k}_${k_sms}"
-        pinpoint_application_id = aws_pinpoint_app.this_app[k].application_id
-      })
-    ]
-  ])
-  sms_flattened_map = {
-    for v in local.sms_flattened_list : v.k_app_sms => v
   }
 }

@@ -1,8 +1,13 @@
 module "name_map" {
   source                          = "../../name_map"
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -51,18 +56,10 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
     }) if v.create_dns_alias
   }
-  create_open_vpn_license_map = {
-    for k, v in local.lx_map : v.k_license_secret => merge(v, {
-    })
-  }
-  create_open_vpn_password_map = {
-    for k, v in local.lx_map : v.k_password_secret => merge(v, {
-    })
-  }
   create_template_map = {
     for k, v in local.lx_map : k => merge(v, {
       iam_instance_profile_arn = module.instance_role[k].data.iam_instance_profile_arn
-      secret_password          = jsondecode(module.password_secret.secret_map[v.k_password_secret])["password"]
+      secret_password          = jsondecode(module.password_secret.secret_map[k])["password"]
     })
   }
   l0_map = {
@@ -79,8 +76,6 @@ locals {
       elb_key_admin                 = v.elb_key_admin == null ? var.instance_elb_key_admin_default : v.elb_key_admin
       elb_key_vpn                   = v.elb_key_vpn == null ? var.instance_elb_key_vpn_default : v.elb_key_vpn
       elb_rule_priority_admin       = v.elb_rule_priority_admin == null ? var.instance_elb_rule_priority_admin_default : v.elb_rule_priority_admin
-      k_license_secret              = "${k}_open_vpn_license"
-      k_password_secret             = "${k}_open_vpn_admin_password"
     })
   }
   l2_map = {
@@ -194,8 +189,8 @@ locals {
         }
         dns_alias         = v.create_dns_alias ? module.dns_alias.data[k] : null
         instance_template = module.instance_template.data[k]
-        license_secret    = module.license_secret.data[v.k_license_secret]
-        password_secret   = module.password_secret.data[v.k_password_secret]
+        license_secret    = module.license_secret.data[k]
+        password_secret   = module.password_secret.data[k]
         role              = module.instance_role[k].data
       }
     )

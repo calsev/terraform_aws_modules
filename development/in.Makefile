@@ -61,6 +61,12 @@ make:
 
 make-lint: make git-lint
 
+module-import:
+	$(PY) cd .. && python development/script/module_import.py
+
+module-render:
+	$(PY) cd .. && python development/script/module_render.py
+
 worker-metric:
 	$(PY) python script/worker_metric.py
 
@@ -70,8 +76,8 @@ py-lint:
 	$(PY) flake8 ..
 	$(PY) pyright .
 
-tf-fmt:
-	cd .. && $(FMT)
+tf-fmt:{% for mod_dir in mod_dirs %}
+	cd {{ mod_dir }} && $(FMT){% endfor %}
 
 tf-fmt-lint: tf-fmt git-lint
 

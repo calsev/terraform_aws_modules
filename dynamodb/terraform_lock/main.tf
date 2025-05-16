@@ -9,6 +9,5 @@ module "this_table" {
       hash_key = "LockID"
     }
   }
-  table_name_infix_default                     = var.table_name_infix_default
   table_server_side_encryption_enabled_default = var.table_server_side_encryption_enabled_default
 }

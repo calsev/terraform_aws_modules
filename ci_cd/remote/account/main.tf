@@ -17,9 +17,9 @@ module "connection" {
   connection_host_key_default      = var.connection_host_key_default
   connection_provider_type_default = var.connection_provider_type_default
   host_data_map                    = module.host.data
-  policy_create                    = var.policy_create
-  policy_name                      = var.policy_name
-  policy_name_infix                = var.policy_name_infix
-  policy_name_prefix               = var.policy_name_prefix
+  policy_access_list_default       = var.policy_access_list_default
+  policy_create_default            = var.policy_create_default
+  policy_name_append_default       = var.policy_name_append_default
+  policy_name_prefix_default       = var.policy_name_prefix_default
   std_map                          = var.std_map
 }

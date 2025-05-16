@@ -107,6 +107,7 @@ module "ecs_task" {
   role_policy_create_json_map_default               = var.role_policy_create_json_map_default
   role_policy_inline_json_map_default               = var.role_policy_inline_json_map_default
   role_policy_managed_name_map_default              = var.role_policy_managed_name_map_default
+  role_path_default                                 = var.role_path_default
   std_map                                           = var.std_map
   task_container_command_join_default               = var.task_container_command_join_default
   task_container_entry_point_default                = var.task_container_entry_point_default
@@ -238,6 +239,7 @@ module "image_build" {
   role_policy_create_json_map_default      = var.build_role_policy_create_json_map_default
   role_policy_inline_json_map_default      = var.build_role_policy_inline_json_map_default
   role_policy_managed_name_map_default     = var.build_role_policy_managed_name_map_default
+  role_path_default                        = var.role_path_default
   std_map                                  = var.std_map
   vpc_az_key_list_default                  = var.vpc_az_key_list_default
   vpc_data_map                             = var.vpc_data_map

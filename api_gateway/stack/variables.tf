@@ -40,8 +40,12 @@ variable "api_map" {
     integration_route_auth_key_default = optional(string)
     integration_route_method_default   = optional(string) # Used only for default route maps
     integration_service_default        = optional(string)
+    name_append                        = optional(string)
     name_include_app_fields            = optional(bool)
     name_infix                         = optional(bool)
+    name_prefix                        = optional(string)
+    name_prepend                       = optional(string)
+    name_suffix                        = optional(string)
     stage_map = map(object({ # Settings are applied uniformly to all routes for a stage
       detailed_metrics_enabled = optional(bool)
       domain_key               = optional(string)
@@ -186,6 +190,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

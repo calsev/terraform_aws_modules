@@ -1,5 +1,5 @@
 resource "aws_pinpoint_app" "this_app" {
-  for_each = local.app_map
+  for_each = local.lx_map
   campaign_hook {
     lambda_function_name = each.value.campaign_hook_lambda_function_arn
     mode                 = each.value.campaign_hook_mode
@@ -22,7 +22,7 @@ resource "aws_pinpoint_app" "this_app" {
 module "email_channel" {
   source                                  = "../../pinpoint/email_channel"
   comms_data                              = var.comms_data
-  email_map                               = local.email_flattened_map
+  email_map                               = local.create_email_x_map
   email_comms_ses_domain_key_default      = var.app_email_comms_ses_domain_key_default
   email_enabled_default                   = var.app_email_channel_enabled_default
   email_iam_role_arn_custom_default       = var.app_email_channel_iam_role_arn_custom_default
@@ -33,7 +33,7 @@ module "email_channel" {
 
 module "sms_channel" {
   source                          = "../../pinpoint/sms_channel"
-  sms_map                         = local.sms_flattened_map
+  sms_map                         = local.create_sms_x_map
   sms_enabled_default             = var.app_sms_channel_enabled_default
   sms_sender_id_string_default    = var.app_sms_channel_sender_id_string_default
   sms_provider_short_code_default = var.app_sms_channel_provider_short_code_default

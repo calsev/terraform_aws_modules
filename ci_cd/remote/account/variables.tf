@@ -41,23 +41,25 @@ variable "host_vpc_tls_certificate_default" {
   default = null
 }
 
-variable "policy_create" {
+variable "policy_access_list_default" {
+  type = list(string)
+  default = [
+    "read",
+    "read_write",
+  ]
+}
+
+variable "policy_create_default" {
   type    = bool
   default = true
 }
 
-variable "policy_name" {
-  type        = string
-  default     = null
-  description = "Defaults to code-connection"
+variable "policy_name_append_default" {
+  type    = string
+  default = "code_connection"
 }
 
-variable "policy_name_infix" {
-  type    = bool
-  default = true
-}
-
-variable "policy_name_prefix" {
+variable "policy_name_prefix_default" {
   type    = string
   default = ""
 }
@@ -67,6 +69,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

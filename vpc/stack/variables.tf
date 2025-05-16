@@ -14,8 +14,9 @@ variable "endpoint_map_default" {
     name_append                                    = optional(string)
     name_include_app_fields                        = optional(bool)
     name_infix                                     = optional(bool)
-    name_override                                  = optional(string)
+    name_prefix                                    = optional(string)
     name_prepend                                   = optional(string)
+    name_suffix                                    = optional(string)
     private_dns_enabled                            = optional(bool)
     private_dns_for_inbound_resolver_endpoint_only = optional(bool)
     service_name_override                          = optional(string)
@@ -34,8 +35,9 @@ variable "endpoint_map_default" {
       name_append                                    = null
       name_include_app_fields                        = null
       name_infix                                     = null
-      name_override                                  = null
+      name_prefix                                    = null
       name_prepend                                   = null
+      name_suffix                                    = null
       private_dns_enabled                            = null
       private_dns_for_inbound_resolver_endpoint_only = null
       service_name_override                          = null
@@ -80,13 +82,17 @@ variable "s3_data_map" {
 
 variable "std_map" {
   type = object({
-    aws_account_id       = string
-    aws_region_name      = string
-    config_name          = string
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    env                            = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
 
@@ -108,8 +114,9 @@ variable "vpc_map" {
       name_append                                    = optional(string)
       name_include_app_fields                        = optional(bool)
       name_infix                                     = optional(bool)
-      name_override                                  = optional(string)
+      name_prefix                                    = optional(string)
       name_prepend                                   = optional(string)
+      name_suffix                                    = optional(string)
       private_dns_enabled                            = optional(bool)
       private_dns_for_inbound_resolver_endpoint_only = optional(bool)
       service_name_override                          = optional(string)

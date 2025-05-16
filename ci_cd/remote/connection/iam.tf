@@ -1,10 +1,15 @@
 module "connection_policy" {
-  for_each            = local.lx_map
-  source              = "../../../iam/policy/identity/codestar/connection"
-  connection_arn      = aws_codestarconnections_connection.this_codestar[each.key].arn
-  connection_host_arn = aws_codestarconnections_connection.this_codestar[each.key].host_arn
-  name                = var.policy_create ? var.policy_name == null ? "${each.key}_code_connection" : var.policy_name : null
-  name_infix          = var.policy_name_infix
-  name_prefix         = var.policy_name_prefix
-  std_map             = var.std_map
+  source                          = "../../../iam/policy/identity/codestar/connection"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  policy_access_list_default      = var.policy_access_list_default
+  policy_create_default           = var.policy_create_default
+  policy_map                      = local.create_policy_map
+  policy_name_append_default      = var.policy_name_append_default
+  policy_name_prefix_default      = var.policy_name_prefix_default
+  std_map                         = var.std_map
 }

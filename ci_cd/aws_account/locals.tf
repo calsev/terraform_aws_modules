@@ -8,18 +8,19 @@ locals {
   }
   bucket_name = "build"
   log_map_base = {
-    policy_create      = var.policy_create
+    allow_public_read  = false
     log_retention_days = var.log_retention_days
-    policy_name_prefix = var.policy_name_prefix
   }
-  log_map_private = {
-    (local.base_name) = local.log_map_base
-  }
-  log_map = !var.log_public_enabled ? local.log_map_private : merge(local.log_map_private, {
-    (local.public_name) = merge(local.log_map_base, {
-      allow_public_read = true
-    }),
-  })
+  log_map = merge(
+    {
+      (local.base_name) = local.log_map_base
+    },
+    var.log_public_enabled ? {
+      (local.public_name) = merge(local.log_map_base, {
+        allow_public_read = true
+      })
+    } : null
+  )
   output_data = {
     bucket     = module.build_bucket.data[local.bucket_name]
     log        = module.build_log.data[local.base_name]

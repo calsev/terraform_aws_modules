@@ -1,9 +1,9 @@
 variable "ecr_data" {
   type = object({
     repo_map = map(object({
-      iam_policy_arn_map = object({
-        read = string
-      })
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
       repo_url = string
     }))
   })
@@ -13,53 +13,55 @@ variable "ecr_data" {
 
 variable "function_map" {
   type = map(object({
-    architecture_list                   = optional(list(string))
-    code_signing_config_arn             = optional(string)
-    dead_letter_queue_enabled           = optional(bool)
-    environment_variable_map            = optional(map(string))
-    ephemeral_storage_mib               = optional(number)
-    kms_key_arn                         = optional(string)
-    layer_version_arn_list              = optional(list(string))
-    memory_size_mib                     = optional(number)
-    name_infix                          = optional(bool)
-    policy_access_list                  = optional(list(string))
-    policy_create                       = optional(bool)
-    policy_name                         = optional(string)
-    policy_name_append                  = optional(string)
-    policy_name_infix                   = optional(bool)
-    policy_name_prefix                  = optional(string)
-    policy_name_prepend                 = optional(string)
-    policy_name_suffix                  = optional(string)
-    publish_numbered_version            = optional(bool)
-    reserved_concurrent_executions      = optional(number)
-    role_policy_attach_arn_map          = optional(map(string))
-    role_policy_create_json_map         = optional(map(string))
-    role_policy_inline_json_map         = optional(map(string))
-    role_policy_managed_name_map        = optional(map(string))
-    source_content_archive_path         = optional(string)
-    source_content_local_path           = optional(string)
-    source_image_command                = optional(list(string))
-    source_image_entry_point            = optional(list(string))
-    source_image_repo_key               = optional(string)
-    source_image_repo_tag               = optional(string)
-    source_image_working_directory      = optional(string)
-    source_package_archive_local_path   = optional(string)
-    source_package_created_archive_path = optional(string) # Defaults to the directory with .zip appended or content file parent with pakage.zip appended
-    source_package_directory_local_path = optional(string)
-    source_package_handler              = optional(string) # Also used for source_content
-    source_package_runtime              = optional(string)
-    source_package_s3_bucket_name       = optional(string)
-    source_package_s3_object_hash       = optional(string) # TODO: Calc for local, this for S3
-    source_package_s3_object_key        = optional(string) # Defaults to ${var.function_source_package_s3_object_key_base_default}/deployment_package_${key}zip
-    source_package_s3_object_version    = optional(number)
-    source_package_snap_start_enabled   = optional(bool)
-    timeout_seconds                     = optional(number)
-    tracing_mode                        = optional(string)
-    vpc_az_key_list                     = optional(list(string))
-    vpc_ipv6_allowed                    = optional(bool)
-    vpc_key                             = optional(string)
-    vpc_security_group_key_list         = optional(list(string))
-    vpc_segment_key                     = optional(string)
+    architecture_list                                = optional(list(string))
+    code_signing_config_arn                          = optional(string)
+    dead_letter_queue_enabled                        = optional(bool)
+    environment_variable_map                         = optional(map(string))
+    ephemeral_storage_mib                            = optional(number)
+    kms_key_arn                                      = optional(string)
+    layer_version_arn_list                           = optional(list(string))
+    memory_size_mib                                  = optional(number)
+    name_append                                      = optional(string)
+    name_include_app_fields                          = optional(bool)
+    name_infix                                       = optional(bool)
+    name_prefix                                      = optional(string)
+    name_prepend                                     = optional(string)
+    name_suffix                                      = optional(string)
+    policy_access_list                               = optional(list(string))
+    policy_create                                    = optional(bool)
+    policy_name_append                               = optional(string)
+    publish_numbered_version                         = optional(bool)
+    reserved_concurrent_executions                   = optional(number)
+    role_policy_attach_arn_map                       = optional(map(string))
+    role_policy_create_json_map                      = optional(map(string))
+    role_policy_inline_json_map                      = optional(map(string))
+    role_policy_managed_name_map                     = optional(map(string))
+    role_path                                        = optional(string)
+    source_content_path_of_file_to_create_in_archive = optional(string)
+    source_content_local_path                        = optional(string)
+    source_content_string                            = optional(string)
+    source_image_command                             = optional(list(string))
+    source_image_entry_point                         = optional(list(string))
+    source_image_repo_key                            = optional(string)
+    source_image_repo_tag                            = optional(string)
+    source_image_working_directory                   = optional(string)
+    source_package_archive_local_path                = optional(string)
+    source_package_created_archive_path              = optional(string) # Defaults to the directory with .zip appended or content file parent with pakage.zip appended
+    source_package_directory_local_path              = optional(string)
+    source_package_handler                           = optional(string) # Also used for source_content
+    source_package_runtime                           = optional(string)
+    source_package_s3_bucket_name                    = optional(string)
+    source_package_s3_object_hash                    = optional(string) # TODO: Calc for local, this for S3
+    source_package_s3_object_key                     = optional(string) # Defaults to ${var.function_source_package_s3_object_key_base_default}/deployment_package_${key}zip
+    source_package_s3_object_version                 = optional(number)
+    source_package_snap_start_enabled                = optional(bool)
+    timeout_seconds                                  = optional(number)
+    tracing_mode                                     = optional(string)
+    vpc_az_key_list                                  = optional(list(string))
+    vpc_ipv6_allowed                                 = optional(bool)
+    vpc_key                                          = optional(string)
+    vpc_security_group_key_list                      = optional(list(string))
+    vpc_segment_key                                  = optional(string)
   }))
 }
 
@@ -105,11 +107,6 @@ variable "function_memory_size_mib_default" {
   default = 128
 }
 
-variable "function_name_infix_default" {
-  type    = bool
-  default = true
-}
-
 variable "function_publish_numbered_version_default" {
   type    = bool
   default = false
@@ -120,13 +117,18 @@ variable "function_reserved_concurrent_executions_default" {
   default = -1
 }
 
-variable "function_source_content_archive_path_default" {
+variable "function_source_content_path_of_file_to_create_in_archive_default" {
   type        = string
   default     = null
   description = "Defaults to basename of source_content_local_path"
 }
 
 variable "function_source_content_local_path_default" {
+  type    = string
+  default = null
+}
+
+variable "function_source_content_string_default" {
   type    = string
   default = null
 }
@@ -233,9 +235,54 @@ variable "iam_data" {
   description = "Must be provided if any function is configured in a VPC"
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
+}
+
+variable "name_infix_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
 variable "policy_access_list_default" {
-  type    = list(string)
-  default = ["write"]
+  type = list(string)
+  default = [
+    "write",
+  ]
 }
 
 variable "policy_create_default" {
@@ -248,22 +295,7 @@ variable "policy_name_append_default" {
   default = ""
 }
 
-variable "policy_name_infix_default" {
-  type    = bool
-  default = true
-}
-
 variable "policy_name_prefix_default" {
-  type    = string
-  default = ""
-}
-
-variable "policy_name_prepend_default" {
-  type    = string
-  default = ""
-}
-
-variable "policy_name_suffix_default" {
   type    = string
   default = ""
 }
@@ -284,8 +316,14 @@ variable "role_policy_inline_json_map_default" {
 }
 
 variable "role_policy_managed_name_map_default" {
-  type    = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
+}
+
+variable "role_path_default" {
+  type    = string
+  default = null
 }
 
 variable "std_map" {
@@ -293,6 +331,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

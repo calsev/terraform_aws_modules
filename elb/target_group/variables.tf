@@ -1,27 +1,70 @@
+# name is limited to 32 characters
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
+}
+
 variable "name_infix_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "target_map" {
   type = map(object({
-    draining_to_unused_delay_seconds            = optional(number)
-    glb_failover_on_deregistration_or_unhealthy = optional(bool)
-    health_check_consecutive_fail_threshold     = optional(number)
-    health_check_consecutive_success_threshold  = optional(number)
-    health_check_enabled                        = optional(bool)
-    health_check_http_path                      = optional(string)
-    health_check_interval_seconds               = optional(number)
-    health_check_no_response_timeout_seconds    = optional(number)
-    health_check_port                           = optional(number)
-    health_check_protocol                       = optional(string)
-    health_check_success_code_list              = optional(list(number))
-    lambda_multi_value_headers_enabled          = optional(bool)
-    load_balancing_algorithm_type               = optional(string)
-    load_balancing_anomaly_mitigation_enabled   = optional(bool)
-    load_balancing_cross_zone_mode              = optional(string)
-    # name_include_app_fields # Hardcoded to false because name is limited to 32 characters
+    draining_to_unused_delay_seconds                   = optional(number)
+    glb_failover_on_deregistration_or_unhealthy        = optional(bool)
+    health_check_consecutive_fail_threshold            = optional(number)
+    health_check_consecutive_success_threshold         = optional(number)
+    health_check_enabled                               = optional(bool)
+    health_check_http_path                             = optional(string)
+    health_check_interval_seconds                      = optional(number)
+    health_check_no_response_timeout_seconds           = optional(number)
+    health_check_port                                  = optional(number)
+    health_check_protocol                              = optional(string)
+    health_check_success_code_list                     = optional(list(number))
+    lambda_multi_value_headers_enabled                 = optional(bool)
+    load_balancing_algorithm_type                      = optional(string)
+    load_balancing_anomaly_mitigation_enabled          = optional(bool)
+    load_balancing_cross_zone_mode                     = optional(string)
+    name_append                                        = optional(string)
+    name_include_app_fields                            = optional(bool)
     name_infix                                         = optional(bool)
+    name_prefix                                        = optional(string)
+    name_prepend                                       = optional(string)
+    name_suffix                                        = optional(string)
     nlb_enable_proxy_protocol_v2                       = optional(bool)
     nlb_preserve_client_ip                             = optional(bool)
     nlb_terminate_connection_on_deregistration_timeout = optional(bool)
@@ -273,9 +316,16 @@ variable "vpc_key_default" {
 
 variable "std_map" {
   type = object({
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    env                            = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }

@@ -9,6 +9,7 @@ locals {
       role_policy_create_json_map           = v.role_policy_create_json_map == null ? var.role_policy_create_json_map_default : v.role_policy_create_json_map
       role_policy_inline_json_map           = v.role_policy_inline_json_map == null ? var.role_policy_inline_json_map_default : v.role_policy_inline_json_map
       role_policy_managed_name_map          = v.role_policy_managed_name_map == null ? var.role_policy_managed_name_map_default : v.role_policy_managed_name_map
+      role_path                             = v.role_path == null ? var.role_path_default : v.role_path
     })
   }
   l2_map = {

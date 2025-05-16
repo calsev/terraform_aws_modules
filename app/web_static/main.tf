@@ -24,8 +24,12 @@ module "cdn" {
   domain_response_security_header_transport_override_default           = var.domain_response_security_header_transport_override_default
   domain_response_security_header_transport_preload_default            = var.domain_response_security_header_transport_preload_default
   dns_data                                                             = var.dns_data
+  name_append_default                                                  = var.name_append_default
   name_include_app_fields_default                                      = var.name_include_app_fields_default
   name_infix_default                                                   = var.name_infix_default
+  name_prefix_default                                                  = var.name_prefix_default
+  name_prepend_default                                                 = var.name_prepend_default
+  name_suffix_default                                                  = var.name_suffix_default
   s3_data_map                                                          = var.s3_data_map
   std_map                                                              = var.std_map
 }
@@ -34,8 +38,12 @@ module "code_build" {
   source                          = "../../ci_cd/build"
   build_environment_type_default  = var.build_environment_type_default
   ci_cd_account_data              = var.ci_cd_account_data
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   repo_map                        = local.create_build_map
   std_map                         = var.std_map
 }
@@ -45,8 +53,12 @@ module "pipe" {
   ci_cd_account_data                           = var.ci_cd_account_data
   ci_cd_build_data_map                         = var.ci_cd_build_data_map
   ci_cd_deploy_data_map                        = module.code_build.data
+  name_append_default                          = var.name_append_default
   name_include_app_fields_default              = var.name_include_app_fields_default
   name_infix_default                           = var.name_infix_default
+  name_prefix_default                          = var.name_prefix_default
+  name_prepend_default                         = var.name_prepend_default
+  name_suffix_default                          = var.name_suffix_default
   pipe_map                                     = local.create_pipe_map
   pipe_source_branch_default                   = var.pipe_source_branch_default
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default

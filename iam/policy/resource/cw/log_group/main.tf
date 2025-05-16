@@ -7,5 +7,5 @@ module "this_policy" {
 
 resource "aws_cloudwatch_log_resource_policy" "this_resource_policy" {
   policy_document = jsonencode(module.this_policy.iam_policy_doc)
-  policy_name     = var.policy_name
+  policy_name     = var.name
 }
