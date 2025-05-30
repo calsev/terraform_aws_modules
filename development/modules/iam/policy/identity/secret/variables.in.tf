@@ -1,0 +1,16 @@
+{{ name.var() }}
+
+{{ iam.policy_var_ar(access=["read", "read_write"], append="secret") }}
+
+variable "policy_map" {
+  type = map(object({
+    access_list             = optional(list(string))
+    {{ name.var_item() }}
+    policy_create           = optional(bool)
+    policy_name_append      = optional(string)
+    sm_secret_name          = optional(string)
+    ssm_param_name          = optional(string)
+  }))
+}
+
+{{ std.map() }}

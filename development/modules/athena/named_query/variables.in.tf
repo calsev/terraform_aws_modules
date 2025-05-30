@@ -1,0 +1,28 @@
+variable "athena_database_map" {
+  type = map(object({
+    database_id : string
+  }))
+}
+
+{{ name.var() }}
+
+variable "query_map" {
+  type = map(object({
+    database_key            = optional(string)
+    {{ name.var_item() }}
+    query                   = string
+    workgroup_id            = optional(string)
+  }))
+}
+
+variable "query_database_key_default" {
+  type    = string
+  default = null
+}
+
+variable "query_workgroup_id_default" {
+  type    = string
+  default = null
+}
+
+{{ std.map() }}
