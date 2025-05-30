@@ -66,6 +66,7 @@ module-import:
 
 module-render:
 	$(PY) cd .. && python development/script/module_render.py
+	make tf-fmt
 
 worker-metric:
 	$(PY) python script/worker_metric.py
@@ -76,8 +77,8 @@ py-lint:
 	$(PY) flake8 ..
 	$(PY) pyright .
 
-tf-fmt:{% for mod_dir in mod_dirs %}
-	cd {{ mod_dir }} && $(FMT){% endfor %}
+tf-fmt:
+	cd .. && $(FMT)
 
 tf-fmt-lint: tf-fmt git-lint
 

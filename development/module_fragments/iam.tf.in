@@ -1,4 +1,4 @@
-{% import 'development/module_fragments/name.in.tf' as name %}
+{% import 'development/module_fragments/name.tf.in' as name %}
 
 {% macro policy_var_item() -%}
     policy_access_list = optional(list(string))

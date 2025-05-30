@@ -3,13 +3,13 @@ variable "contact_map" {
   # OR run
   # aws organizations enable-aws-service-access --service-principal account.amazonaws.com
   type = map(object({
-    account_id             = optional(string)
-    alternate_contact_type = optional(string)
-    contact_name           = optional(string)
-    email_address          = optional(string)
+    account_id              = optional(string)
+    alternate_contact_type  = optional(string)
+    contact_name            = optional(string)
+    email_address           = optional(string)
     {{ name.var_item() }}
-    phone_number           = optional(string)
-    title                  = optional(string)
+    phone_number            = optional(string)
+    title                   = optional(string)
   }))
 }
 
