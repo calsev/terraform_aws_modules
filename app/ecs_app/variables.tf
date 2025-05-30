@@ -159,8 +159,12 @@ variable "app_map" {
     instance_type                     = optional(string)
     key_pair_key                      = optional(string)
     listen_protocol                   = optional(string)
+    name_append                       = optional(string)
     name_include_app_fields           = optional(bool)
     name_infix                        = optional(bool)
+    name_prefix                       = optional(string)
+    name_prepend                      = optional(string)
+    name_suffix                       = optional(string)
     path_include_env                  = optional(bool)
     path_repo_root_to_spec_directory  = optional(string)
     path_terraform_app_to_repo_root   = optional(string)
@@ -171,6 +175,7 @@ variable "app_map" {
     role_policy_create_json_map       = optional(map(string))
     role_policy_inline_json_map       = optional(map(string))
     role_policy_managed_name_map      = optional(map(string))
+    role_path                         = optional(string)
     sticky_cookie_enabled             = optional(bool)
     source_branch                     = optional(string)
     source_build_spec_image           = optional(string)
@@ -298,18 +303,24 @@ variable "ci_cd_account_data" {
     bucket = object({
       name_effective = string
       policy = object({
-        iam_policy_arn_map = map(string)
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
       })
     })
     code_star = object({
       connection = map(object({
-        connection_arn     = string
-        iam_policy_arn_map = map(string)
+        connection_arn = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
       }))
     })
     log = object({
-      iam_policy_arn_map = map(string)
-      log_group_name     = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+      log_group_name = string
     })
     policy = object({
       vpc_net = object({
@@ -436,9 +447,9 @@ variable "dns_data" {
 
 variable "ecr_data_map" {
   type = map(object({
-    iam_policy_arn_map = object({
-      read_write = string
-    })
+    policy_map = map(object({
+      iam_policy_arn = string
+    }))
     repo_url = string
   }))
   default     = null
@@ -738,15 +749,47 @@ variable "monitor_data" {
   })
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
 variable "name_include_app_fields_default" {
   type        = bool
   default     = true
-  description = "If true, the Terraform project context will be included in the name"
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "pipe_build_artifact_name_default" {
@@ -814,8 +857,14 @@ variable "role_policy_inline_json_map_default" {
 }
 
 variable "role_policy_managed_name_map_default" {
-  type    = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
+}
+
+variable "role_path_default" {
+  type    = string
+  default = null
 }
 
 variable "rule_condition_map_default" {

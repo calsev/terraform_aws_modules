@@ -2,9 +2,8 @@ module "password_secret" {
   source                          = "../../secret/random"
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
-  name_append_default             = "password"
   secret_is_param_default         = var.directory_password_secret_is_param_default
-  secret_map                      = local.lx_map
+  secret_map                      = local.create_password_map
   secret_random_init_key_default  = "password"
   std_map                         = var.std_map
 }
@@ -24,6 +23,11 @@ resource "aws_directory_service_directory" "this_dir" {
       subnet_ids        = each.value.vpc_subnet_id_list
       vpc_id            = each.value.vpc_id
     }
+  }
+  lifecycle {
+    ignore_changes = [
+      password,
+    ]
   }
   password   = jsondecode(module.password_secret.secret_map[each.key])["password"]
   short_name = each.value.short_name

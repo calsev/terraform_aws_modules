@@ -1,12 +1,12 @@
 locals {
   l1_map = {
     for k, v in var.name_map : k => merge(v, {
-      name_append                     = lower(replace(replace(v.name_append == null || v.name_append == "" ? var.name_append_default : v.name_append, local.name_regex_prefix, "-"), "--", "-"))
+      name_append                     = lower(replace(replace(v.name_append == null || v.name_append == "" ? var.name_append_default : v.name_append, local.name_regex_prefix, "_"), "__", "_"))
       name_include_app_fields         = v.name_include_app_fields == null ? var.name_include_app_fields_default : v.name_include_app_fields
       name_infix                      = v.name_infix == null ? var.name_infix_default : v.name_infix
-      name_prefix                     = lower(replace(replace(v.name_prefix == null || v.name_prefix == "" ? var.name_prefix_default : v.name_prefix, local.name_regex_prefix, "-"), "--", "-"))
-      name_prepend                    = lower(replace(replace(v.name_prepend == null || v.name_prepend == "" ? var.name_prepend_default : v.name_prepend, local.name_regex_prefix, "-"), "--", "-"))
-      name_suffix                     = lower(replace(replace(v.name_suffix == null || v.name_suffix == "" ? var.name_suffix_default : v.name_suffix, local.name_regex_suffix, "-"), "--", "-"))
+      name_prefix                     = lower(replace(replace(v.name_prefix == null || v.name_prefix == "" ? var.name_prefix_default : v.name_prefix, local.name_regex_prefix, "_"), "__", "_"))
+      name_prepend                    = lower(replace(replace(v.name_prepend == null || v.name_prepend == "" ? var.name_prepend_default : v.name_prepend, local.name_regex_prefix, "_"), "__", "_"))
+      name_suffix                     = lower(replace(replace(v.name_suffix == null || v.name_suffix == "" ? var.name_suffix_default : v.name_suffix, local.name_regex_suffix, "_"), "__", "_"))
       temp_name_convention_underscore = length(split("-", k)) > 1 ? file("Key ${k} should be in snake case") : null
     })
   }

@@ -1,25 +1,27 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = var.param_map
-  std_map  = var.std_map
-}
-
-module "policy_map" {
-  source                      = "../../iam/policy/name_map"
-  name_map                    = var.param_map
-  policy_access_list_default  = var.policy_access_list_default
-  policy_create_default       = var.policy_create_default
-  policy_name_append_default  = var.policy_name_append_default
-  policy_name_infix_default   = var.policy_name_infix_default
-  policy_name_prefix_default  = var.policy_name_prefix_default
-  policy_name_prepend_default = var.policy_name_prepend_default
-  policy_name_suffix_default  = var.policy_name_suffix_default
-  std_map                     = var.std_map
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {
+  create_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      ssm_param_name = aws_ssm_parameter.this_param[k].name
+    })
+  }
+  l0_map = {
+    for k, v in var.param_map : k => v
+  }
   l1_map = {
-    for k, v in var.param_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       allowed_pattern = v.allowed_pattern == null ? var.param_allowed_pattern_default : v.allowed_pattern
       data_type       = v.data_type == null ? var.param_data_type_default : v.data_type
       kms_key_id      = v.kms_key_id == null ? var.param_kms_key_id_default : v.kms_key_id
@@ -27,19 +29,23 @@ locals {
       type            = v.type == null ? var.param_type_default : v.type
     })
   }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
   output_data = {
-    for k, v in local.param_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       {
-        for k_param, v_param in v : k_param => v_param if !contains(["insecure_value"], k_param)
+        for k_attr, v_attr in v : k_attr => v_attr if !contains(["insecure_value"], k_attr)
       },
-      module.this_policy[k].data,
+      module.this_policy.data[k],
       {
         secret_arn = aws_ssm_parameter.this_param[k].arn
         secret_id  = aws_ssm_parameter.this_param[k].id
       },
     )
-  }
-  param_map = {
-    for k, v in var.param_map : k => merge(local.l1_map[k])
   }
 }

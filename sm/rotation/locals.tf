@@ -4,7 +4,10 @@ module "name_map" {
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -13,7 +16,7 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       environment_variable_map = v.lambda_environment_variable_map
       role_policy_attach_arn_map = {
-        secret_read_write = var.secret_data_map[local.l1_map[k].secret_key].secret.iam_policy_arn_map["read_write"]
+        secret_read_write = var.secret_data_map[local.l1_map[k].secret_key].policy_map["read_write"].iam_policy_arn
       }
       source_content_local_path           = "${path.module}/rotation.py"
       source_package_created_archive_path = "${path.root}/config/secret-rotation-${v.name_context}.zip"
@@ -50,7 +53,7 @@ locals {
   l2_map = {
     for k, v in local.l0_map : k => {
       create_lambda = local.l1_map[k].rotation_lambda_arn == null && local.l1_map[k].rotation_method != null
-      secret_id     = var.secret_data_map[local.l1_map[k].secret_key].secret.secret_id
+      secret_id     = var.secret_data_map[local.l1_map[k].secret_key].secret_id
     }
   }
   l3_map = {

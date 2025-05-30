@@ -4,7 +4,10 @@ module "name_map" {
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -29,7 +32,7 @@ locals {
       ip_address_type             = v.ip_address_type == null ? var.endpoint_ip_address_type_default == null ? v.vpc_assign_ipv6_cidr ? "dualstack" : "ipv4" : var.endpoint_ip_address_type_default : v.ip_address_type
       private_dns_enabled         = v.private_dns_enabled == null ? var.endpoint_private_dns_enabled_default : v.private_dns_enabled
       service_name_override       = v.service_name_override == null ? var.endpoint_service_name_override_default : v.service_name_override
-      service_name_short          = v.service_name_short == null ? var.endpoint_service_name_short_default == null ? v.k_end : var.endpoint_service_name_short_default : v.service_name_short
+      service_name_short          = replace(v.service_name_short == null ? var.endpoint_service_name_short_default == null ? v.k_end : var.endpoint_service_name_short_default : v.service_name_short, "_", "-")
       vpc_security_group_key_list = v.vpc_security_group_key_list == null ? var.endpoint_vpc_security_group_key_list_default : v.vpc_security_group_key_list
     })
   }

@@ -131,7 +131,8 @@ def get_mod_dirs(
     if any(curr_dir.endswith(postfix) for postfix in module_ignore_postfixes):
         return
     rel_dir = os.path.join(parent_dir, curr_dir)
-    all_mod_dirs.append(rel_dir)
+    if not rel_dir.endswith(".."):
+        all_mod_dirs.append(rel_dir)
     child_dirs = get_child_dirs(rel_dir)
     child_mods: list[str] = []
     for child_dir in child_dirs:

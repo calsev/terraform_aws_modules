@@ -3,7 +3,7 @@ locals {
     compute_cluster_map = module.computation.data
     iam = {
       policy = {
-        (var.task_name) = module.ecr_mirror_policy.data
+        (var.task_name) = module.ecr_mirror_policy.data["ecr_mirror"]
       }
     }
     repo = module.ecr_repo.data

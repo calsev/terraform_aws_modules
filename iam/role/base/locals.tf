@@ -1,3 +1,16 @@
+module "name_map" {
+  source                          = "../../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
+}
+
 module "role_policy_map" {
   source = "../../../iam/role/policy_map"
   role_map = {
@@ -26,29 +39,30 @@ module "role_policy_map" {
   role_policy_managed_name_map_default = var.role_policy_managed_name_map_default
 }
 
-module "name_map" {
-  source = "../../../name_map"
-  name_map = merge(
+locals {
+  l0_map = merge(
     {
       (var.name) = {
-        name_include_app_fields = var.name_include_app_fields
-        name_infix              = var.name_infix
-        name_override           = var.name_override
-        name_prefix             = var.name_prefix
+        name_override                   = var.name_override_default
+        name_append_default             = var.name_append_default
+        name_include_app_fields_default = var.name_include_app_fields_default
+        name_infix_default              = var.name_infix_default
+        name_prefix_default             = var.name_prefix_default
+        name_prepend_default            = var.name_prepend_default
+        name_suffix_default             = var.name_suffix_default
       }
     },
     {
       for k, v in module.role_policy_map.data[var.name].role_policy_create_json_map : k => {
-        name_include_app_fields = var.name_include_app_fields
-        name_infix              = var.name_infix
-        name_prefix             = var.name_prefix
+        name_append_default             = var.name_append_default
+        name_include_app_fields_default = var.name_include_app_fields_default
+        name_infix_default              = var.name_infix_default
+        name_prefix_default             = var.name_prefix_default
+        name_prepend_default            = var.name_prepend_default
+        name_suffix_default             = var.name_suffix_default
       }
     },
   )
-  std_map = var.std_map
-}
-
-locals {
   l1_map = merge(module.name_map.data[var.name], {
     assume_role_account_map  = var.assume_role_account_map
     assume_role_service_list = var.assume_role_service_list
@@ -67,10 +81,11 @@ locals {
     role_policy_managed_arn_map = {
       for name, policy in module.role_policy_map.data[var.name].role_policy_managed_name_map : "1-managed-${name}" => "arn:${var.std_map.iam_partition}:iam::aws:policy/${policy}"
     }
-    role_path = var.role_path == null ? null : "/${trim(var.role_path, "/")}/"
+    role_path = var.role_path_default
   })
   l2_map = {
     assume_role_doc = var.assume_role_json == null ? module.assume_role_policy["this"].iam_policy_doc_assume_role : jsondecode(var.assume_role_json)
+    role_path       = local.l1_map.role_path == null ? null : "/${trim(local.l1_map.role_path, "/")}/"
   }
   l3_map = {
     role_policy_create_arn_map = {

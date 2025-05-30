@@ -8,22 +8,14 @@ module "name_map" {
   std_map = var.std_map
 }
 
-module "policy_map" {
-  source                      = "../../iam/policy/name_map"
-  name_map                    = var.queue_map
-  policy_access_list_default  = var.policy_access_list_default
-  policy_create_default       = var.policy_create_default
-  policy_name_append_default  = var.policy_name_append_default
-  policy_name_infix_default   = var.policy_name_infix_default
-  policy_name_prefix_default  = var.policy_name_prefix_default
-  policy_name_prepend_default = var.policy_name_prepend_default
-  policy_name_suffix_default  = var.policy_name_suffix_default
-  std_map                     = var.std_map
-}
-
 locals {
   create_queue_map = {
-    for k, v in local.queue_map : k => v if v.create_queue
+    for k, v in local.lx_map : k => v if v.create_queue
+  }
+  create_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      queue_name = v.name_effective
+    }) if v.create_queue
   }
   l0_map = {
     for k, v in var.queue_map : k => merge(v, {
@@ -31,7 +23,7 @@ locals {
     })
   }
   l1_map = {
-    for k, v in var.queue_map : k => merge(local.l0_map[k], module.name_map.data[k], module.policy_map.data[k], {
+    for k, v in local.l0_map : k => merge(local.l0_map[k], module.name_map.data[k], {
       create_queue                      = v.create_queue == null ? var.queue_create_queue_default : v.create_queue
       delay_seconds                     = v.delay_seconds == null ? var.queue_delay_seconds_default : v.delay_seconds
       iam_policy_json                   = v.iam_policy_json == null ? var.queue_iam_policy_json_default : v.iam_policy_json
@@ -47,7 +39,7 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.queue_map : k => {
+    for k, v in local.l0_map : k => {
       content_based_deduplication = local.l1_map[k].is_fifo ? v.content_based_deduplication == null ? var.queue_content_based_deduplication_default : v.content_based_deduplication : null
       deduplication_scope         = local.l1_map[k].is_fifo ? v.deduplication_scope == null ? var.queue_deduplication_scope_default : v.deduplication_scope : null
       fifo_throughput_limit_type  = local.l1_map[k].is_fifo ? v.fifo_throughput_limit_type == null ? var.queue_fifo_throughput_limit_type_default : v.fifo_throughput_limit_type : null
@@ -56,17 +48,17 @@ locals {
       redrive_policy              = local.l1_map[k].redrive_policy_json == null ? null : jsondecode(local.l1_map[k].redrive_policy_json)
     }
   }
+  lx_map = {
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
   output_data = {
-    for k, v in local.queue_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       v,
-      module.queue_policy[k].data,
+      v.create_queue ? module.queue_policy.data[k] : null,
       {
-        arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
-        url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null
+        queue_arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
+        queue_url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null
       },
     )
-  }
-  queue_map = {
-    for k, v in var.queue_map : k => merge(local.l1_map[k], local.l2_map[k])
   }
 }

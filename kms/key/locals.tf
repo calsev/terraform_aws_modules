@@ -4,29 +4,24 @@ module "name_map" {
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
-module "policy_map" {
-  source                      = "../../iam/policy/name_map"
-  name_map                    = var.key_map
-  policy_access_list_default  = var.policy_access_list_default
-  policy_create_default       = var.policy_create_default
-  policy_name_append_default  = var.policy_name_append_default
-  policy_name_infix_default   = var.policy_name_infix_default
-  policy_name_prefix_default  = var.policy_name_prefix_default
-  policy_name_prepend_default = var.policy_name_prepend_default
-  policy_name_suffix_default  = var.policy_name_suffix_default
-  std_map                     = var.std_map
-}
-
 locals {
+  create_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      key_arn_list = [aws_kms_key.this_key[k].arn]
+    })
+  }
   l0_map = {
     for k, v in var.key_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       allow_cloudtrail                           = v.allow_cloudtrail == null ? var.allow_cloudtrail_default : v.allow_cloudtrail
       allow_iam_delegation                       = v.allow_iam_delegation == null ? var.allow_iam_delegation_default : v.allow_iam_delegation
       custom_key_store_id                        = v.custom_key_store_id == null ? var.key_custom_key_store_id_default : v.custom_key_store_id
@@ -55,7 +50,7 @@ locals {
       {
         for k_attr, v_attr in v : k_attr => v_attr if !contains(["iam_policy_json"], k_attr)
       },
-      module.key_policy[k].data,
+      module.key_policy.data[k],
       {
         alias_arn      = aws_kms_alias.this_alias[k].arn
         key_arn        = aws_kms_key.this_key[k].arn

@@ -1,9 +1,9 @@
 resource "aws_iam_policy" "policy" {
-  for_each = var.name != null ? { this = {} } : {}
+  for_each = local.create_policy_map
   lifecycle {
     create_before_destroy = true
   }
-  name   = local.policy_name
-  policy = var.iam_policy_json
-  tags   = var.tag ? local.tags : null
+  name   = each.value.name_effective
+  policy = each.value.iam_policy_json
+  tags   = each.value.tags
 }

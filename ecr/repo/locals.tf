@@ -1,31 +1,27 @@
 module "name_map" {
   source                          = "../../name_map"
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
-  name_map                        = var.repo_map
-  name_regex_allow_list           = ["/"]
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
-module "policy_map" {
-  source                      = "../../iam/policy/name_map"
-  name_map                    = var.repo_map
-  policy_access_list_default  = var.policy_access_list_default
-  policy_create_default       = var.policy_create_default
-  policy_name_append_default  = var.policy_name_append_default
-  policy_name_infix_default   = var.policy_name_infix_default
-  policy_name_prefix_default  = var.policy_name_prefix_default
-  policy_name_prepend_default = var.policy_name_prepend_default
-  policy_name_suffix_default  = var.policy_name_suffix_default
-  std_map                     = var.std_map
-}
-
 locals {
+  create_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      repo_name = v.name_effective
+    })
+  }
   l0_map = {
     for k, v in var.repo_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       iam_policy_json     = v.iam_policy_json == null ? var.repo_iam_policy_json_default : v.iam_policy_json
       image_tag_list      = v.image_tag_list == null ? var.repo_image_tag_list_default : v.image_tag_list
       image_tag_max_count = v.image_tag_max_count == null ? var.repo_image_tag_max_count_default : v.image_tag_max_count
@@ -67,7 +63,7 @@ locals {
       {
         for k_attr, v_attr in v : k_attr => v_attr if !contains(["iam_policy_json"], k_attr)
       },
-      module.repo_policy[k].data,
+      module.repo_policy.data[k],
       {
         repo_arn = aws_ecr_repository.this_repo[k].arn
         repo_url = aws_ecr_repository.this_repo[k].repository_url

@@ -1,52 +1,103 @@
-variable "access_list" {
-  type = list(string)
-}
-
-variable "name" {
+variable "name_append_default" {
   type        = string
-  default     = null
-  description = "If provided, a policy will be created"
+  default     = ""
+  description = "Appended after key"
 }
 
-variable "name_infix" {
+variable "name_include_app_fields_default" {
   type        = bool
   default     = true
-  description = "If true, standard resource prefix and suffix context will be applied to the policy"
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
-variable "name_prefix" {
+variable "name_infix_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
   type        = string
   default     = ""
   description = "Prepended before context prefix"
 }
 
-variable "name_suffix" {
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
   type        = string
   default     = ""
   description = "Appended after context suffix"
 }
 
-variable "resource_map" {
-  type        = map(list(string))
-  description = "A map of resource type to resource names"
+variable "policy_access_list_default" {
+  type = list(string)
+  default = [
+    "read",
+    "read_write",
+    "write",
+  ]
 }
 
-variable "service_name" {
-  type = string
+variable "policy_create_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_append_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_map" {
+  type = map(object({
+    access_list             = optional(list(string))
+    name_append             = optional(string)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_prefix             = optional(string)
+    name_prepend            = optional(string)
+    name_suffix             = optional(string)
+    policy_create           = optional(bool)
+    policy_name_append      = optional(string)
+    resource_map            = map(list(string)) # A map of resource type to resource names
+    service_name            = optional(string)
+  }))
+}
+
+variable "policy_service_name_default" {
+  type    = string
+  default = null
 }
 
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    env                            = string
+    iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string
     resource_name_suffix           = string
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
   })
-}
-
-variable "tag" {
-  type    = bool
-  default = true
 }

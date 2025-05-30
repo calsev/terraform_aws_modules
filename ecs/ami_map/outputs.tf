@@ -1,3 +1,3 @@
 output "data" {
-  value = local.ami_map
+  value = local.output_data
 }

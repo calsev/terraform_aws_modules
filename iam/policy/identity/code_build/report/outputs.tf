@@ -1,3 +1,3 @@
-output "iam_policy_doc" {
-  value = module.this_policy.data
+output "data" {
+  value = local.output_data
 }

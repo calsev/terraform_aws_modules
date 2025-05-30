@@ -1,7 +1,11 @@
 module "key_secret" {
   source                          = "../../secret/random"
-  name_include_app_fields_default = var.key_name_include_app_fields_default
-  name_infix_default              = var.key_name_infix_default
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   policy_create_default           = false
   secret_is_param_default         = var.key_secret_is_param_default
   secret_map                      = local.lx_map

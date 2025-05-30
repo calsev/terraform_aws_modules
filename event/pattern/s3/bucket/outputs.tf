@@ -1,3 +1,3 @@
 output "data" {
-  value = local.pattern
+  value = local.output_data
 }

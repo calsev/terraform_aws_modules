@@ -1,11 +1,15 @@
 module "repo_policy" {
-  for_each    = local.lx_map
-  source      = "../../iam/policy/identity/ecr"
-  access_list = each.value.policy_access_list
-  name        = each.value.policy_name
-  name_infix  = each.value.policy_name_infix
-  name_prefix = each.value.policy_name_prefix
-  name_suffix = each.value.policy_name_suffix
-  repo_name   = each.value.name_effective
-  std_map     = var.std_map
+  source                          = "../../iam/policy/identity/ecr"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  policy_access_list_default      = var.policy_access_list_default
+  policy_create_default           = var.policy_create_default
+  policy_map                      = local.create_policy_map
+  policy_name_append_default      = var.policy_name_append_default
+  policy_name_prefix_default      = var.policy_name_prefix_default
+  std_map                         = var.std_map
 }

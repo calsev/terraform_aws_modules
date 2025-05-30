@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.96.0
+
+### New modules
+
+* EC2 reserved instance purchaser
+
+### General
+
+* IAM identity policies now take an item map
+
 ## 0.95.1
 
 ### General

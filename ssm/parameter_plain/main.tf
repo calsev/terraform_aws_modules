@@ -1,5 +1,5 @@
 resource "aws_ssm_parameter" "this_param" {
-  for_each        = local.param_map
+  for_each        = local.lx_map
   allowed_pattern = each.value.allowed_pattern
   data_type       = each.value.data_type
   insecure_value  = null # This is always dirty

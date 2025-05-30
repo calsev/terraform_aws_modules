@@ -1,11 +1,23 @@
 module "name_map" {
-  source             = "../../../name_map"
-  name_infix_default = false # <= 32 chars
-  name_map           = local.l0_map
-  std_map            = var.std_map
+  source                          = "../../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {
+  create_policy_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      connection_arn      = aws_codestarconnections_connection.this_codestar[k].arn
+      connection_host_arn = aws_codestarconnections_connection.this_codestar[k].host_arn
+    })
+  }
   l0_map = {
     for k, v in var.connection_map : k => v
   }
@@ -26,7 +38,7 @@ locals {
   output_data = {
     for k, v in local.lx_map : k => merge(
       v,
-      module.connection_policy[k].data,
+      module.connection_policy.data[k],
       {
         connection_arn = aws_codestarconnections_connection.this_codestar[k].arn
       },

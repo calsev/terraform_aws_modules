@@ -20,6 +20,7 @@ variable "role_map" {
     role_policy_create_json_map  = optional(map(string))
     role_policy_inline_json_map  = optional(map(string))
     role_policy_managed_name_map = optional(map(string))
+    role_path                    = optional(string)
   }))
 }
 
@@ -71,6 +72,12 @@ variable "role_policy_inline_json_map_default" {
 }
 
 variable "role_policy_managed_name_map_default" {
-  type    = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
+}
+
+variable "role_path_default" {
+  type    = string
+  default = null
 }

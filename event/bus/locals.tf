@@ -4,21 +4,11 @@ module "name_map" {
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
-}
-
-module "policy_map" {
-  source                      = "../../iam/policy/name_map"
-  name_map                    = local.l0_map
-  policy_access_list_default  = var.policy_access_list_default
-  policy_create_default       = var.policy_create_default
-  policy_name_append_default  = var.policy_name_append_default
-  policy_name_infix_default   = var.policy_name_infix_default
-  policy_name_prefix_default  = var.policy_name_prefix_default
-  policy_name_prepend_default = var.policy_name_prepend_default
-  policy_name_suffix_default  = var.policy_name_suffix_default
-  std_map                     = var.std_map
 }
 
 locals {
@@ -31,9 +21,6 @@ locals {
   create_bus_data_map = {
     for k, v in local.lx_map : k => v if !v.create_bus
   }
-  create_policy_map = {
-    for k, v in local.event_bus_map : k => v if v.policy_create
-  }
   event_bus_map = {
     for k, v in local.lx_map : k => merge(v, {
       event_bus_arn  = v.create_bus ? aws_cloudwatch_event_bus.this_bus[k].arn : data.aws_cloudwatch_event_bus.this_bus[k].arn
@@ -44,7 +31,7 @@ locals {
     for k, v in var.bus_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.policy_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       archive_retention_days        = v.archive_retention_days == null ? var.bus_archive_retention_days_default : v.archive_retention_days
       create_bus                    = v.event_bus_name == null
       logging_enabled               = v.logging_enabled == null ? var.bus_logging_enabled_default : v.logging_enabled
@@ -76,9 +63,9 @@ locals {
     for k, v in local.event_bus_map : k => {
       bus = merge(
         v,
-        module.bus_policy[k].data,
+        module.bus_policy.data[k],
         {
-          iam_policy_doc = v.policy_create ? module.resource_policy[k].iam_policy_doc : null
+          iam_policy_doc = module.resource_policy[k].iam_policy_doc
         },
       )
       log     = module.log_group.data[v.log_name]

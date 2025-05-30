@@ -1,7 +1,14 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = local.lx_map_flattened
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.lx_map_flattened
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {

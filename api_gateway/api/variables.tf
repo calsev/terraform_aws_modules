@@ -8,8 +8,12 @@ variable "api_map" {
     cors_expose_headers      = optional(list(string))
     cors_max_age             = optional(number)
     disable_execute_endpoint = optional(bool)
+    name_append              = optional(string)
     name_include_app_fields  = optional(bool)
     name_infix               = optional(bool)
+    name_prefix              = optional(string)
+    name_prepend             = optional(string)
+    name_suffix              = optional(string)
     version                  = optional(string)
   }))
 }
@@ -75,6 +79,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

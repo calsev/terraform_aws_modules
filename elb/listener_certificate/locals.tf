@@ -1,8 +1,13 @@
 module "name_map" {
   source                          = "../../name_map"
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -41,7 +46,7 @@ locals {
     for k, v in local.l0_map : k => {
       acm_certificate_arn = local.l1_map[k].acm_certificate_key == null ? null : var.dns_data.region_domain_cert_map[var.std_map.aws_region_name][local.l1_map[k].acm_certificate_key].certificate_arn
       create_cert         = local.l1_map[k].acm_certificate_key != null && !local.l1_map[k].is_listener # listeners have default certs, these are for rules
-      create_alias        = local.l1_map[k].acm_certificate_key != null || v.dns_alias_fqdn != null && local.l1_map[k].dns_alias_enabled
+      create_alias        = (local.l1_map[k].acm_certificate_key != null || v.dns_alias_fqdn != null) && local.l1_map[k].dns_alias_enabled
     }
   }
   l3_map = {
