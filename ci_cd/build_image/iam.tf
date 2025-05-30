@@ -10,6 +10,7 @@ module "image_build_role" {
   role_policy_create_json_map_default  = var.role_policy_create_json_map_default
   role_policy_inline_json_map_default  = var.role_policy_inline_json_map_default
   role_policy_managed_name_map_default = var.role_policy_managed_name_map_default
+  role_path_default                    = var.role_path_default
   std_map                              = var.std_map
   vpc_access                           = each.value.vpc_access
 }

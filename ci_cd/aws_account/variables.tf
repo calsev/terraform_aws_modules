@@ -14,16 +14,6 @@ variable "log_retention_days" {
   default = 7
 }
 
-variable "policy_create" {
-  type    = bool
-  default = true
-}
-
-variable "policy_name_prefix" {
-  type    = string
-  default = ""
-}
-
 variable "bucket_log_target_bucket_name_default" {
   type    = string
   default = null
@@ -43,6 +33,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

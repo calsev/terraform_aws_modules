@@ -40,18 +40,24 @@ variable "ci_cd_account_data" {
     bucket = object({
       name_effective = string
       policy = object({
-        iam_policy_arn_map = map(string)
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
       })
     })
     code_star = object({
       connection = map(object({
-        connection_arn     = string
-        iam_policy_arn_map = map(string)
+        connection_arn = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
       }))
     })
     log = object({
-      iam_policy_arn_map = map(string)
-      log_group_name     = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+      log_group_name = string
     })
     policy = object({
       vpc_net = object({
@@ -120,15 +126,40 @@ variable "domain_origin_dns_enabled_default" {
   default = true
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
 variable "name_include_app_fields_default" {
   type        = bool
   default     = true
-  description = "If true, the Terraform project context will be included in the name"
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "site_map" {
@@ -165,8 +196,12 @@ variable "site_map" {
     logging_bucket_key                                    = optional(string)
     logging_include_cookies                               = optional(bool)
     logging_object_prefix                                 = optional(string)
+    name_append                                           = optional(string)
     name_include_app_fields                               = optional(bool)
     name_infix                                            = optional(bool)
+    name_prefix                                           = optional(string)
+    name_prepend                                          = optional(string)
+    name_suffix                                           = optional(string)
     origin_dns_enabled                                    = optional(bool)
     origin_fqdn                                           = string
     response_security_header_content_policy_origin_map    = optional(map(list(string)))
@@ -185,6 +220,7 @@ variable "site_map" {
     role_policy_create_json_map     = optional(map(string))
     role_policy_inline_json_map     = optional(map(string))
     role_policy_managed_name_map    = optional(map(string))
+    role_path                       = optional(string)
     source_branch                   = optional(string)
     source_code_star_connection_key = optional(string)
     source_repository_id            = optional(string)
@@ -308,6 +344,7 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
     env                            = string
     iam_partition                  = string
     name_replace_regex             = string

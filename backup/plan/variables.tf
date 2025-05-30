@@ -13,18 +13,38 @@ variable "name_append_default" {
 variable "name_include_app_fields_default" {
   type        = bool
   default     = true
-  description = "If true, the Terraform project context will be included in the name"
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
 }
 
 variable "name_prepend_default" {
   type        = string
   default     = ""
   description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "plan_map" {
@@ -41,10 +61,12 @@ variable "plan_map" {
       lifecycle_cold_storage_opt_in_enabled   = optional(bool)
       lifecycle_delete_after_days             = optional(number)
       name_append                             = optional(string)
-      name_display                            = optional(string)
+      name_include_app_fields                 = optional(bool)
       name_infix                              = optional(bool)
-      name_override                           = optional(string)
+      name_prefix                             = optional(string)
       name_prepend                            = optional(string)
+      name_suffix                             = optional(string)
+      name_display                            = optional(string)
       recovery_point_tag_map                  = optional(map(string))
       schedule_cron_expression                = optional(string)
       start_delay_minutes                     = optional(number)
@@ -95,10 +117,12 @@ variable "plan_rule_map_default" {
     lifecycle_cold_storage_opt_in_enabled   = optional(bool)
     lifecycle_delete_after_days             = optional(number)
     name_append                             = optional(string)
-    name_display                            = optional(string)
+    name_include_app_fields                 = optional(bool)
     name_infix                              = optional(bool)
-    name_override                           = optional(string)
+    name_prefix                             = optional(string)
     name_prepend                            = optional(string)
+    name_suffix                             = optional(string)
+    name_display                            = optional(string)
     recovery_point_tag_map                  = optional(map(string))
     schedule_cron_expression                = optional(string)
     start_delay_minutes                     = optional(number)
@@ -116,10 +140,12 @@ variable "plan_rule_map_default" {
       lifecycle_cold_storage_opt_in_enabled   = null
       lifecycle_delete_after_days             = 7 # Less than 7 is a medium-severity security finding
       name_append                             = null
-      name_display                            = "ContinuousBackupForPointInTimeRecovery"
+      name_include_app_fields                 = null
       name_infix                              = null
-      name_override                           = null
+      name_prefix                             = null
       name_prepend                            = null
+      name_suffix                             = null
+      name_display                            = "ContinuousBackupForPointInTimeRecovery"
       recovery_point_tag_map                  = null
       schedule_cron_expression                = null
       start_delay_minutes                     = null
@@ -136,10 +162,12 @@ variable "plan_rule_map_default" {
       lifecycle_cold_storage_opt_in_enabled   = null
       lifecycle_delete_after_days             = null
       name_append                             = null
-      name_display                            = "SnapshotBackupForLongTermRetention"
+      name_include_app_fields                 = null
       name_infix                              = null
-      name_override                           = null
+      name_prefix                             = null
       name_prepend                            = null
+      name_suffix                             = null
+      name_display                            = "SnapshotBackupForLongTermRetention"
       recovery_point_tag_map                  = null
       schedule_cron_expression                = null
       start_delay_minutes                     = null
@@ -316,10 +344,17 @@ variable "plan_windows_vss_enabled_default" {
 
 variable "std_map" {
   type = object({
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    env                            = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
 

@@ -1,7 +1,8 @@
 data "aws_iam_policy_document" "this_policy_doc" {
+  for_each = local.lx_map
   # Resource-access paradigm does not work for multiple-sub-path-based access
   dynamic "statement" {
-    for_each = local.sid_map
+    for_each = each.value.sid_map
     content {
       actions   = var.std_map.service_resource_access_action.s3[statement.value.resource_type][statement.value.access]
       resources = statement.value.resource_list
@@ -9,7 +10,7 @@ data "aws_iam_policy_document" "this_policy_doc" {
     }
   }
   dynamic "statement" {
-    for_each = local.star_sid_map
+    for_each = each.value.star_sid_map
     content {
       actions   = statement.value.action_list
       resources = ["*"]
@@ -19,10 +20,16 @@ data "aws_iam_policy_document" "this_policy_doc" {
 }
 
 module "this_policy" {
-  source          = "../../../../../iam/policy/identity/base"
-  iam_policy_json = data.aws_iam_policy_document.this_policy_doc.json
-  name            = var.name
-  name_infix      = var.name_infix
-  name_prefix     = var.name_prefix
-  std_map         = var.std_map
+  source                          = "../../../../../iam/policy/identity/base"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  policy_create_default           = var.policy_create_default
+  policy_map                      = local.create_policy_map
+  policy_name_append_default      = var.policy_name_append_default
+  policy_name_prefix_default      = var.policy_name_prefix_default
+  std_map                         = var.std_map
 }

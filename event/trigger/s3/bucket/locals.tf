@@ -4,7 +4,10 @@ module "name_map" {
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -16,7 +19,7 @@ locals {
     for k, v in local.lx_map : "${k}_prefix" => merge(v, {
       event_pattern_json = jsonencode(module.s3_prefix_pattern["${k}_prefix"].data)
       role_policy_attach_arn_map = {
-        events_write = module.event_bus.data["${k}_prefix"].bus.iam_policy_arn_map["write"]
+        events_write = module.event_bus.data["${k}_prefix"].bus.policy_map["write"].iam_policy_arn
       }
       target_arn     = module.event_bus.data["${k}_prefix"].bus.event_bus_arn
       target_service = "events"

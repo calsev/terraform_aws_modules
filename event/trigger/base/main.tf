@@ -27,7 +27,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
     }
   }
   dead_letter_config {
-    arn = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.key].arn : null
+    arn = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.key].queue_arn : null
   }
   dynamic "ecs_target" {
     for_each = each.value.ecs_targets

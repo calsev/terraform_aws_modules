@@ -56,6 +56,7 @@ variable "std_map" {
     aws_account_id                 = string
     aws_region_name                = string
     config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

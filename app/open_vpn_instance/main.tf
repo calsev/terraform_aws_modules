@@ -1,8 +1,12 @@
 module "elastic_ip" {
   source                          = "../../ec2/elastic_ip"
   ip_map                          = local.create_ip_map
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -16,20 +20,28 @@ module "dns_alias" {
 
 module "license_secret" {
   source                          = "../../secret/random"
+  name_append_default             = "license"
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   secret_is_param_default         = var.instance_secret_is_param_default
-  secret_map                      = local.create_open_vpn_license_map
+  secret_map                      = local.lx_map
   secret_random_init_key_default  = "license_key"
   std_map                         = var.std_map
 }
 
 module "password_secret" {
   source                          = "../../secret/random"
+  name_append_default             = "password"
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   secret_is_param_default         = var.instance_secret_is_param_default
-  secret_map                      = local.create_open_vpn_password_map
+  secret_map                      = local.lx_map
   secret_random_init_key_default  = "password"
   secret_random_init_map_default = {
     username = "openvpn"
@@ -38,13 +50,17 @@ module "password_secret" {
 }
 
 module "instance_role" {
-  source                  = "../../iam/role/ec2/instance"
-  for_each                = local.lx_map
-  depends_on              = [module.dns_alias] # This is needed for certbot
-  monitor_data            = var.monitor_data
-  name_include_app_fields = each.value.name_include_app_fields
-  name_infix              = each.value.name_infix
-  name                    = each.key
+  source                          = "../../iam/role/ec2/instance"
+  for_each                        = local.lx_map
+  depends_on                      = [module.dns_alias] # This is needed for certbot
+  monitor_data                    = var.monitor_data
+  name                            = each.key
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
   role_policy_attach_arn_map_default = {
     eip_associate    = var.iam_data.iam_policy_arn_ec2_associate_eip
     attribute_modify = var.iam_data.iam_policy_arn_ec2_modify_attribute
@@ -76,14 +92,18 @@ module "instance_template" {
         "cd /usr/local/openvpn_as/scripts",
         "sacli --user openvpn --new_pass='${v.secret_password}' SetLocalPassword",
         "sacli start",
-        "./liman Activate '${module.license_secret.secret_map[v.k_license_secret]}'",
+        "./liman Activate '${module.license_secret.secret_map[k]}'",
       ]
     })
   }
-  compute_name_include_app_fields_default       = var.name_include_app_fields_default
-  compute_name_infix_default                    = var.name_infix_default
   compute_user_data_suppress_generation_default = var.instance_user_data_suppress_generation_default
   monitor_data                                  = var.monitor_data
+  name_append_default                           = var.name_append_default
+  name_include_app_fields_default               = var.name_include_app_fields_default
+  name_infix_default                            = var.name_infix_default
+  name_prefix_default                           = var.name_prefix_default
+  name_prepend_default                          = var.name_prepend_default
+  name_suffix_default                           = var.name_suffix_default
   std_map                                       = var.std_map
   vpc_az_key_list_default                       = var.vpc_az_key_list_default
   vpc_data_map                                  = var.vpc_data_map
@@ -91,12 +111,18 @@ module "instance_template" {
 }
 
 module "target_group" {
-  source              = "../../elb/target_group"
-  std_map             = var.std_map
-  target_map          = local.create_elb_target_x_map
-  target_type_default = "instance"
-  vpc_data_map        = var.vpc_data_map
-  vpc_key_default     = var.vpc_key_default
+  source                          = "../../elb/target_group"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
+  target_map                      = local.create_elb_target_x_map
+  target_type_default             = "instance"
+  vpc_data_map                    = var.vpc_data_map
+  vpc_key_default                 = var.vpc_key_default
 }
 
 module "listener" {
@@ -110,6 +136,12 @@ module "listener" {
   listener_action_type_default       = "forward"
   listener_dns_from_zone_key_default = var.instance_dns_from_zone_key_default
   listener_map                       = local.create_elb_listener_x_map
+  name_append_default                = var.name_append_default
+  name_include_app_fields_default    = var.name_include_app_fields_default
+  name_infix_default                 = var.name_infix_default
+  name_prefix_default                = var.name_prefix_default
+  name_prepend_default               = var.name_prepend_default
+  name_suffix_default                = var.name_suffix_default
   std_map                            = var.std_map
 }
 
@@ -120,15 +152,19 @@ module "asg" {
   group_auto_scaling_num_instances_max_default           = 1
   group_auto_scaling_protect_from_scale_in_default       = var.instance_auto_scaling_protect_from_scale_in_default
   group_map                                              = local.create_asg_map
-  group_name_include_app_fields_default                  = var.name_include_app_fields_default
-  group_name_infix_default                               = var.name_infix_default
   group_suspended_processes_default = [
     # The instance currently requires manual initialization
     "InstanceRefresh",
     "ReplaceUnhealthy",
   ]
-  std_map                 = var.std_map
-  vpc_az_key_list_default = var.vpc_az_key_list_default
-  vpc_data_map            = var.vpc_data_map
-  vpc_key_default         = var.vpc_key_default
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
+  vpc_az_key_list_default         = var.vpc_az_key_list_default
+  vpc_data_map                    = var.vpc_data_map
+  vpc_key_default                 = var.vpc_key_default
 }

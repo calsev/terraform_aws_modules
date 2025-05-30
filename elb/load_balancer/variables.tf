@@ -34,8 +34,12 @@ variable "elb_map" {
     log_connection_enabled                                       = optional(bool)
     log_db_bucket                                                = optional(string)
     log_db_enabled                                               = optional(bool)
+    name_append                                                  = optional(string)
     name_include_app_fields                                      = optional(bool)
     name_infix                                                   = optional(bool)
+    name_prefix                                                  = optional(string)
+    name_prepend                                                 = optional(string)
+    name_suffix                                                  = optional(string)
     preserve_host_header                                         = optional(bool)
     port_to_protocol_to_listener_map = optional(map(map(object({
       action_map = map(object({
@@ -194,17 +198,6 @@ variable "elb_log_db_enabled_default" {
   description = "Ignored unless a bucket is specified"
 }
 
-variable "elb_name_include_app_fields_default" {
-  type        = bool
-  default     = false
-  description = "If true, the Terraform project context will be included in the name"
-}
-
-variable "elb_name_infix_default" {
-  type    = bool
-  default = true
-}
-
 variable "elb_preserve_host_header_default" {
   type    = bool
   default = false
@@ -311,14 +304,62 @@ variable "elb_xff_header_processing_mode_default" {
   }
 }
 
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = false
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
+}
+
+variable "name_infix_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
 variable "std_map" {
   type = object({
-    aws_account_id       = string
-    aws_region_name      = string
-    name_replace_regex   = string
-    resource_name_prefix = string
-    resource_name_suffix = string
-    tags                 = map(string)
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    env                            = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
   })
 }
 

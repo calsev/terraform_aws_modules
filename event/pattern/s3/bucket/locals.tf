@@ -1,5 +1,5 @@
 locals {
-  pattern = merge(
+  output_data = merge(
     {
       account = [
         var.aws_account_id == null ? var.std_map.aws_account_id : var.aws_account_id

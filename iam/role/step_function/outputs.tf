@@ -1,3 +1,3 @@
 output "data" {
-  value = module.this_role.data
+  value = local.output_data
 }

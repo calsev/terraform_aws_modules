@@ -1,20 +1,16 @@
 module "this_policy" {
-  source      = "../../../../../iam/policy/identity/access_resource"
-  access_list = var.access_list
-  name        = var.name
-  name_infix  = var.name_infix
-  name_prefix = var.name_prefix
-  resource_map = {
-    application-inference-profile = local.arn_list_application_inference_profile
-    custom-model                  = local.arn_list_model_custom
-    evaluation-job                = local.arn_list_job_evaluation
-    foundation-model              = local.arn_list_model_foundation
-    inference-profile             = local.arn_list_inference_profile
-    model-customization-job       = local.arn_list_job_model_customization
-    model-evaluation-job          = local.arn_list_job_model_evaluation
-    model-invocation-job          = local.arn_list_job_model_invocation
-    provisioned-model             = local.arn_list_model_provisioned
-  }
-  service_name = "bedrock"
-  std_map      = var.std_map
+  source                          = "../../../../../iam/policy/identity/access_resource"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  policy_access_list_default      = var.policy_access_list_default
+  policy_create_default           = var.policy_create_default
+  policy_map                      = local.lx_map
+  policy_name_append_default      = var.policy_name_append_default
+  policy_name_prefix_default      = var.policy_name_prefix_default
+  policy_service_name_default     = "bedrock"
+  std_map                         = var.std_map
 }

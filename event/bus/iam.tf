@@ -1,5 +1,5 @@
 module "resource_policy" {
-  for_each                    = local.create_policy_map
+  for_each                    = local.event_bus_map
   depends_on                  = [aws_cloudwatch_event_bus.this_bus] # This fails on new buckets
   source                      = "../../iam/policy/resource/event/bus"
   bus_name                    = each.value.event_bus_name
@@ -11,12 +11,17 @@ module "resource_policy" {
 }
 
 module "bus_policy" {
-  source         = "../../iam/policy/identity/event/bus"
-  for_each       = local.create_policy_map
-  access_list    = each.value.policy_access_list
-  event_bus_name = each.value.event_bus_name
-  name           = each.value.policy_name
-  name_infix     = each.value.policy_name_infix
-  name_prefix    = each.value.policy_name_prefix
-  std_map        = var.std_map
+  source                          = "../../iam/policy/identity/event/bus"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  policy_access_list_default      = var.policy_access_list_default
+  policy_create_default           = var.policy_create_default
+  policy_map                      = local.event_bus_map
+  policy_name_append_default      = var.policy_name_append_default
+  policy_name_prefix_default      = var.policy_name_prefix_default
+  std_map                         = var.std_map
 }

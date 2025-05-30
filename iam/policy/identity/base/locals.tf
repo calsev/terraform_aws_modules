@@ -1,13 +1,46 @@
+module "name_map" {
+  source                          = "../../../../name_map"
+  name_append_default             = trim("${var.name_append_default}_${var.policy_name_append_default}", "_")
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = trim("${var.name_prefix_default}_${var.policy_name_prefix_default}", "_")
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
+}
+
 locals {
-  name_context          = local.name_sanitized == null ? null : "${var.std_map.resource_name_prefix}${local.name_sanitized}${var.std_map.resource_name_suffix}"
-  name_prefix_sanitized = lower(replace(replace(var.name_prefix, var.std_map.name_replace_regex, "-"), "--", "-"))
-  name_sanitized        = var.name == null ? null : lower(replace(replace(var.name, var.std_map.name_replace_regex, "-"), "--", "-"))
-  name_suffix_sanitized = lower(replace(replace(var.name_suffix, var.std_map.name_replace_regex, "-"), "--", "-"))
-  policy_name           = local.name_sanitized == null ? null : var.name_infix ? "${local.name_prefix_sanitized}${local.name_context}${local.name_suffix_sanitized}" : "${local.name_prefix_sanitized}${local.name_sanitized}${local.name_suffix_sanitized}"
-  tags = local.name_sanitized == null ? null : merge(
-    var.std_map.tags,
-    {
-      Name = local.name_context
+  create_policy_map = {
+    for k, v in local.lx_map : k => v if v.policy_create
+  }
+  l0_map = {
+    for k, v in var.policy_map : k => merge(v, {
+      name_append = v.name_append == null && v.policy_name_append == null ? null : trim("${v.name_append == null ? "" : v.name_append}_${v.policy_name_append == null ? "" : v.policy_name_append}", "_")
+    })
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      policy_create = v.policy_create == null ? var.policy_create_default : v.policy_create
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
     }
-  )
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains(["iam_policy_json"], k_attr)
+      },
+      {
+        iam_policy_doc = jsondecode(v.iam_policy_json)
+        iam_policy_arn = v.policy_create ? aws_iam_policy.policy[k].arn : null
+      }
+    )
+  }
 }

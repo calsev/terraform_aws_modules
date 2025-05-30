@@ -1,21 +1,70 @@
-# Only write access makes sense
-
 variable "name" {
-  type        = string
-  default     = null
-  description = "If provided, a policy will be created"
+  type = string
 }
 
-variable "name_infix" {
-  type        = bool
-  default     = true
-  description = "If true, standard resource prefix and suffix will be applied to the policy"
-}
-
-variable "name_prefix" {
+variable "name_append_default" {
   type        = string
   default     = ""
-  description = "If provided, will be put in front of the standard prefix for the policy"
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
+}
+
+variable "name_infix_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
+variable "policy_access_list_default" {
+  type = list(string)
+  default = [
+    "write",
+  ]
+}
+
+variable "policy_create_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_append_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
 }
 
 variable "std_map" {
@@ -23,6 +72,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

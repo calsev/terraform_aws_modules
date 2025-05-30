@@ -3,13 +3,12 @@ module "name_map" {
   name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
   name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
-  name_map                        = local.l0_map
-  name_regex_allow_list           = ["."] # Do not replace "." in domain names
+  name_regex_allow_list           = var.name_regex_allow_list
   name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
-  tags_default                    = var.bucket_tags_default
 }
 
 locals {
@@ -34,7 +33,9 @@ locals {
     for k, v in local.lx_map : k => v if v.log_target_bucket_name != null
   }
   create_policy_identity_map = {
-    for k, v in local.lx_map : k => v if v.policy_identity_create
+    for k, v in local.lx_map : k => merge(v, {
+      bucket_name_list = [v.name_effective]
+    }) if v.policy_identity_create
   }
   create_policy_resource_map = {
     for k, v in local.lx_map : k => v if v.policy_resource_create
@@ -155,7 +156,7 @@ locals {
         bucket_policy_doc       = v.policy_resource_create ? module.this_bucket_policy[k].iam_policy_doc : null
         bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
         dns_alias               = v.dns_enabled ? module.dns_alias.data[k] : null
-        policy                  = v.policy_identity_create ? module.identity_policy[k].data : null
+        policy                  = v.policy_identity_create ? module.identity_policy.data[k] : null
       },
     )
   }

@@ -7,9 +7,14 @@ variable "directory_map" {
     directory_type                                = optional(string)
     domain_controller_count                       = optional(number)
     instance_size                                 = optional(string)
+    name_append                                   = optional(string)
     name_include_app_fields                       = optional(bool)
     name_infix                                    = optional(bool)
+    name_prefix                                   = optional(string)
+    name_prepend                                  = optional(string)
+    name_suffix                                   = optional(string)
     password_secret_is_param                      = optional(bool)
+    password_secret_name_append                   = optional(string)
     short_name                                    = optional(string)
     sso_enabled                                   = optional(bool)
     vpc_az_key_list                               = optional(list(string))
@@ -81,15 +86,55 @@ variable "directory_sso_enabled_default" {
   description = "Defaults to true if alias is non-null"
 }
 
+# Name is a FQDN key
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
 variable "name_include_app_fields_default" {
   type        = bool
   default     = false
-  description = "If true, the Terraform project context will be included in the name"
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type = list(string)
+  default = [
+    ".",
+  ]
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
+variable "password_secret_name_append_default" {
+  type    = string
+  default = "password"
 }
 
 variable "std_map" {
@@ -97,6 +142,8 @@ variable "std_map" {
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
+    config_name                    = string
+    env                            = string
     iam_partition                  = string
     name_replace_regex             = string
     resource_name_prefix           = string

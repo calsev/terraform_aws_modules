@@ -1,9 +1,13 @@
 module "name_map" {
   source                          = "../../name_map"
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
-  name_regex_allow_list           = ["."] # This is a FQDN key
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
   std_map                         = var.std_map
 }
 
@@ -17,6 +21,11 @@ module "vpc_map" {
 }
 
 locals {
+  create_password_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      name_append = v.password_secret_name_append
+    })
+  }
   l0_map = {
     for k, v in var.directory_map : k => v
   }
@@ -29,6 +38,7 @@ locals {
       directory_type                                = v.directory_type == null ? var.directory_type_default : v.directory_type
       instance_size                                 = v.instance_size == null ? var.directory_instance_size_default : v.instance_size
       password_secret_is_param                      = v.password_secret_is_param == null ? var.directory_password_secret_is_param_default : v.password_secret_is_param
+      password_secret_name_append                   = v.password_secret_name_append == null ? var.password_secret_name_append_default : v.password_secret_name_append
     })
   }
   l2_map = {
