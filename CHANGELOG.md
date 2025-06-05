@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.97.0
+
+### General
+
+* Several additional default VPC endpoints
+* Generate modules
+
 ## 0.96.0
 
 ### New modules

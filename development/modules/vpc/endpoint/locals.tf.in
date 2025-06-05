@@ -3,9 +3,9 @@
 locals {
   l0_list = flatten([
     for k, v in var.vpc_map : [
-      for k_end, v_end in v.endpoint_map == null ? var.endpoint_map_default : v.endpoint_map : merge(v, v_end, {
-        k_end     = k_end
-        k_vpc_end = "${k}_${k_end}"
+      for k_end, v_end in v.endpoint_map == null ? merge(var.endpoint_map_standard_default, var.endpoint_map_custom_default) : v.endpoint_map : merge(v, v_end, {
+        k_end     = replace(k_end, "-", "_")
+        k_vpc_end = replace("${k}_${k_end}", "-", "_")
       })
     ]
   ])
@@ -56,20 +56,20 @@ locals {
   output_data = {
     for k, v in var.vpc_map : k => merge(v, {
       endpoint_map = {
-        for k_end, v_end in v.endpoint_map == null ? var.endpoint_map_default : v.endpoint_map : k_end => merge(
+        for k_end, v_end in v.endpoint_map == null ? merge(var.endpoint_map_standard_default, var.endpoint_map_custom_default) : v.endpoint_map : k_end => merge(
           {
-            for k_attr, v_attr in local.lx_map["${k}_${k_end}"] : k_attr => v_attr if !contains(["iam_policy_json"], k_attr)
+            for k_attr, v_attr in local.lx_map[replace("${k}_${k_end}", "-", "_")] : k_attr => v_attr if !contains(["iam_policy_json"], k_attr)
           },
           {
             az_map = {
-              for k_az in local.lx_map["${k}_${k_end}"].vpc_az_key_list : k_az => {
-                endpoint_arn                       = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].arn
-                endpoint_cidr_list                 = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].cidr_blocks
-                endpoint_dns                       = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].dns_entry
-                endpoint_id                        = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].id
-                endpoint_network_interface_id_list = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].network_interface_ids
-                endpoint_prefix_list_id            = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].prefix_list_id
-                endpoint_requester_managed         = aws_vpc_endpoint.this_endpoint["${k}_${k_end}"].requester_managed
+              for k_az in local.lx_map[replace("${k}_${k_end}", "-", "_")].vpc_az_key_list : k_az => {
+                endpoint_arn                       = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].arn
+                endpoint_cidr_list                 = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].cidr_blocks
+                endpoint_dns                       = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].dns_entry
+                endpoint_id                        = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].id
+                endpoint_network_interface_id_list = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].network_interface_ids
+                endpoint_prefix_list_id            = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].prefix_list_id
+                endpoint_requester_managed         = aws_vpc_endpoint.this_endpoint[replace("${k}_${k_end}", "-", "_")].requester_managed
               }
             }
           },
