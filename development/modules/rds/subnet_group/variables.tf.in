@@ -1,0 +1,19 @@
+variable "group_map" {
+  type = map(object({
+    {{ name.var_item() }}
+    name_is_prefix          = optional(bool)
+    {{ vpc.var_item(sg=False) }}
+  }))
+}
+
+{{ name.var(app_fields=False) }}
+
+variable "name_is_prefix_default" {
+  type        = bool
+  default     = false
+  description = "If true, name will be used as a prefix"
+}
+
+{{ std.map() }}
+
+{{ vpc.var(sg=False) }}

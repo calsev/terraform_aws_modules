@@ -16,9 +16,9 @@ module "vpc_map" {
   vpc_az_key_list_default             = var.vpc_az_key_list_default
   vpc_data_map                        = var.vpc_data_map
   vpc_key_default                     = var.vpc_key_default
+  vpc_map                             = local.l0_map
   vpc_security_group_key_list_default = var.vpc_security_group_key_list_default
   vpc_segment_key_default             = var.vpc_segment_key_default
-  vpc_map                             = local.l0_map
 }
 
 locals {

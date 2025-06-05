@@ -1,0 +1,27 @@
+variable "host_map" {
+  type = map(object({
+    name_override               = optional(string) # This is for imported hosts
+    provider_endpoint           = string
+    provider_type               = optional(string)
+    {{ vpc.var_item() }}
+    vpc_tls_certificate         = optional(string)
+  }))
+  default = {}
+}
+
+variable "host_provider_type_default" {
+  type    = string
+  default = "GitHubEnterpriseServer"
+}
+
+variable "host_vpc_tls_certificate_default" {
+  type    = string
+  default = null
+}
+
+# Name is limited to 32 chars
+{{ name.var(infix=False, app_fields=False) }}
+
+{{ std.map() }}
+
+{{ vpc.var(map_default="null", map_desc="Must be provided if a vpc_configuration is provided") }}

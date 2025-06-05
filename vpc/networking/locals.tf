@@ -159,6 +159,12 @@ locals {
           subnet_id_map = {
             for k_az, v_az in v_seg.subnet_map : k_az => aws_subnet.this_subnet[v_az.k_az_full].id
           }
+          subnet_map = {
+            for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
+              route_table_id = aws_route_table.this_route_table[v_az.k_az_full].id
+              subnet_id      = aws_subnet.this_subnet[v_az.k_az_full].id
+            })
+          }
         }
       }
     })
@@ -176,12 +182,7 @@ locals {
         segment_map = {
           for k_seg, v_seg in v.segment_map : k_seg => merge(v_seg, {
             subnet_id_map = local.nat_instance_vpc_data_map[k].segment_map[k_seg].subnet_id_map
-            subnet_map = {
-              for k_az, v_az in v_seg.subnet_map : k_az => merge(v_az, {
-                route_table_id = aws_route_table.this_route_table[v_az.k_az_full].id
-                subnet_id      = aws_subnet.this_subnet[v_az.k_az_full].id
-              })
-            }
+            subnet_map    = local.nat_instance_vpc_data_map[k].segment_map[k_seg].subnet_map
           })
         }
       })

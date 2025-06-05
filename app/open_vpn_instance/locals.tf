@@ -13,12 +13,10 @@ module "name_map" {
 
 module "vpc_map" {
   source                  = "../../vpc/id_map"
-  vpc_map                 = local.l0_map
   vpc_az_key_list_default = var.vpc_az_key_list_default
+  vpc_data_map            = var.vpc_data_map
   vpc_key_default         = var.vpc_key_default
-  # vpc_security_group_key_list_default
-  # vpc_segment_key_default
-  vpc_data_map = var.vpc_data_map
+  vpc_map                 = local.l0_map
 }
 
 locals {
@@ -120,7 +118,7 @@ locals {
         } : {},
       ) : {}
       vpc_security_group_key_list = v.vpc_security_group_key_list == null ? local.l2_map[k].behind_elb ? var.vpc_security_group_key_list_elb_default : var.vpc_security_group_key_list_public_default : v.vpc_security_group_key_list
-      vpc_segment_key             = v.vpc_segment_key == null ? local.l2_map[k].behind_elb ? var.vpc_segment_key_elb_default : var.vpc_segment_key_public_default : v.vpc_segment_key
+      vpc_segment_key             = v.vpc_segment_key == null ? var.vpc_segment_key_default == null ? local.l2_map[k].behind_elb ? "internal" : "public" : var.vpc_segment_key_default : v.vpc_segment_key
     }
   }
   l4_map = {

@@ -1,0 +1,7 @@
+{{ vpc.var(az=[], vpc_default=False, sg=[], seg="null") }}
+
+variable "vpc_map" {
+  type = map(object({
+    {{ vpc.var_item() }}
+  }))
+}

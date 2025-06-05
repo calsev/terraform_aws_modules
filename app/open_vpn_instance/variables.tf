@@ -250,25 +250,40 @@ variable "std_map" {
 }
 
 variable "vpc_az_key_list_default" {
-  type    = list(string)
-  default = ["a", "b"]
+  type = list(string)
+  default = [
+    "a",
+    "b",
+  ]
 }
 
 variable "vpc_data_map" {
   type = map(object({
+    name_simple           = string
     security_group_id_map = map(string)
     segment_map = map(object({
       route_public  = bool
       subnet_id_map = map(string)
+      subnet_map = map(object({
+        availability_zone_name = string
+      }))
     }))
     vpc_assign_ipv6_cidr = bool
+    vpc_cidr_block       = string
     vpc_id               = string
+    vpc_ipv6_cidr_block  = string
   }))
 }
 
 variable "vpc_key_default" {
   type    = string
   default = null
+}
+
+variable "vpc_segment_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to 'internal' if behind ELB, 'public' otherwise"
 }
 
 variable "vpc_security_group_key_list_elb_default" {
@@ -291,14 +306,4 @@ variable "vpc_security_group_key_list_public_default" {
     "world_icmp_in",
     "world_open_vpn_in",
   ]
-}
-
-variable "vpc_segment_key_elb_default" {
-  type    = string
-  default = "internal"
-}
-
-variable "vpc_segment_key_public_default" {
-  type    = string
-  default = "public"
 }

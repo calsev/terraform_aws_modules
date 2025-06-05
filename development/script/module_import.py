@@ -17,7 +17,7 @@ def copy_all_modules() -> None:
             for file in sorted(files):
                 if file.endswith(".tf"):
                     rel_path = os.path.relpath(os.path.join(root, file), start=".")
-                    output_path = f"{os.path.join(TEMPLATE_DIR, rel_path)[:-3]}.in.tf"
+                    output_path = f"{os.path.join(TEMPLATE_DIR, rel_path)[:-3]}.tf.in"
                     if os.path.exists(output_path):
                         continue
                     os.makedirs(os.path.dirname(output_path), exist_ok=True)
