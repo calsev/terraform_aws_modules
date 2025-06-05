@@ -382,8 +382,10 @@ variable "name_prepend_default" {
 
 # tflint-ignore: terraform_unused_declarations
 variable "name_regex_allow_list" {
-  type        = list(string)
-  default     = []
+  type = list(string)
+  default = [
+    ".",
+  ]
   description = "By default, all punctuation is replaced by -"
 }
 

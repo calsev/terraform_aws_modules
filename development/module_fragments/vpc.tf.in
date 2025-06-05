@@ -1,0 +1,73 @@
+{% macro var_item(vpc=True, az=True, sg=True, seg=True) -%}
+  {{ [
+    ("vpc_az_key_list             = optional(list(string))", az),
+    ("vpc_key                     = optional(string)", vpc),
+    ("vpc_security_group_key_list = optional(list(string))", sg),
+    ("vpc_segment_key             = optional(string)", seg)
+  ] | conditional_lines }}
+{%- endmacro %}
+
+{% macro var(precedence="_default", az=None, az_desc=None, map_default=None, map_desc=None, vpc=None, vpc_default=True, sg=None, sg_desc=None, seg=None, seg_desc=None) -%}
+{% if az != False %}variable "vpc_az_key_list{{ precedence }}" {
+  type        = list(string)
+  default     = {{ (["a", "b"] if az is none else az) | tf_list }}{% if az_desc != None %}
+  description = "{{ az_desc }}"{% endif %}
+}
+
+{% endif %}variable "vpc_data_map" {
+  type = map(object({
+    name_simple           = string
+    security_group_id_map = map(string)
+    segment_map = map(object({
+      route_public  = bool
+      subnet_id_map = map(string)
+      subnet_map = map(object({
+        availability_zone_name = string
+      }))
+    }))
+    vpc_assign_ipv6_cidr = bool
+    vpc_cidr_block        = string
+    vpc_id                = string
+    vpc_ipv6_cidr_block   = string
+  })){% if map_default != None %}
+  default     = {{ map_default }}{% endif %}{% if map_desc %}
+  description = "{{ map_desc }}"{% endif %}
+}{% if vpc != False %}
+
+variable "vpc_key{{ precedence }}" {
+  type    = string{% if vpc_default != False %}
+  default = {{ '"' ~ (vpc) ~ '"' if vpc else "null" }}{% endif %}
+}{% endif %}{% if sg != False %}
+
+variable "vpc_security_group_key_list{{ precedence }}" {
+  type        = list(string)
+  default     = {{ (["world_all_out"] if sg is none else sg) | tf_list }}{% if sg_desc %}
+  description = "{{ sg_desc }}"{% endif %}
+}{% endif %}{% if seg != False %}
+
+variable "vpc_segment_key{{ precedence }}" {
+  type        = string
+  default     = {{ "null" if seg == "null" else '"' ~ (seg or "internal") ~ '"' }}{% if seg_desc %}
+  description = "{{ seg_desc }}"{% endif %}
+}{% endif %}
+{%- endmacro %}
+
+{% macro map(source_map="local.l0_map", vpc=True, az=True, sg=True, seg=True) -%}
+module "vpc_map" {
+  source                              = "{{ module_up }}/vpc/id_map"{% if az != False %}
+  vpc_az_key_list_default             = var.vpc_az_key_list_default{% endif %}
+  vpc_data_map                        = var.vpc_data_map{% if vpc != False %}
+  vpc_key_default                     = var.vpc_key_default{% endif %}
+  vpc_map                             = {{ source_map }}{% if sg != False %}
+  vpc_security_group_key_list_default = var.vpc_security_group_key_list_default{% endif %}{% if seg != False %}
+  vpc_segment_key_default             = var.vpc_segment_key_default{% endif %}
+}
+{%- endmacro %}
+
+{% macro map_item(precedence="_default", source="var", append=None, vpc=True, az=True, sg=True, sg_sub="", seg=True) -%}
+    {% if az != False %}vpc_az_key_list_default             = {{ source }}.vpc_az_key_list{{ precedence }}
+    {% endif %}vpc_data_map                        = {{ source }}.vpc_data_map{% if vpc != False %}
+    vpc_key_default                     = {{ source }}.vpc_key{{ precedence }}{% endif %}{% if sg != False %}
+    vpc_security_group_key_list_default = {{ source }}.vpc_security_group_key_list{{ sg_sub }}{{ precedence }}{% endif %}{% if seg != False %}
+    vpc_segment_key_default             = {{ source }}.vpc_segment_key{{ precedence }}{% endif %}
+{%- endmacro %}

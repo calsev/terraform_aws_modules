@@ -12,6 +12,15 @@ loader = jinja2.FileSystemLoader(searchpath=".")
 env = jinja2.Environment(loader=loader)
 
 
+def conditional_lines(lines: list[tuple[str, bool]], **kwargs):
+    return "\n".join(
+        jinja2.Template(line).render(**kwargs) for line, include in lines if include
+    )
+
+
+env.filters["conditional_lines"] = conditional_lines
+
+
 def tf_list(items: list[str], indent=2) -> str:
     indent_space = "  " * indent
     bracket_space = "  " * (indent - 1)
@@ -31,16 +40,16 @@ def discover_fragment_names() -> list[str]:
     names = []
     for root, _, files in os.walk(FRAGMENT_DIR):
         for file in files:
-            if file.endswith(".in.tf"):
+            if file.endswith(".tf.in"):
                 rel_path = os.path.relpath(os.path.join(root, file), FRAGMENT_DIR)
-                names.append(rel_path[:-6].replace(os.sep, "_"))  # Strip `.in.tf`
+                names.append(rel_path[:-6].replace(os.sep, "_"))  # Strip `.tf.in`
     return names
 
 
 def macro_imports() -> str:
     fragment_names = discover_fragment_names()
     import_lines = [
-        f'{{% import "{FRAGMENT_DIR}/{frag}.in.tf" as {frag} %}}'
+        f'{{% import "{FRAGMENT_DIR}/{frag}.tf.in" as {frag} %}}'
         for frag in fragment_names
     ]
     return "".join(import_lines)
@@ -90,7 +99,7 @@ def render_one_tf_module(global_import_str: str, template_file: str) -> str:
 def ensure_all_files(root: str, files: list[str]) -> None:
     # Copy standard files if missing
     for std_file in ["outputs", "versions"]:
-        if files and f"{std_file}.in.tf" not in files:
+        if files and f"{std_file}.tf.in" not in files:
             src_path = os.path.join(FRAGMENT_DIR, f"{std_file}.tf")
             rel_dir = os.path.relpath(root, TEMPLATE_DIR)
             dst_path = os.path.join(rel_dir, f"{std_file}.tf")
@@ -109,13 +118,13 @@ def render_all_tf_modules() -> None:
         file_list.sort(key=lambda _: 0)
         for root, files in file_list:
             for file in sorted(files):
-                if file.endswith(".in.tf"):
+                if file.endswith(".tf.in"):
                     abs_path = os.path.join(root, file)
                     rel_path = os.path.relpath(abs_path, TEMPLATE_DIR)
-                    # if file == "outputs.in.tf":
+                    # if file == "outputs.tf.in":
                     #     os.remove(os.path.join(TEMPLATE_DIR, rel_path))
                     #     continue
-                    output_path = rel_path[:-6] + ".tf"  # Strip `.in.tf`
+                    output_path = rel_path[:-6] + ".tf"  # Strip `.tf.in`
                     rendered = render_one_tf_module(global_import_str, rel_path)
                     os.makedirs(os.path.dirname(output_path), exist_ok=True)
                     with open(output_path, "w") as f:

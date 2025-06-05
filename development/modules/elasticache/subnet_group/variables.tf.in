@@ -1,0 +1,12 @@
+variable "group_map" {
+  type = map(object({
+    {{ name.var_item() }}
+    {{ vpc.var_item(sg=False) }}
+  }))
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+{{ vpc.var(sg=False) }}

@@ -1,15 +1,14 @@
 variable "group_map" {
   type = map(object({
-    name_append                 = optional(string)
-    name_include_app_fields     = optional(bool)
-    name_infix                  = optional(bool)
-    name_prefix                 = optional(string)
-    name_prepend                = optional(string)
-    name_suffix                 = optional(string)
-    vpc_az_key_list             = optional(list(string))
-    vpc_key                     = optional(string)
-    vpc_security_group_key_list = optional(list(string))
-    vpc_segment_key             = optional(string)
+    name_append             = optional(string)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_prefix             = optional(string)
+    name_prepend            = optional(string)
+    name_suffix             = optional(string)
+    vpc_az_key_list         = optional(list(string))
+    vpc_key                 = optional(string)
+    vpc_segment_key         = optional(string)
   }))
 }
 
@@ -73,23 +72,29 @@ variable "std_map" {
 }
 
 variable "vpc_az_key_list_default" {
-  type    = list(string)
-  default = ["a", "b"]
+  type = list(string)
+  default = [
+    "a",
+    "b",
+  ]
 }
 
 variable "vpc_data_map" {
   type = map(object({
+    name_simple           = string
     security_group_id_map = map(string)
     segment_map = map(object({
       route_public  = bool
       subnet_id_map = map(string)
+      subnet_map = map(object({
+        availability_zone_name = string
+      }))
     }))
-    vpc_cidr_block      = string
-    vpc_id              = string
-    vpc_ipv6_cidr_block = string
+    vpc_assign_ipv6_cidr = bool
+    vpc_cidr_block       = string
+    vpc_id               = string
+    vpc_ipv6_cidr_block  = string
   }))
-  default     = null
-  description = "Must be provided if one or more "
 }
 
 variable "vpc_key_default" {

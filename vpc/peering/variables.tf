@@ -57,7 +57,7 @@ variable "std_map" {
   })
 }
 
-variable "vpc_data_map" {
+variable "vpc_map" {
   type = map(object({
     segment_map = map(object({
       route_internal = bool

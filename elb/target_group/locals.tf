@@ -13,9 +13,9 @@ module "name_map" {
 
 module "vpc_map" {
   source          = "../../vpc/id_map"
-  vpc_map         = var.target_map
-  vpc_key_default = var.vpc_key_default
   vpc_data_map    = var.vpc_data_map
+  vpc_key_default = var.vpc_key_default
+  vpc_map         = local.l0_map
 }
 
 locals {

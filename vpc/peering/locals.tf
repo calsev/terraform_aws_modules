@@ -26,7 +26,7 @@ locals {
     ])
   ]))
   l0_map = {
-    for k, v in var.vpc_data_map : k => v
+    for k, v in var.vpc_map : k => v
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {

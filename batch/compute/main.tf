@@ -14,10 +14,10 @@ module "compute_common" {
   set_ecs_cluster_in_user_data             = false
   std_map                                  = var.std_map
   vpc_az_key_list_default                  = var.vpc_az_key_list_default
+  vpc_data_map                             = var.vpc_data_map
   vpc_key_default                          = var.vpc_key_default
   vpc_security_group_key_list_default      = var.vpc_security_group_key_list_default
   vpc_segment_key_default                  = var.vpc_segment_key_default
-  vpc_data_map                             = var.vpc_data_map
 }
 
 resource "aws_batch_compute_environment" "this_compute_env" {

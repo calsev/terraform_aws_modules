@@ -1,0 +1,7 @@
+module "code_build" {
+  source                              = "../../ci_cd/build"
+  ci_cd_account_data                  = var.ci_cd_account_data
+  repo_map                            = local.create_build_map
+  std_map                             = var.std_map
+  {{ vpc.map_item() }}
+}

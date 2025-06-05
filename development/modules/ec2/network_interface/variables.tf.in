@@ -1,0 +1,26 @@
+variable "interface_map" {
+  type = map(object({
+    ipv6_address_count          = optional(number)
+    {{ name.var_item() }}
+    private_ip_count            = optional(number)
+    {{ vpc.var_item() }}
+  }))
+}
+
+variable "interface_ipv6_address_count_default" {
+  type        = number
+  default     = 1
+  description = "Ignored if VPC does not support IPv6"
+}
+
+variable "interface_private_ip_count_default" {
+  type        = number
+  default     = 0
+  description = "This is the number of extra IPs, beyond the default"
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+{{ vpc.var(az=["a"], az_desc="The first value will be used") }}

@@ -34,8 +34,8 @@ variable "rotation_map" {
     rotation_value_key_to_replace                      = optional(string)
     rotation_value_list_max_length                     = optional(number)
     secret_key                                         = optional(string) # Defaults to key
-    vpc_az_key_list                                    = optional(list(string))
     vpc_ipv6_allowed                                   = optional(bool)
+    vpc_az_key_list                                    = optional(list(string))
     vpc_key                                            = optional(string)
     vpc_security_group_key_list                        = optional(list(string))
     vpc_segment_key                                    = optional(string)
@@ -161,21 +161,31 @@ variable "std_map" {
 }
 
 variable "vpc_az_key_list_default" {
-  type    = list(string)
-  default = ["a", "b"]
+  type = list(string)
+  default = [
+    "a",
+    "b",
+  ]
 }
 
 variable "vpc_data_map" {
   type = map(object({
+    name_simple           = string
     security_group_id_map = map(string)
     segment_map = map(object({
       route_public  = bool
       subnet_id_map = map(string)
+      subnet_map = map(object({
+        availability_zone_name = string
+      }))
     }))
-    vpc_id = string
+    vpc_assign_ipv6_cidr = bool
+    vpc_cidr_block       = string
+    vpc_id               = string
+    vpc_ipv6_cidr_block  = string
   }))
   default     = null
-  description = "Must be provided if any function is configured in a VPC"
+  description = "Must be provided if any rotation is configured in a VPC"
 }
 
 variable "vpc_key_default" {
@@ -184,8 +194,10 @@ variable "vpc_key_default" {
 }
 
 variable "vpc_security_group_key_list_default" {
-  type    = list(string)
-  default = ["world_all_out"]
+  type = list(string)
+  default = [
+    "world_all_out",
+  ]
 }
 
 variable "vpc_segment_key_default" {

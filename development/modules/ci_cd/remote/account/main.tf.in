@@ -1,0 +1,18 @@
+module "host" {
+  source                              = "../../../ci_cd/remote/host"
+  host_map                            = var.host_map
+  host_provider_type_default          = var.host_provider_type_default
+  host_vpc_tls_certificate_default    = var.host_vpc_tls_certificate_default
+  std_map                             = var.std_map
+  {{ vpc.map_item() }}
+}
+
+module "connection" {
+  source                           = "../../../ci_cd/remote/connection"
+  connection_map                   = var.connection_map
+  connection_host_key_default      = var.connection_host_key_default
+  connection_provider_type_default = var.connection_provider_type_default
+  host_data_map                    = module.host.data
+  {{ iam.policy_map_item_ar() }}
+  std_map                          = var.std_map
+}
