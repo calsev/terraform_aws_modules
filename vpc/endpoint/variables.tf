@@ -37,7 +37,36 @@ variable "vpc_map" {
   }))
 }
 
-variable "endpoint_map_default" {
+variable "endpoint_map_custom_default" {
+  type = map(object({
+    auto_accept_enabled  = optional(bool)
+    dns_record_ip_type   = optional(string)
+    endpoint_segment_key = optional(string)
+    endpoint_subnet_map = optional(map(object({
+      # Optional addresses, for Gateway endpoints only
+      ipv4_address = optional(string)
+      ipv6_address = optional(string)
+    })), {})
+    endpoint_type                                  = optional(string)
+    iam_policy_json                                = optional(string)
+    ip_address_type                                = optional(string)
+    name_append                                    = optional(string)
+    name_include_app_fields                        = optional(bool)
+    name_infix                                     = optional(bool)
+    name_prefix                                    = optional(string)
+    name_prepend                                   = optional(string)
+    name_suffix                                    = optional(string)
+    private_dns_enabled                            = optional(bool)
+    private_dns_for_inbound_resolver_endpoint_only = optional(bool)
+    service_name_override                          = optional(string)
+    service_name_short                             = optional(string)
+    vpc_security_group_key_list                    = optional(list(string))
+  }))
+  default     = {}
+  description = "These endoints are merged with standard defaults"
+}
+
+variable "endpoint_map_standard_default" {
   type = map(object({
     auto_accept_enabled  = optional(bool)
     dns_record_ip_type   = optional(string)
@@ -63,7 +92,7 @@ variable "endpoint_map_default" {
     vpc_security_group_key_list                    = optional(list(string))
   }))
   default = {
-    "ec2" = {
+    ec2 = {
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -83,7 +112,108 @@ variable "endpoint_map_default" {
       service_name_short                             = null
       vpc_security_group_key_list                    = null
     }
+    "ecr.api" = {
+      auto_accept_enabled                            = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = null
+      iam_policy_json                                = null
+      ip_address_type                                = "ipv4"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+    "ecr.dkr" = {
+      auto_accept_enabled                            = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = null
+      iam_policy_json                                = null
+      ip_address_type                                = "ipv4"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+    ssm = {
+      auto_accept_enabled                            = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = null
+      iam_policy_json                                = null
+      ip_address_type                                = "ipv4"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+    ssm-contacts = {
+      auto_accept_enabled                            = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = null
+      iam_policy_json                                = null
+      ip_address_type                                = "dualstack"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+    ssm-incidents = {
+      auto_accept_enabled                            = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = null
+      iam_policy_json                                = null
+      ip_address_type                                = "dualstack"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
   }
+  description = "These endoints are required to avoid security violations, and are merged with custom defaults"
 }
 
 variable "endpoint_auto_accept_enabled_default" {
