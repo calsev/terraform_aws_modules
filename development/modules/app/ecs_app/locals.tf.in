@@ -175,18 +175,23 @@ locals {
       desired_count                    = v.desired_count == null ? var.service_desired_count_default : v.desired_count
       elb_target_map = v.elb_target_map == null ? var.service_elb_target_map_default == null ? { blue = {
         # This includes only the initial target; blue-green deployments handle toggling the target
-        acm_certificate_key = null
-        container_name      = null
-        container_port      = null
-        dns_alias_fqdn      = null
-        listen_port         = null
-        rule_condition_map  = null
-        rule_priority       = null
+        acm_certificate_key          = null
+        container_name               = null
+        container_port               = null
+        dns_alias_fqdn               = null
+        elb_key                      = null
+        health_check_port            = null
+        health_check_protocol        = null
+        listen_port                  = null
+        listen_protocol              = null
+        rule_condition_map           = null
+        rule_priority                = null
+        target_protocol              = null
+        target_protocol_http_version = null
       } } : var.service_elb_target_map_default : v.elb_target_map
       image_build_arch_list            = v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
       image_ecr_repo_key               = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
       image_tag_base                   = v.image_tag_base == null ? var.build_image_tag_base_default : v.image_tag_base
-      listen_protocol                  = v.listen_protocol == null ? var.listener_listen_protocol_default : v.listen_protocol
       path_include_env                 = v.path_include_env == null ? var.app_path_include_env_default : v.path_include_env
       path_repo_root_to_spec_directory = v.path_repo_root_to_spec_directory == null ? var.app_path_repo_root_to_spec_directory_default : v.path_repo_root_to_spec_directory
       path_terraform_app_to_repo_root  = trim(v.path_terraform_app_to_repo_root == null ? var.app_path_terraform_app_to_repo_root_default : v.path_terraform_app_to_repo_root, "/")
@@ -196,6 +201,11 @@ locals {
     for k, v in local.l0_map : k => {
       auto_scaling_num_instances_max = local.l1_map[k].desired_count * 2
       deployment_controller_type     = length(local.l1_map[k].elb_target_map) == 1 ? v.deployment_controller_type == null ? var.service_deployment_controller_type_default : v.deployment_controller_type : "ECS"
+      elb_target_map = {
+        for k_targ, v_targ in local.l1_map[k].elb_target_map : k_targ => merge(v_targ, {
+          listen_protocol   = v_targ.listen_protocol == null ? var.listener_listen_protocol_default : v_targ.listen_protocol
+        })
+      }
       image_build_enabled            = length(local.l1_map[k].image_build_arch_list) != 0
       image_has_default              = var.ecr_data_map != null && local.l1_map[k].image_ecr_repo_key != null && local.l1_map[k].image_tag_base != null
       path_env_suffix                = local.l1_map[k].path_include_env ? "_${var.std_map.env}" : ""
@@ -228,7 +238,7 @@ locals {
       )
       elb_target_map = {
         # These keys must match the unrolled target keys, even if a single-keyed target uses blue-green
-        for k_targ, v_targ in local.l1_map[k].elb_target_map : local.l3_map[k].deployment_style_use_blue_green ? "${k}_blue" : "${k}_${k_targ}" => v_targ
+        for k_targ, v_targ in local.l2_map[k].elb_target_map : local.l3_map[k].deployment_style_use_blue_green ? "${k}_blue" : "${k}_${k_targ}" => v_targ
       }
     }
   }
@@ -236,7 +246,7 @@ locals {
     for k, v in local.l0_map : k => {
       listen_target_list = flatten([
         # The product of targets and deployment environments
-        for k_targ, v_targ in local.l1_map[k].elb_target_map : [ # This is intentionally l1
+        for k_targ, v_targ in local.l2_map[k].elb_target_map : [ # This is intentionally l2
           for k_dep, v_dep in local.l4_map[k].deployment_environment_map : merge(
             v_targ,
             v_dep,
@@ -260,7 +270,7 @@ locals {
               action_type  = "forward"
             }
           })
-          rule_condition_map = merge(v_lt.rule_condition_map == null ? var.rule_condition_map_default : v_lt.rule_condition_map, startswith(local.l1_map[k].listen_protocol, "HTTP") ? {
+          rule_condition_map = merge(v_lt.rule_condition_map == null ? var.rule_condition_map_default : v_lt.rule_condition_map, startswith(v_lt.listen_protocol, "HTTP") ? {
             host_match = {}
           } : {})
         })

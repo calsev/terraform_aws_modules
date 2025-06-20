@@ -16,7 +16,7 @@ locals {
         },
         {
           identifier_list = [
-            for aws_account_id in v.aws_account_id_list : "arn:${var.std_map.iam_partition}:iam::${aws_account_id}:root"
+            for aws_account_id in v.aws_account_id_list : startswith(aws_account_id, "arn:") ? aws_account_id : "arn:${var.std_map.iam_partition}:iam::${aws_account_id}:root"
           ]
           identifier_type = "AWS"
         },

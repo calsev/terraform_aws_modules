@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.98.0
+
+### General
+
+* AWS provider 6 support
+* ECS per-port ELB mapping
+* ECS custom instance profile
+
 ## 0.97.0
 
 ### General

@@ -134,6 +134,7 @@ variable "task_map" {
       environment_file_list = optional(list(string))
       environment_map       = optional(map(string))
       entry_point           = optional(list(string))
+      hostname              = optional(string)
       image                 = optional(string)
       is_essential          = optional(bool)
       mount_point_map = optional(map(object({

@@ -1,6 +1,7 @@
 import os
 import pathlib
 import shutil
+import typing
 
 import jinja2
 import typer
@@ -12,7 +13,7 @@ loader = jinja2.FileSystemLoader(searchpath=".")
 env = jinja2.Environment(loader=loader)
 
 
-def conditional_lines(lines: list[tuple[str, bool]], **kwargs):
+def conditional_lines(lines: list[tuple[str, bool]], **kwargs: typing.Any):
     return "\n".join(
         jinja2.Template(line).render(**kwargs) for line, include in lines if include
     )
@@ -21,7 +22,7 @@ def conditional_lines(lines: list[tuple[str, bool]], **kwargs):
 env.filters["conditional_lines"] = conditional_lines
 
 
-def tf_list(items: list[str], indent=2) -> str:
+def tf_list(items: list[str], indent: int = 2) -> str:
     indent_space = "  " * indent
     bracket_space = "  " * (indent - 1)
     if not items:
@@ -36,8 +37,23 @@ def tf_list(items: list[str], indent=2) -> str:
 env.filters["tf_list"] = tf_list
 
 
+def tf_map(map: dict[str, str], indent: int = 2) -> str:
+    indent_space = "  " * indent
+    bracket_space = "  " * (indent - 1)
+    if not map:
+        return "{}"
+    return (
+        "{\n"
+        + "".join(f'{indent_space}{k} = "{v}"\n' for k, v in map.items())
+        + f"{bracket_space}}}"
+    )
+
+
+env.filters["tf_map"] = tf_map
+
+
 def discover_fragment_names() -> list[str]:
-    names = []
+    names: list[str] = []
     for root, _, files in os.walk(FRAGMENT_DIR):
         for file in files:
             if file.endswith(".tf.in"):
@@ -115,18 +131,18 @@ def render_all_tf_modules() -> None:
             continue
 
         file_list = [(root, files) for root, _, files in os.walk(abs_module_path)]
-        file_list.sort(key=lambda _: 0)
+        file_list.sort(key=lambda t: t[0])
         for root, files in file_list:
+            rel_root = os.path.relpath(root, TEMPLATE_DIR)
+            os.makedirs(rel_root, exist_ok=True)
             for file in sorted(files):
                 if file.endswith(".tf.in"):
-                    abs_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(abs_path, TEMPLATE_DIR)
+                    rel_path = os.path.join(rel_root, file)
                     # if file == "outputs.tf.in":
                     #     os.remove(os.path.join(TEMPLATE_DIR, rel_path))
                     #     continue
                     output_path = rel_path[:-6] + ".tf"  # Strip `.tf.in`
                     rendered = render_one_tf_module(global_import_str, rel_path)
-                    os.makedirs(os.path.dirname(output_path), exist_ok=True)
                     with open(output_path, "w") as f:
                         f.write(rendered)
             ensure_all_files(root, files)

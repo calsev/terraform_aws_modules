@@ -6,6 +6,7 @@ variable "compute_map" {
     auto_scaling_protect_from_scale_in       = optional(bool)
     elb_target_group_key_list                = optional(list(string))
     health_check_type                        = optional(string)
+    iam_instance_profile_arn                 = optional(string)
     image_id                                 = optional(string)
     instance_allocation_type                 = optional(string)
     instance_storage_gib                     = optional(number)
@@ -56,6 +57,12 @@ variable "compute_health_check_type_default" {
     condition     = var.compute_health_check_type_default == null ? true : contains(["EC2", "ELB"], var.compute_health_check_type_default)
     error_message = "Invalid health check type"
   }
+}
+
+variable "compute_iam_instance_profile_arn_default" {
+  type        = string
+  default     = null
+  description = "Defaults to role from iam_data"
 }
 
 variable "compute_image_id_default" {

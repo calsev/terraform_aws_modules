@@ -96,7 +96,7 @@ variable "secret_random_init_key_default" {
 
 variable "secret_random_init_map_default" {
   type        = map(string)
-  default     = null
+  default     = {}
   description = "If provided, will be merged with the secret key, if provided"
 }
 
