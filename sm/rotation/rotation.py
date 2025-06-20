@@ -149,7 +149,7 @@ def lambda_handler(
     event: dict[str, typing.Any],
     context: dict[str, typing.Any],
 ) -> None:
-    service_client = boto3.client("secretsmanager")
+    service_client: typing.Any = boto3.client("secretsmanager")
     validate_version_is_staged_correctly(
         service_client=service_client,
         secret_id=event["SecretId"],

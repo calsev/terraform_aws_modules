@@ -72,6 +72,7 @@ module "ecs_cluster" {
   compute_auto_scaling_num_instances_max_default    = var.compute_auto_scaling_num_instances_max_default
   compute_auto_scaling_num_instances_min_default    = var.compute_auto_scaling_num_instances_min_default
   compute_health_check_type_default                 = "ELB"
+  compute_iam_instance_profile_arn_default          = var.compute_iam_instance_profile_arn_default
   compute_image_id_default                          = var.compute_image_id_default
   compute_instance_storage_gib_default              = var.compute_instance_storage_gib_default
   compute_instance_type_default                     = var.compute_instance_type_default

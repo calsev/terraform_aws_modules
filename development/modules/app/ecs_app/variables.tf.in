@@ -71,12 +71,14 @@ variable "app_map" {
       name = string
     }))
     container_definition_map = map(object({
-      command_join          = optional(bool)
-      command_list          = optional(list(string))
-      environment_file_list = optional(list(string))
-      environment_map       = optional(map(string))
-      entry_point           = optional(list(string))
-      image                 = optional(string) # Will be defaulted if image_ecr_repo_create
+      command_join               = optional(bool)
+      command_list               = optional(list(string))
+      environment_file_list      = optional(list(string))
+      environment_map            = optional(map(string))
+      entry_point                = optional(list(string))
+      hostname                   = optional(string)
+      image                      = optional(string) # Will be defaulted if image_ecr_repo_create
+      is_essential               = optional(bool)
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -115,11 +117,15 @@ variable "app_map" {
     })))
     elb_health_check_grace_period_seconds = optional(number)
     elb_target_map = optional(map(object({
-      acm_certificate_key = optional(string)
-      container_name      = optional(string)
-      container_port      = optional(number)
-      dns_alias_fqdn      = optional(string)
-      listen_port         = optional(number) # Defaults to prod/test ports
+      acm_certificate_key   = optional(string)
+      container_name        = optional(string)
+      container_port        = optional(number)
+      dns_alias_fqdn        = optional(string)
+      elb_key               = optional(string)
+      health_check_port     = optional(number)
+      health_check_protocol = optional(string)
+      listen_port           = optional(number) # Defaults to prod/test ports
+      listen_protocol       = optional(string)
       rule_condition_map = optional(map(object({
         host_header_pattern_list = optional(list(string))
         http_header_map = optional(map(object({
@@ -133,17 +139,16 @@ variable "app_map" {
         })))
         source_ip_list = optional(list(string))
       })))
-      rule_priority = optional(number)
+      rule_priority                = optional(number)
+      target_protocol              = optional(string)
+      target_protocol_http_version = optional(string)
     })))
-    elb_key                                    = optional(string)
     health_check_consecutive_fail_threshold    = optional(number)
     health_check_consecutive_success_threshold = optional(number)
     health_check_enabled                       = optional(bool)
     health_check_http_path                     = optional(string)
     health_check_interval_seconds              = optional(number)
     health_check_no_response_timeout_seconds   = optional(number)
-    health_check_port                          = optional(number)
-    health_check_protocol                      = optional(string)
     health_check_success_code_list             = optional(list(number))
     host_volume_map = optional(map(object({
       host_path = optional(string)
@@ -154,11 +159,11 @@ variable "app_map" {
     image_environment_key_arch        = optional(string)
     image_environment_key_tag         = optional(string)
     image_id                          = optional(string) # This is for the AMI
+    iam_instance_profile_arn          = optional(string)
     image_tag_base                    = optional(string)
     instance_storage_gib              = optional(number)
     instance_type                     = optional(string)
     key_pair_key                      = optional(string)
-    listen_protocol                   = optional(string)
     {{ name.var_item() }}
     path_include_env                  = optional(bool)
     path_repo_root_to_spec_directory  = optional(string)
@@ -174,8 +179,6 @@ variable "app_map" {
     source_code_star_connection_key   = optional(string)
     source_detect_changes             = optional(bool)
     source_repository_id              = optional(string)
-    target_protocol                   = optional(string)
-    target_protocol_http_version      = optional(string)
     trigger_map = optional(map(object({
       event_list    = optional(list(string))
       sns_topic_arn = optional(string)
@@ -365,6 +368,12 @@ variable "compute_auto_scaling_num_instances_min_default" {
 variable "compute_image_id_default" {
   type    = string
   default = null
+}
+
+variable "compute_iam_instance_profile_arn_default" {
+  type        = string
+  default     = null
+  description = "Defaults to role from iam_data"
 }
 
 variable "compute_instance_storage_gib_default" {
@@ -884,11 +893,15 @@ variable "service_elb_health_check_grace_period_seconds_default" {
 
 variable "service_elb_target_map_default" {
   type = map(object({
-    acm_certificate_key = optional(string)
-    container_name      = optional(string)
-    container_port      = optional(number)
-    dns_alias_fqdn      = optional(string)
-    listen_port         = optional(number)
+    acm_certificate_key   = optional(string)
+    container_name        = optional(string)
+    container_port        = optional(number)
+    dns_alias_fqdn        = optional(string)
+    elb_key               = optional(string)
+    health_check_port     = optional(number)
+    health_check_protocol = optional(string)
+    listen_port           = optional(number) # Defaults to prod/test ports
+    listen_protocol       = optional(string)
     rule_condition_map = optional(map(object({
       host_header_pattern_list = optional(list(string))
       http_header_map = optional(map(object({
@@ -902,7 +915,9 @@ variable "service_elb_target_map_default" {
       })))
       source_ip_list = optional(list(string))
     })))
-    rule_priority = optional(number)
+    rule_priority                = optional(number)
+    target_protocol              = optional(string)
+    target_protocol_http_version = optional(string)
   }))
   default     = null
   description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."

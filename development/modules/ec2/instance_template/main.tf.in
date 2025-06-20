@@ -101,18 +101,6 @@ resource "aws_launch_template" "this_launch_template" {
   default_version  = null
   disable_api_stop = each.value.api_stop_disabled
   ebs_optimized    = each.value.ebs_optimized
-  dynamic "elastic_gpu_specifications" {
-    for_each = {} # GPU
-    content {
-      type = each.value.elastic_gpu_type
-    }
-  }
-  dynamic "elastic_inference_accelerator" {
-    for_each = {} # GPU
-    content {
-      type = each.value.elastic_inference_accelerator_type
-    }
-  }
   enclave_options {
     enabled = each.value.nitro_enclaves_enabled
   }

@@ -176,6 +176,7 @@ locals {
             for file in v_def.environment_file_list == null ? var.task_container_environment_file_list_default : v_def.environment_file_list : file
           ]
           essential = v_def.is_essential == null ? var.task_container_is_essential_default : v_def.is_essential
+          hostname  = v_def.hostname
           image     = v_def.image != null ? v_def.image : var.task_container_image_default
           linuxParameters = {
             initProcessEnabled = true

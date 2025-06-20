@@ -29,6 +29,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       capability_type                         = "EC2" # Consumed by ecs_task
+      iam_instance_profile_arn                = v.iam_instance_profile_arn == null ? var.compute_iam_instance_profile_arn_default == null ? var.iam_data.iam_instance_profile_arn_ecs : var.compute_iam_instance_profile_arn_default : v.iam_instance_profile_arn
       k_log                                   = "${k}_exec"
       log_retention_days                      = v.log_retention_days == null ? var.compute_log_retention_days_default : v.log_retention_days
       provider_instance_warmup_period_s       = v.provider_instance_warmup_period_s == null ? var.compute_provider_instance_warmup_period_s_default : v.provider_instance_warmup_period_s
