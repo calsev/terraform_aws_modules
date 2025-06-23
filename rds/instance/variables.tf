@@ -1,3 +1,18 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "engine_to_security_group_key_list" {
   type = map(list(string))
   default = {
@@ -15,7 +30,21 @@ variable "engine_to_security_group_key_list" {
 
 variable "db_map" {
   type = map(object({
-    active_directory_domain               = optional(string)
+    active_directory_domain = optional(string)
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
     allocated_storage_gib                 = optional(number)
     allocated_storage_max_gib             = optional(number) # Set nonzero to enable storage autoscaling
     allow_major_version_upgrade           = optional(bool)
@@ -80,6 +109,109 @@ variable "db_map" {
 variable "db_active_directory_domain_default" {
   type    = string
   default = null
+}
+
+variable "db_alarm_map_default" {
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+  default = {
+    cpu_utilization = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when CPU utilization is high for database %s"
+      alarm_name                          = "CPU Usage for %s"
+      alert_level                         = null
+      metric_name                         = "CPUUtilization"
+      metric_namespace                    = "AWS/RDS"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+    disk_queue = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when disk queue depth is high for database %s"
+      alarm_name                          = "Disk Queue for %s"
+      alert_level                         = null
+      metric_name                         = "DiskQueueDepth"
+      metric_namespace                    = "AWS/RDS"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 10
+    }
+    freeable_memory = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when freeable memory is low for database %s"
+      alarm_name                          = "Free Memory for %s"
+      alert_level                         = null
+      metric_name                         = "FreeableMemory"
+      metric_namespace                    = "AWS/RDS"
+      statistic_comparison_operator       = "LessThanThreshold"
+      statistic_evaluation_period_count   = 3
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 1024 * 1024 * 1024 # 1 GiB
+    }
+    read_iops = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when read IOPS is high for database %s"
+      alarm_name                          = "Read IOPS for %s"
+      alert_level                         = null
+      metric_name                         = "ReadIOPS"
+      metric_namespace                    = "AWS/RDS"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 3
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 500
+    }
+    storage_space = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when storage is low for database %s"
+      alarm_name                          = "Storage for %s"
+      alert_level                         = null
+      metric_name                         = "FreeStorageSpace"
+      metric_namespace                    = "AWS/RDS"
+      statistic_comparison_operator       = "LessThanThreshold"
+      statistic_evaluation_period_count   = 3
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 10 * 1024 * 1024 * 1024 # 10 GiB
+    }
+    write_iops = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when write IOPS is high for database %s"
+      alarm_name                          = "Write IOPS for %s"
+      alert_level                         = null
+      metric_name                         = "WriteIOPS"
+      metric_namespace                    = "AWS/RDS"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 3
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 500
+    }
+  }
 }
 
 variable "db_allocated_storage_gib_default" {

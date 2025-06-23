@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.99.0
+
+### General
+
+* RDS monitoring
+
 ## 0.98.0
 
 ### General

@@ -84,3 +84,9 @@ resource "aws_db_instance" "this_db" {
   username               = each.value.username
   vpc_security_group_ids = each.value.security_group_id_list
 }
+
+module "alarm" {
+  source    = "../../cw/metric_alarm"
+  alarm_map = local.create_alarm_x_map
+  std_map   = var.std_map
+}
