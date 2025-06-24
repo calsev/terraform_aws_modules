@@ -1,0 +1,30 @@
+variable "alarm_map" {
+  type = map(object({
+    {{ alarm.var_item() }}
+  }))
+}
+
+variable "alarm_map_default" {
+  {{ alarm.var_default_type() }}
+}
+
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
+variable "name_map" {
+  type = map(object({
+    name_effective = string
+  }))
+}

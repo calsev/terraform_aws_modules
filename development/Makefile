@@ -152,6 +152,7 @@ tf-lint: tflint-install
 	cd ../config/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../config/recorder && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cw/alarm_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/config_ecs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/log_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cw/metric_alarm && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

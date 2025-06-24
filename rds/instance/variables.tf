@@ -3,16 +3,6 @@ variable "alert_level_default" {
   default = "general_medium"
 }
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
-
 variable "engine_to_security_group_key_list" {
   type = map(list(string))
   default = {
@@ -508,6 +498,16 @@ variable "iam_data" {
   })
   default     = null
   description = "Must be provided if performance insights are enabled - they are by default"
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
 }
 
 variable "name_append_default" {

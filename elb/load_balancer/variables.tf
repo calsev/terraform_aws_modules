@@ -1,3 +1,8 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "dns_data" {
   type = object({
     domain_to_dns_zone_map = map(object({
@@ -12,7 +17,21 @@ variable "dns_data" {
 
 variable "elb_map" {
   type = map(object({
-    acm_certificate_key                                          = optional(string) # Will be injected into HTTPS listener
+    acm_certificate_key = optional(string) # Will be injected into HTTPS listener
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
     desync_mitigation_mode                                       = optional(string)
     dns_from_zone_key                                            = optional(string)
     dns_record_client_routing_policy                             = optional(string)
@@ -64,6 +83,67 @@ variable "elb_map" {
     waf_key                     = optional(string)
     xff_header_processing_mode  = optional(string)
   }))
+}
+
+variable "elb_alarm_map_default" {
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+  default = {
+    server_5xx = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when 5xx responses are high on %s"
+      alarm_name                          = "Unhealthy host on %s"
+      alert_level                         = null
+      metric_name                         = "HTTPCode_Target_5XX_Count"
+      metric_namespace                    = "AWS/ApplicationELB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 10
+    }
+    target_latency = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when target response time is high on %s"
+      alarm_name                          = "Unhealthy host on %s"
+      alert_level                         = null
+      metric_name                         = "TargetResponseTime"
+      metric_namespace                    = "AWS/ApplicationELB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 5
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 5
+    }
+    unhealthy_host = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when an unhealthy host is attached to %s"
+      alarm_name                          = "Unhealthy host on %s"
+      alert_level                         = null
+      metric_name                         = "UnHealthyHostCount"
+      metric_namespace                    = "AWS/ApplicationELB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 0
+    }
+  }
 }
 
 variable "elb_desync_mitigation_mode_default" {
@@ -302,6 +382,16 @@ variable "elb_xff_header_processing_mode_default" {
     condition     = contains(["append", "preserve", "remove"], var.elb_xff_header_processing_mode_default)
     error_message = "Invalid XFF header processing mode"
   }
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
 }
 
 variable "name_append_default" {

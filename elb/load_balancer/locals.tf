@@ -1,3 +1,12 @@
+module "alarm_map" {
+  source              = "../../cw/alarm_map"
+  alarm_map           = var.elb_map
+  alarm_map_default   = var.elb_alarm_map_default
+  alert_level_default = var.alert_level_default
+  monitor_data        = var.monitor_data
+  name_map            = module.name_map.data
+}
+
 module "name_map" {
   source                          = "../../name_map"
   name_append_default             = var.name_append_default
@@ -26,6 +35,19 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       elb_id = aws_lb.this_lb[k].id
     }) if v.waf_acl_arn != null
+  }
+  create_alarm_1_list = flatten([
+    for k, v in local.lx_map : [
+      for k_alarm, v_alarm in v.alarm_map : merge(v, v_alarm, {
+        metric_dimension_map = {
+          LoadBalancer = aws_lb.this_lb[k].arn_suffix
+        }
+        k_all = "${k}_${k_alarm}"
+      })
+    ]
+  ])
+  create_alarm_x_map = {
+    for v in local.create_alarm_1_list : v.k_all => v
   }
   create_db_access_map = {
     for k, v in local.lx_map : k => merge(v, {
@@ -166,7 +188,7 @@ locals {
     for k, v in var.elb_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.alarm_map.data[k], module.vpc_map.data[k], {
       desync_mitigation_mode                      = v.desync_mitigation_mode == null ? var.elb_desync_mitigation_mode_default : v.desync_mitigation_mode
       drop_invalid_header_fields                  = v.drop_invalid_header_fields == null ? var.elb_drop_invalid_header_fields_default : v.drop_invalid_header_fields
       enable_cross_zone_load_balancing            = v.enable_cross_zone_load_balancing == null ? var.elb_enable_cross_zone_load_balancing_default : v.enable_cross_zone_load_balancing
@@ -219,6 +241,9 @@ locals {
       },
       local.elb_data_map_emulated[k],
       {
+        alarm = {
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
+        }
         elb_arn_suffix             = aws_lb.this_lb[k].arn_suffix
         elb_id                     = aws_lb.this_lb[k].id
         log_access_db              = v.log_db_enabled ? module.log_access_db.data[k] : null

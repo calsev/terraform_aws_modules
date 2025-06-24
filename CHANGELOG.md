@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.100.0
+
+### New modules
+
+* Alarm map
+
+### General
+
+* ELB monitoring
+
 ## 0.99.0
 
 ### General
