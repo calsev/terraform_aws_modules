@@ -93,3 +93,10 @@ module "log_connection_table_query" {
   query_map           = local.create_db_connection_map
   std_map             = var.std_map
 }
+
+module "alarm" {
+  source               = "../../cw/metric_alarm"
+  alarm_map            = local.create_alarm_x_map
+  name_prepend_default = "elb"
+  std_map              = var.std_map
+}

@@ -1,3 +1,12 @@
+module "alarm_map" {
+  source              = "../../cw/alarm_map"
+  alarm_map           = var.db_map
+  alarm_map_default   = var.db_alarm_map_default
+  alert_level_default = var.alert_level_default
+  monitor_data        = var.monitor_data
+  name_map            = module.name_map.data
+}
+
 module "name_map" {
   source                          = "../../name_map"
   name_append_default             = var.name_append_default
@@ -18,7 +27,7 @@ locals {
         metric_dimension_map = {
           DBInstanceIdentifier = v.name_effective
         }
-        k_all = "db_${k}_${k_alarm}"
+        k_all = "${k}_${k_alarm}"
       })
     ]
   ])
@@ -37,9 +46,8 @@ locals {
     for k, v in var.db_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.alarm_map.data[k], {
       active_directory_domain                   = v.active_directory_domain == null ? var.db_active_directory_domain_default : v.active_directory_domain
-      alarm_map                                 = v.alarm_map == null ? var.db_alarm_map_default : v.alarm_map
       allocated_storage_gib                     = v.allocated_storage_gib == null ? var.db_allocated_storage_gib_default : v.allocated_storage_gib
       allocated_storage_max_gib                 = v.allocated_storage_max_gib == null ? var.db_allocated_storage_max_gib_default : v.allocated_storage_max_gib
       allow_major_version_upgrade               = v.allow_major_version_upgrade == null ? var.db_allow_major_version_upgrade_default : v.allow_major_version_upgrade
@@ -91,13 +99,6 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      alarm_map = {
-        for k_alarm, v_alarm in local.l1_map[k].alarm_map : k_alarm => merge(v_alarm, {
-          alarm_description = format(v_alarm.alarm_description, local.l1_map[k].name_effective)
-          alarm_name        = format(v_alarm.alarm_name, local.l1_map[k].name_effective)
-          alert_level       = v_alarm.alert_level == null ? var.alert_level_default : v_alarm.alert_level
-        })
-      }
       engine_family             = split("-", local.l1_map[k].engine)[0]
       final_snapshot_identifier = v.final_snapshot_identifier == null ? local.l1_map[k].name_effective : v.final_snapshot_identifier
       #      ignore_change_map = merge(
@@ -119,11 +120,6 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      alarm_map = {
-        for k_alarm, v_alarm in local.l2_map[k].alarm_map : k_alarm => merge(v_alarm, {
-          alarm_action_target_arn_list = [var.monitor_data.alert.topic_map[v_alarm.alert_level].topic_arn]
-        })
-      }
       availability_zone_name     = var.vpc_data_map[local.l2_map[k].vpc_key].segment_map[local.l2_map[k].vpc_segment_key].subnet_map[local.l1_map[k].availability_zone_key].availability_zone_name
       cloudwatch_log_export_list = v.cloudwatch_log_export_list == null ? lookup(var.db_cloudwatch_log_export_list_map_default, local.l2_map[k].engine_family, null) == null ? [] : var.db_cloudwatch_log_export_list_map_default[local.l2_map[k].engine_family] : v.cloudwatch_log_export_list
       iam_role_arn_monitoring    = local.l2_map[k].performance_insights_enabled ? var.iam_data.iam_role_arn_rds_monitor : null
@@ -144,7 +140,7 @@ locals {
       module.password_secret.data[k],
       {
         alarm = {
-          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["db_${k}_${k_alarm}"]
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
         }
         db_domain_name = v.create_instance ? aws_db_instance.this_db[k].address : null
         db_arn         = v.create_instance ? aws_db_instance.this_db[k].arn : null

@@ -1,0 +1,45 @@
+
+{% macro var_item() -%}
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
+{%- endmacro %}
+
+{% macro var_default_type() -%}
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+{%- endmacro %}
+
+{% macro map(map, def_map) -%}
+module "alarm_map" {
+  source              = "{{ module_up }}/cw/alarm_map"
+  alarm_map           = var.{{ map }}
+  alarm_map_default   = var.{{ def_map }}
+  alert_level_default = var.alert_level_default
+  monitor_data        = var.monitor_data
+  name_map            = module.name_map.data
+}
+{%- endmacro %}
