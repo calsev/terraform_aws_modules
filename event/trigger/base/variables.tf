@@ -148,7 +148,7 @@ variable "iam_data" {
 
 variable "name_append_default" {
   type        = string
-  default     = ""
+  default     = "trigger"
   description = "Appended after key"
 }
 

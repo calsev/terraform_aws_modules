@@ -11,6 +11,7 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
 module "dead_letter_queue" {
   source    = "../../../sqs/dead_letter_queue"
   queue_map = local.lx_map
+  {{ name.map_item() }}
   std_map   = var.std_map
 }
 

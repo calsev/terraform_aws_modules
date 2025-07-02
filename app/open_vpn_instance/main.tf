@@ -157,6 +157,7 @@ module "asg" {
     "InstanceRefresh",
     "ReplaceUnhealthy",
   ]
+  monitor_data                    = var.monitor_data
   name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default

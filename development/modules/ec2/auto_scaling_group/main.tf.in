@@ -73,3 +73,5 @@ resource "aws_autoscaling_group" "this_asg" {
   wait_for_elb_capacity     = null # TF Wait
   # warm_pool # TODO
 }
+
+{{ alarm.main(prepend="asg") }}

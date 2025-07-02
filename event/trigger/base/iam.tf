@@ -17,11 +17,17 @@ module "trigger_role" {
     }
   }
   map_policy                           = each.value
-  name                                 = "trigger_${each.key}"
+  name                                 = each.key
   role_policy_attach_arn_map_default   = var.role_policy_attach_arn_map_default
   role_policy_create_json_map_default  = var.role_policy_create_json_map_default
   role_policy_inline_json_map_default  = var.role_policy_inline_json_map_default
   role_policy_managed_name_map_default = var.role_policy_managed_name_map_default
   role_path_default                    = var.role_path_default
+  name_append_default                  = var.name_append_default
+  name_include_app_fields_default      = var.name_include_app_fields_default
+  name_infix_default                   = var.name_infix_default
+  name_prefix_default                  = var.name_prefix_default
+  name_prepend_default                 = var.name_prepend_default
+  name_suffix_default                  = var.name_suffix_default
   std_map                              = var.std_map
 }

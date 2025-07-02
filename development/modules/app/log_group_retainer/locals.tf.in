@@ -1,0 +1,60 @@
+{{ name.map() }}
+
+locals {
+  create_lambda_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      role_policy_attach_arn_map = {
+        reserved_instance_purchaser = module.retainer_policy.data[local.policy_key].iam_policy_arn
+      }
+      source_content_path_of_file_to_create_in_archive = "ensure_log_group_retention.py"
+      source_package_created_archive_path              = "${path.root}/config/${k}.zip"
+      source_content_string = templatefile("${path.module}/app/ensure_log_group_retention.py", {
+        retention_default_days = v.retention_default_days
+        retention_max_days     = v.retention_max_days
+        retention_min_days     = v.retention_min_days
+      })
+    })
+  }
+  create_lambda_permission_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      lambda_arn = module.lambda.data[k].lambda_arn
+      source_arn = module.trigger.data[k].event_rule_arn
+    })
+  }
+  create_trigger_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      target_arn = module.lambda.data[k].lambda_arn
+    })
+  }
+  l0_map = {
+    log_retainer = {}
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      retention_default_days = var.retention_default_days
+      retention_max_days     = var.retention_max_days
+      retention_min_days     = var.retention_min_days
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains(["source_content_string"], k_attr)
+      },
+      {
+        lambda            = module.lambda.data[k]
+        lambda_permission = module.lambda_permission.data[k]
+        policy            = module.retainer_policy.data
+        trigger           = module.trigger.data[k]
+      }
+    )
+  }
+  policy_key = "logs_retention_setter"
+}

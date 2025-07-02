@@ -29,6 +29,7 @@ module "asg" {
   group_health_check_type_default                        = var.compute_health_check_type_default
   group_map                                              = local.create_asg_map
   elb_target_data_map                                    = var.elb_target_data_map
+  monitor_data                                           = var.monitor_data
   std_map                                                = var.std_map
   vpc_az_key_list_default                                = var.vpc_az_key_list_default
   vpc_data_map                                           = var.vpc_data_map

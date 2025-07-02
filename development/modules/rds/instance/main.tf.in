@@ -85,9 +85,4 @@ resource "aws_db_instance" "this_db" {
   vpc_security_group_ids = each.value.security_group_id_list
 }
 
-module "alarm" {
-  source               = "../../cw/metric_alarm"
-  alarm_map            = local.create_alarm_x_map
-  name_prepend_default = "db"
-  std_map              = var.std_map
-}
+{{ alarm.main(prepend="db") }}

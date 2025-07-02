@@ -1,3 +1,8 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "elb_target_data_map" {
   type = map(object({
     target_group_arn = string
@@ -8,6 +13,7 @@ variable "elb_target_data_map" {
 
 variable "group_map" {
   type = map(object({
+    {{ alarm.var_item() }}
     auto_scaling_iam_role_arn_service_linked    = optional(string)
     auto_scaling_num_instances_max              = optional(number)
     auto_scaling_num_instances_min              = optional(number)
@@ -22,6 +28,26 @@ variable "group_map" {
     suspended_processes                         = optional(list(string))
     {{ vpc.var_item() }}
   }))
+}
+
+variable "group_alarm_map_default" {
+  {{ alarm.var_default_type() }}
+  default = {
+    cpu_utilization = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when CPU utilization is high for asg %s"
+      alarm_name                          = "CPU Usage for %s"
+      alert_level                         = null
+      metric_name                         = "CPUUtilization"
+      metric_namespace                    = "AWS/EC2"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+  }
 }
 
 variable "group_auto_scaling_iam_role_arn_service_linked_default" {
@@ -98,6 +124,16 @@ variable "group_suspended_processes_default" {
     ])) == 0
     error_message = "Invalid suspended processes"
   }
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
 }
 
 {{ name.var(app_fields=False) }}

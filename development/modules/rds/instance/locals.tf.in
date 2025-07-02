@@ -3,19 +3,7 @@
 {{ name.map() }}
 
 locals {
-  create_alarm_1_list = flatten([
-    for k, v in local.lx_map : [
-      for k_alarm, v_alarm in v.alarm_map : merge(v, v_alarm, {
-        metric_dimension_map = {
-          DBInstanceIdentifier = v.name_effective
-        }
-        k_all = "${k}_${k_alarm}"
-      })
-    ]
-  ])
-  create_alarm_x_map = {
-    for v in local.create_alarm_1_list : v.k_all => v
-  }
+  {{ alarm.create(dimension="DBInstanceIdentifier") }}
   create_instance_map = {
     for k, v in local.lx_map : k => v if v.create_instance
   }
@@ -121,9 +109,7 @@ locals {
       v,
       module.password_secret.data[k],
       {
-        alarm = {
-          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
-        }
+        {{ alarm.out() }}
         db_domain_name = v.create_instance ? aws_db_instance.this_db[k].address : null
         db_arn         = v.create_instance ? aws_db_instance.this_db[k].arn : null
         db_id          = v.create_instance ? aws_db_instance.this_db[k].id : null
