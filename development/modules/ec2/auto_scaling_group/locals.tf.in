@@ -1,13 +1,16 @@
+{{ alarm.map(map="group_map", def_map="group_alarm_map_default") }}
+
 {{ name.map() }}
 
 {{ vpc.map() }}
 
 locals {
+  {{ alarm.create(dimension="AutoScalingGroupName", dim_val="aws_autoscaling_group.this_asg[k].name") }}
   l0_map = {
     for k, v in var.group_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], module.alarm_map.data[k], {
       auto_scaling_iam_role_arn_service_linked    = v.auto_scaling_iam_role_arn_service_linked == null ? var.group_auto_scaling_iam_role_arn_service_linked_default : v.auto_scaling_iam_role_arn_service_linked
       auto_scaling_num_instances_max              = v.auto_scaling_num_instances_max == null ? var.group_auto_scaling_num_instances_max_default : v.auto_scaling_num_instances_max
       auto_scaling_num_instances_min              = v.auto_scaling_num_instances_min == null ? var.group_auto_scaling_num_instances_min_default : v.auto_scaling_num_instances_min
@@ -39,6 +42,7 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
+        {{ alarm.out() }}
         auto_scaling_group_arn = aws_autoscaling_group.this_asg[k].arn
       }
     )

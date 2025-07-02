@@ -1,0 +1,40 @@
+variable "event_schedule_expression_default" {
+  type        = string
+  default     = "rate(1 hour)"
+  description = "Either Cron expression or event pattern is required"
+}
+
+variable "function_timeout_seconds_default" {
+  type        = number
+  default     = 15
+  description = "This can take time for many log groups"
+}
+
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_batch_submit_job = string
+    iam_policy_arn_ecs_start_task   = string
+    iam_policy_arn_lambda_vpc       = string
+  })
+}
+
+variable "retention_default_days" {
+  type    = number
+  default = 365
+}
+
+variable "retention_max_days" {
+  type    = number
+  default = 365
+}
+
+variable "retention_min_days" {
+  type    = number
+  default = 7
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+{{ vpc.var(map_default="null", map_desc="Must be provided if any function is configured in a VPC") }}

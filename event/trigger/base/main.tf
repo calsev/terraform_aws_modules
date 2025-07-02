@@ -9,9 +9,15 @@ resource "aws_cloudwatch_event_rule" "this_rule" {
 }
 
 module "dead_letter_queue" {
-  source    = "../../../sqs/dead_letter_queue"
-  queue_map = local.lx_map
-  std_map   = var.std_map
+  source                          = "../../../sqs/dead_letter_queue"
+  queue_map                       = local.lx_map
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 resource "aws_cloudwatch_event_target" "this_target" {

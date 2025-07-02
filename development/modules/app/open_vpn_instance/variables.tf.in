@@ -168,6 +168,11 @@ variable "instance_type_default" {
 
 variable "monitor_data" {
   type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
     ecs_ssm_param_map = object({
       cpu = object({
         policy_map = map(object({

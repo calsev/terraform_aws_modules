@@ -1,3 +1,8 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "elb_target_data_map" {
   type = map(object({
     target_group_arn = string
@@ -8,6 +13,20 @@ variable "elb_target_data_map" {
 
 variable "group_map" {
   type = map(object({
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
     auto_scaling_iam_role_arn_service_linked    = optional(string)
     auto_scaling_num_instances_max              = optional(number)
     auto_scaling_num_instances_min              = optional(number)
@@ -30,6 +49,39 @@ variable "group_map" {
     vpc_security_group_key_list                 = optional(list(string))
     vpc_segment_key                             = optional(string)
   }))
+}
+
+variable "group_alarm_map_default" {
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+  default = {
+    cpu_utilization = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when CPU utilization is high for asg %s"
+      alarm_name                          = "CPU Usage for %s"
+      alert_level                         = null
+      metric_name                         = "CPUUtilization"
+      metric_namespace                    = "AWS/EC2"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+  }
 }
 
 variable "group_auto_scaling_iam_role_arn_service_linked_default" {
@@ -106,6 +158,16 @@ variable "group_suspended_processes_default" {
     ])) == 0
     error_message = "Invalid suspended processes"
   }
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
 }
 
 variable "name_append_default" {

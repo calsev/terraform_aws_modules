@@ -134,7 +134,7 @@ variable "iam_data" {
   description = "Must be provided for Batch and ECS targets"
 }
 
-{{ name.var() }}
+{{ name.var(append="trigger") }}
 
 {{ iam.role_var() }}
 

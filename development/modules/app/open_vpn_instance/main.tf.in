@@ -119,6 +119,7 @@ module "asg" {
     "InstanceRefresh",
     "ReplaceUnhealthy",
   ]
+  monitor_data            = var.monitor_data
   {{ name.map_item() }}
   std_map                 = var.std_map
   {{ vpc.map_item(sg=False, seg=False) }}

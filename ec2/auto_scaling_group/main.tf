@@ -73,3 +73,10 @@ resource "aws_autoscaling_group" "this_asg" {
   wait_for_elb_capacity     = null # TF Wait
   # warm_pool # TODO
 }
+
+module "alarm" {
+  source               = "../../cw/metric_alarm"
+  alarm_map            = local.create_alarm_x_map
+  name_prepend_default = "asg"
+  std_map              = var.std_map
+}

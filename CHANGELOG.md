@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.101.0
+
+### New modules
+
+* Log group retention app
+
+### General
+
+* CPU monitoring for auto scaling group
+
 ## 0.100.0
 
 ### New modules

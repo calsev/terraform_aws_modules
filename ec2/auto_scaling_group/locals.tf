@@ -1,3 +1,12 @@
+module "alarm_map" {
+  source              = "../../cw/alarm_map"
+  alarm_map           = var.group_map
+  alarm_map_default   = var.group_alarm_map_default
+  alert_level_default = var.alert_level_default
+  monitor_data        = var.monitor_data
+  name_map            = module.name_map.data
+}
+
 module "name_map" {
   source                          = "../../name_map"
   name_append_default             = var.name_append_default
@@ -22,11 +31,24 @@ module "vpc_map" {
 }
 
 locals {
+  create_alarm_1_list = flatten([
+    for k, v in local.lx_map : [
+      for k_alarm, v_alarm in v.alarm_map : merge(v, v_alarm, {
+        metric_dimension_map = {
+          AutoScalingGroupName = aws_autoscaling_group.this_asg[k].name
+        }
+        k_all = "${k}_${k_alarm}"
+      })
+    ]
+  ])
+  create_alarm_x_map = {
+    for v in local.create_alarm_1_list : v.k_all => v
+  }
   l0_map = {
     for k, v in var.group_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], module.alarm_map.data[k], {
       auto_scaling_iam_role_arn_service_linked    = v.auto_scaling_iam_role_arn_service_linked == null ? var.group_auto_scaling_iam_role_arn_service_linked_default : v.auto_scaling_iam_role_arn_service_linked
       auto_scaling_num_instances_max              = v.auto_scaling_num_instances_max == null ? var.group_auto_scaling_num_instances_max_default : v.auto_scaling_num_instances_max
       auto_scaling_num_instances_min              = v.auto_scaling_num_instances_min == null ? var.group_auto_scaling_num_instances_min_default : v.auto_scaling_num_instances_min
@@ -58,6 +80,9 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
+        alarm = {
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
+        }
         auto_scaling_group_arn = aws_autoscaling_group.this_asg[k].arn
       }
     )

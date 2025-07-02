@@ -163,6 +163,11 @@ variable "iam_data" {
 
 variable "monitor_data" {
   type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
     ecs_ssm_param_map = object({
       cpu = object({
         name_effective = string

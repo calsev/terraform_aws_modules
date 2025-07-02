@@ -17,7 +17,8 @@ module "trigger_role" {
     }
   }
   map_policy                           = each.value
-  name                                 = "trigger_${each.key}"
+  name                                 = each.key
   {{ iam.role_map_item() }}
+  {{ name.map_item() }}
   std_map                              = var.std_map
 }
