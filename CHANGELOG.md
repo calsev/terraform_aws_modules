@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.103.0
+
+### New modules
+
+* Open VPN service
+
 ## 0.102.0
 
 ### General
