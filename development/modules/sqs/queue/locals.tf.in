@@ -1,3 +1,5 @@
+{{ alarm.map(map="queue_map", def_map="queue_alarm_map_default") }}
+
 module "name_map" {
   source = "../../name_map"
   name_map = {
@@ -9,6 +11,7 @@ module "name_map" {
 }
 
 locals {
+  {{ alarm.create(dimension="QueueName") }}
   create_queue_map = {
     for k, v in local.lx_map : k => v if v.create_queue
   }
@@ -23,7 +26,7 @@ locals {
     })
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(local.l0_map[k], module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(local.l0_map[k], module.name_map.data[k], module.alarm_map.data[k], {
       create_queue                      = v.create_queue == null ? var.queue_create_queue_default : v.create_queue
       delay_seconds                     = v.delay_seconds == null ? var.queue_delay_seconds_default : v.delay_seconds
       iam_policy_json                   = v.iam_policy_json == null ? var.queue_iam_policy_json_default : v.iam_policy_json
@@ -56,6 +59,7 @@ locals {
       v,
       v.create_queue ? module.queue_policy.data[k] : null,
       {
+        {{ alarm.out() }}
         queue_arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
         queue_url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null
       },

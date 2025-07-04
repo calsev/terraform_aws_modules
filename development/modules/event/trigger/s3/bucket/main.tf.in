@@ -16,16 +16,18 @@ module "s3_suffix_pattern" {
 }
 
 module "event_bus" {
-  source  = "../../../../event/bus"
-  bus_map = local.create_bus_map
-  std_map = var.std_map
+  source       = "../../../../event/bus"
+  bus_map      = local.create_bus_map
+  monitor_data = var.monitor_data
+  std_map      = var.std_map
 }
 
 module "trigger_prefix" {
-  source    = "../../../../event/trigger/base"
-  event_map = local.create_prefix_map
-  iam_data  = var.iam_data
-  std_map   = var.std_map
+  source       = "../../../../event/trigger/base"
+  event_map    = local.create_prefix_map
+  iam_data     = var.iam_data
+  monitor_data = var.monitor_data
+  std_map      = var.std_map
 }
 
 module "trigger_suffix" {
@@ -45,6 +47,7 @@ module "trigger_suffix" {
   event_target_service_default                    = var.event_target_service_default
   event_task_count_default                        = var.event_task_count_default
   iam_data                                        = var.iam_data
+  monitor_data                                    = var.monitor_data
   {{ iam.role_map_item() }}
   std_map                                         = var.std_map
   {{ vpc.map_item() }}

@@ -18,3 +18,10 @@ resource "aws_sqs_queue" "this_queue" {
   tags                              = each.value.tags
   visibility_timeout_seconds        = each.value.visibility_timeout_seconds
 }
+
+module "alarm" {
+  source               = "../../cw/metric_alarm"
+  alarm_map            = local.create_alarm_x_map
+  name_prepend_default = "queue"
+  std_map              = var.std_map
+}

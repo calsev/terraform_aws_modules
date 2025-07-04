@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.102.0
+
+### General
+
+* Trigger for log retention on group creation
+* Queue message age alarm
+
+### Bugfix
+
+* Trigger permission for log retention
+
 ## 0.101.0
 
 ### New modules

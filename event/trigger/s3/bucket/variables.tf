@@ -141,6 +141,16 @@ variable "iam_data" {
   description = "Must be provided for Batch and ECS targets"
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "name_append_default" {
   type        = string
   default     = ""

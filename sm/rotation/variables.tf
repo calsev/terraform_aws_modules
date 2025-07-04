@@ -6,6 +6,16 @@ variable "iam_data" {
   description = "Must be provided if any secret is configured with rotation_method"
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "secret_data_map" {
   type = map(object({
     policy_map = map(object({

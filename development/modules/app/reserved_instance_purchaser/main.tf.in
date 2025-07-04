@@ -5,6 +5,7 @@ module "lambda" {
   function_source_package_handler_default = "purchase_reserved_instance.lambda_handler"
   function_source_package_runtime_default = "python3.13"
   iam_data                                = var.iam_data
+  monitor_data                            = var.monitor_data
   std_map                                 = var.std_map
   {{ vpc.map_item() }}
 }
@@ -22,6 +23,7 @@ module "trigger" {
   event_schedule_expression_default   = var.event_schedule_expression_default
   event_target_service_default        = "lambda"
   iam_data                            = var.iam_data
+  monitor_data                        = var.monitor_data
   std_map                             = var.std_map
   {{ vpc.map_item() }}
 }

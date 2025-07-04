@@ -1,6 +1,7 @@
 module "this_queue" {
-  source    = "../../sqs/queue"
+  source       = "../../sqs/queue"
   {{ iam.policy_map_item_ar() }}
-  queue_map = local.lx_map
-  std_map   = var.std_map
+  monitor_data = var.monitor_data
+  queue_map    = local.lx_map
+  std_map      = var.std_map
 }

@@ -64,6 +64,16 @@ variable "policy_name_prefix_default" {
   default = ""
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "queue_map" {
   type = map(object({
     dead_letter_policy_create = optional(bool)
