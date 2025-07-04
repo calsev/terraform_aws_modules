@@ -51,6 +51,16 @@ variable "bus_logging_excluded_detail_types_default" {
   ]
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "name_append_default" {
   type        = string
   default     = ""

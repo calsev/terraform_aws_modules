@@ -54,6 +54,7 @@ module "task_trigger" {
   event_schedule_expression_default   = var.schedule_expression
   event_target_service_default        = "ecs"
   iam_data                            = var.iam_data
+  monitor_data                        = var.monitor_data
   std_map                             = var.std_map
   vpc_az_key_list_default             = var.vpc_az_key_list_default
   vpc_data_map                        = var.vpc_data_map

@@ -25,6 +25,7 @@ module "log_trigger" {
     }
   }
   event_target_service_default = "logs"
+  monitor_data                 = var.monitor_data
   std_map                      = var.std_map
 }
 

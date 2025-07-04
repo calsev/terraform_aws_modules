@@ -1,3 +1,12 @@
+module "alarm_map" {
+  source              = "../../cw/alarm_map"
+  alarm_map           = var.queue_map
+  alarm_map_default   = var.queue_alarm_map_default
+  alert_level_default = var.alert_level_default
+  monitor_data        = var.monitor_data
+  name_map            = module.name_map.data
+}
+
 module "name_map" {
   source = "../../name_map"
   name_map = {
@@ -9,6 +18,19 @@ module "name_map" {
 }
 
 locals {
+  create_alarm_1_list = flatten([
+    for k, v in local.lx_map : [
+      for k_alarm, v_alarm in v.alarm_map : merge(v, v_alarm, {
+        metric_dimension_map = {
+          QueueName = v.name_effective
+        }
+        k_all = "${k}_${k_alarm}"
+      })
+    ]
+  ])
+  create_alarm_x_map = {
+    for v in local.create_alarm_1_list : v.k_all => v
+  }
   create_queue_map = {
     for k, v in local.lx_map : k => v if v.create_queue
   }
@@ -23,7 +45,7 @@ locals {
     })
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(local.l0_map[k], module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(local.l0_map[k], module.name_map.data[k], module.alarm_map.data[k], {
       create_queue                      = v.create_queue == null ? var.queue_create_queue_default : v.create_queue
       delay_seconds                     = v.delay_seconds == null ? var.queue_delay_seconds_default : v.delay_seconds
       iam_policy_json                   = v.iam_policy_json == null ? var.queue_iam_policy_json_default : v.iam_policy_json
@@ -56,6 +78,9 @@ locals {
       v,
       v.create_queue ? module.queue_policy.data[k] : null,
       {
+        alarm = {
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
+        }
         queue_arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
         queue_url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null
       },

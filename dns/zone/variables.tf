@@ -20,7 +20,7 @@ variable "domain_mx_url_list_default" {
 
 variable "log_retention_days_default" {
   type        = number
-  default     = 3
+  default     = 7
   description = "This is for DNS logs, so typically kept short"
   validation {
     condition     = contains([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.log_retention_days_default)

@@ -10,7 +10,15 @@ variable "logging_enabled_for_default_bus" {
 
 variable "log_retention_days_for_default_bus" {
   type    = number
-  default = 3
+  default = 7
+}
+
+variable "alert_data_map" {
+  type = object({
+    topic_map = map(object({
+      topic_arn = string
+    }))
+  })
 }
 
 variable "std_map" {

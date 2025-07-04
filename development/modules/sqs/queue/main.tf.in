@@ -18,3 +18,5 @@ resource "aws_sqs_queue" "this_queue" {
   tags                              = each.value.tags
   visibility_timeout_seconds        = each.value.visibility_timeout_seconds
 }
+
+{{ alarm.main(prepend="queue") }}

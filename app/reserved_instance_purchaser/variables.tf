@@ -12,6 +12,16 @@ variable "iam_data" {
   })
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "purchaser_map" {
   type = map(object({
     dry_run                     = optional(bool)

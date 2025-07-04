@@ -1,3 +1,8 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "name_append_default" {
   type        = string
   default     = ""
@@ -64,8 +69,32 @@ variable "policy_name_prefix_default" {
   default = ""
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "queue_map" {
   type = map(object({
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
     content_based_deduplication       = optional(bool)
     create_queue                      = optional(bool)
     deduplication_scope               = optional(string)
@@ -93,6 +122,39 @@ variable "queue_map" {
     sqs_managed_sse_enabled           = optional(bool)
     visibility_timeout_seconds        = optional(number)
   }))
+}
+
+variable "queue_alarm_map_default" {
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+  default = {
+    message_age = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when message age is high for queue %s"
+      alarm_name                          = "Message Age for %s"
+      alert_level                         = null
+      metric_name                         = "ApproximateAgeOfOldestMessage"
+      metric_namespace                    = "AWS/SQS"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Maximum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 60 * 60 # 1 hour in seconds
+    }
+  }
 }
 
 variable "queue_content_based_deduplication_default" {

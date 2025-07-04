@@ -1,9 +1,25 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 {{ name.var() }}
 
 {{ iam.policy_var_ar(access=["read", "write"], append="queue") }}
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "queue_map" {
   type = map(object({
+    {{ alarm.var_item() }}
     content_based_deduplication       = optional(bool)
     create_queue                      = optional(bool)
     deduplication_scope               = optional(string)
@@ -23,6 +39,26 @@ variable "queue_map" {
     sqs_managed_sse_enabled           = optional(bool)
     visibility_timeout_seconds        = optional(number)
   }))
+}
+
+variable "queue_alarm_map_default" {
+  {{ alarm.var_default_type() }}
+  default = {
+    message_age = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when message age is high for queue %s"
+      alarm_name                          = "Message Age for %s"
+      alert_level                         = null
+      metric_name                         = "ApproximateAgeOfOldestMessage"
+      metric_namespace                    = "AWS/SQS"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Maximum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 60 * 60 # 1 hour in seconds
+    }
+  }
 }
 
 variable "queue_content_based_deduplication_default" {

@@ -1,7 +1,8 @@
 module "this_event_bus" {
-  source  = "../../event/bus"
-  bus_map = local.create_bus_map
-  std_map = var.std_map
+  source       = "../../event/bus"
+  bus_map      = local.create_bus_map
+  monitor_data = var.monitor_data
+  std_map      = var.std_map
 }
 
 module "task_log" {

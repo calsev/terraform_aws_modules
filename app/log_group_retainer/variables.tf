@@ -18,6 +18,16 @@ variable "iam_data" {
   })
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "retention_default_days" {
   type    = number
   default = 365

@@ -9,5 +9,6 @@ module "alert_trigger" {
     })
   }
   event_target_service_default = "sns"
+  monitor_data                 = var.monitor_data
   std_map                      = var.std_map
 }

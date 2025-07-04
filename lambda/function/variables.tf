@@ -235,6 +235,16 @@ variable "iam_data" {
   description = "Must be provided if any function is configured in a VPC"
 }
 
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "name_append_default" {
   type        = string
   default     = ""

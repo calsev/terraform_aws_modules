@@ -4,6 +4,7 @@ module "this_queue" {
   policy_create_default      = var.policy_create_default
   policy_name_append_default = var.policy_name_append_default
   policy_name_prefix_default = var.policy_name_prefix_default
+  monitor_data               = var.monitor_data
   queue_map                  = local.lx_map
   std_map                    = var.std_map
 }
