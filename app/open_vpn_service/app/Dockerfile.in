@@ -1,0 +1,7 @@
+FROM ${ecr_repo_url}:${ecr_repo_tag}
+
+# Copy factory config into read-only location
+RUN mkdir -p /var/opt/openvpn_as && \
+    cp -a /usr/local/openvpn_as/* /var/opt/openvpn_as/
+
+COPY entry_point.sh /entry_point.sh
