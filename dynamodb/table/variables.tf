@@ -110,17 +110,18 @@ variable "table_map" {
       statistic_threshold_percentile      = optional(number)
       statistic_threshold_value           = optional(number)
     })))
-    attribute_map                  = optional(map(string))
-    billing_mode                   = optional(string)
-    create_policy                  = optional(bool)
-    deletion_protection_enabled    = optional(bool)
-    gsi_hash_key                   = optional(string)
-    gsi_name                       = optional(string)
-    gsi_non_key_attribute_list     = optional(list(string))
-    gsi_projection_type            = optional(string)
-    gsi_range_key                  = optional(string)
-    gsi_read_capacity              = optional(number)
-    gsi_write_capacity             = optional(number)
+    attribute_map               = optional(map(string))
+    billing_mode                = optional(string)
+    create_policy               = optional(bool)
+    deletion_protection_enabled = optional(bool)
+    gsi_map = optional(map(object({
+      hash_key               = optional(string)
+      non_key_attribute_list = optional(list(string))
+      projection_type        = optional(string)
+      range_key              = optional(string)
+      read_capacity          = optional(number)
+      write_capacity         = optional(number)
+    })))
     hash_key                       = optional(string)
     lsi_name                       = optional(string)
     lsi_non_key_attribute_list     = optional(list(string))
@@ -129,6 +130,7 @@ variable "table_map" {
     name_append                    = optional(string)
     name_include_app_fields        = optional(bool)
     name_infix                     = optional(bool)
+    name_override                  = optional(string)
     name_prefix                    = optional(string)
     name_prepend                   = optional(string)
     name_suffix                    = optional(string)
@@ -218,12 +220,19 @@ variable "table_deletion_protection_enabled_default" {
   default = true
 }
 
-variable "table_gsi_hash_key_default" {
-  type    = string
-  default = null
+variable "table_gsi_map_default" {
+  type = map(object({
+    hash_key               = optional(string)
+    non_key_attribute_list = optional(list(string))
+    projection_type        = optional(string)
+    range_key              = optional(string)
+    read_capacity          = optional(number)
+    write_capacity         = optional(number)
+  }))
+  default = {}
 }
 
-variable "table_gsi_name_default" {
+variable "table_gsi_hash_key_default" {
   type    = string
   default = null
 }

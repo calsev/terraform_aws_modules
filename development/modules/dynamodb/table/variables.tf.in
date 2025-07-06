@@ -26,19 +26,20 @@ variable "table_map" {
     billing_mode                   = optional(string)
     create_policy                  = optional(bool)
     deletion_protection_enabled    = optional(bool)
-    gsi_hash_key                   = optional(string)
-    gsi_name                       = optional(string)
-    gsi_non_key_attribute_list     = optional(list(string))
-    gsi_projection_type            = optional(string)
-    gsi_range_key                  = optional(string)
-    gsi_read_capacity              = optional(number)
-    gsi_write_capacity             = optional(number)
+    gsi_map = optional(map(object({
+      hash_key               = optional(string)
+      non_key_attribute_list = optional(list(string))
+      projection_type        = optional(string)
+      range_key              = optional(string)
+      read_capacity          = optional(number)
+      write_capacity         = optional(number)
+    })))
     hash_key                       = optional(string)
     lsi_name                       = optional(string)
     lsi_non_key_attribute_list     = optional(list(string))
     lsi_projection_type            = optional(string)
     lsi_range_key                  = optional(string)
-    {{ name.var_item() }}
+    {{ name.var_item(override=True) }}
     point_in_time_recovery_enabled = optional(bool)
     policy_access_list             = optional(list(string))
     policy_create                  = optional(bool)
@@ -112,12 +113,19 @@ variable "table_deletion_protection_enabled_default" {
   default = true
 }
 
-variable "table_gsi_hash_key_default" {
-  type    = string
-  default = null
+variable "table_gsi_map_default" {
+  type = map(object({
+    hash_key               = optional(string)
+    non_key_attribute_list = optional(list(string))
+    projection_type        = optional(string)
+    range_key              = optional(string)
+    read_capacity          = optional(number)
+    write_capacity         = optional(number)
+  }))
+  default = {}
 }
 
-variable "table_gsi_name_default" {
+variable "table_gsi_hash_key_default" {
   type    = string
   default = null
 }

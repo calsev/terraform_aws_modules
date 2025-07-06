@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.104.0
+
+### General
+
+* DynamoDB support for multiple GSI
+
 ## 0.103.0
 
 ### New modules

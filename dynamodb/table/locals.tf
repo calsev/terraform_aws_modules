@@ -50,13 +50,7 @@ locals {
       billing_mode                   = v.billing_mode == null ? var.table_billing_mode_default : v.billing_mode
       create_policy                  = v.create_policy == null ? var.table_create_policy_default : v.create_policy
       deletion_protection_enabled    = v.deletion_protection_enabled == null ? var.table_deletion_protection_enabled_default : v.deletion_protection_enabled
-      gsi_hash_key                   = v.gsi_hash_key == null ? var.table_gsi_hash_key_default : v.gsi_hash_key
-      gsi_name                       = v.gsi_name == null ? var.table_gsi_name_default : v.gsi_name
-      gsi_non_key_attribute_list     = v.gsi_non_key_attribute_list == null ? var.table_gsi_non_key_attribute_list_default : v.gsi_non_key_attribute_list
-      gsi_projection_type            = v.gsi_projection_type == null ? var.table_gsi_projection_type_default : v.gsi_projection_type
-      gsi_range_key                  = v.gsi_range_key == null ? var.table_gsi_range_key_default : v.gsi_range_key
-      gsi_read_capacity              = v.gsi_read_capacity == null ? var.table_gsi_read_capacity_default : v.gsi_read_capacity
-      gsi_write_capacity             = v.gsi_write_capacity == null ? var.table_gsi_write_capacity_default : v.gsi_write_capacity
+      gsi_map                        = v.gsi_map == null ? var.table_gsi_map_default : v.gsi_map
       hash_key                       = v.hash_key == null ? var.table_hash_key_default : v.hash_key
       lsi_name                       = v.lsi_name == null ? var.table_lsi_name_default : v.lsi_name
       lsi_non_key_attribute_list     = v.lsi_non_key_attribute_list == null ? var.table_lsi_non_key_attribute_list_default : v.lsi_non_key_attribute_list
@@ -74,7 +68,17 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      has_gsi     = local.l1_map[k].gsi_hash_key != null && local.l1_map[k].gsi_name != null
+      gsi_map = {
+        for k_gsi, v_gsi in local.l1_map[k].gsi_map : k_gsi => merge(v_gsi, {
+          hash_key               = v_gsi.hash_key == null ? var.table_gsi_hash_key_default : v_gsi.hash_key
+          non_key_attribute_list = v_gsi.non_key_attribute_list == null ? var.table_gsi_non_key_attribute_list_default : v_gsi.non_key_attribute_list
+          projection_type        = v_gsi.projection_type == null ? var.table_gsi_projection_type_default : v_gsi.projection_type
+          range_key              = v_gsi.range_key == null ? var.table_gsi_range_key_default : v_gsi.range_key
+          read_capacity          = v_gsi.read_capacity == null ? var.table_gsi_read_capacity_default : v_gsi.read_capacity
+          write_capacity         = v_gsi.write_capacity == null ? var.table_gsi_write_capacity_default : v_gsi.write_capacity
+        })
+      }
+      has_gsi     = length(local.l1_map[k].gsi_map) != 0
       has_lsi     = local.l1_map[k].lsi_name != null && local.l1_map[k].lsi_range_key != null
       policy_name = "${k}_dynamodb"
       ttl_enabled = local.l1_map[k].ttl_attribute_name != null
