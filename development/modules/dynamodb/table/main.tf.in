@@ -10,15 +10,15 @@ resource "aws_dynamodb_table" "this_table" {
   billing_mode                = each.value.billing_mode
   deletion_protection_enabled = each.value.deletion_protection_enabled
   dynamic "global_secondary_index" {
-    for_each = each.value.has_gsi ? { this = {} } : {}
+    for_each = each.value.gsi_map
     content {
-      hash_key           = each.value.gsi_hash_key
-      name               = each.value.gsi_name
-      non_key_attributes = each.value.gsi_non_key_attribute_list
-      projection_type    = each.value.gsi_projection_type
-      range_key          = each.value.gsi_range_key
-      read_capacity      = each.value.gsi_read_capacity
-      write_capacity     = each.value.gsi_write_capacity
+      hash_key           = global_secondary_index.value.hash_key
+      name               = global_secondary_index.key
+      non_key_attributes = global_secondary_index.value.non_key_attribute_list
+      projection_type    = global_secondary_index.value.projection_type
+      range_key          = global_secondary_index.value.range_key
+      read_capacity      = global_secondary_index.value.read_capacity
+      write_capacity     = global_secondary_index.value.write_capacity
     }
   }
   hash_key = each.value.hash_key
