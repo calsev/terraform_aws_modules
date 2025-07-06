@@ -224,6 +224,7 @@ tf-lint: tflint-install
 	cd ../iam/app/mobile_analytics && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/rds && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/app/support && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/app/textract && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/organization && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/organization/account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/organization/organization && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -269,6 +270,7 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity/sqs/queue && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/step_function/machine && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/textract && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/managed && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/name_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

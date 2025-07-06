@@ -1,13 +1,3 @@
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
-
 variable "name_append_default" {
   type        = string
   default     = ""
@@ -16,13 +6,13 @@ variable "name_append_default" {
 
 variable "name_include_app_fields_default" {
   type        = bool
-  default     = false
+  default     = true
   description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
   type        = bool
-  default     = false
+  default     = true
   description = "If true, standard project prefix and resource suffix will be added to the name"
 }
 
@@ -51,6 +41,46 @@ variable "name_suffix_default" {
   description = "Appended after context suffix"
 }
 
+variable "policy_map" {
+  type = map(object({
+    name_append             = optional(string)
+    name_include_app_fields = optional(bool)
+    name_infix              = optional(bool)
+    name_prefix             = optional(string)
+    name_prepend            = optional(string)
+    name_suffix             = optional(string)
+    policy_access_list      = optional(list(string))
+    policy_create           = optional(bool)
+    policy_name_append      = optional(string)
+    policy_name_prefix      = optional(string)
+    adapter_name            = string
+  }))
+}
+
+variable "policy_access_list_default" {
+  type = list(string)
+  default = [
+    "read",
+    "read_write",
+    "write",
+  ]
+}
+
+variable "policy_create_default" {
+  type    = bool
+  default = true
+}
+
+variable "policy_name_append_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
 variable "std_map" {
   type = object({
     access_title_map               = map(string)
@@ -65,9 +95,4 @@ variable "std_map" {
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
   })
-}
-
-variable "table_server_side_encryption_enabled_default" {
-  type    = bool
-  default = false
 }

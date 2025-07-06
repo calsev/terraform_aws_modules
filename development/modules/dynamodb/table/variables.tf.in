@@ -1,3 +1,18 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 {{ name.var() }}
 
 {{ iam.policy_var_ar(access=["read_write"], append="dynamodb") }}
@@ -6,6 +21,7 @@
 
 variable "table_map" {
   type = map(object({
+    {{ alarm.var_item() }}
     attribute_map                  = optional(map(string))
     billing_mode                   = optional(string)
     create_policy                  = optional(bool)
@@ -35,6 +51,40 @@ variable "table_map" {
     ttl_attribute_name             = optional(string)
     write_capacity                 = optional(number)
   }))
+}
+
+variable "table_alarm_map_default" {
+  {{ alarm.var_default_type() }}
+  default = {
+    read_iops = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when read capcity usage is high for table %s"
+      alarm_name                          = "Read Capacity for %s"
+      alert_level                         = null
+      metric_name                         = "ConsumedReadCapacityUnits"
+      metric_namespace                    = "AWS/DynamoDB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+    write_iops = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when write capcity usage is high for table %s"
+      alarm_name                          = "Write Capacity for %s"
+      alert_level                         = null
+      metric_name                         = "ConsumedWriteCapacityUnits"
+      metric_namespace                    = "AWS/DynamoDB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+  }
 }
 
 variable "table_attribute_map_default" {

@@ -60,3 +60,5 @@ resource "aws_dynamodb_table" "this_table" {
 }
 
 {{ iam.policy_identity_ar_type(policy_name="policy", suffix="dynamodb/table") }}
+
+{{ alarm.main(prepend="table") }}

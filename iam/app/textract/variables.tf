@@ -1,13 +1,3 @@
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
-
 variable "name_append_default" {
   type        = string
   default     = ""
@@ -16,13 +6,13 @@ variable "name_append_default" {
 
 variable "name_include_app_fields_default" {
   type        = bool
-  default     = false
+  default     = true
   description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 
 variable "name_infix_default" {
   type        = bool
-  default     = false
+  default     = true
   description = "If true, standard project prefix and resource suffix will be added to the name"
 }
 
@@ -65,9 +55,4 @@ variable "std_map" {
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
   })
-}
-
-variable "table_server_side_encryption_enabled_default" {
-  type    = bool
-  default = false
 }

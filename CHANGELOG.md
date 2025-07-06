@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.103.0
+
+### New modules
+
+* IAM app for Textract
+* IAM policy for Textract
+
+### General
+
+* Monitoring for DynamoDB
+
 ## 0.102.0
 
 ### General
