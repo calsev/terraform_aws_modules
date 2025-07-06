@@ -1,7 +1,8 @@
 module "this_table" {
-  source  = "../../dynamodb/table"
+  source       = "../../dynamodb/table"
+  monitor_data = var.monitor_data
   {{ name.map_item() }}
-  std_map = var.std_map
+  std_map      = var.std_map
   table_map = {
     (local.table_name) = {
       attribute_map = {

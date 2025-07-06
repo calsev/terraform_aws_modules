@@ -1,3 +1,13 @@
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 {{ name.var(infix=False, app_fields=False) }}
 
 {{ std.map() }}

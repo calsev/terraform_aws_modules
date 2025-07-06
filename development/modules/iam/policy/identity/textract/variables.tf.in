@@ -1,0 +1,13 @@
+{{ name.var() }}
+
+variable "policy_map" {
+  type = map(object({
+    {{ name.var_item() }}
+    {{ iam.policy_var_item() }}
+    adapter_name = string
+  }))
+}
+
+{{ iam.policy_var_ar(access=["read", "read_write","write"]) }}
+
+{{ std.map() }}

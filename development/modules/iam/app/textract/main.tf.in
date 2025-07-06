@@ -1,0 +1,10 @@
+module "analyze_policy" {
+  source = "../../../iam/policy/identity/textract"
+  policy_map = {
+    textract_analyze = {
+      adapter_name = "*"
+    }
+  }
+  {{ name.map_item() }}
+  std_map             = var.std_map
+}

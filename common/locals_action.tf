@@ -1075,6 +1075,60 @@ locals {
         ]
       }
     }
+    textract = {
+      adapter = {
+        public_read = []
+        read = [
+          "GetAdapter",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          #"CreateAdapterVersion",
+          #"DeleteAdapter",
+          "TagResource",
+          "UntagResource",
+          #"UpdateAdapter",
+        ]
+      }
+      adapterversion = {
+        public_read = []
+        read = [
+          "GetAdapterVersion",
+          "ListTagsForResource",
+        ]
+        public_write = []
+        write = [
+          #"DeleteAdapterVersion",
+          "TagResource",
+          "UntagResource",
+        ]
+      }
+      star = {
+        public_read = []
+        read = [
+          "AnalyzeDocument",
+          "AnalyzeExpense",
+          "AnalyzeID",
+          "DetectDocumentText",
+          "GetDocumentAnalysis",
+          "GetDocumentTextDetection",
+          "GetExpenseAnalysis",
+          "GetLendingAnalysis",
+          "GetLendingAnalysisSummary",
+          "ListAdapterVersions",
+          "ListAdapters",
+        ]
+        public_write = []
+        write = [
+          #"CreateAdapter",
+          "StartDocumentAnalysis",
+          "StartDocumentTextDetection",
+          "StartExpenseAnalysis",
+          "StartLendingAnalysis",
+        ]
+      }
+    }
     xray = {
       group = {
         public_read = []

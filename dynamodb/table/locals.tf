@@ -1,3 +1,12 @@
+module "alarm_map" {
+  source              = "../../cw/alarm_map"
+  alarm_map           = var.table_map
+  alarm_map_default   = var.table_alarm_map_default
+  alert_level_default = var.alert_level_default
+  monitor_data        = var.monitor_data
+  name_map            = module.name_map.data
+}
+
 module "name_map" {
   source                          = "../../name_map"
   name_append_default             = var.name_append_default
@@ -12,6 +21,19 @@ module "name_map" {
 }
 
 locals {
+  create_alarm_1_list = flatten([
+    for k, v in local.lx_map : [
+      for k_alarm, v_alarm in v.alarm_map : merge(v, v_alarm, {
+        metric_dimension_map = {
+          TableName = v.name_effective
+        }
+        k_all = "${k}_${k_alarm}"
+      })
+    ]
+  ])
+  create_alarm_x_map = {
+    for v in local.create_alarm_1_list : v.k_all => v
+  }
   create_policy_map = {
     for k, v in local.lx_map : k => merge(v, {
       name_map_table = {
@@ -23,7 +45,7 @@ locals {
     for k, v in var.table_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.alarm_map.data[k], {
       attribute_map                  = v.attribute_map == null ? var.table_attribute_map_default : v.attribute_map
       billing_mode                   = v.billing_mode == null ? var.table_billing_mode_default : v.billing_mode
       create_policy                  = v.create_policy == null ? var.table_create_policy_default : v.create_policy
@@ -65,6 +87,9 @@ locals {
     for k, v in local.lx_map : k => merge(
       v,
       {
+        alarm = {
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
+        }
         policy    = v.create_policy ? module.policy.data[k] : null
         table_arn = aws_dynamodb_table.this_table[k].arn
       },

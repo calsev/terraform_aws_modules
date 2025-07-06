@@ -1,6 +1,9 @@
+{{ alarm.map(map="table_map", def_map="table_alarm_map_default") }}
+
 {{ name.map() }}
 
 locals {
+  {{ alarm.create(dimension="TableName") }}
   create_policy_map = {
     for k, v in local.lx_map : k => merge(v, {
       name_map_table = {
@@ -12,7 +15,7 @@ locals {
     for k, v in var.table_map : k => v
   }
   l1_map = {
-    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.alarm_map.data[k], {
       attribute_map                  = v.attribute_map == null ? var.table_attribute_map_default : v.attribute_map
       billing_mode                   = v.billing_mode == null ? var.table_billing_mode_default : v.billing_mode
       create_policy                  = v.create_policy == null ? var.table_create_policy_default : v.create_policy
@@ -54,6 +57,7 @@ locals {
     for k, v in local.lx_map : k => merge(
       v,
       {
+        {{ alarm.out() }}
         policy    = v.create_policy ? module.policy.data[k] : null
         table_arn = aws_dynamodb_table.this_table[k].arn
       },

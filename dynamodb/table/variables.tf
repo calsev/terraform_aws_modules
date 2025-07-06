@@ -1,3 +1,18 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
 variable "name_append_default" {
   type        = string
   default     = ""
@@ -81,6 +96,20 @@ variable "std_map" {
 
 variable "table_map" {
   type = map(object({
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
     attribute_map                  = optional(map(string))
     billing_mode                   = optional(string)
     create_policy                  = optional(bool)
@@ -115,6 +144,53 @@ variable "table_map" {
     ttl_attribute_name             = optional(string)
     write_capacity                 = optional(number)
   }))
+}
+
+variable "table_alarm_map_default" {
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+  default = {
+    read_iops = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when read capcity usage is high for table %s"
+      alarm_name                          = "Read Capacity for %s"
+      alert_level                         = null
+      metric_name                         = "ConsumedReadCapacityUnits"
+      metric_namespace                    = "AWS/DynamoDB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+    write_iops = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when write capcity usage is high for table %s"
+      alarm_name                          = "Write Capacity for %s"
+      alert_level                         = null
+      metric_name                         = "ConsumedWriteCapacityUnits"
+      metric_namespace                    = "AWS/DynamoDB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+  }
 }
 
 variable "table_attribute_map_default" {

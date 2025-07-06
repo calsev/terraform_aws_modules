@@ -74,3 +74,10 @@ module "policy" {
   policy_name_prefix_default      = var.policy_name_prefix_default
   std_map                         = var.std_map
 }
+
+module "alarm" {
+  source               = "../../cw/metric_alarm"
+  alarm_map            = local.create_alarm_x_map
+  name_prepend_default = "table"
+  std_map              = var.std_map
+}
