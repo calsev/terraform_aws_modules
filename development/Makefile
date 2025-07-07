@@ -317,6 +317,8 @@ tf-lint: tflint-install
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/alb_target && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../lambda/monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../lambda/monitor_auto && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../local_config && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../macie && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

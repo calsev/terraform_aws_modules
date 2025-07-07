@@ -70,7 +70,7 @@ variable "elb_alarm_map_default" {
     server_5xx = {
       alarm_action_enabled                = null
       alarm_description                   = "Alarm when 5xx responses are high on %s"
-      alarm_name                          = "Unhealthy host on %s"
+      alarm_name                          = "Error Rate for %s"
       alert_level                         = null
       metric_name                         = "HTTPCode_Target_5XX_Count"
       metric_namespace                    = "AWS/ApplicationELB"
@@ -84,7 +84,7 @@ variable "elb_alarm_map_default" {
     target_latency = {
       alarm_action_enabled                = null
       alarm_description                   = "Alarm when target response time is high on %s"
-      alarm_name                          = "Unhealthy host on %s"
+      alarm_name                          = "Target Latency for %s"
       alert_level                         = null
       metric_name                         = "TargetResponseTime"
       metric_namespace                    = "AWS/ApplicationELB"

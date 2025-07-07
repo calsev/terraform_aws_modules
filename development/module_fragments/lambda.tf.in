@@ -1,0 +1,23 @@
+{% import 'development/module_fragments/alarm.tf.in' as alarm %}
+
+{% macro var_alarm_default() -%}
+variable "function_alarm_map_default" {
+  {{ alarm.var_default_type() }}
+  default = {
+    lambda_error = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when errors are high for %s"
+      alarm_name                          = "Error for Lambda %s"
+      alert_level                         = null
+      metric_name                         = "Errors"
+      metric_namespace                    = "AWS/Lambda"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 0
+    }
+  }
+}
+{%- endmacro %}

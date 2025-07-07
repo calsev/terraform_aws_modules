@@ -1,0 +1,28 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
+{{ lambda.var_alarm_default() }}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+  })
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+variable "tag_filter_list" {
+  type = list(string)
+  default = [
+    "tf.workspace",
+  ]
+  description = "Alarms will be configured for every lambda function that has none of these tags"
+}

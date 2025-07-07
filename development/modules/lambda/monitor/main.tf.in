@@ -1,0 +1,2 @@
+# Function is already prepended by default
+{{ alarm.main() }}

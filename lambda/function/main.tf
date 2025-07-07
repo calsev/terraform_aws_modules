@@ -96,4 +96,11 @@ resource "aws_lambda_function" "this_function" {
   }
 }
 
-# TODO Fail alert
+module "alarm" {
+  source                     = "../../lambda/monitor"
+  alert_level_default        = var.alert_level_default
+  function_alarm_map_default = var.function_alarm_map_default
+  monitor_data               = var.monitor_data
+  function_map               = local.lx_map
+  std_map                    = var.std_map
+}
