@@ -109,6 +109,7 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr
         if !contains(["source_content_content", "source_content_string"], k_attr)
       },
+      module.alarm.data[k],
       module.function_policy.data[k],
       {
         dead_letter_queue   = module.dead_letter_queue.data[k]

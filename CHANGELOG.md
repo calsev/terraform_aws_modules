@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.105.0
+
+### New modules
+
+* Lambda monitor
+* Lambda auto monitor
+
+### General
+
+* Lambda monitoring embedded in function
+
 ## 0.104.0
 
 ### General

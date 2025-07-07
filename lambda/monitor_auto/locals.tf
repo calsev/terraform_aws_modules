@@ -1,0 +1,14 @@
+locals {
+  output_data = {
+    alarm = module.alarm.data
+  }
+  untagged_lambda_1_name_list = toset([for name, _ in data.external.untagged_lambdas.result : name])
+  untagged_lambda_2_name_map_sanitized = {
+    for name in local.untagged_lambda_1_name_list : name => replace(lower(name), "-", "_")
+  }
+  untagged_lambda_x_map = {
+    for k, v in local.untagged_lambda_2_name_map_sanitized : v => {
+      name_effective = k
+    }
+  }
+}

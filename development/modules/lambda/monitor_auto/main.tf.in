@@ -1,0 +1,17 @@
+data "external" "untagged_lambdas" {
+  program = flatten([
+    "python",
+    "${path.module}/list_untagged_lambdas.py",
+    flatten([for tag in var.tag_filter_list : ["--tag", tag]]),
+  ])
+}
+
+module "alarm" {
+  source                     = "../../lambda/monitor"
+  alert_level_default        = var.alert_level_default
+  function_alarm_map_default = var.function_alarm_map_default
+  function_map               = local.untagged_lambda_x_map
+  monitor_data               = var.monitor_data
+  {{ name.map_item() }}
+  std_map                    = var.std_map
+}

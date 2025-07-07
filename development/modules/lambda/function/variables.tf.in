@@ -1,3 +1,8 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "ecr_data" {
   type = object({
     repo_map = map(object({
@@ -13,6 +18,7 @@ variable "ecr_data" {
 
 variable "function_map" {
   type = map(object({
+    {{ alarm.var_item() }}
     architecture_list                                = optional(list(string))
     code_signing_config_arn                          = optional(string)
     dead_letter_queue_enabled                        = optional(bool)
@@ -52,6 +58,8 @@ variable "function_map" {
     {{ vpc.var_item() }}
   }))
 }
+
+{{ lambda.var_alarm_default() }}
 
 variable "function_architecture_list_default" {
   type        = list(string)

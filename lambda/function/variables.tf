@@ -1,3 +1,8 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
 variable "ecr_data" {
   type = object({
     repo_map = map(object({
@@ -13,6 +18,20 @@ variable "ecr_data" {
 
 variable "function_map" {
   type = map(object({
+    alarm_map = optional(map(object({
+      alarm_action_enabled                = optional(bool)
+      alarm_description                   = string # Human-friendly description
+      alarm_name                          = string # Human-friendly name
+      alert_level                         = optional(string)
+      metric_name                         = optional(string)
+      metric_namespace                    = optional(string)
+      statistic_comparison_operator       = optional(string)
+      statistic_evaluation_period_count   = optional(number)
+      statistic_evaluation_period_seconds = optional(number)
+      statistic_for_metric                = optional(string)
+      statistic_threshold_percentile      = optional(number)
+      statistic_threshold_value           = optional(number)
+    })))
     architecture_list                                = optional(list(string))
     code_signing_config_arn                          = optional(string)
     dead_letter_queue_enabled                        = optional(bool)
@@ -63,6 +82,39 @@ variable "function_map" {
     vpc_security_group_key_list                      = optional(list(string))
     vpc_segment_key                                  = optional(string)
   }))
+}
+
+variable "function_alarm_map_default" {
+  type = map(object({
+    alarm_action_enabled                = optional(bool)
+    alarm_description                   = string # Human-friendly description
+    alarm_name                          = string # Human-friendly name
+    alert_level                         = optional(string)
+    metric_name                         = optional(string)
+    metric_namespace                    = optional(string)
+    statistic_comparison_operator       = optional(string)
+    statistic_evaluation_period_count   = optional(number)
+    statistic_evaluation_period_seconds = optional(number)
+    statistic_for_metric                = optional(string)
+    statistic_threshold_percentile      = optional(number)
+    statistic_threshold_value           = optional(number)
+  }))
+  default = {
+    lambda_error = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when errors are high for %s"
+      alarm_name                          = "Error for Lambda %s"
+      alert_level                         = null
+      metric_name                         = "Errors"
+      metric_namespace                    = "AWS/Lambda"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 1
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Sum"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 0
+    }
+  }
 }
 
 variable "function_architecture_list_default" {
