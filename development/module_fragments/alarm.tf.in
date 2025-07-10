@@ -44,7 +44,7 @@ module "alarm_map" {
 }
 {%- endmacro %}
 
-{% macro create(dimension, dim_val="v.name_effective") -%}
+{% macro create(dimension, dim_val="v.name_effective", condition=None) -%}
   create_alarm_1_list = flatten([
     for k, v in local.lx_map : [
       for k_alarm, v_alarm in v.alarm_map : merge(v, v_alarm, {
@@ -53,16 +53,16 @@ module "alarm_map" {
         }
         k_all = "${k}_${k_alarm}"
       })
-    ]
+    ]{% if condition %} if {{ condition }}{% endif %}
   ])
   create_alarm_x_map = {
     for v in local.create_alarm_1_list : v.k_all => v
   }
 {%- endmacro %}
 
-{% macro out() -%}
+{% macro out(condition=None) -%}
         alarm = {
-          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]{% if condition %} if {{ condition }}{% endif %}
         }
 {%- endmacro %}
 

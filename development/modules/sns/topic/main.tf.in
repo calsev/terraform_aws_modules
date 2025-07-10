@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "this_topic" {
-  for_each                                 = local.topic_map
+  for_each                                 = local.tx_map
   application_failure_feedback_role_arn    = null # TODO
   application_success_feedback_role_arn    = null # TODO
   application_success_feedback_sample_rate = null # TODO
@@ -19,7 +19,7 @@ resource "aws_sns_topic" "this_topic" {
   lambda_success_feedback_sample_rate      = null # TODO
   name                                     = each.value.name_effective
   name_prefix                              = null
-  policy                                   = each.value.has_policy ? jsonencode(module.this_policy[each.key].iam_policy_doc) : null
+  policy                                   = each.value.has_policy ? jsonencode(module.resource_policy[each.key].iam_policy_doc) : null
   signature_version                        = each.value.signature_version
   sqs_failure_feedback_role_arn            = null # TODO
   sqs_success_feedback_role_arn            = null # TODO

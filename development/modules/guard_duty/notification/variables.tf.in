@@ -1,0 +1,21 @@
+variable "alert_level_default" {
+  type    = string
+  default = "general_medium"
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        topic_arn = string
+      }))
+    })
+  })
+}
+
+{{ name.var() }}
+
+{{ std.map() }}

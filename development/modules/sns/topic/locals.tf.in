@@ -14,6 +14,11 @@ locals {
   all_topic_list = sort([
     for k, _ in var.topic_map : k
   ])
+  create_policy_map = {
+    for k, v in local.tx_map : k => merge(v, {
+      sns_topic_name = v.name_effective
+    })
+  }
   output_data = {
     subscription_map = {
       for k, v in local.subscription_map : k => merge(v, {
@@ -23,10 +28,14 @@ locals {
       })
     }
     topic_map = {
-      for k, v in local.topic_map : k => merge(v, {
-        policy_doc = v.has_policy ? module.this_policy[k].iam_policy_doc : null
-        topic_arn  = aws_sns_topic.this_topic[k].arn
-      })
+      for k, v in local.tx_map : k => merge(
+        v,
+        module.topic_policy.data[k],
+        {
+          policy_doc = v.has_policy ? module.resource_policy[k].iam_policy_doc : null
+          topic_arn  = aws_sns_topic.this_topic[k].arn
+        },
+      )
     }
   }
   s1_map = {
@@ -77,10 +86,10 @@ locals {
       signature_version                  = v.signature_version == null ? var.topic_signature_version_default : v.signature_version
     })
   }
-  topic_map = {
+  tx_map = {
     for k, v in var.topic_map : k => merge(local.t1_map[k], local.t2_map[k], local.t3_map[k])
   }
   topic_policy_map = {
-    for k, v in local.topic_map : k => v if v.has_policy
+    for k, v in local.tx_map : k => v if v.has_policy
   }
 }

@@ -26,7 +26,7 @@ locals {
         }
         k_all = "${k}_${k_alarm}"
       })
-    ]
+    ] if v.create_queue
   ])
   create_alarm_x_map = {
     for v in local.create_alarm_1_list : v.k_all => v
@@ -79,7 +79,7 @@ locals {
       v.create_queue ? module.queue_policy.data[k] : null,
       {
         alarm = {
-          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
+          for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"] if v.create_queue
         }
         queue_arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
         queue_url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null

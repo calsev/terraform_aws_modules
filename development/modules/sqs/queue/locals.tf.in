@@ -11,7 +11,7 @@ module "name_map" {
 }
 
 locals {
-  {{ alarm.create(dimension="QueueName") }}
+  {{ alarm.create(dimension="QueueName", condition="v.create_queue") }}
   create_queue_map = {
     for k, v in local.lx_map : k => v if v.create_queue
   }
@@ -59,7 +59,7 @@ locals {
       v,
       v.create_queue ? module.queue_policy.data[k] : null,
       {
-        {{ alarm.out() }}
+        {{ alarm.out(condition="v.create_queue") }}
         queue_arn = v.create_queue ? aws_sqs_queue.this_queue[k].arn : null
         queue_url = v.create_queue ? aws_sqs_queue.this_queue[k].url : null
       },

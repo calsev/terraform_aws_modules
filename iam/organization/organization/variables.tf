@@ -63,6 +63,7 @@ variable "organization_aws_service_access_principal_list_default" {
     "aws-artifact-account-sync.amazonaws.com",
     "cost-optimization-hub.bcm.amazonaws.com",
     "iam.amazonaws.com",
+    "sso.amazonaws.com",
   ]
 }
 

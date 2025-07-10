@@ -209,7 +209,9 @@ tf-lint: tflint-install
 	cd ../event/trigger/s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/trigger/s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../guard_duty && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../guard_duty/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../guard_duty/detector && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../guard_duty/notification && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/access_analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/access_analyzer/analyzer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -266,6 +268,7 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity/s3/bucket_access_resource && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/sns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/sns/topic && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/sqs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/sqs/queue && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
