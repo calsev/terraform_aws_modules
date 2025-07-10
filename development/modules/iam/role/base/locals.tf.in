@@ -1,4 +1,4 @@
-{{ name.map() }}
+# L-1
 
 module "role_policy_map" {
   source = "../../../iam/role/policy_map"
@@ -27,6 +27,10 @@ module "role_policy_map" {
   role_policy_inline_json_map_default  = var.role_policy_inline_json_map_default
   role_policy_managed_name_map_default = var.role_policy_managed_name_map_default
 }
+
+# L0
+
+{{ name.map() }}
 
 locals {
   l0_map = merge(

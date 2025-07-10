@@ -1,3 +1,5 @@
+# L1
+
 module "assume_role_policy" {
   source       = "../../../iam/policy/assume_role"
   for_each     = local.l1_map.enable_assume_role ? { this = {} } : {}
@@ -15,6 +17,8 @@ resource "aws_iam_policy" "this_created_policy" {
   policy = jsonencode(each.value)
   tags   = module.name_map.data[each.key].tags
 }
+
+# L2
 
 resource "aws_iam_role" "this_iam_role" {
   assume_role_policy   = jsonencode(local.l2_map.assume_role_doc)
@@ -40,6 +44,10 @@ resource "aws_iam_role_policies_exclusive" "inline_policies" {
     for k, v in local.l1_map.role_policy_inline_doc_map : k
   ]
 }
+
+# L3
+
+# L4
 
 resource "aws_iam_role_policy_attachments_exclusive" "managed_policies" {
   role_name   = aws_iam_role.this_iam_role.name
