@@ -34,3 +34,31 @@ module "policy" {
   }
   std_map = var.std_map
 }
+
+module "efs_policy" {
+  source                          = "../../../iam/policy/identity/efs"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  policy_map                      = local.efs_policy_map
+  std_map                         = var.std_map
+}
+
+module "efs_role" {
+  source                          = "../../../iam/role/ec2/instance"
+  monitor_data                    = var.monitor_data
+  name                            = "efs_mount"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_suffix_default             = var.name_suffix_default
+  role_policy_attach_arn_map_default = {
+    efs_read_write = module.efs_policy.data["mount"].policy_map["read_write"].iam_policy_arn
+  }
+  std_map = var.std_map
+}

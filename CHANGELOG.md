@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.107.0
+
+### General
+
+* EFS mount role added to IAM EC2 app
+
 ## 0.106.0
 
 ### New modules
