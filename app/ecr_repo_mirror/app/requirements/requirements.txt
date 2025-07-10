@@ -1,1 +1,1 @@
-ecr-mirror
+ecr-mirror~=1.3.0
