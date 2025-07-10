@@ -1,4 +1,4 @@
-module "this_policy" {
+module "resource_policy" {
   for_each = local.topic_policy_map
   source   = "../../iam/policy/resource/sns/topic"
   sid_map = {
@@ -21,3 +21,5 @@ module "this_policy" {
   sns_topic_name = each.value.name_effective
   std_map        = var.std_map
 }
+
+{{ iam.policy_identity_ar_type(policy_name="topic_policy", suffix="sns/topic") }}

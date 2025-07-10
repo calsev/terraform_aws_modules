@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.106.0
+
+### New modules
+
+* GuardDuty AWS account
+* GuardDuty notification
+
+### General
+
+* Add sso to default Organization principles
+* SNS topic identity policy moved to subdirectory of sns
+* Embedded policy for SNS topic
+
+### Bugfix
+
+* Alarm for queue no longer created if queue not created
+
 ## 0.105.0
 
 ### New modules

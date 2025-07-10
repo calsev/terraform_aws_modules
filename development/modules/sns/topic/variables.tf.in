@@ -1,3 +1,7 @@
+{{ iam.policy_var_ar(access=["write"], append="topic") }}
+
+{{ name.var() }}
+
 {{ std.map() }}
 
 variable "subscription_map" {
@@ -46,8 +50,10 @@ variable "topic_map" {
   type = map(object({
     allow_events                       = optional(bool)
     enable_content_based_deduplication = optional(bool)
+    {{ iam.policy_var_item() }}
     is_fifo                            = optional(bool)
     kms_key                            = optional(string)
+    {{ name.var_item() }}
     signature_version                  = optional(string)
   }))
 }
