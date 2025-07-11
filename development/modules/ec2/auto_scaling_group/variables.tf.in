@@ -20,8 +20,12 @@ variable "group_map" {
     auto_scaling_protect_from_scale_in          = optional(bool)
     elb_target_group_key_list                   = optional(list(string))
     health_check_type                           = optional(string)
+    instance_lifetime_max_hours                 = optional(number)
     instance_maintenance_max_healthy_percentage = optional(number)
     instance_maintenance_min_healthy_percentage = optional(number)
+    instance_refresh_max_healthy_percentage     = optional(number)
+    instance_refresh_min_healthy_percentage     = optional(number)
+    instance_refresh_protected_instance_enabled = optional(bool)
     launch_template_id                          = optional(string)
     {{ name.var_item() }}
     placement_group_id                          = optional(string)
@@ -67,8 +71,8 @@ variable "group_auto_scaling_num_instances_min_default" {
 
 variable "group_auto_scaling_protect_from_scale_in_default" {
   type        = bool
-  default     = true
-  description = "This is required for managed termination protection in ECS"
+  default     = false
+  description = "Prevents instance cycling and overrides ECS delegation. Sticks to instances once created, so enable with caution."
 }
 
 variable "group_elb_target_group_key_list_default" {
@@ -87,14 +91,44 @@ variable "group_health_check_type_default" {
   }
 }
 
+variable "group_instance_lifetime_max_hours_default" {
+  type        = number
+  default     = 0
+  description = "Set nonzero to enable automatic cycling"
+}
+
 variable "group_instance_maintenance_max_healthy_percentage_default" {
   type    = number
   default = 200
+  validation {
+    condition     = 100 <= var.group_instance_maintenance_max_healthy_percentage_default && var.group_instance_maintenance_max_healthy_percentage_default <= 200
+    error_message = "Invalid healthy percentage"
+  }
 }
 
 variable "group_instance_maintenance_min_healthy_percentage_default" {
   type    = number
   default = 100
+}
+
+variable "group_instance_refresh_max_healthy_percentage_default" {
+  type    = number
+  default = 200
+  validation {
+    condition     = 100 <= var.group_instance_refresh_max_healthy_percentage_default && var.group_instance_refresh_max_healthy_percentage_default <= 200
+    error_message = "Invalid healthy percentage"
+  }
+}
+
+variable "group_instance_refresh_min_healthy_percentage_default" {
+  type    = number
+  default = 100
+}
+
+variable "group_instance_refresh_protected_instance_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Allows autonomous auto scale-in actions such as instance rotation."
 }
 
 variable "group_launch_template_id_default" {

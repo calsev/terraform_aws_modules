@@ -19,18 +19,19 @@ resource "aws_autoscaling_group" "this_asg" {
   }
   instance_refresh {
     preferences {
+      # alarm_specification
       auto_rollback                = false
       checkpoint_delay             = 3600
       checkpoint_percentages       = null
       instance_warmup              = null
-      max_healthy_percentage       = 100
-      min_healthy_percentage       = 90
-      scale_in_protected_instances = "Ignore"
+      max_healthy_percentage       = each.value.instance_refresh_max_healthy_percentage
+      min_healthy_percentage       = each.value.instance_refresh_min_healthy_percentage
+      scale_in_protected_instances = each.value.instance_refresh_protected_instance_enabled ? "Refresh" : "Ignore"
       skip_matching                = false
-      standby_instances            = "Ignore"
+      standby_instances            = each.value.instance_refresh_protected_instance_enabled ? "Terminate" : "Ignore"
     }
     strategy = "Rolling"
-    triggers = []
+    triggers = ["max_instance_lifetime"]
   }
   launch_configuration = null # Conflicts with launch_template
   launch_template {
@@ -44,13 +45,12 @@ resource "aws_autoscaling_group" "this_asg" {
     ]
   }
   load_balancers        = null # Obsolete: classic load balancer
-  max_instance_lifetime = 0
+  max_instance_lifetime = each.value.instance_lifetime_max_hours * 60 * 60
   metrics_granularity   = "1Minute"
   min_elb_capacity      = null # TF Wait
   # mixed_instances_policy # Conflicts with launch_template
-  name        = null                            # Conflicts with name_prefix
-  name_prefix = each.value.resource_name_prefix # Name causes issues with replacing
-  # max_instance_lifetime
+  name                    = null                            # Conflicts with name_prefix
+  name_prefix             = each.value.resource_name_prefix # Name causes issues with replacing
   max_size                = each.value.auto_scaling_num_instances_max
   min_size                = each.value.auto_scaling_num_instances_min
   placement_group         = each.value.placement_group_id
@@ -65,8 +65,14 @@ resource "aws_autoscaling_group" "this_asg" {
       propagate_at_launch = true
     }
   }
-  termination_policies = ["OldestLaunchConfiguration", "OldestInstance", "AllocationStrategy", "Default"]
-  target_group_arns    = each.value.elb_target_group_arn_list
+  termination_policies = [
+    "OldestLaunchConfiguration",
+    "OldestLaunchTemplate",
+    "OldestInstance",
+    "AllocationStrategy",
+    "Default",
+  ]
+  target_group_arns = each.value.elb_target_group_arn_list
   # traffic_source # TODO
   vpc_zone_identifier       = each.value.vpc_subnet_id_list
   wait_for_capacity_timeout = "10m"

@@ -64,9 +64,10 @@ variable "instance_map" {
   }))
 }
 
-variable "instance_auto_scaling_protect_from_scale_in_default" {
-  type    = bool
-  default = false
+variable "group_auto_scaling_protect_from_scale_in_default" {
+  type        = bool
+  default     = false
+  description = "Prevents instance cycling and overrides ECS delegation. Sticks to instances once created, so enable with caution."
 }
 
 variable "instance_cert_contact_email_default" {

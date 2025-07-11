@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.108.0
+
+### General
+
+* ECS app support for instance refresh
+* ECS app max instance age parameter
+* ECS app scaling size parameter
+
 ## 0.107.1
 
 ### Security
