@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.107.1
+
+### Security
+
+* Bump dependencies for ECR repo mirror
+
 ## 0.107.0
 
 ### General
