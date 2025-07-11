@@ -1,29 +1,31 @@
 variable "compute_map" {
   type = map(object({
-    auto_scaling_iam_role_arn_service_linked = optional(string)
-    auto_scaling_num_instances_max           = optional(number)
-    auto_scaling_num_instances_min           = optional(number)
-    auto_scaling_protect_from_scale_in       = optional(bool)
-    elb_target_group_key_list                = optional(list(string))
-    health_check_type                        = optional(string)
-    iam_instance_profile_arn                 = optional(string)
-    image_id                                 = optional(string)
-    instance_allocation_type                 = optional(string)
-    instance_storage_gib                     = optional(number)
-    instance_type                            = optional(string)
-    key_pair_key                             = optional(string)
-    log_retention_days                       = optional(number)
-    provider_instance_warmup_period_s        = optional(number)
-    provider_managed_scaling_enabled         = optional(bool)
-    provider_managed_termination_protection  = optional(bool)
-    provider_step_size_max                   = optional(number)
-    provider_step_size_min                   = optional(number)
-    provider_target_capacity                 = optional(number)
-    vpc_az_key_list                          = optional(list(string))
-    vpc_key                                  = optional(string)
-    vpc_security_group_key_list              = optional(list(string))
-    vpc_segment_key                          = optional(string)
-    user_data_command_list                   = optional(list(string))
+    auto_scaling_iam_role_arn_service_linked    = optional(string)
+    auto_scaling_num_instances_max              = optional(number)
+    auto_scaling_num_instances_min              = optional(number)
+    auto_scaling_protect_from_scale_in          = optional(bool)
+    elb_target_group_key_list                   = optional(list(string))
+    health_check_type                           = optional(string)
+    iam_instance_profile_arn                    = optional(string)
+    image_id                                    = optional(string)
+    instance_allocation_type                    = optional(string)
+    instance_lifetime_max_hours                 = optional(number)
+    instance_refresh_protected_instance_enabled = optional(bool)
+    instance_storage_gib                        = optional(number)
+    instance_type                               = optional(string)
+    key_pair_key                                = optional(string)
+    log_retention_days                          = optional(number)
+    provider_instance_warmup_period_s           = optional(number)
+    provider_managed_scaling_enabled            = optional(bool)
+    provider_managed_termination_protection     = optional(bool)
+    provider_step_size_max                      = optional(number)
+    provider_step_size_min                      = optional(number)
+    provider_target_capacity                    = optional(number)
+    vpc_az_key_list                             = optional(list(string))
+    vpc_key                                     = optional(string)
+    vpc_security_group_key_list                 = optional(list(string))
+    vpc_segment_key                             = optional(string)
+    user_data_command_list                      = optional(list(string))
   }))
 }
 
@@ -43,8 +45,9 @@ variable "compute_auto_scaling_num_instances_min_default" {
 }
 
 variable "compute_auto_scaling_protect_from_scale_in_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = false
+  description = "Prevents instance cycling and overrides ECS delegation. Sticks to instances once created, so enable with caution."
 }
 
 variable "compute_elb_target_group_key_list_default" {
@@ -82,6 +85,18 @@ variable "compute_instance_allocation_type_default" {
   }
 }
 
+variable "compute_instance_lifetime_max_hours_default" {
+  type        = number
+  default     = 0
+  description = "Set nonzero to enable automatic cycling"
+}
+
+variable "compute_instance_refresh_protected_instance_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Allows autonomous auto scale-in actions such as instance rotation."
+}
+
 variable "compute_instance_storage_gib_default" {
   type        = number
   default     = 30
@@ -117,8 +132,8 @@ variable "compute_provider_managed_scaling_enabled_default" {
 
 variable "compute_provider_managed_termination_protection_default" {
   type        = bool
-  default     = true
-  description = "Ignored for Fargate capacity type. Requires auto_scaling_protect_from_scale_in."
+  default     = null
+  description = "Delegates termination to ECS, preventing scale in for rotation. Defaults to true if instance_lifetime_max_hours is zero. Ignored for Fargate capacity type."
 }
 
 variable "compute_provider_step_size_max_default" {

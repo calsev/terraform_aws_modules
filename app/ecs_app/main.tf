@@ -69,27 +69,32 @@ module "elb_listener" {
 }
 
 module "ecs_cluster" {
-  source                                            = "../../ecs/compute"
-  compute_auto_scaling_num_instances_max_default    = var.compute_auto_scaling_num_instances_max_default
-  compute_auto_scaling_num_instances_min_default    = var.compute_auto_scaling_num_instances_min_default
-  compute_health_check_type_default                 = "ELB"
-  compute_iam_instance_profile_arn_default          = var.compute_iam_instance_profile_arn_default
-  compute_image_id_default                          = var.compute_image_id_default
-  compute_instance_storage_gib_default              = var.compute_instance_storage_gib_default
-  compute_instance_type_default                     = var.compute_instance_type_default
-  compute_key_pair_key_default                      = var.compute_key_pair_key_default
-  compute_map                                       = local.create_cluster_map
-  compute_provider_instance_warmup_period_s_default = var.compute_provider_instance_warmup_period_s_default
-  compute_user_data_command_list_default            = var.compute_user_data_command_list_default
-  elb_target_data_map                               = module.elb_target.data
-  iam_data                                          = var.iam_data
-  monitor_data                                      = var.monitor_data
-  std_map                                           = var.std_map
-  vpc_az_key_list_default                           = var.vpc_az_key_list_default
-  vpc_data_map                                      = var.vpc_data_map
-  vpc_key_default                                   = var.vpc_key_default
-  vpc_security_group_key_list_default               = var.vpc_security_group_key_list_instance_default
-  vpc_segment_key_default                           = var.vpc_segment_key_default
+  source                                                      = "../../ecs/compute"
+  compute_auto_scaling_num_instances_max_default              = var.compute_auto_scaling_num_instances_max_default
+  compute_auto_scaling_num_instances_min_default              = var.compute_auto_scaling_num_instances_min_default
+  compute_auto_scaling_protect_from_scale_in_default          = var.compute_auto_scaling_protect_from_scale_in_default
+  compute_health_check_type_default                           = "ELB"
+  compute_iam_instance_profile_arn_default                    = var.compute_iam_instance_profile_arn_default
+  compute_image_id_default                                    = var.compute_image_id_default
+  compute_instance_lifetime_max_hours_default                 = var.compute_instance_lifetime_max_hours_default
+  compute_instance_refresh_protected_instance_enabled_default = var.compute_instance_refresh_protected_instance_enabled_default
+  compute_instance_storage_gib_default                        = var.compute_instance_storage_gib_default
+  compute_instance_type_default                               = var.compute_instance_type_default
+  compute_key_pair_key_default                                = var.compute_key_pair_key_default
+  compute_map                                                 = local.create_cluster_map
+  compute_provider_instance_warmup_period_s_default           = var.compute_provider_instance_warmup_period_s_default
+  compute_provider_managed_termination_protection_default     = var.compute_provider_managed_termination_protection_default
+  compute_provider_step_size_max_default                      = var.compute_provider_step_size_max_default
+  compute_user_data_command_list_default                      = var.compute_user_data_command_list_default
+  elb_target_data_map                                         = module.elb_target.data
+  iam_data                                                    = var.iam_data
+  monitor_data                                                = var.monitor_data
+  std_map                                                     = var.std_map
+  vpc_az_key_list_default                                     = var.vpc_az_key_list_default
+  vpc_data_map                                                = var.vpc_data_map
+  vpc_key_default                                             = var.vpc_key_default
+  vpc_security_group_key_list_default                         = var.vpc_security_group_key_list_instance_default
+  vpc_segment_key_default                                     = var.vpc_segment_key_default
 }
 
 module "fargate_cluster" {

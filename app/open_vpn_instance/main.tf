@@ -150,7 +150,7 @@ module "asg" {
   elb_target_data_map                                    = module.target_group.data
   group_auto_scaling_iam_role_arn_service_linked_default = null
   group_auto_scaling_num_instances_max_default           = 1
-  group_auto_scaling_protect_from_scale_in_default       = var.instance_auto_scaling_protect_from_scale_in_default
+  group_auto_scaling_protect_from_scale_in_default       = var.group_auto_scaling_protect_from_scale_in_default
   group_map                                              = local.create_asg_map
   group_suspended_processes_default = [
     # The instance currently requires manual initialization

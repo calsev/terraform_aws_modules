@@ -8,6 +8,7 @@ resource "aws_ecs_service" "this_static_service" {
       rollback    = alarms.alarm_rollback_enabled
     }
   }
+  # availability_zone_rebalancing
   capacity_provider_strategy { # Conflicts with launch_type
     base              = 0      # Base does not work well with auto scaling and app spec
     capacity_provider = each.value.capacity_provider_name
@@ -137,6 +138,7 @@ resource "aws_ecs_service" "this_dynamic_service" {
       rollback    = alarms.alarm_rollback_enabled
     }
   }
+  # availability_zone_rebalancing
   capacity_provider_strategy { # Conflicts with launch_type
     base              = 0      # Base does not work well with auto scaling and app spec
     capacity_provider = each.value.capacity_provider_name
