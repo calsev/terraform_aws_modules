@@ -76,6 +76,7 @@ variable "policy_map" {
     name_suffix             = optional(string)
     policy_create           = optional(bool)
     policy_name_append      = optional(string)
+    policy_name_prefix      = optional(string)
     resource_map            = map(list(string)) # A map of resource type to resource names
     service_name            = optional(string)
   }))

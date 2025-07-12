@@ -52,6 +52,7 @@ variable "policy_map" {
     name_suffix             = optional(string)
     policy_create           = optional(bool)
     policy_name_append      = optional(string)
+    policy_name_prefix      = optional(string)
   }))
 }
 
