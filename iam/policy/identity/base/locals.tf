@@ -1,10 +1,10 @@
 module "name_map" {
   source                          = "../../../../name_map"
-  name_append_default             = trim("${var.name_append_default}_${var.policy_name_append_default}", "_")
+  name_append_default             = var.name_append_default
   name_include_app_fields_default = var.name_include_app_fields_default
   name_infix_default              = var.name_infix_default
   name_map                        = local.l0_map
-  name_prefix_default             = trim("${var.name_prefix_default}_${var.policy_name_prefix_default}", "_")
+  name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
   name_regex_allow_list           = var.name_regex_allow_list
   name_suffix_default             = var.name_suffix_default
@@ -17,7 +17,8 @@ locals {
   }
   l0_map = {
     for k, v in var.policy_map : k => merge(v, {
-      name_append = v.name_append == null && v.policy_name_append == null ? null : trim("${v.name_append == null ? "" : v.name_append}_${v.policy_name_append == null ? "" : v.policy_name_append}", "_")
+      name_append = trim(replace("${v.name_append == null ? var.name_append_default == null ? "" : var.name_append_default : v.name_append}_${v.policy_name_append == null ? var.policy_name_append_default == null ? "" : var.policy_name_append_default : v.policy_name_append}", "_", "_"), "_")
+      name_prefix = trim(replace("${v.name_prefix == null ? var.name_prefix_default == null ? "" : var.name_prefix_default : v.name_prefix}_${v.policy_name_prefix == null ? var.policy_name_prefix_default == null ? "" : var.policy_name_prefix_default : v.policy_name_prefix}", "_", "_"), "_")
     })
   }
   l1_map = {
