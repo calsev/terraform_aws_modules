@@ -72,14 +72,20 @@ variable "app_map" {
       name = string
     }))
     container_definition_map = map(object({
-      command_join          = optional(bool)
-      command_list          = optional(list(string))
-      environment_file_list = optional(list(string))
-      environment_map       = optional(map(string))
-      entry_point           = optional(list(string))
-      hostname              = optional(string)
-      image                 = optional(string) # Will be defaulted if image_ecr_repo_create
-      is_essential          = optional(bool)
+      command_join               = optional(bool)
+      command_list               = optional(list(string))
+      environment_file_list      = optional(list(string))
+      environment_map            = optional(map(string))
+      entry_point                = optional(list(string))
+      hostname                   = optional(string)
+      image                      = optional(string) # Will be defaulted if image_ecr_repo_create
+      is_essential               = optional(bool)
+      linux_capability_add_list  = optional(list(string))
+      linux_capability_drop_list = optional(list(string))
+      linux_device_map = optional(map(object({
+        container_path  = optional(string)
+        permission_list = optional(list(string))
+      })), {})
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -1180,6 +1186,21 @@ variable "task_container_environment_map_default" {
 variable "task_container_image_default" {
   type    = string
   default = "public.ecr.aws/lts/ubuntu:latest"
+}
+
+variable "task_container_linux_capability_add_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "task_container_linux_capability_drop_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "task_container_linux_device_permission_list_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "task_container_mount_point_map_default" {

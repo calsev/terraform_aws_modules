@@ -1,0 +1,121 @@
+module "name_map" {
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
+}
+
+locals {
+  create_app_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      container_definition_map = {
+        server = {
+          hostname = v.dns_from_fqdn
+          linux_device_map = {
+            "/dev/net/tun" = {
+              permissions = [
+                "read",
+                "write",
+              ]
+            }
+          }
+          secret_map = {
+            OPENVPN_ADMIN_PASSWORD = "${module.secret.data[k].secret_arn}:admin_password::"
+            OPENVPN_LICENSE_KEY    = "${module.secret.data[k].secret_arn}:license_key::"
+          }
+        }
+      }
+      efs_volume_map = {
+        authorization_access_point_id = module.efs.data[k].access_point_map["/openvpn"].access_point_id
+        file_system_id                = module.efs.data[k].efs_id
+        root_directory                = "/openvpn"
+      }
+      iam_instance_profile_arn = module.instance_role[k].data.iam_instance_profile_arn
+      iam_role_arn_execution   = module.ecs_task_execution_role.data[k].iam_role_arn
+    })
+  }
+  l0_map = {
+    for k, v in var.vpn_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      dns_from_zone_key = v.dns_from_zone_key == null ? var.listener_dns_from_zone_key_default : v.dns_from_zone_key
+      elb_key_alb       = v.elb_key_alb == null ? var.vpn_elb_key_alb_default : v.elb_key_alb
+      elb_key_nlb       = v.elb_key_nlb == null ? var.vpn_elb_key_nlb_default : v.elb_key_nlb
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+      dns_from_fqdn = v.dns_from_fqdn == null ? "vpn.${local.l1_map[k].dns_from_zone_key}" : v.dns_from_fqdn
+      elb_target_map = {
+        "${k}_tcp" = {
+          acm_certificate_key   = null
+          container_port        = 443
+          dns_alias_fqdn        = null
+          elb_key               = local.l1_map[k].elb_key_nlb
+          health_check_port     = null
+          health_check_protocol = null
+          listen_protocol       = "TCP"
+          rule_condition_map    = null
+          rule_priority         = null
+          target_protocol       = "TCP"
+        }
+        "${k}_udp" = {
+          acm_certificate_key   = null
+          container_port        = 1194
+          dns_alias_fqdn        = null
+          elb_key               = local.l1_map[k].elb_key_nlb
+          health_check_port     = 443 # Health check is mandatory but does not support UDP
+          health_check_protocol = null
+          listen_protocol       = "UDP"
+          rule_condition_map    = null
+          rule_priority         = null
+          target_protocol       = "UDP"
+        }
+        "${k}_web" = {
+          acm_certificate_key   = v.acm_certificate_key
+          container_port        = 943
+          dns_alias_fqdn        = v.dns_alias_fqdn
+          elb_key               = local.l1_map[k].elb_key_alb
+          health_check_port     = null
+          health_check_protocol = "HTTPS"
+          listen_protocol       = "HTTPS"
+          rule_condition_map    = null
+          rule_priority         = v.elb_rule_priority_alb
+          target_protocol       = "HTTPS"
+        }
+      }
+    }
+  }
+  l3_map = {
+    for k, v in local.l0_map : k => {
+      elb_target_map = {
+        for k_targ, v_targ in local.l2_map[k].elb_target_map : k_targ => merge(v_targ, {
+        })
+      }
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
+      },
+      {
+        ecs_app                 = module.ecs_app.data[k]
+        ecs_task_execution_role = module.ecs_task_execution_role.data[k]
+        efs                     = module.efs.data[k]
+        instance_profile        = module.instance_role[k].data
+        secret                  = module.secret.data[k]
+      },
+    )
+  }
+}
