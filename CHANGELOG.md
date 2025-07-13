@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.109.0
+
+### General
+
+* Flatten IAM access-based policy to address Terraform module depth limit
+
 ## 0.108.0
 
 ### General

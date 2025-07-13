@@ -10,10 +10,4 @@ data "aws_iam_policy_document" "this_policy_doc" {
   }
 }
 
-module "this_policy" {
-  source                          = "../../../../iam/policy/identity/base"
-  # Appended here
-  {{ name.map_item(append="") }}
-  {{ iam.policy_map_item_base(append="") }}
-  std_map                         = var.std_map
-}
+{{ iam.policy_main() }}
