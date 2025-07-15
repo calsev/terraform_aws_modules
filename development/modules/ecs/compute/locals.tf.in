@@ -34,8 +34,13 @@ locals {
       provider_managed_termination_protection = v.provider_managed_termination_protection == null ? var.compute_provider_managed_termination_protection_default == null ? local.l1_map[k].instance_lifetime_max_hours == 0 : var.compute_provider_managed_termination_protection_default : v.provider_managed_termination_protection
     }
   }
+  l3_map = {
+    for k, v in local.l0_map : k => {
+      auto_scaling_protect_from_scale_in = v.auto_scaling_protect_from_scale_in == null ? var.compute_auto_scaling_protect_from_scale_in_default == null ? local.l2_map[k].provider_managed_termination_protection : var.compute_auto_scaling_protect_from_scale_in_default : v.auto_scaling_protect_from_scale_in
+    }
+  }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

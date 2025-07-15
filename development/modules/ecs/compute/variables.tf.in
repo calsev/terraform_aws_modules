@@ -43,8 +43,8 @@ variable "compute_auto_scaling_num_instances_min_default" {
 
 variable "compute_auto_scaling_protect_from_scale_in_default" {
   type        = bool
-  default     = false
-  description = "Prevents instance cycling and overrides ECS delegation. Sticks to instances once created, so enable with caution."
+  default     = null
+  description = "Prevents instance cycling but required for ECS delegation. Sticks to instances once created. Defaults to provider_managed_termination_protection."
 }
 
 variable "compute_elb_target_group_key_list_default" {

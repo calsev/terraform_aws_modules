@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.110.0
+
+### General
+
+* EC2 ASG protected scale in handled automatically in most cases
+* ECS app Linux capabilties and devices
+* ECS app target type and network mode to support host networking
+* ECS managed draining explicitly enabled (was default true)
+* OpenVPN instance backup bucket permission
+* ECR repo lifecycle shortened to 7 days for consistency with vulnerability SLAs
+* ELB anomaly mitigation handled automatically
+
 ## 0.109.0
 
 ### General

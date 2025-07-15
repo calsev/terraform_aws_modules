@@ -168,6 +168,17 @@ locals {
           hostname  = v_def.hostname
           image     = v_def.image != null ? v_def.image : var.task_container_image_default
           linuxParameters = {
+            capabilities = {
+              add = v_def.linux_capability_add_list == null ? var.task_container_linux_capability_add_list_default : v_def.linux_capability_add_list
+              drop = v_def.linux_capability_drop_list == null ? var.task_container_linux_capability_drop_list_default : v_def.linux_capability_drop_list
+            }
+            devices = [
+              for k_dev, v_dev in v_def.linux_device_map : {
+                hostPath      = k_dev
+                containerPath = v_dev.container_path == null ? k_dev : v_dev.container_path
+                permissions   = v_dev.permission_list == null ? var.task_container_linux_device_permission_list_default : v_dev.permission_list
+              }
+            ]
             initProcessEnabled = true
           }
           logConfiguration = {
