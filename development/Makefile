@@ -12,23 +12,26 @@ BASE_PY_BIN := $(shell [ $(PY_VER) == $(SYS_PY_VER) ] && echo $(SYS_PY_BIN) || e
 BASE_PY ?= $(BASE_PY_BIN)
 VENV := .venv
 
-ACTIVATE := source "$(VENV)/bin/activate"
 PIP := -m pip install --upgrade
-PY := $(ACTIVATE) &&
 # Pin below as things break - especially setuptools
 PY_INIT := $(PIP) --no-cache-dir pip virtualenv # No sudo; will upgrade packages in ~/.local unless running as root, e.g. in Docker
 ENV_INIT := python $(PIP) --no-cache-dir pip wheel setuptools
 
 TF := terraform
+ENV := env/.env
 FMT := $(TF) fmt --recursive
 LINT := tflint
 VALIDATE := $(TF) validate
+FULL := ([[ -f $(ENV) ]] && source $(ENV) || echo No env sourced) && source "${VENV}/bin/activate" &&
 
 # https://github.com/terraform-linters/tflint/releases
 TFLINT_VER := $(shell cat ver_tflint)
 
 ci-deps:
-	$(PY) cd .. && python -m development.script.download_ci_dependencies
+	$(FULL) cd .. && python -m development.script.download_ci_dependencies
+
+$(ENV):
+	cp env/template.env $(ENV)
 
 $(VENV):
 	@echo Application Python version is \'$(PY_VER)\'
@@ -43,39 +46,39 @@ env-clean:
 	rm -rf $(VENV)
 
 env-install: $(VENV)
-	$(PY) $(ENV_INIT)
-	$(PY) python $(PIP) -r $(REQ).lock.txt
+	$(FULL) $(ENV_INIT)
+	$(FULL) python $(PIP) -r $(REQ).lock.txt
 
 env-update: $(VENV)
-	$(PY) $(ENV_INIT)
-	$(PY) python $(PIP) --no-cache-dir -r $(REQ).txt
-	$(PY) python -m pip freeze --all > $(REQ).lock.txt
+	$(FULL) $(ENV_INIT)
+	$(FULL) python $(PIP) --no-cache-dir -r $(REQ).txt
+	$(PFULLY) python -m pip freeze --all > $(REQ).lock.txt
 
 git-lint:
 	git diff --exit-code
 
 lint: make-lint tf-fmt-lint py-lint tf-lint
 
-make:
-	$(PY) python ../script/makefile.py '{}' --env-file '' --module-root '..' --module-ignore-postfixes 'development' 'documentation' '.git' 'script' '.venv'
+make: $(ENV)
+	$(FULL) python ../script/makefile.py '{"aws_profile": "CALSEV", "github_profile": "CALSEV"}' '{}' --module-root '..' --module-ignore-postfixes '["development", "documentation", ".git", "script", ".venv"]'
 
 make-lint: make git-lint
 
 module-import:
-	$(PY) cd .. && python development/script/module_import.py
+	$(FULL) cd .. && python development/script/module_import.py
 
 module-render:
-	$(PY) cd .. && python development/script/module_render.py
+	$(FULL) cd .. && python development/script/module_render.py
 	make tf-fmt
 
 worker-metric:
-	$(PY) python script/worker_metric.py
+	$(FULL) python script/worker_metric.py
 
 py-lint:
-	$(PY) black --check ..
-	$(PY) isort --check ..
-	$(PY) flake8 ..
-	$(PY) pyright .
+	$(FULL) black --check ..
+	$(FULL) isort --check ..
+	$(FULL) flake8 ..
+	$(FULL) pyright .
 
 tf-fmt:
 	cd .. && $(FMT)

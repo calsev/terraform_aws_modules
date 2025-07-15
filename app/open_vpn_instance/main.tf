@@ -53,6 +53,7 @@ module "instance_role" {
   source                          = "../../iam/role/ec2/instance"
   for_each                        = local.lx_map
   depends_on                      = [module.dns_alias] # This is needed for certbot
+  map_policy                      = each.value
   monitor_data                    = var.monitor_data
   name                            = each.key
   name_append_default             = var.name_append_default
@@ -61,11 +62,7 @@ module "instance_role" {
   name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
   name_suffix_default             = var.name_suffix_default
-  role_policy_attach_arn_map_default = {
-    eip_associate    = var.iam_data.iam_policy_arn_ec2_associate_eip
-    attribute_modify = var.iam_data.iam_policy_arn_ec2_modify_attribute
-  }
-  std_map = var.std_map
+  std_map                         = var.std_map
 }
 
 module "instance_template" {

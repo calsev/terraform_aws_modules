@@ -37,6 +37,7 @@ variable "iam_data" {
 variable "instance_map" {
   type = map(object({
     auto_scaling_protect_from_scale_in = optional(bool)
+    backup_bucket_key                  = optional(string)
     cert_contact_email                 = optional(string)
     create_instance                    = optional(bool)
     dns_from_fqdn                      = optional(string) # Defaults to vpn.${from_zone_key}
@@ -68,6 +69,11 @@ variable "group_auto_scaling_protect_from_scale_in_default" {
   type        = bool
   default     = false
   description = "Prevents instance cycling and overrides ECS delegation. Sticks to instances once created, so enable with caution."
+}
+
+variable "instance_backup_bucket_key_default" {
+  type    = string
+  default = null
 }
 
 variable "instance_cert_contact_email_default" {
@@ -237,6 +243,17 @@ variable "name_suffix_default" {
   type        = string
   default     = ""
   description = "Appended after context suffix"
+}
+
+variable "s3_data_map" {
+  type = map(object({
+    name_effective = string
+    policy = object({
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+  }))
 }
 
 variable "std_map" {

@@ -129,14 +129,20 @@ variable "task_map" {
     alert_enabled = optional(bool)
     alert_level   = optional(string)
     container_definition_map = map(object({
-      command_join          = optional(bool)
-      command_list          = optional(list(string))
-      environment_file_list = optional(list(string))
-      environment_map       = optional(map(string))
-      entry_point           = optional(list(string))
-      hostname              = optional(string)
-      image                 = optional(string)
-      is_essential          = optional(bool)
+      command_join               = optional(bool)
+      command_list               = optional(list(string))
+      environment_file_list      = optional(list(string))
+      environment_map            = optional(map(string))
+      entry_point                = optional(list(string))
+      hostname                   = optional(string)
+      image                      = optional(string)
+      is_essential               = optional(bool)
+      linux_capability_add_list  = optional(list(string))
+      linux_capability_drop_list = optional(list(string))
+      linux_device_map = optional(map(object({
+        container_path  = optional(string)
+        permission_list = optional(list(string))
+      })), {})
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -214,6 +220,21 @@ variable "task_container_image_default" {
 variable "task_container_is_essential_default" {
   type    = bool
   default = true
+}
+
+variable "task_container_linux_capability_add_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "task_container_linux_capability_drop_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "task_container_linux_device_permission_list_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "task_container_mount_point_map_default" {

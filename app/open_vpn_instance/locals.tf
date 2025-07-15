@@ -65,6 +65,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+      backup_bucket_key             = v.backup_bucket_key == null ? var.instance_backup_bucket_key_default : v.backup_bucket_key
       cert_contact_email            = v.cert_contact_email == null ? var.instance_cert_contact_email_default : v.cert_contact_email
       create_instance               = v.create_instance == null ? var.instance_create_instance_default : v.create_instance
       dns_from_zone_key             = v.dns_from_zone_key == null ? var.instance_dns_from_zone_key_default : v.dns_from_zone_key
@@ -81,6 +82,11 @@ locals {
       auto_scaling_num_instances_min = local.l1_map[k].create_instance ? 1 : 0
       behind_elb                     = local.l1_map[k].elb_acm_certificate_key_admin != null && local.l1_map[k].elb_acm_certificate_key_vpn != null && local.l1_map[k].elb_key_admin != null && local.l1_map[k].elb_key_vpn != null
       dns_from_fqdn                  = v.dns_from_fqdn == null ? "vpn.${local.l1_map[k].dns_from_zone_key}" : v.dns_from_fqdn
+      role_policy_attach_arn_map = {
+        attribute_modify = var.iam_data.iam_policy_arn_ec2_modify_attribute
+        eip_associate    = var.iam_data.iam_policy_arn_ec2_associate_eip
+        s3_backup        = var.s3_data_map[local.l1_map[k].backup_bucket_key].policy.policy_map["read_write"].iam_policy_arn
+      }
     }
   }
   l3_map = {

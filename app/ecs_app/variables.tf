@@ -72,14 +72,20 @@ variable "app_map" {
       name = string
     }))
     container_definition_map = map(object({
-      command_join          = optional(bool)
-      command_list          = optional(list(string))
-      environment_file_list = optional(list(string))
-      environment_map       = optional(map(string))
-      entry_point           = optional(list(string))
-      hostname              = optional(string)
-      image                 = optional(string) # Will be defaulted if image_ecr_repo_create
-      is_essential          = optional(bool)
+      command_join               = optional(bool)
+      command_list               = optional(list(string))
+      environment_file_list      = optional(list(string))
+      environment_map            = optional(map(string))
+      entry_point                = optional(list(string))
+      hostname                   = optional(string)
+      image                      = optional(string) # Will be defaulted if image_ecr_repo_create
+      is_essential               = optional(bool)
+      linux_capability_add_list  = optional(list(string))
+      linux_capability_drop_list = optional(list(string))
+      linux_device_map = optional(map(object({
+        container_path  = optional(string)
+        permission_list = optional(list(string))
+      })), {})
       mount_point_map = optional(map(object({
         container_path = string
         read_only      = optional(bool)
@@ -143,6 +149,7 @@ variable "app_map" {
       rule_priority                = optional(number)
       target_protocol              = optional(string)
       target_protocol_http_version = optional(string)
+      target_type                  = optional(string)
     })))
     health_check_consecutive_fail_threshold    = optional(number)
     health_check_consecutive_success_threshold = optional(number)
@@ -173,6 +180,7 @@ variable "app_map" {
     name_prefix                                 = optional(string)
     name_prepend                                = optional(string)
     name_suffix                                 = optional(string)
+    network_mode                                = optional(string)
     path_include_env                            = optional(bool)
     path_repo_root_to_spec_directory            = optional(string)
     path_terraform_app_to_repo_root             = optional(string)
@@ -325,10 +333,10 @@ variable "ci_cd_account_data" {
       }))
     })
     log = object({
+      log_group_name = string
       policy_map = map(object({
         iam_policy_arn = string
       }))
-      log_group_name = string
     })
     policy = object({
       vpc_net = object({
@@ -384,8 +392,8 @@ variable "compute_auto_scaling_num_instances_min_default" {
 
 variable "compute_auto_scaling_protect_from_scale_in_default" {
   type        = bool
-  default     = false
-  description = "Prevents instance cycling and overrides ECS delegation. Sticks to instances once created, so enable with caution."
+  default     = null
+  description = "Prevents instance cycling but required for ECS delegation. Sticks to instances once created. Defaults to provider_managed_termination_protection."
 }
 
 variable "compute_image_id_default" {
@@ -1030,6 +1038,7 @@ variable "service_elb_target_map_default" {
     rule_priority                = optional(number)
     target_protocol              = optional(string)
     target_protocol_http_version = optional(string)
+    target_type                  = optional(string)
   }))
   default     = null
   description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."
@@ -1156,6 +1165,16 @@ variable "target_sticky_cookie_enabled_default" {
   default = false
 }
 
+variable "target_type_default" {
+  type        = string
+  default     = "ip"
+  description = "For awsvpc networking mode ip is required, for bridged networking instance is appropriate."
+  validation {
+    condition     = contains(["instance", "ip", "lambda", "alb"], var.target_type_default)
+    error_message = "Invalid target_type"
+  }
+}
+
 variable "task_container_command_join_default" {
   type    = bool
   default = true
@@ -1180,6 +1199,21 @@ variable "task_container_environment_map_default" {
 variable "task_container_image_default" {
   type    = string
   default = "public.ecr.aws/lts/ubuntu:latest"
+}
+
+variable "task_container_linux_capability_add_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "task_container_linux_capability_drop_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "task_container_linux_device_permission_list_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "task_container_mount_point_map_default" {
@@ -1348,6 +1382,11 @@ variable "task_iam_role_arn_execution_default" {
   type        = string
   default     = null
   description = "By default, the task execution role is the basic role from IAM data. This overrides the default."
+}
+
+variable "task_network_mode_default" {
+  type    = string
+  default = "awsvpc"
 }
 
 variable "task_resource_memory_gib_default" {

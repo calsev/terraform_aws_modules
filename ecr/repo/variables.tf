@@ -133,7 +133,7 @@ variable "repo_lifecycle_rule_list_default" {
     {
       rulePriority = 1
       selection = {
-        countNumber = 14
+        countNumber = 7
         countType   = "sinceImagePushed"
         countUnit   = "days"
         tagStatus   = "untagged"

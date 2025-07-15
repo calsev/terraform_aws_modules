@@ -61,16 +61,20 @@ locals {
   }
   l3_map = {
     for k, v in local.l0_map : k => {
-      health_check_http_path                    = startswith(local.l2_map[k].health_check_protocol, "HTTP") ? v.health_check_http_path == null ? var.target_health_check_http_path_default : v.health_check_http_path : null
-      health_check_success_code_list            = startswith(local.l2_map[k].health_check_protocol, "HTTP") ? v.health_check_success_code_list == null ? var.target_health_check_success_code_list_default : v.health_check_success_code_list : null
-      load_balancing_algorithm_type             = local.l2_map[k].is_nlb ? null : v.load_balancing_algorithm_type == null ? var.target_load_balancing_algorithm_type_default : v.load_balancing_algorithm_type
-      load_balancing_anomaly_mitigation_enabled = local.l2_map[k].is_nlb ? null : v.load_balancing_anomaly_mitigation_enabled == null ? var.target_load_balancing_anomaly_mitigation_enabled_default : v.load_balancing_anomaly_mitigation_enabled
-      nlb_enable_proxy_protocol_v2              = local.l2_map[k].is_nlb ? v.nlb_enable_proxy_protocol_v2 == null ? var.target_nlb_enable_proxy_protocol_v2_default : v.nlb_enable_proxy_protocol_v2 : null
-      nlb_preserve_client_ip                    = local.l2_map[k].is_nlb ? v.nlb_preserve_client_ip == null ? var.target_nlb_preserve_client_ip_default : v.nlb_preserve_client_ip : null
+      health_check_http_path         = startswith(local.l2_map[k].health_check_protocol, "HTTP") ? v.health_check_http_path == null ? var.target_health_check_http_path_default : v.health_check_http_path : null
+      health_check_success_code_list = startswith(local.l2_map[k].health_check_protocol, "HTTP") ? v.health_check_success_code_list == null ? var.target_health_check_success_code_list_default : v.health_check_success_code_list : null
+      load_balancing_algorithm_type  = local.l2_map[k].is_nlb ? null : v.load_balancing_algorithm_type == null ? var.target_load_balancing_algorithm_type_default : v.load_balancing_algorithm_type
+      nlb_enable_proxy_protocol_v2   = local.l2_map[k].is_nlb ? v.nlb_enable_proxy_protocol_v2 == null ? var.target_nlb_enable_proxy_protocol_v2_default : v.nlb_enable_proxy_protocol_v2 : null
+      nlb_preserve_client_ip         = local.l2_map[k].is_nlb ? v.nlb_preserve_client_ip == null ? var.target_nlb_preserve_client_ip_default : v.nlb_preserve_client_ip : null
+    }
+  }
+  l4_map = {
+    for k, v in local.l0_map : k => {
+      load_balancing_anomaly_mitigation_enabled = local.l2_map[k].is_nlb ? null : local.l3_map[k].load_balancing_algorithm_type != "weighted_random" ? false : v.load_balancing_anomaly_mitigation_enabled == null ? var.target_load_balancing_anomaly_mitigation_enabled_default == null ? !local.l1_map[k].sticky_cookie_enabled : var.target_load_balancing_anomaly_mitigation_enabled_default : v.load_balancing_anomaly_mitigation_enabled
     }
   }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k])
   }
   output_data = {
     for k, v in local.lx_map : k => merge(

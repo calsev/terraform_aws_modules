@@ -43,6 +43,7 @@ resource "aws_ecs_capacity_provider" "this_capacity_provider" {
   for_each = local.create_cp_map
   auto_scaling_group_provider {
     auto_scaling_group_arn = each.value.auto_scaling_group_arn
+    managed_draining       = "ENABLED"
     managed_scaling {
       instance_warmup_period    = each.value.provider_instance_warmup_period_s
       maximum_scaling_step_size = each.value.provider_step_size_max

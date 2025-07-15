@@ -180,8 +180,8 @@ variable "target_load_balancing_algorithm_type_default" {
 
 variable "target_load_balancing_anomaly_mitigation_enabled_default" {
   type        = bool
-  default     = false
-  description = "Ignored for network load balancers. Only supported for weighted_random algorithm"
+  default     = null
+  description = "Ignored for network load balancers. Only supported for weighted_random algorithm. Defaults to true if stickiness is also off."
 }
 
 variable "target_load_balancing_cross_zone_mode_default" {

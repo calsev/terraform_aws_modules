@@ -199,6 +199,7 @@ locals {
         rule_priority                = null
         target_protocol              = null
         target_protocol_http_version = null
+        target_type                  = null
       } } : var.service_elb_target_map_default : v.elb_target_map
       image_build_arch_list            = v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
       image_ecr_repo_key               = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
