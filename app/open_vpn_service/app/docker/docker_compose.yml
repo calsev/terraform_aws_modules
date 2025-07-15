@@ -1,0 +1,30 @@
+name: openvpn
+services:
+  as:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: openvpn-as
+    image: openvpn-as
+    networks:
+      openvpn:
+        aliases:
+          - openvpn-as
+    read_only: true
+    restart: unless-stopped
+    user: ubuntu
+    volumes:
+      - openvpn:/openvpn
+      - usr/local/openvpn_as:/usr/local/openvpn_as
+networks:
+  openvpn:
+    driver: bridge
+volumes:
+  openvpn:
+    driver_opts:
+      device: tmpfs
+      type: tmpfs
+  usr/local/openvpn_as:
+    driver_opts:
+      device: tmpfs
+      type: tmpfs
