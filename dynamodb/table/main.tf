@@ -22,6 +22,13 @@ resource "aws_dynamodb_table" "this_table" {
     }
   }
   hash_key = each.value.hash_key
+  lifecycle {
+    ignore_changes = [
+      # Capacity requires frequent fiddling, and there is auto scaling
+      read_capacity,
+      write_capacity,
+    ]
+  }
   dynamic "local_secondary_index" {
     for_each = each.value.has_lsi ? { this = {} } : {}
     content {
