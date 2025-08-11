@@ -203,10 +203,10 @@ locals {
           memoryReservation = (v_def.reserved_memory_gib == null ? var.task_container_reserved_memory_gib_default == null ? local.l7_map[k].resource_memory_gib / length(v.container_definition_map) : var.task_container_reserved_memory_gib_default : v_def.reserved_memory_gib) * 1024
           mountPoints = concat(
             [
-              for name, mount_data in v_def.mount_point_map == null ? var.task_container_mount_point_map_default : v_def.mount_point_map : {
-                containerPath = mount_data.container_path
-                readOnly      = mount_data.read_only != null ? mount_data.read_only : var.task_container_mount_read_only_default
-                sourceVolume  = name
+              for k_mount, v_mount in v_def.mount_point_map == null ? var.task_container_mount_point_map_default : v_def.mount_point_map : {
+                containerPath = v_mount.container_path == null ? "/${replace(k_mount, "_", "/")}" : v_mount.container_path
+                readOnly      = v_mount.read_only == null ? var.task_container_mount_read_only_default : v_mount.read_only
+                sourceVolume  = k_mount
               }
             ],
             local.l1_map[k].ecs_exec_enabled ? [

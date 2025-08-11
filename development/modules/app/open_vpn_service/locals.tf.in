@@ -1,0 +1,137 @@
+{{ name.map() }}
+
+locals {
+  create_app_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      build_stage_list = [] # TODO: test
+      container_definition_map = {
+        server = {
+          environment_map = {
+            OPENVPN_TUNNEL_HOST = v.dns_alias_fqdn_tunnel
+          }
+          hostname = v.dns_alias_fqdn_admin
+          linux_device_map = {
+            "/dev/net/tun" = {
+              permissions = [
+                "read",
+                "write",
+              ]
+            }
+          }
+          port_map = {
+            for _, v_port in v.elb_target_map : v_port.container_port => {
+              protocol = v_port.target_protocol == "UDP" ? "udp" : "tcp"
+            }
+          }
+          secret_map = {
+            OPENVPN_ADMIN_PASSWORD = "${module.secret.data[k].secret_arn}:admin_password::"
+            OPENVPN_LICENSE_KEY    = "${module.secret.data[k].secret_arn}:license_key::"
+          }
+          username = "openvpnas"
+        }
+      }
+      efs_volume_map = {
+        openvpn = {
+          authorization_access_point_id = module.efs.data[k].access_point_map["/openvpn"].access_point_id
+          file_system_id                = module.efs.data[k].efs_id
+          root_directory                = "/openvpn"
+        }
+      }
+      role_policy_attach_arn_map = {
+        s3_backup = var.s3_data_map[v.backup_bucket_key].policy.policy_map["read_write"].iam_policy_arn
+      }
+      iam_instance_profile_arn = module.instance_role[k].data.iam_instance_profile_arn
+      iam_role_arn_execution   = module.ecs_task_execution_role[k].data.iam_role_arn
+    })
+  }
+  create_file_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      ecr_repo_url                       = var.ecr_data_map[module.ecs_app.data[k].image_ecr_repo_key].repo_url
+      image_tag_base                     = module.ecs_app.data[k].image_tag_base
+      path_terraform_app_to_app_directory = "${module.ecs_app.data[k].path_terraform_app_to_repo_root}/${v.path_repo_root_to_app_directory}"
+    })
+  }
+  l0_map = {
+    for k, v in var.vpn_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      backup_bucket_key               = v.backup_bucket_key == null ? var.vpn_backup_bucket_key_default : v.backup_bucket_key
+      dns_from_zone_key               = v.dns_from_zone_key == null ? var.listener_dns_from_zone_key_default : v.dns_from_zone_key
+      elb_key_alb                     = v.elb_key_alb == null ? var.vpn_elb_key_alb_default : v.elb_key_alb
+      elb_key_nlb                     = v.elb_key_nlb == null ? var.vpn_elb_key_nlb_default : v.elb_key_nlb
+      image_source_uri                = v.image_source_uri == null ? var.vpn_image_source_uri_default : v.image_source_uri
+      path_repo_root_to_app_directory = v.path_repo_root_to_app_directory == null ? var.app_path_repo_root_to_app_directory_default : v.path_repo_root_to_app_directory
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+      dns_alias_fqdn_admin             = v.dns_alias_fqdn_admin == null ? "vpn-admin.${local.l1_map[k].dns_from_zone_key}" : v.dns_alias_fqdn_admin
+      dns_alias_fqdn_tunnel            = v.dns_alias_fqdn_tunnel == null ? "vpn.${local.l1_map[k].dns_from_zone_key}" : v.dns_alias_fqdn_tunnel
+      path_repo_root_to_spec_directory = "${local.l1_map[k].path_repo_root_to_app_directory}/spec"
+    }
+  }
+  l3_map = {
+    for k, v in local.l0_map : k => {
+      elb_target_map = {
+        tcp = {
+          acm_certificate_key   = null
+          container_port        = 443
+          dns_alias_fqdn        = local.l2_map[k].dns_alias_fqdn_tunnel
+          elb_key               = local.l1_map[k].elb_key_nlb
+          health_check_port     = null
+          health_check_protocol = null
+          listen_port           = null
+          listen_protocol       = "TCP"
+          rule_condition_map    = null
+          rule_priority         = null
+          target_protocol       = "TCP"
+        }
+        udp = {
+          acm_certificate_key   = null
+          container_port        = 1194
+          dns_alias_fqdn        = local.l2_map[k].dns_alias_fqdn_tunnel
+          elb_key               = local.l1_map[k].elb_key_nlb
+          health_check_port     = 443 # Health check is mandatory but does not support UDP
+          health_check_protocol = null
+          listen_port           = 1194
+          listen_protocol       = "UDP"
+          rule_condition_map    = null
+          rule_priority         = null
+          target_protocol       = "UDP"
+        }
+        web = {
+          acm_certificate_key   = replace(local.l2_map[k].dns_alias_fqdn_admin, "-", "_")
+          container_port        = 943
+          dns_alias_fqdn        = null
+          elb_key               = local.l1_map[k].elb_key_alb
+          health_check_port     = null
+          health_check_protocol = "HTTPS"
+          listen_port           = null
+          listen_protocol       = "HTTPS"
+          rule_condition_map    = null
+          rule_priority         = v.elb_rule_priority_alb
+          target_protocol       = "HTTPS"
+        }
+      }
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
+      },
+      local.create_app_map[k],
+      {
+        ecs_app                 = module.ecs_app.data[k]
+        ecs_task_execution_role = module.ecs_task_execution_role[k].data
+        efs                     = module.efs.data[k]
+        instance_profile        = module.instance_role[k].data
+        secret                  = module.secret.data[k]
+      },
+    )
+  }
+}

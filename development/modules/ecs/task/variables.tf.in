@@ -65,7 +65,7 @@ variable "task_map" {
         permission_list = optional(list(string))
       })), {})
       mount_point_map = optional(map(object({
-        container_path = string
+        container_path = optional(string)
         read_only      = optional(bool)
       })))
       port_map = optional(map(object({
@@ -156,7 +156,7 @@ variable "task_container_linux_device_permission_list_default" {
 
 variable "task_container_mount_point_map_default" {
   type = map(object({
-    container_path = string
+    container_path = optional(string) # Defaults to key with _ replaced with /
     read_only      = optional(bool)
   }))
   default     = {}
