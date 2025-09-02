@@ -97,7 +97,6 @@ variable "pipe_map" {
     trigger_pull_request_event_list = optional(list(string))
     variable_map                    = optional(map(string))
     webhook_enabled                 = optional(bool)
-    webhook_enable_github_hook      = optional(bool)
     webhook_event_list              = optional(list(string))
     webhook_filter_map = optional(map(object({ # This will be merged over the filter for branch at source_branch
       json_path    = string
@@ -198,12 +197,6 @@ variable "pipe_variable_map_default" {
 variable "pipe_webhook_enabled_default" {
   type    = bool
   default = true
-}
-
-variable "pipe_webhook_enable_github_hook_default" {
-  type        = bool
-  default     = false
-  description = "Ignored if webhook is not enabled"
 }
 
 variable "pipe_webhook_event_list_default" {

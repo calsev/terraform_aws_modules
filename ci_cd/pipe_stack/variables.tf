@@ -163,7 +163,6 @@ variable "pipe_map" {
     source_detect_changes           = optional(bool)
     source_repository_id            = optional(string)
     webhook_enabled                 = optional(bool)
-    webhook_enable_github_hook      = optional(bool)
   }))
 }
 
@@ -210,12 +209,6 @@ variable "pipe_stage_category_default" {
 variable "pipe_webhook_enabled_default" {
   type    = bool
   default = true
-}
-
-variable "pipe_webhook_enable_github_hook_default" {
-  type        = bool
-  default     = false
-  description = "Ignored if webhook is not enabled"
 }
 
 variable "pipe_webhook_secret_is_param_default" {

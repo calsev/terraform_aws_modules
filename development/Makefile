@@ -110,6 +110,8 @@ tf-lint: tflint-install
 	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/reserved_instance_purchaser && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/reserved_instance_purchaser/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/vanta_vulnerability_accepter && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/vanta_vulnerability_accepter/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/web_static && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../athena/database && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

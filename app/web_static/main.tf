@@ -63,7 +63,6 @@ module "pipe" {
   pipe_source_branch_default                   = var.pipe_source_branch_default
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
   pipe_source_repository_id_default            = var.pipe_source_repository_id_default
-  pipe_webhook_enable_github_hook_default      = var.pipe_webhook_enable_github_hook_default
   pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
   std_map                                      = var.std_map
 }
