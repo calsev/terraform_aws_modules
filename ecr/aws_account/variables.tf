@@ -35,7 +35,7 @@ variable "scan_rule_filter_type_default" {
 
 variable "scan_rule_scan_frequency_default" {
   type    = string
-  default = "SCAN_ON_PUSH"
+  default = "CONTINUOUS_SCAN"
   validation {
     condition     = contains(["CONTINUOUS_SCAN", "MANUAL", "SCAN_ON_PUSH"], var.scan_rule_scan_frequency_default)
     error_message = "Invalid filter type"

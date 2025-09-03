@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.111.0
+
+### New modules
+
+* Vanta vulnerability accepter
+
+### General
+
+* Add monitoring for Batch ASG
+* Remove Github webhook in Codepipeline
+* ECR default to continuous scan
+
 ## 0.110.0
 
 ### General

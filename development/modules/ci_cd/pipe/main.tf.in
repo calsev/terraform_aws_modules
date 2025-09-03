@@ -144,22 +144,3 @@ resource "aws_codepipeline_webhook" "this_pipe_webhook" {
   target_action   = "Source"
   target_pipeline = aws_codepipeline.this_pipeline[each.value.k_pipe].name
 }
-
-resource "github_repository_webhook" "this_githhub_webhook" {
-  for_each   = local.create_github_map
-  depends_on = [aws_codepipeline_webhook.this_pipe_webhook]
-  active     = true
-  configuration {
-    content_type = "json"
-    insecure_ssl = false
-    secret       = module.webhook_secret.secret_map[each.value.k_secret]
-    url          = aws_codepipeline_webhook.this_pipe_webhook[each.key].url
-  }
-  lifecycle {
-    ignore_changes = [
-      configuration[0].secret # This is causing re-creation on every update
-    ]
-  }
-  repository = each.value.source_repository_name
-  events     = each.value.webhook_event_list
-}

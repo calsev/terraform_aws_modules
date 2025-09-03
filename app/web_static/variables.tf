@@ -224,7 +224,6 @@ variable "site_map" {
     source_branch                   = optional(string)
     source_code_star_connection_key = optional(string)
     source_repository_id            = optional(string)
-    webhook_enable_github_hook      = optional(bool)
   }))
 }
 
@@ -247,12 +246,6 @@ variable "pipe_source_code_star_connection_key_default" {
 variable "pipe_source_repository_id_default" {
   type    = string
   default = null
-}
-
-variable "pipe_webhook_enable_github_hook_default" {
-  type        = bool
-  default     = false
-  description = "Ignored if webhook is not enabled"
 }
 
 variable "pipe_webhook_secret_is_param_default" {
