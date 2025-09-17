@@ -16,7 +16,7 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      mx_url_list = [
+      mx_url_list = local.l1_map[k].mx_url_list == null ? null : [
         for url in local.l1_map[k].mx_url_list : "${trim(url, ".")}."
       ]
     }
