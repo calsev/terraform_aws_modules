@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.111.1
+
+### Bugfix
+
+* DNS zone support no MX records
+* Security group rule set support public only
+
 ## 0.111.0
 
 ### New modules
