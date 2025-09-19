@@ -5,11 +5,11 @@ This script provides an interactive shell that does the hard parts:
 * Escaping quotes
 """
 
-import argparse
 import itertools
 import os
 from typing import Optional, Tuple
 
+import typer
 from InquirerPy.inquirer import confirm, rawlist  # type: ignore
 
 from .plan import get_plan_resources, resource_regex, run_command_as_process
@@ -22,15 +22,6 @@ resource_type_ignore_regex_map = {
     resource_type: resource_regex(resource_type)
     for resource_type in resource_type_ignore_list
 }
-
-
-def parse_args(args_in: Optional[list[str]] = None) -> argparse.Namespace:
-    args = argparse.ArgumentParser()
-    args.add_argument("path", type=str)
-    args.add_argument("profile", type=str)
-    args.add_argument("--var-file", type=str)
-    parsed_args = args.parse_args(args_in)
-    return parsed_args
 
 
 def get_resource_types(change_to_resources: dict[str, list[str]]) -> list[str]:
@@ -118,7 +109,11 @@ def map_resources(
     return resource_type_list, resources, plan_out
 
 
-def prompt_user(resource_to_destroy: str, create_options: list[str]) -> int:
+def prompt_user(
+    resource_to_destroy: str,
+    create_options: list[str],
+    choice_for_ignore: int,
+) -> int:
     create_options = create_options[:7]  # Max length of rawlist is 9
     choices = [
         *[f"Alias - {create_option}" for create_option in create_options],
@@ -132,9 +127,9 @@ def prompt_user(resource_to_destroy: str, create_options: list[str]) -> int:
         validate=lambda result: len(result) > 1,
     ).execute()
     i_choice = choices.index(choice)
-    if i_choice < len(create_options):
+    if i_choice < choice_for_ignore:
         proceed = confirm(
-            message=f"Move {resource_to_destroy} -> {create_options[i_choice]}?",
+            message=f"Move {resource_to_destroy}\n  ->   {create_options[i_choice]}?",
             default=True,
         ).execute()
         if not proceed:
@@ -167,11 +162,12 @@ def change_one_resource_type(
     ):
         resource_to_destroy = change_to_resource_list["destroyed"].pop(0)
         create_options = change_to_resource_list["created"]
-        choice = prompt_user(resource_to_destroy, create_options)
-        if choice > len(create_options):
+        choice_for_ignore = min(7, len(create_options))
+        choice = prompt_user(resource_to_destroy, create_options, choice_for_ignore)
+        if choice > choice_for_ignore:
             print("Quitting")
             return None
-        elif choice == len(create_options):
+        elif choice == choice_for_ignore:
             print(f"Ignoring {resource_to_destroy}")
             resource_ignore_list.append(resource_to_destroy)
             moved_one = True
@@ -220,9 +216,11 @@ def change_one_resource(
 
 
 def move_resources(
-    rel_path: str, aws_profile: str, var_file: Optional[str] = None
+    rel_path: str,
+    profile: str,
+    var_file: Optional[str] = None,
 ) -> None:
-    os.environ["AWS_PROFILE"] = aws_profile
+    os.environ["AWS_PROFILE"] = profile
     module_name = rel_path.split("/")[-1]
     print(f"Moving state for path {rel_path}, module {module_name}")
     resource_ignore_list: list[str] = []
@@ -230,10 +228,21 @@ def move_resources(
         pass
 
 
-def main(args_in: Optional[list[str]] = None) -> None:
-    args = parse_args(args_in)
-    move_resources(args.path, args.profile, args.var_file)
+def main(
+    rel_path: str = typer.Argument(
+        help="Relative path to application directory",
+    ),
+    profile: str = typer.Option(
+        os.environ.get("AWS_PROFILE"),
+        help="AWS profile to use",
+    ),
+    var_file: str | None = typer.Option(
+        None,
+        help="Relative path to variables file",
+    ),
+) -> None:
+    move_resources(**locals())
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

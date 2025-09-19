@@ -31,21 +31,26 @@ def get_child_dirs(rel_path: str) -> list[str]:
 
 def get_app_dir_conf(
     tf_root: str,
-    provisioning_dir: str,
+    prov_dir: str,
     dir_data: dict[str, typing.Any],
+    prov_dirs: dict[str, dict[str, typing.Any]],
     app_dirs: dict[str, typing.Any],
 ) -> None:
     app_conf = dir_data.get("app", {})
     skip_dirs = dir_data.get("skip_plan", [])
-    for app_dir in get_child_dirs(os.path.join(tf_root, provisioning_dir)):
+    for app_dir in get_child_dirs(os.path.join(tf_root, prov_dir)):
         app_data = app_conf.get(app_dir, {})
-        app_dirs[f"{provisioning_dir}_{app_dir}"] = {
-            "path": os.path.join(tf_root, provisioning_dir, app_dir),
+        curr_dir_data = {
+            "path": os.path.join(tf_root, prov_dir, app_dir),
             "aws_profile": f"AWS_PROFILE_{dir_data['aws_profile']}",
             "github_profile": dir_data["github_profile"],
             "skip_plan": app_dir in skip_dirs,
             "var_file": app_data.get("var_file", None),
         }
+        if prov_dir not in prov_dirs:
+            prov_dirs[prov_dir] = {}
+        prov_dirs[prov_dir][app_dir] = curr_dir_data
+        app_dirs[f"{prov_dir}_{app_dir}"] = curr_dir_data
 
 
 def get_mod_dirs(
@@ -70,12 +75,15 @@ def get_mod_dirs(
 def render_makefile(
     template: str,
     makefile: str,
+    provisioning_dir_to_app_dir_to_conf_data: dict[str, dict[str, typing.Any]],
     app_dir_to_conf_data: dict[str, typing.Any],
     all_mod_dirs: list[str],
 ) -> None:
     make_template = jinja_env.get_template(template)
     makefile_content = make_template.render(
-        app_dirs=app_dir_to_conf_data, mod_dirs=all_mod_dirs
+        prov_dirs=provisioning_dir_to_app_dir_to_conf_data,
+        app_dirs=app_dir_to_conf_data,
+        mod_dirs=all_mod_dirs,
     )
     makefile_content = f"{makefile_content}\n"
     with open(makefile, "w") as f:
@@ -94,16 +102,29 @@ def render_makefile_and_env(
     dir_default: dict[str, typing.Any] = json.loads(directory_defaults)
     provisioning_dirs: dict[str, typing.Any] = json.loads(provisioning_directories)
     module_ignore_post: list[str] = json.loads(module_ignore_postfixes)
+    provisioning_dir_to_app_dir_to_conf_data: dict[str, dict[str, typing.Any]] = {}
     app_dir_to_conf_data: dict[str, typing.Any] = {}
     for provisioning_dir, dir_data in provisioning_dirs.items():
         effective_dir: dict[str, typing.Any] = {
             **dir_default,
             **dir_data,
         }
-        get_app_dir_conf(tf_root, provisioning_dir, effective_dir, app_dir_to_conf_data)
+        get_app_dir_conf(
+            tf_root,
+            provisioning_dir,
+            effective_dir,
+            provisioning_dir_to_app_dir_to_conf_data,
+            app_dir_to_conf_data,
+        )
     all_mod_dirs: list[str] = []
     get_mod_dirs("", module_root, module_ignore_post, all_mod_dirs)
-    render_makefile(template, makefile, app_dir_to_conf_data, all_mod_dirs)
+    render_makefile(
+        template,
+        makefile,
+        provisioning_dir_to_app_dir_to_conf_data,
+        app_dir_to_conf_data,
+        all_mod_dirs,
+    )
 
 
 def main(
