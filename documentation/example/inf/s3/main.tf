@@ -80,11 +80,6 @@ module "milan_bucket" {
   std_map                          = module.milan_lib.std_map
 }
 
-module "tf_lock" {
-  source  = "path/to/modules/dynamodb/terraform_lock"
-  std_map = module.com_lib.std_map
-}
-
 module "local_config" {
   source  = "path/to/modules/local_config"
   content = local.output_data

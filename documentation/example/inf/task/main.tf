@@ -8,12 +8,12 @@ module "com_lib" {
 }
 
 module "ecr_repo_mirror" {
-  source       = "path/to/modules/app/ecr_repo_mirror"
-  iam_data     = data.terraform_remote_state.iam.outputs.data
-  monitor_data = data.terraform_remote_state.monitor.outputs.data
-  std_map      = module.com_lib.std_map
-  vpc_data_map = data.terraform_remote_state.net.outputs.data.vpc_map
-  vpc_key      = "main"
+  source          = "path/to/modules/app/ecr_repo_mirror"
+  iam_data        = data.terraform_remote_state.iam.outputs.data
+  monitor_data    = data.terraform_remote_state.monitor.outputs.data
+  std_map         = module.com_lib.std_map
+  vpc_data_map    = data.terraform_remote_state.net.outputs.data.vpc_map
+  vpc_key_default = "main"
 }
 
 module "local_config" {

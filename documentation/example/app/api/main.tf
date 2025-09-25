@@ -12,7 +12,8 @@ module "sqs" {
   queue_map = {
     (local.queue_name) = {}
   }
-  std_map = module.com_lib.std_map
+  monitor_data = data.terraform_remote_state.monitor.outputs.data
+  std_map      = module.com_lib.std_map
 }
 
 module "step_function" {
