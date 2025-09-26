@@ -6,9 +6,9 @@ module "api_role" {
     prd = "api.example.com_api"
   }[each.key]
   role_policy_attach_arn_map_default = {
-    auth_invoke        = module.lambda[each.key].data[local.lambda_name_auth].iam_policy_arn_map.write
-    integration_invoke = module.lambda[each.key].data[local.lambda_name_integration].iam_policy_arn_map.write
-    options_invoke     = module.lambda[each.key].data[local.lambda_name_options].iam_policy_arn_map.write
+    auth_invoke        = module.lambda[each.key].data[local.lambda_name_auth].iam_policy_map["write"].iam_policy_arn
+    integration_invoke = module.lambda[each.key].data[local.lambda_name_integration].iam_policy_map["write"].iam_policy_arn
+    options_invoke     = module.lambda[each.key].data[local.lambda_name_options].iam_policy_map["write"].iam_policy_arn
   }
   std_map = module.com_lib[each.key].std_map
 }

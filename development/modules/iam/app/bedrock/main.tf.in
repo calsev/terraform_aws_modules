@@ -24,3 +24,15 @@ module "model_invoke_policy" {
   {{ name.map_item() }}
   std_map             = var.std_map
 }
+
+module "knowledge_base_policy" {
+  source = "../../../iam/policy/identity/bedrock/knowledge_base"
+  policy_map = {
+    bedrock_knowledge_base = {
+      name_list_knowledge_base = ["*"]
+    }
+  }
+  {{ name.map_item() }}
+  std_map             = var.std_map
+}
+

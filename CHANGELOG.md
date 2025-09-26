@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.113.0
+
+### New modules
+
+* IAM polocy for Bedrock Knowledge Base
+
+### General
+
+* Add knowledge base policy to Bedrock IAM app
+
 ## 0.112.0
 
 ### General

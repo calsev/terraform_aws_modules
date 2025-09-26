@@ -14,7 +14,7 @@ module "com_lib" {
 
 module "vpc_stack" {
   source                                      = "path/to/modules/vpc/stack"
-  endpoint_map_default                        = {}
+  endpoint_map_standard_default               = {}
   s3_data_map                                 = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
   std_map                                     = module.com_lib.std_map
   vpc_flow_log_destination_bucket_key_default = "example_log"
@@ -57,6 +57,7 @@ module "load_balancer" {
       # ip_address_type     = "dualstack-without-public-ipv4"
     }
   }
+  monitor_data    = data.terraform_remote_state.monitor.outputs.data
   std_map         = module.com_lib.std_map
   vpc_data_map    = module.vpc_stack.data.vpc_map
   vpc_key_default = "main"
@@ -70,10 +71,10 @@ module "oregon_ap" {
     }
     example_deploy = {}
   }
-  ap_name_infix_default = false
-  s3_data_map           = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
-  std_map               = module.com_lib.std_map
-  vpc_data_map          = module.vpc_stack.data.vpc_map
+  name_infix_default = false
+  s3_data_map        = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
+  std_map            = module.com_lib.std_map
+  vpc_data_map       = module.vpc_stack.data.vpc_map
 }
 
 module "local_config" {

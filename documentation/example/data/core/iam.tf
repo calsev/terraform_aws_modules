@@ -4,7 +4,7 @@ module "db_proxy_role" {
   assume_role_service_list = ["rds"]
   name                     = "proxy"
   role_policy_attach_arn_map_default = {
-    db_secret_read = module.db[each.key].data[local.db_key].secret.iam_policy_arn_map["read"]
+    db_secret_read = module.db[each.key].data[local.db_key].secret.iam_policy_map["read"].iam_policy_arn
   }
   std_map = module.com_lib[each.key].std_map
 }

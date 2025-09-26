@@ -49,8 +49,10 @@ module "ecs_dashboard" {
 }
 
 module "event_account" {
-  source  = "path/to/modules/event/aws_account"
-  std_map = module.com_lib.std_map
+  source                             = "path/to/modules/event/aws_account"
+  alert_data_map                     = module.alert_account.data
+  log_retention_days_for_default_bus = 1
+  std_map                            = module.com_lib.std_map
 }
 
 module "alert_account" {

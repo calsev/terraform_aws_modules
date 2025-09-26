@@ -40,10 +40,10 @@ module "this_role" {
   create_instance_profile  = false
   embedded_role_policy_attach_arn_map = {
     log_read = {
-      policy = var.log_data.iam_policy_arn_map.read
+      policy = var.log_data.iam_policy_map["read"].iam_policy_arn
     }
     log_write = {
-      policy = var.log_data.iam_policy_arn_map.write
+      policy = var.log_data.iam_policy_map["write"].iam_policy_arn
     }
   }
   embedded_role_policy_inline_json_map = {
