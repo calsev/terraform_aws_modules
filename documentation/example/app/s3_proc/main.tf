@@ -48,7 +48,7 @@ module "job" {
   }
   monitor_data = data.terraform_remote_state.monitor.outputs.data
   role_policy_attach_arn_map_default = {
-    read_source_object = module.s3.data[local.bucket_key].policy.iam_policy_arn_map["read"]
+    read_source_object = module.s3.data[local.bucket_key].policy.iam_policy_map["read"].iam_policy_arn
   }
   std_map = module.com_lib.std_map
 }

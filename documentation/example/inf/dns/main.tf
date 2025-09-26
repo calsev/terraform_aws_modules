@@ -102,7 +102,6 @@ module "cert_oregon" {
     "auth_api.example.com" = {}
     "lambda.example.com"   = {}
     "web.example.com"      = {}
-    "web_dev.example.com"  = {}
   }
   domain_dns_from_zone_key_default = "example.com"
   std_map                          = module.oregon_lib.std_map
