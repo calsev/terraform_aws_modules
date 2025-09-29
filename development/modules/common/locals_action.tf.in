@@ -170,6 +170,38 @@ locals {
           "InvokeModelWithResponseStream",
         ]
       }
+      knowledge-base = {
+        public_read = []
+        read = [
+          "GetAgentKnowledgeBase",
+          "GetDataSource",
+          "GetIngestionJob",
+          "GetKnowledgeBase",
+          "GetKnowledgeBaseDocuments",
+          "ListDataSources",
+          "ListIngestionJobs",
+          "ListKnowledgeBaseDocuments",
+          "ListTagsForResource",
+          "Retrieve",
+        ]
+        public_write = []
+        write = [
+          "AssociateAgentKnowledgeBase",
+          "CreateDataSource",
+          "DeleteDataSource",
+          "DeleteKnowledgeBase",
+          "DeleteKnowledgeBaseDocuments",
+          "DisassociateAgentKnowledgeBase",
+          "IngestKnowledgeBaseDocuments",
+          "StartIngestionJob",
+          "StopIngestionJob",
+          "TagResource",
+          "UntagResource",
+          "UpdateAgentKnowledgeBase",
+          "UpdateDataSource",
+          "UpdateKnowledgeBase",
+        ]
+      }
       model-customization-job = {
         public_read = []
         read = [
@@ -225,9 +257,12 @@ locals {
         public_read = []
         read = [
           "ListAgents",
+          "ListKnowledgeBases",
         ]
         public_write = []
-        write        = []
+        write        = [
+          "CreateKnowledgeBase",
+        ]
       }
     }
     cloudfront = {

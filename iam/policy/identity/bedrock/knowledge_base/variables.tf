@@ -1,42 +1,3 @@
-variable "log_data" {
-  type = object({
-    iam_policy_map = object({
-      read = object({
-        iam_policy_arn = string
-      })
-      write = object({
-        iam_policy_arn = string
-      })
-    })
-  })
-}
-
-variable "map_policy" {
-  type = object({
-    role_policy_attach_arn_map   = optional(map(string))
-    role_policy_create_json_map  = optional(map(string))
-    role_policy_inline_json_map  = optional(map(string))
-    role_policy_managed_name_map = optional(map(string))
-    role_path                    = optional(string)
-  })
-  default = {
-    role_policy_attach_arn_map   = null
-    role_policy_create_json_map  = null
-    role_policy_inline_json_map  = null
-    role_policy_managed_name_map = null
-    role_path                    = null
-  }
-}
-
-variable "max_session_duration_m" {
-  type    = number
-  default = null
-}
-
-variable "name" {
-  type = string
-}
-
 variable "name_append_default" {
   type        = string
   default     = ""
@@ -80,30 +41,46 @@ variable "name_suffix_default" {
   description = "Appended after context suffix"
 }
 
-variable "role_policy_attach_arn_map_default" {
-  type    = map(string)
-  default = {}
+variable "policy_access_list_default" {
+  type = list(string)
+  default = [
+    "read_write",
+  ]
 }
 
-variable "role_policy_create_json_map_default" {
-  type    = map(string)
-  default = {}
+variable "policy_create_default" {
+  type    = bool
+  default = true
 }
 
-variable "role_policy_inline_json_map_default" {
-  type    = map(string)
-  default = {}
-}
-
-variable "role_policy_managed_name_map_default" {
-  type        = map(string)
-  default     = {}
-  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
-}
-
-variable "role_path_default" {
+variable "policy_name_append_default" {
   type    = string
-  default = null
+  default = ""
+}
+
+variable "policy_name_prefix_default" {
+  type    = string
+  default = ""
+}
+
+variable "policy_map" {
+  type = map(object({
+    access_list              = optional(list(string))
+    name_append              = optional(string)
+    name_include_app_fields  = optional(bool)
+    name_infix               = optional(bool)
+    name_prefix              = optional(string)
+    name_prepend             = optional(string)
+    name_suffix              = optional(string)
+    name_list_knowledge_base = optional(list(string))
+    policy_create            = optional(bool)
+    policy_name_append       = optional(string)
+  }))
+}
+
+variable "policy_name_list_knowledge_base_default" {
+  type    = list(string)
+  default = []
 }
 
 variable "std_map" {

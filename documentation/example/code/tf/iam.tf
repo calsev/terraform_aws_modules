@@ -18,7 +18,7 @@ module "basic_build_role" {
   name               = "build_basic"
   role_policy_attach_arn_map_default = {
     deps_read      = module.deps_bucket_policy.data.iam_policy_arn
-    efs_read_write = module.efs.data.cache.iam_policy_arn_map.read_write
+    efs_read_write = module.efs.data.cache.iam_policy_map["read_write"].iam_policy_arn
   }
   s3_data_map = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
   std_map     = module.com_lib.std_map
@@ -33,7 +33,7 @@ module "public_build_role" {
   name               = "build_public"
   role_policy_attach_arn_map_default = {
     deps_read      = module.deps_bucket_policy.data.iam_policy_arn
-    efs_read_write = module.efs.data.cache.iam_policy_arn_map.read_write
+    efs_read_write = module.efs.data.cache.iam_policy_map["read_write"].iam_policy_arn
   }
   s3_data_map = data.terraform_remote_state.s3.outputs.data.bucket[local.std_var.aws_region_name]
   std_map     = module.com_lib.std_map
