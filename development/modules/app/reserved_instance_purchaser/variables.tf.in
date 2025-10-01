@@ -1,7 +1,12 @@
 variable "event_schedule_expression_default" {
   type        = string
-  default     = "rate(10 minutes)"
+  default     = "rate(5 minutes)"
   description = "Either Cron expression or event pattern is required"
+}
+
+variable "function_timeout_seconds_default" {
+  type        = number
+  default     = 30
 }
 
 variable "iam_data" {
