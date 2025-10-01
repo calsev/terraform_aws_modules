@@ -1,0 +1,77 @@
+{{ name.var() }}
+
+{{ std.map() }}
+
+variable "stream_map" {
+  type = map(object({
+    aws_region_name           = optional(string)
+    encryption_type           = optional(string)
+    enforce_consumer_deletion = optional(bool)
+    kms_key_id                = optional(string)
+    {{ name.var_item() }}
+    retention_period_h      = optional(number)
+    shard_count             = optional(number)
+    shard_level_metric_list = optional(list(string))
+    stream_capacity_mode    = optional(string)
+  }))
+}
+
+variable "stream_aws_region_name_default" {
+  type        = string
+  default     = null
+  description = "Defaults to region for provider"
+}
+
+variable "stream_encryption_type_default" {
+  type    = string
+  default = "KMS"
+  validation {
+      condition     = contains(["KMS", "NONE"], var.stream_encryption_type_default)
+      error_message = "Invalid encryption type"
+  }
+}
+
+variable "stream_enforce_consumer_deletion_default" {
+  type    = bool
+  default = false
+}
+
+variable "stream_kms_key_id_default" {
+  type    = string
+  default = "alias/aws/kinesis"
+}
+
+variable "stream_retention_period_h_default" {
+  type = number
+  default = 24
+  validation {
+      condition     = 24 <= var.stream_retention_period_h_default && var.stream_retention_period_h_default <= 8760
+      error_message = "Invalid retention period"
+  }
+}
+
+variable "stream_shard_count_default" {
+  type = number
+  default = null
+  description = "Required if stream_capacity_mode is PROVISIONED"
+}
+
+variable "stream_shard_level_metric_list_default" {
+  type = list(string)
+  default = [
+    "IncomingBytes",
+    "IteratorAgeMilliseconds",
+    "OutgoingBytes",
+    "ReadProvisionedThroughputExceeded",
+    "WriteProvisionedThroughputExceeded",
+  ]
+}
+
+variable "stream_capacity_mode_default" {
+  type = string
+  default = "ON_DEMAND"
+  validation {
+      condition     = contains(["ON_DEMAND", "PROVISIONED"], var.stream_capacity_mode_default)
+      error_message = "Invalid stream mode"
+  }
+}
