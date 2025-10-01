@@ -321,6 +321,8 @@ tf-lint: tflint-install
 	cd ../iam/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../inspect && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../inspect/enabler && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../kinesis && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../kinesis/stream && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

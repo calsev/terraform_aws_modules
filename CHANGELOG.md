@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.114.0
+
+### New modules
+
+* Kinesis stream
+
 ## 0.113.0
 
 ### New modules
