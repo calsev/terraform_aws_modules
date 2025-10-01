@@ -32,15 +32,13 @@ locals {
       })
     })
   }
-  create_lambda_permission_map = {
-    for k, v in local.lx_map : k => merge(v, {
-      lambda_arn = module.lambda.data[k].lambda_arn
-      source_arn = module.trigger.data[k].event_rule_arn
-    })
-  }
   create_trigger_map = {
     for k, v in local.lx_map : k => merge(v, {
-      target_arn = module.lambda.data[k].lambda_arn
+      role_policy_attach_arn_map = {
+        invoke_lambda = module.lambda.data[k].policy_map["write"].iam_policy_arn
+      }
+      schedule_expression = var.event_schedule_expression_default
+      target_arn          = module.lambda.data[k].lambda_arn
     })
   }
   l0_map = {
@@ -72,9 +70,8 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains(["source_content_string"], k_attr)
       },
       {
-        lambda            = module.lambda.data[k]
-        lambda_permission = module.lambda_permission.data[k]
-        trigger           = module.trigger.data[k]
+        lambda  = module.lambda.data[k]
+        trigger = module.trigger.data[k]
       }
     )
   }

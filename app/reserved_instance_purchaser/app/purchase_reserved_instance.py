@@ -25,7 +25,7 @@ MAX_TOTAL_INSTANCES = int(
 OFFER_MAX_DURATION_DAYS = int(
     os.environ.get("OFFER_MAX_DURATION_DAYS", "${offer_max_duration_days}")
 )
-OFFER_MAX_HOURLY_PRICE = int(
+OFFER_MAX_HOURLY_PRICE = float(
     os.environ.get("OFFER_MAX_HOURLY_PRICE", "${offer_max_hourly_price}")
 )
 

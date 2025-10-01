@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.114.1
+
+### Bugfix
+
+* EC2 reserved instance purchaser trigger permission
+
 ## 0.114.0
 
 ### New modules
