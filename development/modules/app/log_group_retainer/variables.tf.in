@@ -18,6 +18,35 @@ variable "iam_data" {
   })
 }
 
+{{ log.var(retention=7) }}
+
+variable "metric_default_days" {
+  type    = number
+  default = 7
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.metric_default_days)
+    error_message = "Invalid retention"
+  }
+}
+
+variable "metric_max_days" {
+  type    = number
+  default = 30
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.metric_max_days)
+    error_message = "Invalid retention"
+  }
+}
+
+variable "metric_min_days" {
+  type    = number
+  default = 1
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.metric_min_days)
+    error_message = "Invalid retention"
+  }
+}
+
 variable "monitor_data" {
   type = object({
     alert = object({
@@ -31,16 +60,28 @@ variable "monitor_data" {
 variable "retention_default_days" {
   type    = number
   default = 365
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.retention_default_days)
+    error_message = "Invalid retention"
+  }
 }
 
 variable "retention_max_days" {
   type    = number
   default = 365
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.retention_max_days)
+    error_message = "Invalid retention"
+  }
 }
 
 variable "retention_min_days" {
   type    = number
   default = 7
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.retention_min_days)
+    error_message = "Invalid retention"
+  }
 }
 
 {{ name.var() }}

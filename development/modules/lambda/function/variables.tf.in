@@ -231,6 +231,8 @@ variable "iam_data" {
   description = "Must be provided if any function is configured in a VPC"
 }
 
+{{ log.var() }}
+
 variable "monitor_data" {
   type = object({
     alert = object({

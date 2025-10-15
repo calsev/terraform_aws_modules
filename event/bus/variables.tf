@@ -29,13 +29,13 @@ variable "bus_map" {
 
 variable "bus_archive_retention_days_default" {
   type        = number
-  default     = 14
+  default     = 7
   description = "If not not null, a replay archive will be created"
 }
 
 variable "bus_log_retention_days_default" {
   type        = number
-  default     = 14
+  default     = 7
   description = "If not not null, a log group and rule will be created"
 }
 

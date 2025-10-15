@@ -1,6 +1,7 @@
 module "log_group" {
   source  = "../../cw/log_group"
   log_map = local.log_map
+  {{ log.map_item() }}
   std_map = var.std_map
 }
 

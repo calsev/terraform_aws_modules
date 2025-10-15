@@ -1,7 +1,10 @@
 module "log_group" {
-  source  = "../../cw/log_group"
-  log_map = local.log_map
-  std_map = var.std_map
+  source                     = "../../cw/log_group"
+  log_map                    = local.log_map
+  log_group_class_default    = var.log_group_class_default
+  log_kms_key_id_default     = var.log_kms_key_id_default
+  log_retention_days_default = var.log_retention_days_default
+  std_map                    = var.std_map
 }
 
 module "dead_letter_queue" {
