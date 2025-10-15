@@ -6,6 +6,8 @@ variable "iam_data" {
   description = "Must be provided if any secret is configured with rotation_method"
 }
 
+{{ log.var(retention=7) }}
+
 variable "monitor_data" {
   type = object({
     alert = object({

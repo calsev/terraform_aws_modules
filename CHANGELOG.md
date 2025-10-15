@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.115.0
+
+### General
+
+* Log retainer different retention for metric logs
+
 ## 0.114.1
 
 ### Bugfix

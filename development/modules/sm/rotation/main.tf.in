@@ -5,6 +5,7 @@ module "lambda" {
   function_source_package_handler_default = "rotation.lambda_handler"
   function_source_package_runtime_default = "python3.13"
   iam_data                                = var.iam_data
+  {{ log.map_item() }}
   monitor_data                            = var.monitor_data
   std_map                                 = var.std_map
   {{ vpc.map_item() }}
