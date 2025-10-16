@@ -48,6 +48,14 @@ variable "ecr_data_map" {
   description = "Must be provided if image key is specified"
 }
 
+variable "iam_data" {
+  type = object({
+    iam_policy_arn_ecr_get_token = string
+  })
+  default     = null
+  description = "If provided ECR login permissions will be added"
+}
+
 variable "map_policy" {
   type = object({
     image_ecr_repo_key           = optional(string) # The key of the image to build. If specified read/write for the image will be granted.
