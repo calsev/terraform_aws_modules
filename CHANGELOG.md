@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.116.0
+
+### General
+
+* Embed ECR login in CodeBuild role
+
 ## 0.115.0
 
 ### General

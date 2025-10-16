@@ -10,6 +10,10 @@ module "this_role" {
       condition = var.code_star_connection_key != null
       policy    = var.code_star_connection_key == null ? null : var.ci_cd_account_data.code_star.connection[var.code_star_connection_key].policy_map["read_write"].iam_policy_arn
     }
+    ecr_login = {
+      condition = var.iam_data != null
+      policy    = var.iam_data == null ? null : var.iam_data.iam_policy_arn_ecr_get_token
+    }
     image_read_write = {
       condition = var.map_policy.image_ecr_repo_key != null
       policy    = var.map_policy.image_ecr_repo_key == null ? null : var.ecr_data_map[var.map_policy.image_ecr_repo_key].policy_map["read_write"].iam_policy_arn
