@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.116.1
+
+### Bugfix
+
+* Weekly snapshot for long-term Backup
+
 ## 0.116.0
 
 ### General

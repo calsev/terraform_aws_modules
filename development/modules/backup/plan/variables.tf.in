@@ -108,7 +108,7 @@ variable "plan_rule_map_default" {
       {{ name.var_item(type="null") }}
       name_display                            = "SnapshotBackupForLongTermRetention"
       recovery_point_tag_map                  = null
-      schedule_cron_expression                = null
+      schedule_cron_expression                = "cron(0 7 ? * 7 *)" # Sunday at 7am UTC
       start_delay_minutes                     = null
     }
   }
@@ -181,7 +181,7 @@ variable "plan_rule_recovery_point_tag_map_default" {
 
 variable "plan_rule_schedule_cron_expression_default" {
   type    = string
-  default = "cron(0 7 ? * * *)" # every day at 7am UTC
+  default = "cron(0 7 ? * * *)" # Every day at 7am UTC
 }
 
 variable "plan_rule_start_delay_minutes_default" {
