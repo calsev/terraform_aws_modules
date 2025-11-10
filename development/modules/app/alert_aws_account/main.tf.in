@@ -45,6 +45,7 @@ module "cloudtrail" {
           }
         }
       }
+      log_retention_days = var.trail_log_management_retention_days
     }
     s3_event = {
       advanced_event_selector_map = {
@@ -60,7 +61,7 @@ module "cloudtrail" {
         }
       }
       insight_type_list  = []
-      log_retention_days = 7 # Possibly lots of events so shorted this up
+      log_retention_days = var.trail_log_s3_retention_days
     }
   }
 }
