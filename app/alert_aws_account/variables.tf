@@ -78,3 +78,13 @@ variable "std_map" {
 variable "trail_log_bucket_key" {
   type = string
 }
+
+variable "trail_log_management_retention_days" {
+  type    = number
+  default = 14
+}
+
+variable "trail_log_s3_retention_days" {
+  type    = number
+  default = 7 # Possibly lots of events
+}

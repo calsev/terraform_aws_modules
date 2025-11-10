@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.117.0
+
+### General
+
+* Parameterize log retention for alert account
+
 ## 0.116.1
 
 ### Bugfix
