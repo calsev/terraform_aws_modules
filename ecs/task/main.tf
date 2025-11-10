@@ -6,9 +6,12 @@ module "this_event_bus" {
 }
 
 module "task_log" {
-  source  = "../../cw/log_group"
-  log_map = local.l0_map # This is used later
-  std_map = var.std_map
+  source                     = "../../cw/log_group"
+  log_map                    = local.l0_map # This is used later
+  log_group_class_default    = var.log_group_class_default
+  log_kms_key_id_default     = var.log_kms_key_id_default
+  log_retention_days_default = var.log_retention_days_default
+  std_map                    = var.std_map
 }
 
 resource "aws_ecs_task_definition" "this_task" {

@@ -29,6 +29,8 @@ variable "iam_data" {
   })
 }
 
+{{ log.var() }}
+
 variable "monitor_data" {
   type = object({
     alert = object({

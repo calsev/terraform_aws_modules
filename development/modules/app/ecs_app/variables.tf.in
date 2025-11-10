@@ -771,6 +771,8 @@ variable "listener_listen_protocol_default" {
   }
 }
 
+{{ log.var() }}
+
 variable "monitor_data" {
   type = object({
     alert = object({

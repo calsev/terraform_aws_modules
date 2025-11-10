@@ -109,6 +109,9 @@ module "ecs_task" {
   alert_enabled_default                               = var.alert_enabled_default
   ecs_cluster_data                                    = local.ecs_cluster_data
   iam_data                                            = var.iam_data
+  log_group_class_default                             = var.log_group_class_default
+  log_kms_key_id_default                              = var.log_kms_key_id_default
+  log_retention_days_default                          = var.log_retention_days_default
   monitor_data                                        = var.monitor_data
   role_policy_attach_arn_map_default                  = var.role_policy_attach_arn_map_default
   role_policy_create_json_map_default                 = var.role_policy_create_json_map_default
