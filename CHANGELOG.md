@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.118.0
+
+### General
+
+* Parameterize log retention for ECS app
+
 ## 0.117.0
 
 ### General

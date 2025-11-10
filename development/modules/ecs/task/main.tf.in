@@ -8,6 +8,7 @@ module "this_event_bus" {
 module "task_log" {
   source  = "../../cw/log_group"
   log_map = local.l0_map # This is used later
+  {{ log.map_item() }}
   std_map = var.std_map
 }
 
