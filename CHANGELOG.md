@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.119.0
+
+### General
+
+* Improve matcher API for log group retainer
+
 ## 0.118.0
 
 ### General
