@@ -7,7 +7,7 @@ module "compute_common" {
   compute_instance_storage_gib_default     = var.compute_instance_storage_gib_default
   compute_instance_type_default            = var.compute_instance_type_default
   compute_key_pair_key_default             = var.compute_key_pair_key_default
-  compute_map                              = var.compute_map
+  compute_map                              = local.create_template_map
   compute_user_data_command_list_default   = var.compute_user_data_command_list_default
   iam_data                                 = var.iam_data
   monitor_data                             = var.monitor_data
@@ -21,36 +21,49 @@ module "compute_common" {
 }
 
 resource "aws_batch_compute_environment" "this_compute_env" {
-  for_each = local.compute_map
+  for_each = local.lx_map
   compute_resources {
-    allocation_strategy = "BEST_FIT"
-    bid_percentage      = 100 # Bid percentage set to 100 to maximize availability and minimize interruptions
-    desired_vcpus       = each.value.min_num_vcpu
-    ec2_configuration {
-      image_id_override = each.value.image_id # Cleanup diff
-      image_type        = each.value.image_type
-    }
+    allocation_strategy = each.value.instance_allocation_type == "FARGATE" ? null : "BEST_FIT"
+    bid_percentage      = each.value.instance_allocation_type == "FARGATE" ? null : 100 # Bid percentage set to 100 to maximize availability and minimize interruptions
+    desired_vcpus       = each.value.instance_allocation_type == "FARGATE" ? null : each.value.min_num_vcpu
     dynamic "ec2_configuration" {
-      for_each = each.value.image_type_second == null ? {} : { this = {} }
+      for_each = each.value.instance_allocation_type == "FARGATE" ? {} : { this = {} }
       content {
-        image_id_override = null
-        image_type        = each.value.image_type_second
+        image_id_override        = each.value.image_id # Cleanup diff
+        image_kubernetes_version = null
+        image_type               = each.value.image_type
       }
     }
-    instance_role = var.iam_data.iam_instance_profile_arn_ecs # ECS service API calls
-    instance_type = [each.value.instance_type]
-    launch_template {
-      launch_template_id = each.value.launch_template_id
-      version            = each.value.launch_template_version
+    dynamic "ec2_configuration" {
+      for_each = each.value.instance_allocation_type == "FARGATE" || each.value.image_type_second == null ? {} : { this = {} }
+      content {
+        image_id_override        = each.value.image_id # Cleanup diff
+        image_kubernetes_version = null
+        image_type               = each.value.image_type_second
+      }
+    }
+    ec2_key_pair = null
+    # image_id # Deprecated
+    instance_role = each.value.instance_allocation_type == "FARGATE" ? null : var.iam_data.iam_instance_profile_arn_ecs # ECS service API calls
+    instance_type = each.value.instance_allocation_type == "FARGATE" ? null : [each.value.instance_type]
+    dynamic "launch_template" {
+      for_each = each.value.instance_allocation_type == "FARGATE" ? {} : { this = {} }
+      content {
+        launch_template_id   = each.value.launch_template_id
+        launch_template_name = null
+        version              = each.value.launch_template_version
+      }
     }
     max_vcpus           = each.value.max_num_vcpu
-    min_vcpus           = each.value.min_num_vcpu
+    min_vcpus           = each.value.instance_allocation_type == "FARGATE" ? null : each.value.min_num_vcpu
+    placement_group     = each.value.placement_group_id
     security_group_ids  = each.value.vpc_security_group_id_list
     spot_iam_fleet_role = each.value.instance_allocation_type == "SPOT" ? var.iam_data.iam_role_arn_batch_spot_fleet : null
     subnets             = each.value.vpc_subnet_id_list
-    tags                = each.value.tags
+    tags                = each.value.instance_allocation_type == "FARGATE" ? null : each.value.tags
     type                = each.value.instance_allocation_type
   }
+  # eks_configuration
   lifecycle {
     # https://github.com/terraform-providers/terraform-provider-aws/issues/11077#issuecomment-560416740
     create_before_destroy = true
@@ -59,14 +72,24 @@ resource "aws_batch_compute_environment" "this_compute_env" {
       compute_resources[0].desired_vcpus
     ]
   }
+  # name # Conflicts with name_prefix
   name_prefix  = each.value.resource_name_prefix
+  region       = var.std_map.aws_region_name
   service_role = var.iam_data.iam_role_arn_batch_service # Batch service API calls
+  state        = "ENABLED"
   tags         = each.value.tags
   type         = "MANAGED"
+  dynamic "update_policy" {
+    for_each = each.value.supports_update ? { this = {} } : {}
+    content {
+      job_execution_timeout_minutes = each.value.update_job_timeout_minutes
+      terminate_jobs_on_update      = each.value.update_job_termination_enabled
+    }
+  }
 }
 
 resource "aws_batch_job_queue" "this_job_queue" {
-  for_each = local.compute_map
+  for_each = local.lx_map
   compute_environment_order {
     compute_environment = aws_batch_compute_environment.this_compute_env[each.key].arn
     order               = 1
