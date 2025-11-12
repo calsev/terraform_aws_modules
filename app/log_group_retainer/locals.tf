@@ -20,12 +20,7 @@ locals {
       source_content_path_of_file_to_create_in_archive = "ensure_log_group_retention.py"
       source_package_created_archive_path              = "${path.root}/config/${k}.zip"
       source_content_string = templatefile("${path.module}/app/ensure_log_group_retention.py", {
-        metric_default_days    = v.metric_default_days
-        metric_max_days        = v.metric_max_days
-        metric_min_days        = v.metric_min_days
-        retention_default_days = v.retention_default_days
-        retention_max_days     = v.retention_max_days
-        retention_min_days     = v.retention_min_days
+        retention_list = jsonencode(v.retention_list)
       })
     })
   }
@@ -61,12 +56,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      metric_default_days    = var.metric_default_days
-      metric_max_days        = var.metric_max_days
-      metric_min_days        = var.metric_min_days
-      retention_default_days = var.retention_default_days
-      retention_max_days     = var.retention_max_days
-      retention_min_days     = var.retention_min_days
+      retention_list = var.retention_list
     })
   }
   l2_map = {

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 import typing
 
 import boto3
@@ -8,42 +9,21 @@ import boto3
 logger = logging.getLogger("ri-purchaser")
 logger.setLevel(logging.INFO)
 
-DEFAULT_METRIC_DAYS = int(
-    os.environ.get(
-        "DEFAULT_METRIC_DAYS",
-        "${metric_default_days}",
-    )
+RETENTION_STR = os.environ.get(
+    "RETENTION_LIST",
+    '${retention_list}',  # fmt: skip
 )
-MAX_METRIC_DAYS = int(
-    os.environ.get(
-        "MAX_METRIC_DAYS",
-        "${metric_max_days}",
-    )
-)
-MIN_METRIC_DAYS = int(
-    os.environ.get(
-        "MIN_METRIC_DAYS",
-        "${metric_min_days}",
-    )
-)
-DEFAULT_RETENTION_DAYS = int(
-    os.environ.get(
-        "DEFAULT_RETENTION_DAYS",
-        "${retention_default_days}",
-    )
-)
-MAX_RETENTION_DAYS = int(
-    os.environ.get(
-        "MAX_RETENTION_DAYS",
-        "${retention_max_days}",
-    )
-)
-MIN_RETENTION_DAYS = int(
-    os.environ.get(
-        "MIN_RETENTION_DAYS",
-        "${retention_min_days}",
-    )
-)
+RETENTION_LIST_RAW = json.loads(RETENTION_STR)
+
+
+def compile_patterns(retention: dict[str, typing.Any]) -> dict[str, typing.Any]:
+    return {
+        **retention,
+        "match_regex_list": [re.compile(r) for r in retention["match_regex_list"]],
+    }
+
+
+RETENTION_LIST = [compile_patterns(r) for r in RETENTION_LIST_RAW]
 
 
 def get_all_log_groups(
@@ -78,37 +58,32 @@ def adjust_retention_for_log_group(
     log_group_name: str,
     current_retention: int | None,
 ) -> None:
-    if log_group_name.startswith("/aws/"):
-        new_retention = new_retention_for_log_group(
-            default_retention=DEFAULT_METRIC_DAYS,
-            max_retention=MAX_METRIC_DAYS,
-            min_rentention=MIN_METRIC_DAYS,
-            current_retention=current_retention,
-        )
-    else:
-        new_retention = new_retention_for_log_group(
-            default_retention=DEFAULT_RETENTION_DAYS,
-            max_retention=MAX_RETENTION_DAYS,
-            min_rentention=MIN_RETENTION_DAYS,
-            current_retention=current_retention,
-        )
-    if new_retention is None:
-        return
-    logger.info(
-        f"Updating retention for group {log_group_name}: {current_retention} -> {new_retention}"
-    )
-    log_client.put_retention_policy(
-        logGroupName=log_group_name, retentionInDays=new_retention
-    )
+    for retention in RETENTION_LIST:
+        if any(
+            log_group_name.startswith(prefix)
+            for prefix in retention["match_prefix_list"]
+        ) or any(
+            re.search(regex, log_group_name) for regex in retention["match_regex_list"]
+        ):
+            new_retention = new_retention_for_log_group(
+                default_retention=retention["default_days"],
+                max_retention=retention["max_days"],
+                min_rentention=retention["min_days"],
+                current_retention=current_retention,
+            )
+            if new_retention is not None:
+                logger.info(
+                    f"Updating retention for group {log_group_name}: {current_retention} -> {new_retention}"
+                )
+                log_client.put_retention_policy(
+                    logGroupName=log_group_name, retentionInDays=new_retention
+                )
+            return
+    raise ValueError(f"No match found for group {log_group_name}")
 
 
 def ensure_log_group_retention_for_account():
-    logger.info(f"Metric default is {DEFAULT_METRIC_DAYS}")
-    logger.info(f"Metric max is {MAX_METRIC_DAYS}")
-    logger.info(f"Metric min is {MIN_METRIC_DAYS}")
-    logger.info(f"Retention default is {DEFAULT_RETENTION_DAYS}")
-    logger.info(f"Retention max is {MAX_RETENTION_DAYS}")
-    logger.info(f"Retention min is {MIN_RETENTION_DAYS}")
+    logger.info(f"Retention is {RETENTION_LIST}")
     log_client = typing.cast(typing.Any, boto3.client("logs"))
     for log_group in get_all_log_groups(log_client):
         log_group_name = log_group["logGroupName"]

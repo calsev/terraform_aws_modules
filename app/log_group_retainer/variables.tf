@@ -41,33 +41,6 @@ variable "log_retention_days_default" {
   }
 }
 
-variable "metric_default_days" {
-  type    = number
-  default = 7
-  validation {
-    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.metric_default_days)
-    error_message = "Invalid retention"
-  }
-}
-
-variable "metric_max_days" {
-  type    = number
-  default = 30
-  validation {
-    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.metric_max_days)
-    error_message = "Invalid retention"
-  }
-}
-
-variable "metric_min_days" {
-  type    = number
-  default = 1
-  validation {
-    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.metric_min_days)
-    error_message = "Invalid retention"
-  }
-}
-
 variable "monitor_data" {
   type = object({
     alert = object({
@@ -76,33 +49,6 @@ variable "monitor_data" {
       }))
     })
   })
-}
-
-variable "retention_default_days" {
-  type    = number
-  default = 365
-  validation {
-    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.retention_default_days)
-    error_message = "Invalid retention"
-  }
-}
-
-variable "retention_max_days" {
-  type    = number
-  default = 365
-  validation {
-    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.retention_max_days)
-    error_message = "Invalid retention"
-  }
-}
-
-variable "retention_min_days" {
-  type    = number
-  default = 7
-  validation {
-    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.retention_min_days)
-    error_message = "Invalid retention"
-  }
 }
 
 variable "name_append_default" {
@@ -146,6 +92,33 @@ variable "name_suffix_default" {
   type        = string
   default     = ""
   description = "Appended after context suffix"
+}
+
+variable "retention_list" {
+  type = list(object({
+    default_days      = number
+    match_prefix_list = list(string)
+    match_regex_list  = list(string)
+    max_days          = number
+    min_days          = number
+  }))
+  default = [
+    {
+      default_days      = 7
+      match_prefix_list = ["/aws/"]
+      match_regex_list  = ["event-trail"]
+      max_days          = 30
+      min_days          = 1
+    },
+    {
+      default_days      = 365
+      match_prefix_list = [""]
+      match_regex_list  = []
+      max_days          = 365
+      min_days          = 7
+    },
+  ]
+  description = "The first match in the list will be applied to each log group. A log group matches if either a prefix or regex matches."
 }
 
 variable "std_map" {
