@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.121.0
+
+### General
+
+* Exclude escaped characters from default secret rotation
+
+### Bugfix
+
+* Batch job support for Fargate cluster
+
 ## 0.120.0
 
 ### General

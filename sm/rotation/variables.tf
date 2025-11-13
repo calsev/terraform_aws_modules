@@ -157,7 +157,7 @@ variable "rotation_schedule_window_default" {
 
 variable "rotation_value_random_string_characters_to_exclude_default" {
   type    = string
-  default = ""
+  default = "'\"\\"
 }
 
 variable "rotation_value_random_string_length_default" {

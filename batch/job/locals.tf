@@ -54,7 +54,6 @@ locals {
       mount_map                  = v.mount_map == null ? var.job_mount_map_default : v.mount_map
       parameter_map              = v.parameter_map == null ? var.job_parameter_map_default : v.parameter_map
       privileged                 = v.privileged == null ? var.job_privileged_default : v.privileged
-      resource_memory_shared_gib = v.resource_memory_shared_gib == null ? var.job_resource_memory_shared_gib_default : v.resource_memory_shared_gib
       secret_map                 = v.secret_map == null ? var.job_secret_map_default : v.secret_map
       ulimit_map                 = v.ulimit_map == null ? var.job_ulimit_map_default : v.ulimit_map
       username                   = v.username == null ? var.job_username_default : v.username
@@ -80,11 +79,6 @@ locals {
           "aws.batch",
         ]
       })
-      linux_param_map = {
-        devices          = []
-        sharedMemorySize = local.l1_map[k].resource_memory_shared_gib * 1024
-        tmpfs            = []
-      }
       efs_volume_map = {
         for k_vol, v_vol in local.l1_map[k].efs_volume_map : k_vol => merge(v_vol, {
           authorization_access_point_id = v_vol.authorization_access_point_id == null ? var.job_efs_authorization_access_point_id_default : v_vol.authorization_access_point_id
@@ -99,9 +93,11 @@ locals {
           volume_key = v_mount.volume_key == null ? k_mount : v_mount.volume_key
         })
       }
-      resource_memory_host_gib_default = 13 / 32 + var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib / 64
-      resource_num_gpu_default         = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_gpu
-      resource_num_vcpu_default        = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_vcpu
+      platform_capability_list         = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_allocation_type == "FARGATE" ? ["FARGATE"] : ["EC2"]
+      resource_memory_host_gib_default = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_allocation_type == "FARGATE" ? 0 : 13 / 32 + var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib / 64
+      resource_num_gpu_default         = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_allocation_type == "FARGATE" ? 0 : var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_gpu
+      resource_num_vcpu_default        = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_allocation_type == "FARGATE" ? 0 : var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_num_vcpu
+      resource_memory_shared_gib       = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_allocation_type == "FARGATE" ? 0 : v.resource_memory_shared_gib == null ? var.job_resource_memory_shared_gib_default : v.resource_memory_shared_gib
     }
   }
   l3_map = {
@@ -110,6 +106,11 @@ locals {
         for k_vol, v_vol in local.l2_map[k].efs_volume_map : k_vol => merge(v_vol, {
           root_directory = v_vol.authorization_access_point_id != null ? "/" : v_vol.root_directory == null ? var.job_efs_root_directory_default : v_vol.root_directory
         })
+      }
+      linux_param_map = {
+        devices          = []
+        sharedMemorySize = local.l2_map[k].resource_memory_shared_gib == 0 ? null : local.l2_map[k].resource_memory_shared_gib * 1024
+        tmpfs            = []
       }
       resource_memory_host_gib = v.resource_memory_host_gib == null ? var.job_resource_memory_host_gib_default == null ? local.l2_map[k].resource_memory_host_gib_default : var.job_resource_memory_host_gib_default : v.resource_memory_host_gib
       resource_num_gpu         = v.resource_num_gpu == null ? var.job_resource_num_gpu_default == null ? local.l2_map[k].resource_num_gpu_default : var.job_resource_num_gpu_default : v.resource_num_gpu
@@ -124,7 +125,7 @@ locals {
           value = tostring(local.l3_map[k].resource_num_gpu)
         }
       ]
-      resource_memory_gib_default = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib - local.l3_map[k].resource_memory_host_gib - local.l1_map[k].resource_memory_shared_gib
+      resource_memory_gib_default = var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_allocation_type == "FARGATE" ? 0 : var.batch_cluster_data[local.l1_map[k].batch_cluster_key].instance_type_memory_gib - local.l3_map[k].resource_memory_host_gib - local.l2_map[k].resource_memory_shared_gib
     }
   }
   l5_map = {
@@ -165,7 +166,7 @@ locals {
         ]
         executionRoleArn = local.l1_map[k].iam_role_arn_job_execution
         image            = "${local.l1_map[k].image_id}:${local.l1_map[k].image_tag}"
-        linuxParameters  = local.l2_map[k].linux_param_map
+        linuxParameters  = local.l3_map[k].linux_param_map
         mountPoints = [
           for k_mount, v_mount in local.l2_map[k].mount_map : {
             containerPath = v_mount.container_path
