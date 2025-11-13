@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.120.0
+
+### General
+
+* Fargate support for Batch cluster
+
 ## 0.119.0
 
 ### General

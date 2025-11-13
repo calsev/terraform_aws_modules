@@ -1,17 +1,21 @@
 variable "compute_map" {
   type = map(object({
-    image_id                    = optional(string)
-    instance_allocation_type    = optional(string)
-    instance_storage_gib        = optional(number)
-    instance_type               = optional(string)
-    key_pair_key                = optional(string)
-    max_instances               = optional(number)
-    min_instances               = optional(number)
-    vpc_az_key_list             = optional(list(string))
-    vpc_key                     = optional(string)
-    vpc_security_group_key_list = optional(list(string))
-    vpc_segment_key             = optional(string)
-    user_data_command_list      = optional(list(string))
+    image_id                       = optional(string)
+    instance_allocation_strategy   = optional(string)
+    instance_allocation_type       = optional(string)
+    instance_storage_gib           = optional(number)
+    instance_type                  = optional(string)
+    key_pair_key                   = optional(string)
+    max_instances                  = optional(number)
+    min_instances                  = optional(number)
+    placement_group_id             = optional(string)
+    update_job_termination_enabled = optional(bool)
+    update_job_timeout_minutes     = optional(number)
+    user_data_command_list         = optional(list(string))
+    vpc_az_key_list                = optional(list(string))
+    vpc_key                        = optional(string)
+    vpc_security_group_key_list    = optional(list(string))
+    vpc_segment_key                = optional(string)
   }))
 }
 
@@ -20,9 +24,22 @@ variable "compute_image_id_default" {
   default = null
 }
 
+variable "compute_instance_allocation_strategy_default" {
+  type    = string
+  default = "BEST_FIT"
+  validation {
+    condition     = contains(["BEST_FIT", "BEST_FIT_PROGRESSIVE", "SPOT_CAPACITY_OPTIMIZED", "SPOT_PRICE_CAPACITY_OPTIMIZED"], var.compute_instance_allocation_strategy_default)
+    error_message = "Invalid allocation type"
+  }
+}
+
 variable "compute_instance_allocation_type_default" {
   type    = string
   default = "EC2"
+  validation {
+    condition     = contains(["EC2", "FARGATE", "FARGATE_SPOT", "SPOT"], var.compute_instance_allocation_type_default)
+    error_message = "Invalid allocation type"
+  }
 }
 
 variable "compute_instance_storage_gib_default" {
@@ -41,13 +58,30 @@ variable "compute_key_pair_key_default" {
 }
 
 variable "compute_max_instances_default" {
-  type    = number
-  default = 1
+  type        = number
+  default     = 1
+  description = "For Fargate this is the number of vCPUs"
 }
 
 variable "compute_min_instances_default" {
+  type        = number
+  default     = 0
+  description = "Ignored for Fargate"
+}
+
+variable "compute_placement_group_id_default" {
+  type    = string
+  default = null
+}
+
+variable "compute_update_job_termination_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "compute_update_job_timeout_minutes_default" {
   type    = number
-  default = 0
+  default = null
 }
 
 variable "compute_user_data_command_list_default" {
@@ -77,6 +111,49 @@ variable "monitor_data" {
       })
     })
   })
+}
+
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
+}
+
+variable "name_infix_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
 }
 
 variable "std_map" {
