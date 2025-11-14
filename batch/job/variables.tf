@@ -10,9 +10,10 @@ variable "alert_level_default" {
 
 variable "batch_cluster_data" {
   type = map(object({
-    instance_type_memory_gib = number
-    instance_type_num_gpu    = number
-    instance_type_num_vcpu   = number
+    instance_allocation_type = string
+    instance_type_memory_gib = optional(number)
+    instance_type_num_gpu    = optional(number)
+    instance_type_num_vcpu   = optional(number)
   }))
 }
 
@@ -190,12 +191,13 @@ variable "job_resource_memory_gib_default" {
 variable "job_resource_memory_host_gib_default" {
   type        = number
   default     = null
-  description = "Memory remaining for host OS. Defaults to 13/32 + Instance memory / 64"
+  description = "Memory remaining for host OS. Defaults to 13/32 + Instance memory / 64 for EC2, ignored for Fargate"
 }
 
 variable "job_resource_memory_shared_gib_default" {
-  type    = number
-  default = 0.125
+  type        = number
+  default     = 0.125
+  description = "Ignored for Fargate"
 }
 
 variable "job_resource_num_gpu_default" {
