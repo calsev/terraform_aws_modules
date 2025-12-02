@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.122.0
+
+### General
+
+* Cognito client app refresh token rotation
+
 ## 0.121.0
 
 ### General
