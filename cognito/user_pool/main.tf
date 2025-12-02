@@ -136,13 +136,15 @@ module "domain_alias" {
 }
 
 module "pool_client" {
-  source                                       = "../../cognito/client_app"
-  client_access_token_validity_minutes_default = var.client_access_token_validity_minutes_default
-  client_auth_session_validity_minutes_default = var.client_auth_session_validity_minutes_default
-  client_id_token_validity_minutes_default     = var.client_id_token_validity_minutes_default
-  client_refresh_token_validity_hours_default  = var.client_refresh_token_validity_hours_default
-  pool_map                                     = local.create_client_map
-  std_map                                      = var.std_map
+  source                                        = "../../cognito/client_app"
+  client_access_token_validity_minutes_default  = var.client_access_token_validity_minutes_default
+  client_auth_session_validity_minutes_default  = var.client_auth_session_validity_minutes_default
+  client_explicit_auth_flow_list_default        = var.client_explicit_auth_flow_list_default
+  client_id_token_validity_minutes_default      = var.client_id_token_validity_minutes_default
+  client_refresh_token_rotation_enabled_default = var.client_refresh_token_rotation_enabled_default
+  client_refresh_token_validity_hours_default   = var.client_refresh_token_validity_hours_default
+  pool_map                                      = local.create_client_map
+  std_map                                       = var.std_map
 }
 
 module "pool_group" {

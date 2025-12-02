@@ -17,9 +17,23 @@ variable "client_auth_session_validity_minutes_default" {
   default = 3
 }
 
+variable "client_explicit_auth_flow_list_default" {
+  type = list(string)
+  default = [
+    "ALLOW_REFRESH_TOKEN_AUTH",
+    "ALLOW_USER_PASSWORD_AUTH",
+    "ALLOW_USER_SRP_AUTH",
+  ]
+}
+
 variable "client_id_token_validity_minutes_default" {
   type    = number
   default = 60
+}
+
+variable "client_refresh_token_rotation_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "client_refresh_token_validity_hours_default" {

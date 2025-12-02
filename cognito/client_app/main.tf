@@ -17,8 +17,13 @@ resource "aws_cognito_user_pool_client" "this_client" {
   name                                          = each.value.name_effective
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = each.value.read_attribute_list
-  refresh_token_validity                        = each.value.refresh_token_validity_hours
-  supported_identity_providers                  = each.value.supported_identity_provider_list
+  refresh_token_rotation {
+    feature                    = each.value.refresh_token_rotation_enabled ? "ENABLED" : "DISABLED"
+    retry_grace_period_seconds = each.value.refresh_token_rotation_enabled ? each.value.refresh_token_rotation_retry_grace_period_seconds : 0
+  }
+  refresh_token_validity       = each.value.refresh_token_validity_hours
+  region                       = var.std_map.aws_region_name
+  supported_identity_providers = each.value.supported_identity_provider_list
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
