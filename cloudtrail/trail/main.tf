@@ -16,7 +16,7 @@ module "logging_role" {
 }
 
 resource "aws_cloudtrail" "this_trail" {
-  for_each = local.lx_map
+  for_each = local.create_trail_map
   dynamic "advanced_event_selector" {
     for_each = each.value.advanced_event_selector_map
     content {
@@ -35,8 +35,8 @@ resource "aws_cloudtrail" "this_trail" {
       name = advanced_event_selector.key
     }
   }
-  cloud_watch_logs_group_arn = "${module.log_group.data[each.key].log_group_arn}:*"
-  cloud_watch_logs_role_arn  = module.logging_role[each.key].data.iam_role_arn
+  cloud_watch_logs_group_arn = each.value.cloud_watch_logs_group_arn
+  cloud_watch_logs_role_arn  = each.value.cloud_watch_logs_role_arn
   enable_log_file_validation = each.value.log_file_validation_enabled
   enable_logging             = each.value.logging_enabled
   dynamic "event_selector" {

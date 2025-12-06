@@ -24,6 +24,12 @@ locals {
       )
     })
   }
+  create_trail_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      cloud_watch_logs_group_arn = v.logging_cloudwatch_enabled ? "${module.log_group.data[k].log_group_arn}:*" : null
+      cloud_watch_logs_role_arn  = v.logging_cloudwatch_enabled ? module.logging_role[k].data.iam_role_arn : null
+    })
+  }
   l0_map = {
     for k, v in var.trail_map : k => v
   }
@@ -37,6 +43,7 @@ locals {
       log_bucket_key                = v.log_bucket_key == null ? var.trail_log_bucket_key_default : v.log_bucket_key
       log_bucket_object_prefix      = v.log_bucket_object_prefix == null ? var.trail_log_bucket_object_prefix_default : v.log_bucket_object_prefix
       log_file_validation_enabled   = v.log_file_validation_enabled == null ? var.trail_log_file_validation_enabled_default : v.log_file_validation_enabled
+      logging_cloudwatch_enabled    = v.logging_cloudwatch_enabled == null ? var.trail_logging_cloudwatch_enabled_default : v.logging_cloudwatch_enabled
       logging_enabled               = v.logging_enabled == null ? var.trail_logging_enabled_default : v.logging_enabled
       multi_region_trail_enabled    = v.multi_region_trail_enabled == null ? var.trail_multi_region_trail_enabled_default : v.multi_region_trail_enabled
       organization_trail_enabled    = v.organization_trail_enabled == null ? var.trail_organization_trail_enabled_default : v.organization_trail_enabled

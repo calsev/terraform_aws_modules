@@ -29,12 +29,13 @@ module "kms_key" {
 }
 
 module "cloudtrail" {
-  source                       = "../../cloudtrail/trail"
-  kms_data_map                 = module.kms_key.data
-  s3_data_map                  = var.s3_data_map
-  std_map                      = var.std_map
-  trail_kms_key_key_default    = var.encrypt_trail_with_kms ? "trail" : null
-  trail_log_bucket_key_default = var.trail_log_bucket_key
+  source                                   = "../../cloudtrail/trail"
+  kms_data_map                             = module.kms_key.data
+  s3_data_map                              = var.s3_data_map
+  std_map                                  = var.std_map
+  trail_kms_key_key_default                = var.encrypt_trail_with_kms ? "trail" : null
+  trail_log_bucket_key_default             = var.trail_log_bucket_key
+  trail_logging_cloudwatch_enabled_default = var.trail_logging_cloudwatch_enabled_default
   trail_map = {
     management_event = {
       advanced_event_selector_map = {

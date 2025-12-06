@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.123.0
+
+### General
+
+* Default event trail Cloudwatch log flag
+
 ## 0.122.0
 
 ### General
