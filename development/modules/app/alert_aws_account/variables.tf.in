@@ -65,6 +65,11 @@ variable "trail_log_bucket_key" {
   type = string
 }
 
+variable "trail_logging_cloudwatch_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "trail_log_management_retention_days" {
   type    = number
   default = 14

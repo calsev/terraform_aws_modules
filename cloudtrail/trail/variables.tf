@@ -107,6 +107,7 @@ variable "trail_map" {
     log_bucket_key                = optional(string)
     log_bucket_object_prefix      = optional(string)
     log_file_validation_enabled   = optional(bool)
+    logging_cloudwatch_enabled    = optional(bool)
     logging_enabled               = optional(bool)
     log_retention_days            = optional(number)
     multi_region_trail_enabled    = optional(bool)
@@ -207,6 +208,11 @@ variable "trail_log_bucket_object_prefix_default" {
 }
 
 variable "trail_log_file_validation_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "trail_logging_cloudwatch_enabled_default" {
   type    = bool
   default = true
 }
