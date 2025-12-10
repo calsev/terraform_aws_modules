@@ -43,7 +43,7 @@ variable "function_map" {
     source_image_repo_tag                            = optional(string)
     source_image_working_directory                   = optional(string)
     source_package_archive_local_path                = optional(string)
-    source_package_created_archive_path              = optional(string) # Defaults to the directory with .zip appended or content file parent with pakage.zip appended
+    source_package_created_archive_path              = optional(string) # Defaults to the directory with .zip appended or content file parent with package.zip appended
     source_package_directory_local_path              = optional(string)
     source_package_handler                           = optional(string) # Also used for source_content
     source_package_runtime                           = optional(string)

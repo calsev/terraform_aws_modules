@@ -8,7 +8,7 @@ locals {
         secret_read_write = var.secret_data_map[local.l1_map[k].secret_key].policy_map["read_write"].iam_policy_arn
       }
       source_content_local_path           = "${path.module}/rotation.py"
-      source_package_created_archive_path = "${path.root}/config/secret-rotation-${v.name_context}.zip"
+      source_package_created_archive_path = "${path.root}/config/secret-rotation-${v.name_simple}${var.std_map.resource_name_suffix}.zip"
     }) if v.create_lambda
   }
   create_lambda_permission_map = {
