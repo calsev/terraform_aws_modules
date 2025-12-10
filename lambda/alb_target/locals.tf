@@ -25,8 +25,7 @@ locals {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       action_map = {
         forward_to_service = {
-          action_order = v.action_order
-          action_type  = "forward"
+          action_type = "forward"
         }
       }
       lambda_arn = var.lambda_data_map[v.lambda_key].lambda_arn

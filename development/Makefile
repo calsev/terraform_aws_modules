@@ -100,6 +100,8 @@ tf-lint: tflint-install
 	cd ../api_gateway/stage && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/alert_aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/cors_preflight && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/cors_preflight/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
