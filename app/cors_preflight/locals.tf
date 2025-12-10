@@ -15,7 +15,7 @@ locals {
   create_lambda_map = {
     for k, v in local.lx_map : k => merge(v, {
       source_content_path_of_file_to_create_in_archive = "preflight.py"
-      source_package_created_archive_path              = "${path.root}/config/${k}.zip"
+      source_package_created_archive_path              = "${path.root}/config/${v.name_simple}${var.std_map.resource_name_suffix}.zip"
       source_content_string = templatefile("${path.module}/app/preflight.py", {
         allowed_headers = join(",", v.cors_allowed_headers)
         allowed_hosts   = join(",", v.cors_allowed_hosts)

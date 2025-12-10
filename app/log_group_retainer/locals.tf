@@ -18,7 +18,7 @@ locals {
         reserved_instance_purchaser = module.retainer_policy.data[local.policy_key].iam_policy_arn
       }
       source_content_path_of_file_to_create_in_archive = "ensure_log_group_retention.py"
-      source_package_created_archive_path              = "${path.root}/config/${k}.zip"
+      source_package_created_archive_path              = "${path.root}/config/${v.name_simple}${var.std_map.resource_name_suffix}.zip"
       source_content_string = templatefile("${path.module}/app/ensure_log_group_retention.py", {
         retention_list = jsonencode(v.retention_list)
       })

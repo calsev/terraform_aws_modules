@@ -18,7 +18,7 @@ locals {
         reserved_instance_purchaser = module.purchaser_policy.data[local.policy_key].iam_policy_arn
       }
       source_content_path_of_file_to_create_in_archive = "purchase_reserved_instance.py"
-      source_package_created_archive_path              = "${path.root}/config/purchase_reserved_instance_${k}.zip"
+      source_package_created_archive_path              = "${path.root}/config/purchase-reserved-instance-${v.name_simple}${var.std_map.resource_name_suffix}.zip"
       source_content_string = templatefile("${path.module}/app/purchase_reserved_instance.py", {
         dry_run                 = v.dry_run
         email_recipient         = v.email_recipient

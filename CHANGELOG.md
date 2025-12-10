@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.125.0
+
+### Bugfix
+
+* Path collisions for embedded Lambda archives
+
 ## 0.124.0
 
 ### New modules
