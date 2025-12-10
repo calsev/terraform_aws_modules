@@ -1,0 +1,41 @@
+module "lambda" {
+  source                                          = "../../lambda/function"
+  alert_level_default                             = var.alert_level_default
+  function_ephemeral_storage_mib_default          = 512
+  function_map                                    = local.create_lambda_map
+  function_reserved_concurrent_executions_default = var.function_reserved_concurrent_executions_default
+  function_source_package_handler_default         = "preflight.lambda_handler"
+  function_source_package_runtime_default         = "python3.13"
+  function_timeout_seconds_default                = var.function_timeout_seconds_default
+  function_vpc_ipv6_allowed_default               = var.function_vpc_ipv6_allowed_default
+  iam_data                                        = var.iam_data
+  log_group_class_default                         = var.log_group_class_default
+  log_kms_key_id_default                          = var.log_kms_key_id_default
+  log_retention_days_default                      = var.log_retention_days_default
+  monitor_data                                    = var.monitor_data
+  std_map                                         = var.std_map
+  vpc_az_key_list_default                         = var.vpc_az_key_list_default
+  vpc_data_map                                    = var.vpc_data_map
+  vpc_key_default                                 = var.vpc_key_default
+  vpc_security_group_key_list_default             = var.vpc_security_group_key_list_default
+  vpc_segment_key_default                         = var.vpc_segment_key_default
+}
+
+module "target" {
+  source                                = "../../lambda/alb_target"
+  dns_data                              = var.dns_data
+  elb_data_map                          = var.elb_data_map
+  lambda_data_map                       = module.lambda.data
+  listener_acm_certificate_key_default  = var.listener_acm_certificate_key_default
+  listener_dns_alias_enabled_default    = var.listener_dns_alias_enabled_default
+  listener_dns_from_zone_key_default    = var.listener_dns_from_zone_key_default
+  listener_elb_key_default              = var.listener_elb_key_default
+  rule_condition_map_default            = var.rule_condition_map_default
+  rule_http_request_method_list_default = var.rule_http_request_method_list_default
+  rule_path_pattern_list_default        = var.rule_path_pattern_list_default
+  rule_priority_default                 = var.rule_priority_default
+  std_map                               = var.std_map
+  target_map                            = local.create_target_map
+  vpc_data_map                          = var.vpc_data_map
+  vpc_key_default                       = var.vpc_key_default
+}

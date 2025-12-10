@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.124.0
+
+### New modules
+
+* CORS preflight app
+
 ## 0.123.0
 
 ### General

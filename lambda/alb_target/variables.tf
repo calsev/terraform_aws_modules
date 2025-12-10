@@ -34,13 +34,9 @@ variable "listener_acm_certificate_key_default" {
   description = "Must be provided if a listener uses HTTPS. Ignored for other protocols."
 }
 
-variable "listener_action_order_default" {
-  type    = number
-  default = 10000
-  validation {
-    condition     = var.listener_action_order_default >= 1 && var.listener_action_order_default <= 50000
-    error_message = "Invalid action order"
-  }
+variable "listener_dns_alias_enabled_default" {
+  type    = bool
+  default = true
 }
 
 variable "listener_dns_from_zone_key_default" {
@@ -137,6 +133,16 @@ variable "rule_path_pattern_list_default" {
   default = []
 }
 
+variable "rule_priority_default" {
+  type        = number
+  default     = null
+  description = "defaults to order in the list"
+  validation {
+    condition     = var.rule_priority_default == null ? true : var.rule_priority_default >= 1 && var.rule_priority_default <= 50000
+    error_message = "Invalid action order"
+  }
+}
+
 variable "rule_query_string_map_default" {
   type = map(object({
     key_pattern   = optional(string)
@@ -169,7 +175,7 @@ variable "std_map" {
 variable "target_map" {
   type = map(object({
     acm_certificate_key            = optional(string)
-    action_order                   = optional(number)
+    dns_alias_enabled              = optional(bool)
     dns_from_zone_key              = optional(string)
     elb_key                        = optional(string)
     lambda_key                     = string
@@ -193,7 +199,8 @@ variable "target_map" {
       })))
       source_ip_list = optional(list(string))
     })))
-    vpc_key = optional(string)
+    rule_priority = optional(number)
+    vpc_key       = optional(string)
   }))
 }
 

@@ -1,0 +1,54 @@
+{{ name.map() }}
+
+locals {
+  create_lambda_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      source_content_path_of_file_to_create_in_archive = "preflight.py"
+      source_package_created_archive_path              = "${path.root}/config/${k}.zip"
+      source_content_string = templatefile("${path.module}/app/preflight.py", {
+        allowed_headers = join(",", v.cors_allowed_headers)
+        allowed_hosts   = join(",", v.cors_allowed_hosts)
+        allowed_methods = join(",", v.cors_allowed_methods)
+        max_age         = v.cors_max_age
+        origin_default  = v.cors_origin_default
+      })
+    })
+  }
+  create_target_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      lambda_key = k
+    })
+  }
+  l0_map = {
+    for k, v in var.cors_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      cors_allowed_headers    = v.cors_allowed_headers == null ? var.cors_allowed_headers_default : v.cors_allowed_headers
+      cors_allowed_hosts      = v.cors_allowed_hosts == null ? var.cors_allowed_hosts_default : v.cors_allowed_hosts
+      cors_allowed_methods    = v.cors_allowed_methods == null ? var.cors_allowed_methods_default : v.cors_allowed_methods
+      cors_local_host_allowed = v.cors_local_host_allowed == null ? var.cors_local_host_allowed_default : v.cors_local_host_allowed
+      cors_max_age            = v.cors_max_age == null ? var.cors_max_age_default : v.cors_max_age
+      cors_origin_default     = v.cors_origin_default == null ? var.cors_origin_default : v.cors_origin_default
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+      cors_allowed_hosts = distinct(concat(local.l1_map[k].cors_allowed_hosts, local.l1_map[k].cors_local_host_allowed ? ["127.0.0.1","localhost"] : []))
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
+      },
+      {
+        lambda = module.lambda.data[k]
+        target = module.target.data[k]
+      },
+    )
+  }
+}
