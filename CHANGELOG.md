@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.126.0
+
+### General
+
+*  CDN support for CORS '*' allowed origin
+
 ## 0.125.0
 
 ### Bugfix

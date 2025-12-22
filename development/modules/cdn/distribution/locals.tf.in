@@ -71,7 +71,7 @@ locals {
       response_cors_allow_credentials                       = v.response_cors_allow_credentials == null ? var.domain_response_cors_allow_credentials_default : v.response_cors_allow_credentials
       response_cors_allowed_header_list                     = v.response_cors_allowed_header_list == null ? var.domain_response_cors_allowed_header_list_default : v.response_cors_allowed_header_list
       response_cors_allowed_method_list                     = v.response_cors_allowed_method_list == null ? var.domain_response_cors_allowed_method_list_default : v.response_cors_allowed_method_list
-      response_cors_allowed_origin_list                     = [for origin in v.response_cors_allowed_origin_list == null ? var.domain_response_cors_allowed_origin_list_default : v.response_cors_allowed_origin_list : startswith(origin, "http") ? origin : "https://${origin}"]
+      response_cors_allowed_origin_list                     = v.response_cors_allowed_origin_list == null ? var.domain_response_cors_allowed_origin_list_default : v.response_cors_allowed_origin_list
       response_cors_expose_header_list                      = v.response_cors_expose_header_list == null ? var.domain_response_cors_expose_header_list_default : v.response_cors_expose_header_list
       response_cors_max_age_seconds                         = v.response_cors_max_age_seconds == null ? var.domain_response_cors_max_age_seconds_default : v.response_cors_max_age_seconds
       response_cors_origin_override                         = v.response_cors_origin_override == null ? var.domain_response_cors_origin_override_default : v.response_cors_origin_override
@@ -99,12 +99,13 @@ locals {
   }
   l2_map = {
     for k, v in var.domain_map : k => {
-      acm_certificate_arn         = local.l1_map[k].dns_alias_enabled ? var.cdn_global_data.domain_cert_map[k].certificate_arn : null
-      acm_certificate_use_default = !local.l1_map[k].dns_alias_enabled
-      alias_name_list             = concat([local.l1_map[k].name_simple], local.l1_map[k].dns_alias_san_list)
-      cache_policy_id             = var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
-      logging_bucket_name         = local.l1_map[k].logging_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].logging_bucket_key].name_effective
-      origin_request_policy_id    = var.cdn_global_data.origin_request_policy_map[local.l1_map[k].origin_request_policy_key].policy_id
+      acm_certificate_arn               = local.l1_map[k].dns_alias_enabled ? var.cdn_global_data.domain_cert_map[k].certificate_arn : null
+      acm_certificate_use_default       = !local.l1_map[k].dns_alias_enabled
+      alias_name_list                   = concat([local.l1_map[k].name_simple], local.l1_map[k].dns_alias_san_list)
+      cache_policy_id                   = var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
+      logging_bucket_name               = local.l1_map[k].logging_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].logging_bucket_key].name_effective
+      origin_request_policy_id          = var.cdn_global_data.origin_request_policy_map[local.l1_map[k].origin_request_policy_key].policy_id
+      response_cors_allowed_origin_list = [for origin in local.l1_map[k].response_cors_allowed_origin_list: origin == "*" ? "*" : startswith(origin, "http") ? origin : "https://${origin}"]
       response_custom_header_map = {
         for k_head, v_head in local.l1_map[k].response_custom_header_map : k_head => merge(v_head, {
           override = v_head.override == null ? var.domain_response_custom_header_override_default : v.override
@@ -124,7 +125,7 @@ locals {
   l3_map = {
     for k, v in var.domain_map : k => {
       alias_name_list_final                 = local.l1_map[k].dns_alias_enabled ? local.l2_map[k].alias_name_list : []
-      response_cors_allowed_origin_list_all = concat([for fqdn in local.l2_map[k].alias_name_list : "https://${fqdn}"], local.l1_map[k].response_cors_allowed_origin_list) # Include aliases even without DNS enabled
+      response_cors_allowed_origin_list_all = local.l2_map[k].response_cors_allowed_origin_list == ["*"] ? local.l2_map[k].response_cors_allowed_origin_list : concat([for fqdn in local.l2_map[k].alias_name_list : "https://${fqdn}"], local.l2_map[k].response_cors_allowed_origin_list) # Include aliases even without DNS enabled
       response_security_header_content_policy_final = join(" ", [
         for k_src, v_src in local.l2_map[k].response_security_header_content_policy_origin_map_all : "${k_src} ${join(" ", v_src)};"
       ])
