@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.127.0
+
+### General
+
+*  SES configuration destinations
+
 ## 0.126.0
 
 ### General
