@@ -1,16 +1,38 @@
 module "name_map" {
-  source   = "../../name_map"
-  name_map = var.config_map
-  std_map  = var.std_map
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
 }
 
 locals {
-  config_map = {
-    for k, v in var.config_map : k => merge(local.l1_map[k], local.l2_map[k])
+  create_destination_1_list = flatten([
+    for k, v in local.lx_map : [
+      for k_dest, v_dest in v.destination_map : merge(v, v_dest, {
+        configuration_set_name = aws_sesv2_configuration_set.this_config[k].configuration_set_name
+        k                      = k
+        k_all                  = "${k}_${k_dest}"
+        k_dest                 = k_dest
+      })
+    ]
+  ])
+  create_destination_x_map = {
+    for v in local.create_destination_1_list : v.k_all => merge(v, {
+    })
+  }
+  l0_map = {
+    for k, v in var.config_map : k => v
   }
   l1_map = {
-    for k, v in var.config_map : k => merge(v, module.name_map.data[k], {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       auto_suppress_address_reason_list              = v.auto_suppress_address_reason_list == null ? var.config_auto_suppress_address_reason_list_default : v.auto_suppress_address_reason_list
+      destination_map                                = v.destination_map == null ? var.config_destination_map_default : v.destination_map
       ip_pool_key                                    = v.ip_pool_key == null ? var.config_ip_pool_key_default : v.ip_pool_key
       reputation_metrics_enabled                     = v.reputation_metrics_enabled == null ? var.config_reputation_metrics_enabled_default : v.reputation_metrics_enabled
       sending_enabled                                = v.sending_enabled == null ? var.config_sending_enabled_default : v.sending_enabled
@@ -21,18 +43,26 @@ locals {
     })
   }
   l2_map = {
-    for k, v in var.config_map : k => {
+    for k, v in local.l0_map : k => {
       ip_pool_name = local.l1_map[k].ip_pool_key == null ? null : var.ip_pool_data_map[local.l1_map[k].ip_pool_key].name_effective
     }
   }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
   output_data = {
-    for k, v in var.config_map : k => merge(
+    for k, v in local.lx_map : k => merge(
       {
-        for k_attr, v_attr in local.config_map[k] : k_attr => v_attr if !contains([], k_attr)
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
         arn                    = aws_sesv2_configuration_set.this_config[k].arn
         configuration_set_name = aws_sesv2_configuration_set.this_config[k].configuration_set_name
+        destination_map = {
+          for k_dest, v_dest in v.destination_map : k_dest => merge(v_dest, {
+            destination_id = aws_sesv2_configuration_set_event_destination.destination["${k}_${k_dest}"].id
+          })
+        }
       },
     )
   }

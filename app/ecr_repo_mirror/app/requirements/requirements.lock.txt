@@ -13,5 +13,5 @@ setuptools==80.9.0
 six==1.17.0
 types-awscrt==0.28.2
 types-s3transfer==0.14.0
-urllib3==2.5.0
+urllib3==2.6.0
 wheel==0.45.1
