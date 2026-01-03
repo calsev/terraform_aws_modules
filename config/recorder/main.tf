@@ -44,3 +44,34 @@ resource "aws_config_configuration_recorder_status" "this_status" {
   is_enabled = each.value.is_enabled
   name       = aws_config_configuration_recorder.this_recorder[each.key].name
 }
+
+module "athena_db" {
+  source               = "../../athena/database"
+  db_map               = local.create_query_table_map
+  name_prepend_default = "config"
+  std_map              = var.std_map
+}
+
+module "athena_query_table" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "config"
+  query_map            = local.create_query_table_map
+  std_map              = var.std_map
+}
+
+module "athena_query_resource_type" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "config"
+  query_map            = local.create_query_type_map
+  std_map              = var.std_map
+}
+
+module "athena_query_resource_update" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "config"
+  query_map            = local.create_query_update_map
+  std_map              = var.std_map
+}

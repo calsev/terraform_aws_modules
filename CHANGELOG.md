@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.128.0
+
+### General
+
+*  Config cost query
+
 ## 0.127.0
 
 ### General

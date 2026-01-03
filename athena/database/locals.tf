@@ -22,6 +22,7 @@ locals {
       force_destroy     = v.force_destroy == null ? var.db_force_destroy_default : v.force_destroy
       kms_key_id        = v.kms_key_id == null ? var.db_kms_key_id_default : v.kms_key_id
       property_map      = v.property_map == null ? var.db_property_map_default : v.property_map
+      workgroup         = v.workgroup == null ? var.db_workgroup_default : v.workgroup
     })
   }
   l2_map = {

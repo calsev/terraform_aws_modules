@@ -11,6 +11,7 @@ variable "db_map" {
     name_prepend            = optional(string)
     name_suffix             = optional(string)
     property_map            = optional(map(string))
+    workgroup               = optional(string)
   }))
 }
 
@@ -41,6 +42,11 @@ variable "db_kms_key_id_default" {
 variable "db_property_map_default" {
   type    = map(string)
   default = {}
+}
+
+variable "db_workgroup_default" {
+  type    = string
+  default = null
 }
 
 variable "name_append_default" {

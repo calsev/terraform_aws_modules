@@ -51,6 +51,7 @@ variable "name_suffix_default" {
 
 variable "record_map" {
   type = map(object({
+    cost_query_enabled              = optional(bool)
     exclusion_by_resource_type_list = optional(list(string))
     global_resource_types_included  = optional(bool)
     iam_role_arn                    = optional(string)
@@ -77,15 +78,27 @@ variable "record_map" {
   }))
 }
 
+variable "record_cost_query_enabled_default" {
+  type    = bool
+  default = true
+}
+
 variable "record_exclusion_by_resource_type_list_default" {
-  type        = list(string)
-  default     = []
+  type = list(string)
+  default = [
+    "AWS::Backup::RecoveryPoint",
+    "AWS::EC2::Instance",
+    "AWS::EC2::NetworkInterface",
+    "AWS::EC2::Volume",
+    "AWS::SSM::ManagedInstanceInventory",
+  ]
   description = "Ignored if resource_all_supported_enabled"
 }
 
 variable "record_global_resource_types_included_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = false
+  description = "Requires resource_all_supported_enabled"
 }
 
 variable "record_iam_role_arn_default" {
@@ -127,8 +140,18 @@ variable "record_mode_override_record_frequency_default" {
 }
 
 variable "record_mode_override_resource_type_list_default" {
-  type    = list(string)
-  default = ["AWS::IAM::Group", "AWS::IAM::Policy", "AWS::IAM::Role", "AWS::IAM::User"]
+  type = list(string)
+  default = [
+    "AWS::AutoScaling::AutoScalingGroup",
+    "AWS::EC2::SecurityGroup",
+    "AWS::EC2::Subnet",
+    "AWS::EC2::VPC",
+    "AWS::IAM::Group",
+    "AWS::IAM::Policy",
+    "AWS::IAM::Role",
+    "AWS::IAM::User",
+  ]
+  description = "Break-even for daily recording is 4 continuous instances per resource. The default is resources that tend to have many configuration instances per day due to relationship churn."
 }
 
 variable "record_mode_record_frequency_default" {
@@ -142,7 +165,7 @@ variable "record_mode_record_frequency_default" {
 
 variable "record_resource_all_supported_enabled_default" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "record_resource_type_list_default" {
@@ -177,7 +200,7 @@ variable "record_sns_topic_key_default" {
 
 variable "record_strategy_use_only_default" {
   type    = string
-  default = "ALL_SUPPORTED_RESOURCE_TYPES"
+  default = "EXCLUSION_BY_RESOURCE_TYPES"
   validation {
     condition     = contains(["ALL_SUPPORTED_RESOURCE_TYPES", "EXCLUSION_BY_RESOURCE_TYPES", "INCLUSION_BY_RESOURCE_TYPES"], var.record_strategy_use_only_default)
     error_message = "Invalid strategy"
