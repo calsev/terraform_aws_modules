@@ -6,6 +6,7 @@ variable "db_map" {
     kms_key_id              = optional(string)
     {{ name.var_item() }}
     property_map            = optional(map(string))
+    workgroup               = optional(string)
   }))
 }
 
@@ -36,6 +37,11 @@ variable "db_kms_key_id_default" {
 variable "db_property_map_default" {
   type    = map(string)
   default = {}
+}
+
+variable "db_workgroup_default" {
+  type    = string
+  default = null
 }
 
 {{ name.var() }}

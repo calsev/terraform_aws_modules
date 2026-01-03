@@ -12,4 +12,6 @@ resource "aws_athena_database" "this_db" {
   force_destroy         = each.value.force_destroy
   name                  = replace(each.value.name_effective, "-", "_") # No dash allowed
   properties            = each.value.property_map
+  region                = var.std_map.aws_region_name
+  workgroup             = each.value.workgroup
 }

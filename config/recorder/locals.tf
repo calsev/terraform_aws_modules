@@ -12,11 +12,95 @@ module "name_map" {
 }
 
 locals {
+  create_query_table_map = {
+    for k, v in local.lx_map : k => merge(v, {
+      bucket_name  = v.s3_bucket_name
+      database_key = k
+      query        = <<-EOT
+      CREATE EXTERNAL TABLE IF NOT EXISTS ${v.athena_table_name} (
+        fileversion string,
+        configsnapshotid string,
+        configurationitems array<
+          struct<
+            configurationitemversion:string,
+            configurationitemcapturetime:string,
+            configurationstateid:bigint,
+            awsaccountid:string,
+            configurationitemstatus:string,
+            resourcetype:string,
+            resourceid:string,
+            resourcename:string,
+            arn:string,
+            awsregion:string,
+            availabilityzone:string,
+            configuration:string,
+            supplementaryconfiguration:map<string,string>,
+            tags:map<string,string>
+          >
+        >
+      )
+      ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+      LOCATION 's3://${v.s3_bucket_name}${v.s3_log_key_prefix}/AWSLogs/${var.std_map.aws_account_id}/Config/${var.std_map.aws_region_name}/';
+      EOT
+    }) if v.cost_query_enabled
+  }
+  create_query_type_map = {
+    for k, v in local.create_query_table_map : k => merge(v, {
+      query = <<-EOT
+      SELECT
+        ci.resourcetype AS resource_type,
+        COUNT(*)        AS ci_count
+      FROM ${v.athena_table_name}
+      CROSS JOIN UNNEST(configurationitems) AS t(ci)
+      WHERE "$path" LIKE '%ConfigHistory%'
+        AND from_iso8601_timestamp(ci.configurationitemcapturetime)
+              >= current_timestamp - INTERVAL '1' DAY
+      GROUP BY 1
+      ORDER BY 2 DESC
+      LIMIT 50;
+      EOT
+    })
+  }
+  create_query_update_map = {
+    for k, v in local.create_query_table_map : k => merge(v, {
+      query = <<-EOT
+      WITH per_resource AS (
+        SELECT
+          ci.resourcetype AS resource_type,
+          ci.resourceid   AS resource_id,
+          COUNT(*)        AS ci_count_24h
+        FROM config_history_inf_mon_account_record_com_usea1
+        CROSS JOIN UNNEST(configurationitems) AS t(ci)
+        WHERE "$path" LIKE '%ConfigHistory%'
+          AND from_iso8601_timestamp(ci.configurationitemcapturetime)
+                >= current_timestamp - INTERVAL '1' DAY
+        GROUP BY 1, 2
+      ),
+      summary AS (
+        SELECT
+          resource_type,
+          COUNT(*)                             AS resources_seen_24h,
+          SUM(ci_count_24h)                    AS total_cis_24h,
+          AVG(ci_count_24h)                    AS avg_cis_per_resource_24h,
+          approx_percentile(ci_count_24h, 0.5) AS p50_cis_per_resource_24h,
+          approx_percentile(ci_count_24h, 0.9) AS p90_cis_per_resource_24h,
+          MAX(ci_count_24h)                    AS max_cis_per_resource_24h
+        FROM per_resource
+        GROUP BY 1
+      )
+      SELECT *
+      FROM summary
+      ORDER BY total_cis_24h DESC
+      LIMIT 50;
+      EOT
+    })
+  }
   l0_map = {
     for k, v in var.record_map : k => v
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      cost_query_enabled             = v.cost_query_enabled == null ? var.record_cost_query_enabled_default : v.cost_query_enabled
       global_resource_types_included = v.global_resource_types_included == null ? var.record_global_resource_types_included_default : v.global_resource_types_included
       iam_role_arn                   = v.iam_role_arn == null ? var.record_iam_role_arn_default : v.iam_role_arn
       is_enabled                     = v.is_enabled == null ? var.record_is_enabled_default : v.is_enabled
@@ -34,8 +118,10 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      athena_table_name               = replace("config_history_${local.l1_map[k].name_effective}", "-", "_")
       exclusion_by_resource_type_list = local.l1_map[k].resource_all_supported_enabled ? null : v.exclusion_by_resource_type_list == null ? var.record_exclusion_by_resource_type_list_default : v.exclusion_by_resource_type_list
       kms_key_arn                     = local.l1_map[k].kms_key_key == null ? null : var.kms_data_map[local.l1_map[k].kms_key_key].key_arn
+      s3_log_key_prefix               = local.l1_map[k].s3_object_key_prefix == null ? "" : "/${local.l1_map[k].s3_object_key_prefix}"
       mode_override_map = {
         for k_mode, v_mode in local.l1_map[k].mode_override_map : k_mode => merge(v_mode, {
           record_frequency   = v_mode.record_frequency == null ? var.record_mode_override_record_frequency_default : v_mode.record_frequency
@@ -56,6 +142,14 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
+        athena = {
+          db = v.cost_query_enabled ? module.athena_db.data[k] : null
+          query = {
+            resource_type   = v.cost_query_enabled ? module.athena_query_resource_type.data[k] : null
+            resource_update = v.cost_query_enabled ? module.athena_query_resource_update.data[k] : null
+            table           = v.cost_query_enabled ? module.athena_query_table.data[k] : null
+          }
+        }
       }
     )
   }
