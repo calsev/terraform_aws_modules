@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.129.0
+
+### General
+
+*  Reduce Cloudwatch metric cardinality for instances
+
 ## 0.128.0
 
 ### General
