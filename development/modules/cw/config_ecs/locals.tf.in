@@ -7,9 +7,7 @@ locals {
     metrics = {
       append_dimensions = {
         AutoScalingGroupName = "$${aws:AutoScalingGroupName}"
-        ImageId              = "$${aws:ImageId}"
         InstanceId           = "$${aws:InstanceId}"
-        InstanceType         = "$${aws:InstanceType}"
       }
       metrics_collected = {
         collectd = {
@@ -17,25 +15,37 @@ locals {
         }
         cpu = {
           measurement = [
-            "cpu_usage_idle",
+            # "cpu_usage_idle",
             "cpu_usage_iowait",
             "cpu_usage_system",
             "cpu_usage_user",
           ]
           metrics_collection_interval = 60
           resources = [
-            "*"
+            "cpu-total",
           ]
           totalcpu = true
         }
         disk = {
+          ignore_file_system_types = [
+            "autofs",
+            "cgroup",
+            "cgroup2",
+            "devtmpfs",
+            "overlay",
+            "proc",
+            "squashfs",
+            "sysfs",
+            "tracefs",
+            "tmpfs",
+          ]
           measurement = [
-            "inodes_free",
+            # "inodes_free",
             "used_percent",
           ]
           metrics_collection_interval = 60
           resources = [
-            "*",
+            "/",
           ]
         }
         diskio = {
@@ -51,7 +61,10 @@ locals {
           ]
           metrics_collection_interval = 60
           resources = [
-            "*",
+            "nvme0n1",
+            "nvme1n1",
+            "xvda",
+            "xvdb",
           ]
         }
         mem = {
@@ -66,6 +79,9 @@ locals {
             "bytes_sent",
           ]
           metrics_collection_interval = 60
+          resources = [
+            "eth0",
+          ]
         }
         netstat = {
           measurement = [
@@ -74,11 +90,11 @@ locals {
           ]
           metrics_collection_interval = 60
         }
-        statsd = {
-          metrics_aggregation_interval = 60
-          metrics_collection_interval  = 10
-          service_address              = ":8125"
-        }
+        # statsd = {
+        #   metrics_aggregation_interval = 60
+        #   metrics_collection_interval  = 60
+        #   service_address              = ":8125"
+        # }
         swap = {
           measurement = [
             "swap_used_percent",
@@ -106,6 +122,10 @@ locals {
     }
   }
   output_data = {
+    cw_config = {
+      cpu = local.cw_config_cpu
+      gpu = local.cw_config_gpu
+    }
     ecs_ssm_param_map = {
       cpu = module.ssm_param_cw_config.data["cloudwatch_agent_config_ecs_cpu"]
       gpu = module.ssm_param_cw_config.data["cloudwatch_agent_config_ecs_gpu"]

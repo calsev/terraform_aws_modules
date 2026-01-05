@@ -100,10 +100,8 @@ variable "record_mode_override_resource_type_list_default" {
     "AWS::EC2::SecurityGroup",
     "AWS::EC2::Subnet",
     "AWS::EC2::VPC",
-    "AWS::IAM::Group",
     "AWS::IAM::Policy",
     "AWS::IAM::Role",
-    "AWS::IAM::User",
   ]
   description = "Break-even for daily recording is 4 continuous instances per resource. The default is resources that tend to have many configuration instances per day due to relationship churn."
 }
