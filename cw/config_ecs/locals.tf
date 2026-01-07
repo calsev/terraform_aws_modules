@@ -13,19 +13,19 @@ locals {
         collectd = {
           metrics_aggregation_interval = 60
         }
-        cpu = {
-          measurement = [
-            # "cpu_usage_idle",
-            "cpu_usage_iowait",
-            "cpu_usage_system",
-            "cpu_usage_user",
-          ]
-          metrics_collection_interval = 60
-          resources = [
-            "cpu-total",
-          ]
-          totalcpu = true
-        }
+        # cpu = {
+        #   measurement = [
+        #     "cpu_usage_idle",
+        #     "cpu_usage_iowait", # Use AWS/EC2 CPUUtilization
+        #     "cpu_usage_system", # Use AWS/EC2 CPUUtilization
+        #     "cpu_usage_user", # Use AWS/EC2 CPUUtilization
+        #   ]
+        #   metrics_collection_interval = 60
+        #   resources = [
+        #     "cpu-total",
+        #   ]
+        #   totalcpu = true
+        # }
         disk = {
           ignore_file_system_types = [
             "autofs",
@@ -52,12 +52,12 @@ locals {
           measurement = [
             "iops_in_progress",
             "io_time",
-            "read_bytes",
-            "read_time",
-            "reads",
-            "write_bytes",
-            "write_time",
-            "writes",
+            # "read_bytes", # Use AWS/EC2 EBSReadBytes
+            # "read_time", # Use AWS/EBS VolumeTotalReadTime
+            # "reads", # Use AWS/EC2 EBSReadOps
+            # "write_bytes", # Use AWS/EC2 EBSWriteBytes
+            # "write_time", # Use AWS/EBS VolumeTotalWriteTime
+            # "writes", # Use AWS/EC2 EBSWriteOps
           ]
           metrics_collection_interval = 60
           resources = [
@@ -73,16 +73,16 @@ locals {
           ]
           metrics_collection_interval = 60
         }
-        net = {
-          measurement = [
-            "bytes_recv",
-            "bytes_sent",
-          ]
-          metrics_collection_interval = 60
-          resources = [
-            "eth0",
-          ]
-        }
+        # net = {
+        #   measurement = [
+        #     "bytes_recv", # Use AWS/EC2 NetworkIn
+        #     "bytes_sent", # Use AWS/EC2 NetworkOut
+        #   ]
+        #   metrics_collection_interval = 60
+        #   resources = [
+        #     "eth0",
+        #   ]
+        # }
         netstat = {
           measurement = [
             "tcp_established",
