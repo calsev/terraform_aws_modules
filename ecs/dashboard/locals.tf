@@ -1,105 +1,137 @@
 locals {
+  insights_fn_map = {
+    # Map CloudWatch "aggregation" string to Metrics Insights function
+    Average = "AVG"
+    Maximum = "MAX"
+    Sum     = "SUM"
+  }
   metric_list = [
     {
       aggregation = "Average"
-      metric      = "cpu_usage_iowait"
-      title       = "CPU I/O time"
-    },
-    {
-      aggregation = "Average"
-      metric      = "cpu_usage_user"
-      title       = "CPU user time"
-    },
-    {
-      aggregation = "Average"
-      metric      = "cpu_usage_system"
-      title       = "CPU system time"
+      metric      = "CPUUtilization"
+      namespace   = "AWS/EC2"
+      title       = "CPU used %"
     },
     {
       aggregation = "Average"
       metric      = "mem_used_percent"
+      namespace   = "CWAgent"
       title       = "Memory used %"
     },
     {
       aggregation = "Average"
       metric      = "swap_used_percent"
+      namespace   = "CWAgent"
       title       = "Swap used %"
     },
     {
-      aggregation = "Average"
+      aggregation = "Maximum"
       metric      = "disk_used_percent"
+      namespace   = "CWAgent"
       title       = "Disk used %"
     },
     {
       aggregation = "Average"
       metric      = "diskio_iops_in_progress"
+      namespace   = "CWAgent"
       title       = "Disk ops pending"
     },
     {
-      aggregation = "Sum"
-      metric      = "diskio_read_time"
-      title       = "Disk read wait time"
+      aggregation = "Average"
+      metric      = "VolumeAvgReadLatency"
+      namespace   = "AWS/EBS"
+      title       = "Disk read latency"
+    },
+    {
+      aggregation = "Average"
+      metric      = "VolumeAvgWriteLatency"
+      namespace   = "AWS/EBS"
+      title       = "Disk write latency"
+    },
+    {
+      aggregation = "Maximum"
+      metric      = "VolumeQueueLength"
+      namespace   = "AWS/EBS"
+      title       = "Disk queue length"
     },
     {
       aggregation = "Sum"
-      metric      = "diskio_write_time"
-      title       = "Disk write wait time"
-    },
-    {
-      aggregation = "Sum"
-      metric      = "net_bytes_recv"
+      metric      = "NetworkIn"
+      namespace   = "AWS/EC2"
       title       = "Net bytes received"
     },
     {
       aggregation = "Sum"
-      metric      = "net_bytes_sent"
+      metric      = "NetworkOut"
+      namespace   = "AWS/EC2"
       title       = "Net bytes sent"
     },
     {
       aggregation = "Average"
       metric      = "netstat_tcp_time_wait"
+      namespace   = "CWAgent"
       title       = "TCP connections closing"
     },
     {
       aggregation = "Average"
       metric      = "nvidia_gpu_utilization_gpu"
-      title       = "GPU utilization %"
+      namespace   = "CWAgent"
+      title       = "GPU used %"
     },
     {
       aggregation = "Average"
       metric      = "nvidia_gpu_utilization_memory"
-      title       = "GPU mem utilization %"
+      namespace   = "CWAgent"
+      title       = "GPU mem used %"
     },
     {
       aggregation = "Average"
       metric      = "nvidia_gpu_memory_used"
+      namespace   = "CWAgent"
       title       = "GPU mem used MB"
     },
     {
       aggregation = "Average"
       metric      = "nvidia_gpu_memory_free"
+      namespace   = "CWAgent"
       title       = "GPU mem free MB"
     },
   ]
+  insights_where_by_metric = {
+    # Extend this later (e.g., diskio device, net interface, etc.)
+    disk_used_percent = "WHERE path = '/'"
+  }
   dashboard_body = {
     widgets = [
-      for v_metric in local.metric_list : {
+      for i_metric, v_metric in local.metric_list : {
         height = local.widget_height
         properties = {
           metrics = [
             [
               {
-                expression = "SEARCH('Namespace=\"CWAgent\" ${v_metric.metric}', '${v_metric.aggregation}', 60)"
+                id = format("q%02d", i_metric + 1)
+                expression = format(
+                  "SELECT %s(%s) FROM \"%s\" %s GROUP BY %s ORDER BY %s() DESC LIMIT %d",
+                  lookup(local.insights_fn_map, v_metric.aggregation, "AVG"),
+                  v_metric.metric,
+                  v_metric.namespace,
+                  lookup(local.insights_where_by_metric, v_metric.metric, ""),
+                  "InstanceId",
+                  "MAX",
+                  local.top_n
+                )
               }
             ]
-          ],
-          period = 60
-          region = var.std_map.aws_region_name
-          title  = v_metric.title
+          ]
+          period  = 60
+          region  = var.std_map.aws_region_name
+          stacked = false
+          title   = v_metric.title
+          view    = "timeSeries"
+          yAxis   = local.y_axis_object
         }
-        type  = "metric",
+        type  = "metric"
         width = local.widget_width
-        yAxis = local.y_axis_object
       }
     ]
   }
@@ -107,6 +139,7 @@ locals {
     ecs_dashboard_body = local.dashboard_body
     ecs_dashboard_id   = aws_cloudwatch_dashboard.main.id
   }
+  top_n         = 8
   widget_height = 8
   widget_width  = 12
   y_axis_object = {

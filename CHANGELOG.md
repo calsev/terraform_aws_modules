@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.130.0
+
+### General
+
+* Deduplicate CWAgent, EC2, EBS metrics
+* Update EC2 dashboard metrics
+
 ## 0.129.0
 
 ### General
