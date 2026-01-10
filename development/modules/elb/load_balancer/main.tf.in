@@ -64,34 +64,27 @@ module "elb_listener" {
   std_map                            = var.std_map
 }
 
-module "log_access_db" {
-  source              = "../../athena/database"
-  db_map              = local.create_db_access_map
-  name_append_default = "elb_access"
-  std_map             = var.std_map
+module "log_db" {
+  source                          = "../../athena/database"
+  db_map                          = local.create_db_x_map
+  name_include_app_fields_default = false
+  std_map                         = var.std_map
 }
 
 module "log_access_table_query" {
-  source              = "../../athena/named_query"
-  athena_database_map = module.log_access_db.data
-  name_append_default = "elb_access"
-  query_map           = local.create_db_access_map
-  std_map             = var.std_map
-}
-
-module "log_connection_db" {
-  source              = "../../athena/database"
-  db_map              = local.create_db_connection_map
-  name_append_default = "elb_connection"
-  std_map             = var.std_map
+  source               = "../../athena/named_query"
+  athena_database_map  = module.log_db.data
+  name_prepend_default = "elb_access"
+  query_map            = local.create_db_access_map
+  std_map              = var.std_map
 }
 
 module "log_connection_table_query" {
-  source              = "../../athena/named_query"
-  athena_database_map = module.log_connection_db.data
-  name_append_default = "elb_connection"
-  query_map           = local.create_db_connection_map
-  std_map             = var.std_map
+  source               = "../../athena/named_query"
+  athena_database_map  = module.log_db.data
+  name_prepend_default = "elb_connection"
+  query_map            = local.create_db_connection_map
+  std_map              = var.std_map
 }
 
 {{ alarm.main(prepend="elb") }}

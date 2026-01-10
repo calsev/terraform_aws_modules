@@ -1,6 +1,7 @@
 variable "vpc_map" {
   type = map(object({
     endpoint_map = optional(map(object({
+      add_region_name      = optional(bool)
       auto_accept_enabled  = optional(bool)
       dns_record_ip_type   = optional(string)
       endpoint_segment_key = optional(string)
@@ -39,6 +40,7 @@ variable "vpc_map" {
 
 variable "endpoint_map_custom_default" {
   type = map(object({
+    add_region_name      = optional(bool)
     auto_accept_enabled  = optional(bool)
     dns_record_ip_type   = optional(string)
     endpoint_segment_key = optional(string)
@@ -62,12 +64,14 @@ variable "endpoint_map_custom_default" {
     service_name_short                             = optional(string)
     vpc_security_group_key_list                    = optional(list(string))
   }))
-  default     = {}
-  description = "These endoints are merged with standard defaults"
+  default = {
+  }
+  description = "These endpoints are merged with standard defaults"
 }
 
 variable "endpoint_map_standard_default" {
   type = map(object({
+    add_region_name      = optional(bool)
     auto_accept_enabled  = optional(bool)
     dns_record_ip_type   = optional(string)
     endpoint_segment_key = optional(string)
@@ -93,6 +97,7 @@ variable "endpoint_map_standard_default" {
   }))
   default = {
     ec2 = {
+      add_region_name                                = null
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -113,6 +118,7 @@ variable "endpoint_map_standard_default" {
       vpc_security_group_key_list                    = null
     }
     "ecr.api" = {
+      add_region_name                                = null
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -133,6 +139,7 @@ variable "endpoint_map_standard_default" {
       vpc_security_group_key_list                    = null
     }
     "ecr.dkr" = {
+      add_region_name                                = null
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -153,6 +160,7 @@ variable "endpoint_map_standard_default" {
       vpc_security_group_key_list                    = null
     }
     ssm = {
+      add_region_name                                = null
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -173,6 +181,7 @@ variable "endpoint_map_standard_default" {
       vpc_security_group_key_list                    = null
     }
     ssm-contacts = {
+      add_region_name                                = null
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -193,6 +202,7 @@ variable "endpoint_map_standard_default" {
       vpc_security_group_key_list                    = null
     }
     ssm-incidents = {
+      add_region_name                                = null
       auto_accept_enabled                            = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
@@ -213,7 +223,12 @@ variable "endpoint_map_standard_default" {
       vpc_security_group_key_list                    = null
     }
   }
-  description = "These endoints are required to avoid security violations, and are merged with custom defaults"
+  description = "These endpoints are required to avoid security violations, and are merged with custom defaults"
+}
+
+variable "endpoint_add_region_name_default" {
+  type    = bool
+  default = true
 }
 
 variable "endpoint_auto_accept_enabled_default" {

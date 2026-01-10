@@ -13,10 +13,50 @@ resource "aws_flow_log" "this_log" {
   # log_group_name # Obsolete, conflicts with log_destination
   log_format                    = each.value.log_format
   max_aggregation_interval      = each.value.max_aggregation_interval_seconds
+  region                        = var.std_map.aws_region_name
+  regional_nat_gateway_id       = each.value.regional_nat_gateway_id
   subnet_id                     = each.value.subnet_id
   tags                          = each.value.tags
   traffic_type                  = each.value.traffic_type
   transit_gateway_attachment_id = each.value.transit_gateway_attachment_id
   transit_gateway_id            = each.value.transit_gateway_id
   vpc_id                        = each.value.vpc_id
+}
+
+module "athena_db" {
+  source                          = "../../athena/database"
+  db_map                          = local.create_db_x_map
+  std_map                         = var.std_map
+}
+
+module "athena_table_query" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "vpc_table"
+  query_map            = local.create_db_table_map
+  std_map              = var.std_map
+}
+
+module "athena_destination_query" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "vpc_destination"
+  query_map            = local.create_db_destination_map
+  std_map              = var.std_map
+}
+
+module "athena_source_query" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "vpc_source"
+  query_map            = local.create_db_source_map
+  std_map              = var.std_map
+}
+
+module "athena_nat_query" {
+  source               = "../../athena/named_query"
+  athena_database_map  = module.athena_db.data
+  name_prepend_default = "vpc_nat"
+  query_map            = local.create_db_nat_map
+  std_map              = var.std_map
 }

@@ -1,6 +1,7 @@
 variable "vpc_map" {
   type = map(object({
     endpoint_map = optional(map(object({
+      add_region_name      = optional(bool)
       auto_accept_enabled  = optional(bool)
       dns_record_ip_type   = optional(string)
       endpoint_segment_key = optional(string)
@@ -33,6 +34,11 @@ variable "vpc_map" {
 }
 
 {{ vpc.endpoint_map_default() }}
+
+variable "endpoint_add_region_name_default" {
+  type    = bool
+  default = true
+}
 
 variable "endpoint_auto_accept_enabled_default" {
   type    = bool

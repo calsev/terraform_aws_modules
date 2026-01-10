@@ -1,6 +1,6 @@
 variable "athena_database_map" {
   type = map(object({
-    database_id : string
+    database_id = string
   }))
 }
 

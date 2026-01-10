@@ -50,6 +50,7 @@ variable "vpc_map" {
   type = map(object({
     # Subnets can be added after creation, but not segments
     availability_zone_map_key_list      = optional(list(string))
+    dns64_enabled                       = optional(bool)
     ec2_connect_security_group_key_list = optional(list(string))
     nacl_egress_map = optional(map(object({
       action          = string
@@ -97,6 +98,12 @@ variable "vpc_availability_zone_map_key_list_default" {
   type        = list(string)
   default     = ["a", "b"]
   description = "AZs a, ... will be created for each key, mapped to these AWS AZs"
+}
+
+variable "vpc_dns64_enabled_default" {
+  type        = bool
+  default     = false
+  description = "If true, AWS resolver will return IPv6-encoded results for local IPv4 addresses. Host resolvers prefer IPv6 per RFC, so without a 64:ff9b::/96 route to a NAT this will break connections to AWS services that do not support IPv6 - this route is handled automatically here. In the absence of mitigating measures, local traffic will also traverse the NAT. Enable with caution. Ignored unless nat_gateway_enabled."
 }
 
 variable "vpc_nacl_egress_map_default" {

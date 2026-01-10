@@ -11,13 +11,21 @@ locals {
     }) if v.waf_acl_arn != null
   }
   {{ alarm.create(dimension="LoadBalancer", dim_val="aws_lb.this_lb[k].arn_suffix") }}
+  create_db_1_map = {
+    for k, v in local.lx_map : v.log_db_key => merge(v, {
+      bucket_name = v.log_db_bucket
+    })... if v.log_db_enabled
+  }
+  create_db_x_map = {
+    for k, v in local.create_db_1_map : k => v[0]
+  }
   create_db_access_map = {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.log_db_bucket
-      database_key = k
+      database_key = v.log_db_key
       # https://docs.aws.amazon.com/athena/latest/ug/application-load-balancer-logs.html
       query = <<-EOT
-      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_effective, "-", "_")}_access_logs (
+      CREATE EXTERNAL TABLE IF NOT EXISTS ${replace("${module.log_db.data[v.log_db_key].name_effective}.${v.name_effective}_access", "-", "_")} (
         type string,
         time string,
         elb string,
@@ -65,12 +73,12 @@ locals {
       LOCATION 's3://${v.log_db_bucket}/${v.log_prefix_access}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/'
       TBLPROPERTIES
       (
-        "projection.enabled" = "true",
-        "projection.day.type" = "date",
-        "projection.day.range" = "2022/01/01,NOW",
         "projection.day.format" = "yyyy/MM/dd",
         "projection.day.interval" = "1",
         "projection.day.interval.unit" = "DAYS",
+        "projection.day.range" = "2025/01/01,NOW",
+        "projection.day.type" = "date",
+        "projection.enabled" = "true",
         "storage.location.template" = "s3://${v.log_db_bucket}/${v.log_prefix_access}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/$${day}"
       )
       EOT
@@ -79,9 +87,9 @@ locals {
   create_db_connection_map = {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.log_db_bucket
-      database_key = k
+      database_key = v.log_db_key
       query        = <<-EOT
-      CREATE EXTERNAL TABLE IF NOT EXISTS elb_${replace(v.name_effective, "-", "_")}_connection_logs (
+      CREATE EXTERNAL TABLE IF NOT EXISTS ${replace("${module.log_db.data[v.log_db_key].name_effective}.${v.name_effective}_connection", "-", "_")} (
         time string,
         client_ip string,
         client_port int,
@@ -107,12 +115,12 @@ locals {
       LOCATION 's3://${v.log_db_bucket}/${v.log_prefix_connection}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/'
       TBLPROPERTIES
       (
-        "projection.enabled" = "true",
-        "projection.day.type" = "date",
-        "projection.day.range" = "2023/01/01,NOW",
         "projection.day.format" = "yyyy/MM/dd",
         "projection.day.interval" = "1",
         "projection.day.interval.unit" = "DAYS",
+        "projection.day.range" = "2025/01/01,NOW",
+        "projection.day.type" = "date",
+        "projection.enabled" = "true",
         "storage.location.template" = "s3://${v.log_db_bucket}/${v.log_prefix_connection}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/$${day}"
       )
       EOT
@@ -164,7 +172,7 @@ locals {
       load_balancer_type                          = v.load_balancer_type == null ? var.elb_load_balancer_type_default : v.load_balancer_type
       log_access_bucket                           = v.log_access_bucket == null ? var.elb_log_access_bucket_default : v.log_access_bucket
       log_connection_enabled                      = v.log_connection_enabled == null ? var.elb_log_connection_enabled_default : v.log_connection_enabled
-      log_db_enabled                              = v.log_db_enabled == null ? var.elb_log_db_enabled_default : v.log_db_enabled
+      log_db_key                                  = v.log_db_key == null ? var.elb_log_db_key_default : v.log_db_key
       preserve_host_header                        = v.preserve_host_header == null ? var.elb_preserve_host_header_default : v.preserve_host_header
       xff_header_processing_mode                  = v.xff_header_processing_mode == null ? var.elb_xff_header_processing_mode_default : v.xff_header_processing_mode
     })
@@ -177,6 +185,7 @@ locals {
       log_access_enabled                                           = v.log_access_enabled == null ? var.elb_log_access_enabled_default == null ? local.l1_map[k].load_balancer_type == "application" : var.elb_log_access_enabled_default : v.log_access_enabled
       log_connection_bucket                                        = v.log_connection_bucket == null ? var.elb_log_connection_bucket_default == null ? local.l1_map[k].log_access_bucket : var.elb_log_connection_bucket_default : v.log_connection_bucket
       log_db_bucket                                                = v.log_db_bucket == null ? var.elb_log_db_bucket_default == null ? local.l1_map[k].log_access_bucket : var.elb_log_db_bucket_default : v.log_db_bucket
+      log_db_enabled                                               = local.l1_map[k].log_db_key != null
       log_prefix_access                                            = "elb-${local.l1_map[k].name_effective}-access"
       log_prefix_connection                                        = "elb-${local.l1_map[k].name_effective}-connection"
       port_to_protocol_to_listener_map                             = v.port_to_protocol_to_listener_map == null ? var.elb_type_to_port_to_protocol_to_listener_map_default[local.l1_map[k].load_balancer_type] : v.port_to_protocol_to_listener_map
@@ -206,10 +215,9 @@ locals {
         {{ alarm.out() }}
         elb_arn_suffix             = aws_lb.this_lb[k].arn_suffix
         elb_id                     = aws_lb.this_lb[k].id
-        log_access_db              = v.log_db_enabled ? module.log_access_db.data[k] : null
         log_access_table_query     = v.log_db_enabled ? module.log_access_table_query.data[k] : null
-        log_connection_db          = v.log_db_enabled ? module.log_connection_db.data[k] : null
         log_connection_table_query = v.log_db_enabled ? module.log_connection_table_query.data[k] : null
+        log_db                     = v.log_db_enabled ? module.log_db.data[v.log_db_key] : null
         port_to_protocol_to_listener_map = {
           for k_port, v_port in v.port_to_protocol_to_listener_map : k_port => {
             for k_proto, v_proto in v_port : k_proto => merge(v_proto, module.elb_listener.data["${k}_${k_port}_${k_proto}"])

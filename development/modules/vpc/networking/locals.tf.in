@@ -128,14 +128,23 @@ locals {
       nat_enabled = local.l5_map[k].nat_instance_enabled || local.l6_map[k].nat_gateway_enabled
       segment_map = {
         for k_seg, v_seg in local.l6_map[k].segment_map : k_seg => merge(v_seg, {
-          dns_v6_enabled    = local.l1_map[k].vpc_assign_ipv6_cidr && local.l6_map[k].nat_gateway_enabled # Must have ipv6 route to NAT or dnsv6 blackholes AWS endpoint requests
+          route_nat_v6      = local.l1_map[k].vpc_assign_ipv6_cidr && local.l6_map[k].nat_gateway_enabled # Must have ipv6 route to NAT or dnsv6 blackholes AWS endpoint requests
           route_nat_gateway = local.l6_map[k].nat_gateway_enabled && !v_seg.route_public
         })
       }
     }
   }
+  l8_map = {
+    for k, v in local.l0_map : k => {
+      segment_map = {
+        for k_seg, v_seg in local.l7_map[k].segment_map : k_seg => merge(v_seg, {
+          dns64_enabled = v_seg.route_nat_v6 ? v.dns64_enabled == null ? var.vpc_dns64_enabled_default : v.dns64_enabled : false # Must have ipv6 route to NAT or dnsv6 blackholes AWS endpoint requests
+        })
+      }
+    }
+  }
   lx_map = {
-    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k], local.l7_map[k])
+    for k, v in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k], local.l3_map[k], local.l4_map[k], local.l5_map[k], local.l6_map[k], local.l7_map[k], local.l8_map[k])
   }
   nat_flattened_list = flatten([
     for k, v in local.lx_map : [
@@ -208,7 +217,7 @@ locals {
     for k, v in local.subnet_flattened_map : k => v if v.route_nat_instance
   }
   subnet_flattened_nat_ipv6_map = {
-    for k, v in local.subnet_flattened_map : k => v if v.dns_v6_enabled # Synonomous with ipv6 route because you can't have one without the other
+    for k, v in local.subnet_flattened_map : k => v if v.route_nat_v6
   }
   subnet_flattened_public_map = {
     for k, v in local.subnet_flattened_map : k => v if v.route_public

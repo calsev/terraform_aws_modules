@@ -6,8 +6,7 @@ locals {
     }
     metrics = {
       append_dimensions = {
-        AutoScalingGroupName = "$${aws:AutoScalingGroupName}"
-        InstanceId           = "$${aws:InstanceId}"
+        InstanceId = "$${aws:InstanceId}"
       }
       metrics_collected = {
         collectd = {

@@ -52,7 +52,7 @@ variable "elb_map" {
     log_connection_bucket                                        = optional(string)
     log_connection_enabled                                       = optional(bool)
     log_db_bucket                                                = optional(string)
-    log_db_enabled                                               = optional(bool)
+    log_db_key                                                   = optional(string)
     name_append                                                  = optional(string)
     name_include_app_fields                                      = optional(bool)
     name_infix                                                   = optional(bool)
@@ -272,10 +272,10 @@ variable "elb_log_db_bucket_default" {
   description = "Defaults to access log bucket"
 }
 
-variable "elb_log_db_enabled_default" {
-  type        = bool
-  default     = true
-  description = "Ignored unless a bucket is specified"
+variable "elb_log_db_key_default" {
+  type        = string
+  default     = "net_elb"
+  description = "If provided an Athena DB of this name will be created. Ignored unless a bucket is specified."
 }
 
 variable "elb_preserve_host_header_default" {
