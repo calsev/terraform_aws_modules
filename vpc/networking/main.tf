@@ -4,7 +4,7 @@ resource "aws_subnet" "this_subnet" {
   availability_zone                              = each.value.availability_zone_name
   cidr_block                                     = each.value.subnet_cidr_block
   customer_owned_ipv4_pool                       = null
-  enable_dns64                                   = each.value.dns_v6_enabled
+  enable_dns64                                   = each.value.dns64_enabled
   enable_resource_name_dns_aaaa_record_on_launch = each.value.assign_ipv6_address
   enable_resource_name_dns_a_record_on_launch    = true
   ipv6_cidr_block                                = cidrsubnet(each.value.vpc_ipv6_cidr_block, 8, each.value.cidr_block_index) # Must be /64

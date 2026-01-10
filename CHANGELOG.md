@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.131.0
+
+### General
+
+* VPC flow queries
+* DNS64 disabled by default
+* Athena cleanup for ELB, Config
+
 ## 0.130.0
 
 ### General

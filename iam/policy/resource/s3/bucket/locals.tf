@@ -1,9 +1,10 @@
 locals {
+  allow_log_delivery     = var.allow_log_elb || var.allow_log_vpc_flow || var.allow_log_waf
   bucket_arn             = startswith(var.bucket_name, "arn:") ? var.bucket_name : "arn:${var.std_map.iam_partition}:${local.service_name}:::${var.bucket_name}"
   cloud_trail_arn_prefix = "arn:${var.std_map.iam_partition}:cloudtrail:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:trail/*"
   final_policy_json      = data.aws_iam_policy_document.final_policy.json
   has_custom_policy      = length(local.sid_map) != 0
-  has_empty_policy       = !var.allow_access_point && !var.allow_config_recording && var.allow_insecure_access && !var.allow_log_cloudtrail && !var.allow_log_elb && !var.allow_log_waf && !local.has_custom_policy
+  has_empty_policy       = !var.allow_access_point && !var.allow_config_recording && var.allow_insecure_access && !var.allow_log_cloudtrail && !local.allow_log_delivery && !local.has_custom_policy
   logs_arn_prefix        = "arn:${var.std_map.iam_partition}:logs:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:*"
   log_object_prefix      = "${local.bucket_arn}/*" # AWSLogs/${var.std_map.aws_account_id}/* prevents prefixes
   service_name           = "s3"

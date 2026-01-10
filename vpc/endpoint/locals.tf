@@ -25,6 +25,7 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      add_region_name             = v.add_region_name == null ? var.endpoint_add_region_name_default : v.add_region_name
       auto_accept_enabled         = v.auto_accept_enabled == null ? var.endpoint_auto_accept_enabled_default : v.auto_accept_enabled
       endpoint_segment_key        = v.endpoint_segment_key == null ? var.endpoint_segment_key_default == null ? v.non_public_segment_list[0] : var.endpoint_segment_key_default : v.endpoint_segment_key
       endpoint_type               = v.endpoint_type == null ? var.endpoint_type_default : v.endpoint_type
@@ -46,7 +47,7 @@ locals {
       }
       iam_policy_doc                                 = local.l1_map[k].iam_policy_json == null ? null : jsondecode(local.l1_map[k].iam_policy_json)
       private_dns_for_inbound_resolver_endpoint_only = local.l1_map[k].private_dns_enabled ? v.private_dns_for_inbound_resolver_endpoint_only == null ? var.endpoint_private_dns_for_inbound_resolver_endpoint_only_default : v.private_dns_for_inbound_resolver_endpoint_only : null
-      service_name                                   = local.l1_map[k].service_name_override == null ? "com.amazonaws.${var.std_map.aws_region_name}.${local.l1_map[k].service_name_short}" : local.l1_map[k].service_name_override
+      service_name                                   = local.l1_map[k].service_name_override == null ? "com.amazonaws${local.l1_map[k].add_region_name ? ".${var.std_map.aws_region_name}" : ""}.${local.l1_map[k].service_name_short}" : local.l1_map[k].service_name_override
       vpc_az_key_list                                = length(v.endpoint_subnet_map) == 0 ? v.vpc_availability_zone_letter_list : [for k_az, _ in v.endpoint_subnet_map : k_az]
       vpc_security_group_id_list                     = [for k_sg in local.l1_map[k].vpc_security_group_key_list : v.security_group_id_map[k_sg]]
     }

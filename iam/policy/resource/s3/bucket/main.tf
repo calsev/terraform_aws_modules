@@ -192,8 +192,9 @@ data "aws_iam_policy_document" "alb_policy" {
 }
 
 data "aws_iam_policy_document" "log_delivery_policy" {
-  for_each = var.allow_log_elb || var.allow_log_waf ? { this = {} } : {}
+  for_each = local.allow_log_delivery ? { this = {} } : {}
   # See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+  # https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3-permissions.html
   # See https://docs.aws.amazon.com/waf/latest/developerguide/logging-s3.html
   statement {
     actions = ["s3:GetBucketAcl"]
@@ -260,7 +261,7 @@ data "aws_iam_policy_document" "final_policy" {
     var.allow_insecure_access ? [] : [data.aws_iam_policy_document.transport_policy["this"].json],
     var.allow_log_cloudtrail ? [data.aws_iam_policy_document.trail_policy["this"].json] : [],
     var.allow_log_elb ? [data.aws_iam_policy_document.alb_policy["this"].json] : [],
-    var.allow_log_elb || var.allow_log_waf ? [data.aws_iam_policy_document.log_delivery_policy["this"].json] : [],
+    local.allow_log_delivery ? [data.aws_iam_policy_document.log_delivery_policy["this"].json] : [],
     local.has_custom_policy ? [jsonencode(module.this_policy["this"].iam_policy_doc)] : [],
   ]))
 }

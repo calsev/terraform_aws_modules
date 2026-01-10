@@ -7,6 +7,7 @@ variable "log_map" {
     destination_type                               = optional(string)
     iam_role_arn_cloudwatch_logs                   = optional(string)
     iam_role_arn_cross_account_delivery            = optional(string)
+    log_db_key                                     = optional(string)
     log_format                                     = optional(string)
     max_aggregation_interval_seconds               = optional(number)
     name_append                                    = optional(string)
@@ -55,9 +56,15 @@ variable "log_destination_type_default" {
   }
 }
 
+variable "log_db_key_default" {
+  type        = string
+  default     = "net_flow"
+  description = "If provided an Athena DB of this name will be created. Ignored if destination_type != s3."
+}
+
 variable "log_format_default" {
   type    = string
-  default = "$${srcaddr} $${dstaddr} $${srcport} $${dstport}"
+  default = "$${version} $${account-id} $${interface-id} $${srcaddr} $${dstaddr} $${srcport} $${dstport} $${protocol} $${packets} $${bytes} $${start} $${end} $${action} $${log-status} $${pkt-srcaddr} $${pkt-dstaddr} $${pkt-src-aws-service} $${pkt-dst-aws-service} $${ecs-cluster-name} $${ecs-service-name} $${ecs-task-id} $${reject-reason}"
 }
 
 variable "log_iam_role_arn_cloudwatch_logs_default" {
@@ -85,14 +92,14 @@ variable "log_source_type_default" {
   type    = string
   default = "vpc"
   validation {
-    condition     = contains(["eni", "subnet", "transit-gateway", "transit-gateway-attachment", "vpc"], var.log_source_type_default)
+    condition     = contains(["eni", "regional-nat-gateway", "subnet", "transit-gateway", "transit-gateway-attachment", "vpc"], var.log_source_type_default)
     error_message = "Invalid source type"
   }
 }
 
 variable "log_traffic_type_default" {
   type    = string
-  default = "REJECT"
+  default = "ALL"
   validation {
     condition     = contains(["ACCEPT", "ALL", "REJECT"], var.log_traffic_type_default)
     error_message = "Invalid traffic type"
@@ -107,7 +114,7 @@ variable "name_append_default" {
 
 variable "name_include_app_fields_default" {
   type        = bool
-  default     = true
+  default     = false
   description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
 }
 

@@ -23,6 +23,11 @@ variable "allow_log_elb" {
   default = false
 }
 
+variable "allow_log_vpc_flow" {
+  type    = bool
+  default = false
+}
+
 variable "allow_log_waf" {
   type    = bool
   default = false
