@@ -110,6 +110,10 @@ tf-lint: tflint-install
 	cd ../app/log_group_retainer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/log_group_retainer/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/open_vpn_service && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/open_vpn_service/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/open_vpn_service/app/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/open_vpn_service/app/spec && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/reserved_instance_purchaser && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/reserved_instance_purchaser/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/vanta_vulnerability_accepter && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
