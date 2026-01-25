@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.132.0
+
+### General
+
+* Backup S3 permissions
+* Cognito client variable validation
+
 ## 0.131.0
 
 ### General

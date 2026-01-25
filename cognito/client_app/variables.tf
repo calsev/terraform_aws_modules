@@ -53,6 +53,10 @@ variable "client_explicit_auth_flow_list_default" {
     "ALLOW_USER_PASSWORD_AUTH",
     "ALLOW_USER_SRP_AUTH",
   ]
+  validation {
+    condition     = length(setsubtract(toset(var.client_explicit_auth_flow_list_default), toset(["ADMIN_NO_SRP_AUTH", "ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_CUSTOM_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_USER_AUTH", "CUSTOM_AUTH_FLOW_ONLY", "USER_PASSWORD_AUTH"]))) == 0
+    error_message = "Invalid auth flows"
+  }
 }
 
 variable "client_generate_secret_default" {
@@ -69,6 +73,10 @@ variable "client_logout_url_list_default" {
 variable "client_oath_flow_allowed_list_default" {
   type    = list(string)
   default = ["code", "implicit"]
+  validation {
+    condition     = length(setsubtract(toset(var.client_oath_flow_allowed_list_default), toset(["client_credentials", "code", "implicit"]))) == 0
+    error_message = "Invalid auth flows"
+  }
 }
 
 variable "client_oath_flow_enabled_default" {
@@ -123,7 +131,7 @@ variable "client_supported_identity_provider_list_default" {
 
 variable "client_write_attribute_list_default" {
   type    = list(string)
-  default = null
+  default = []
 }
 
 variable "name_append_default" {

@@ -140,7 +140,10 @@ module "pool_client" {
   client_access_token_validity_minutes_default  = var.client_access_token_validity_minutes_default
   client_auth_session_validity_minutes_default  = var.client_auth_session_validity_minutes_default
   client_explicit_auth_flow_list_default        = var.client_explicit_auth_flow_list_default
+  client_generate_secret_default                = var.client_generate_secret_default
   client_id_token_validity_minutes_default      = var.client_id_token_validity_minutes_default
+  client_logout_url_list_default                = var.client_logout_url_list_default
+  client_oath_flow_allowed_list_default         = var.client_oath_flow_allowed_list_default
   client_refresh_token_rotation_enabled_default = var.client_refresh_token_rotation_enabled_default
   client_refresh_token_validity_hours_default   = var.client_refresh_token_validity_hours_default
   pool_map                                      = local.create_client_map
