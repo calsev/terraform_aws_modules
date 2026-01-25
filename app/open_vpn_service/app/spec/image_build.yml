@@ -1,0 +1,9 @@
+# This file is managed with Terraform!
+version: 0.2
+phases:
+  install:
+    commands:
+      - cd ${path_repo_root_to_app_directory}
+  build:
+    commands:
+      - make docker-build-remote
