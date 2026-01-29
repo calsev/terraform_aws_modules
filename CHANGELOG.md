@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.133.0
+
+### General
+
+* Secret policy takes optional list of names
+
 ## 0.132.0
 
 ### General
