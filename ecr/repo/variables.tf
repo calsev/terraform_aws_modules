@@ -69,12 +69,10 @@ variable "policy_name_prefix_default" {
 
 variable "repo_map" {
   type = map(object({
-    base_image          = optional(string) # For Setting up a mirror repo
-    iam_policy_json     = optional(string)
-    image_tag_list      = optional(list(string))
-    image_tag_max_count = optional(number)
-    lifecycle_rule_list = optional(list(object({
-      rulePriority = number
+    base_image            = optional(string) # For Setting up a mirror repo
+    iam_policy_json       = optional(string)
+    image_tag_mirror_list = optional(list(string))
+    lifecycle_rule_map = optional(map(object({
       selection = object({
         countNumber = number
         countType   = string
@@ -86,6 +84,10 @@ variable "repo_map" {
       })
       }
     )))
+    lifecycle_tag_map = optional(map(object({
+      tag_max_count    = number
+      tag_pattern_list = list(string)
+    })))
     name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
@@ -104,20 +106,14 @@ variable "repo_iam_policy_json_default" {
   description = "This policy will override the base policy with SIDs: LambdaGetImage"
 }
 
-variable "repo_image_tag_list_default" {
+variable "repo_image_tag_mirror_list_default" {
   type        = list(string)
   default     = ["latest"]
   description = "These tags will be duplicated from the base image, if both exist"
 }
 
-variable "repo_image_tag_max_count_default" {
-  type    = number
-  default = 1
-}
-
-variable "repo_lifecycle_rule_list_default" {
-  type = list(object({
-    rulePriority = number
+variable "repo_lifecycle_rule_map_default" {
+  type = map(object({
     selection = object({
       countNumber = number
       countType   = string
@@ -129,9 +125,8 @@ variable "repo_lifecycle_rule_list_default" {
     })
     }
   ))
-  default = [
-    {
-      rulePriority = 1
+  default = {
+    1 = {
       selection = {
         countNumber = 7
         countType   = "sinceImagePushed"
@@ -141,8 +136,21 @@ variable "repo_lifecycle_rule_list_default" {
       action = {
         type = "expire"
       }
-    },
-  ]
+    }
+  }
+}
+
+variable "repo_lifecycle_tag_map_default" {
+  type = map(object({
+    tag_max_count    = number
+    tag_pattern_list = list(string)
+  }))
+  default = {
+    2 = {
+      tag_max_count    = 9
+      tag_pattern_list = ["*"]
+    }
+  }
 }
 
 variable "std_map" {

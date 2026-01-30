@@ -4,22 +4,18 @@ locals {
     # See https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
     batch = {
       compute-environment = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       job = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "CancelJob",
           "TagResource",
@@ -27,11 +23,9 @@ locals {
         ]
       }
       job-definition = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "SubmitJob",
           "TagResource",
@@ -40,11 +34,9 @@ locals {
         ]
       }
       job-queue = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "SubmitJob",
           "TagResource",
@@ -53,7 +45,6 @@ locals {
       }
       #scheduling-policy
       star = {
-        public_read = []
         read = [
           "DescribeComputeEnvironments",
           "DescribeJobDefinitions",
@@ -61,14 +52,12 @@ locals {
           "DescribeJobs",
           "ListJobs",
         ]
-        public_write = []
         write = [
         ]
       }
     }
     bedrock = {
       agent = {
-        public_read = []
         read = [
           "GetAgent",
           "GetAgentActionGroup",
@@ -80,20 +69,17 @@ locals {
           "ListAgentVersions",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       agent-alias = {
-        public_read = []
         read = [
           "GetAgentAlias",
           "GetAgentMemory",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "InvokeAgent",
           "TagResource",
@@ -101,12 +87,10 @@ locals {
         ]
       }
       application-inference-profile = {
-        public_read = []
         read = [
           "GetInferenceProfile",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "InvokeModel",
           "InvokeModelWithResponseStream",
@@ -115,12 +99,10 @@ locals {
         ]
       }
       custom-model = {
-        public_read = []
         read = [
           "GetCustomModel",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "CreateEvaluationJob",
           "CreateModelCustomizationJob",
@@ -131,12 +113,10 @@ locals {
         ]
       }
       evaluation-job = {
-        public_read = []
         read = [
           "GetEvaluationJob",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "StopEvaluationJob",
           "TagResource",
@@ -144,11 +124,9 @@ locals {
         ]
       }
       foundation-model = {
-        public_read = []
         read = [
           "GetFoundationModel",
         ]
-        public_write = []
         write = [
           "CreateEvaluationJob",
           "CreateModelCustomizationJob",
@@ -160,18 +138,15 @@ locals {
         ]
       }
       inference-profile = {
-        public_read = []
         read = [
           "GetInferenceProfile",
         ]
-        public_write = []
         write = [
           "InvokeModel",
           "InvokeModelWithResponseStream",
         ]
       }
       knowledge-base = {
-        public_read = []
         read = [
           "GetAgentKnowledgeBase",
           "GetDataSource",
@@ -184,7 +159,6 @@ locals {
           "ListTagsForResource",
           "Retrieve",
         ]
-        public_write = []
         write = [
           "AssociateAgentKnowledgeBase",
           "CreateDataSource",
@@ -203,12 +177,10 @@ locals {
         ]
       }
       model-customization-job = {
-        public_read = []
         read = [
           "GetModelCustomizationJob",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "StopModelCustomizationJob",
           "TagResource",
@@ -216,24 +188,20 @@ locals {
         ]
       }
       model-evaluation-job = {
-        public_read = []
         read = [
           "GetModelEvaluationJob",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       model-invocation-job = {
-        public_read = []
         read = [
           "GetModelInvocationJob",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "StopModelInvocationJob",
           "TagResource",
@@ -241,11 +209,9 @@ locals {
         ]
       }
       provisioned-model = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "InvokeModel",
           "InvokeModelWithResponseStream",
@@ -254,12 +220,10 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "ListAgents",
           "ListKnowledgeBases",
         ]
-        public_write = []
         write = [
           "CreateKnowledgeBase",
         ]
@@ -267,13 +231,11 @@ locals {
     }
     cloudfront = {
       distribution = {
-        public_read = []
         read = [
           "GetDistribution",
           "GetInvalidation",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "CreateInvalidation",
           "ListInvalidations",
@@ -282,17 +244,14 @@ locals {
         ]
       }
       function = {
-        public_read = []
         read = [
           "DescribeFunction",
         ]
-        public_write = []
         write = [
           "TestFunction",
         ]
       }
       star = {
-        public_read = []
         read = [
           "GetPublicKey",
           "ListDistributions",
@@ -300,17 +259,14 @@ locals {
           "ListPublicKeys",
           "ListStreamingDistributions",
         ]
-        public_write = []
         write = [
         ]
       }
       streaming-distribution = {
-        public_read = []
         read = [
           "GetStreamingDistribution",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
@@ -319,7 +275,6 @@ locals {
     }
     codebuild = {
       project = {
-        public_read = []
         read = [
           "BatchGetBuildBatches",
           "BatchGetBuilds",
@@ -327,7 +282,6 @@ locals {
           "ListBuildBatchesForProject",
           "ListBuildsForProject",
         ]
-        public_write = []
         write = [
           "BatchDeleteBuilds",
           "DeleteBuildBatch",
@@ -341,7 +295,6 @@ locals {
         ]
       }
       report_group = {
-        public_read = []
         read = [
           "BatchGetReportGroups",
           "BatchGetReports",
@@ -350,7 +303,6 @@ locals {
           "GetReportGroupTrend",
           "ListReportsForReportGroup",
         ]
-        public_write = []
         write = [
           "BatchPutCodeCoverages",
           "BatchPutTestCases",
@@ -363,7 +315,6 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "ListBuildBatches",
           "ListBuilds",
@@ -373,13 +324,10 @@ locals {
           "ListSharedProjects",
           "ListSharedReportGroups",
         ]
-        public_write = []
-        write        = []
       }
     }
     codedeploy = {
       application = {
-        public_read = []
         read = [
           "BatchGetApplicationRevisions",
           "BatchGetApplications",
@@ -389,7 +337,6 @@ locals {
           "ListDeploymentGroups",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "RegisterApplicationRevision",
           "TagResource",
@@ -397,15 +344,11 @@ locals {
         ]
       }
       deploymentconfig = {
-        public_read = []
         read = [
           "GetDeploymentConfig",
         ]
-        public_write = []
-        write        = []
       }
       deploymentgroup = {
-        public_read = []
         read = [
           "BatchGetDeploymentGroups",
           "BatchGetDeploymentInstances",
@@ -417,7 +360,6 @@ locals {
           "ListDeployments",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "CreateDeployment",
           "TagResource",
@@ -425,12 +367,10 @@ locals {
         ]
       }
       instance = {
-        public_read = []
         read = [
           "BatchGetOnPremisesInstances",
           "GetOnPremisesInstance",
         ]
-        public_write = []
         write = [
           "AddTagsToOnPremisesInstances",
           "RegisterOnPremisesInstance",
@@ -438,7 +378,6 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "BatchGetDeploymentTargets",
           "GetDeploymentTarget",
@@ -448,7 +387,6 @@ locals {
           # "ListGitHubAccountTokenNames",
           "ListOnPremisesInstances",
         ]
-        public_write = []
         write = [
           "ContinueDeployment",
           "CreateCloudFormationDeployment",
@@ -460,32 +398,25 @@ locals {
     }
     codestar-connections = {
       connection = {
-        public_read = []
         read = [
           "GetConnection",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "PassConnection",
           "UseConnection",
         ]
       }
       host = {
-        public_read = []
         read = [
           "GetHost",
         ]
-        public_write = []
-        write        = []
       }
       star = {
-        public_read = []
         read = [
           "ListConnections",
           "ListHosts",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
@@ -494,53 +425,37 @@ locals {
     }
     dynamodb = {
       global-table = {
-        public_read = []
         read = [
           "DescribeGlobalTable",
         ]
-        public_write = []
-        write        = []
       }
       import = {
-        public_read = []
         read = [
           "DescribeImport",
         ]
-        public_write = []
-        write        = []
       }
       index = {
-        public_read = []
         read = [
           "PartiQLInsert",
           "Query",
           "Scan",
         ]
-        public_write = []
-        write        = []
       }
       star = {
-        public_read = []
         read = [
           "DescribeEndpoints",
           "ListGlobalTables",
           "ListStreams",
           "ListTables",
         ]
-        public_write = []
-        write        = []
       }
       stream = {
-        public_read = []
         read = [
           "GetRecords",
           "GetShardIterator",
         ]
-        public_write = []
-        write        = []
       }
       table = {
-        public_read = []
         read = [
           "BatchGetItem",
           "ConditionCheckItem",
@@ -551,7 +466,6 @@ locals {
           "Query",
           "Scan",
         ]
-        public_write = []
         write = [
           "BatchWriteItem",
           "DeleteItem",
@@ -570,7 +484,6 @@ locals {
     }
     ecr = {
       repo = {
-        public_read = []
         read = [
           "BatchCheckLayerAvailability",
           "BatchGetImage",
@@ -579,7 +492,6 @@ locals {
           "ListImages",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "BatchDeleteImage",
           "BatchImportUpstreamImage",
@@ -593,12 +505,10 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "DescribeRepositories",
           "GetAuthorizationToken",
         ]
-        public_write = []
         write = [
           "GetAuthorizationToken",
         ]
@@ -606,23 +516,19 @@ locals {
     }
     ecs = {
       capacity-provider = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       cluster = {
-        public_read = []
         read = [
           "ListContainerInstances",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "DeregisterContainerInstance",
           "RegisterContainerInstance",
@@ -631,12 +537,10 @@ locals {
         ]
       }
       container-instance = {
-        public_read = []
         read = [
           "ListTagsForResource",
           "ListTasks",
         ]
-        public_write = []
         write = [
           "StartTelemetrySession",
           "TagResource",
@@ -644,11 +548,9 @@ locals {
         ]
       }
       service = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
@@ -657,19 +559,15 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
         ]
-        public_write = []
         write = [
         ]
       }
       task = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "StopTask",
           "TagResource",
@@ -677,11 +575,9 @@ locals {
         ]
       }
       task-definition = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "RunTask",
           "StartTask",
@@ -690,11 +586,9 @@ locals {
         ]
       }
       task-set = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
@@ -704,19 +598,16 @@ locals {
     }
     elasticfilesystem = {
       access-point = {
-        public_read = []
         read = [
           "DescribeAccessPoints",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       file-system = {
-        public_read = []
         read = [
           "ClientMount",
           "DescribeFileSystems",
@@ -724,7 +615,6 @@ locals {
           "DescribeTags",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "ClientRootAccess", # Needed to delete files owned by root
           "ClientWrite",
@@ -736,20 +626,16 @@ locals {
     }
     events = {
       api-destination = {
-        public_read = []
         read = [
         ]
-        public_write = []
         write = [
           "InvokeApiDestination",
         ]
       }
       event-bus = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "PutEvents",
           "TagResource",
@@ -757,31 +643,24 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "ListApiDestinations",
           "ListEventBuses",
         ]
-        public_write = []
         write = [
         ]
       }
     }
     kms = {
       alias = {
-        public_read  = []
-        read         = []
-        public_write = []
-        write        = []
+        # Only management actions
       }
       key = {
-        public_read = []
         read = [
           "DescribeKey", # Required for encryption
           "GetPublicKey",
           "ListResourceTags",
         ]
-        public_write = []
         write = [
           "Decrypt",
           "Encrypt",
@@ -797,12 +676,10 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "ListAliases",
           "ListKeys",
         ]
-        public_write = []
         write = [
           "GenerateRandom",
         ]
@@ -810,11 +687,9 @@ locals {
     }
     lambda = {
       function = {
-        public_read = []
         read = [
           "ListTags",
         ]
-        public_write = []
         write = [
           "InvokeFunction",
           "InvokeFunctionUrl",
@@ -823,11 +698,9 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "ListFunctions",
         ]
-        public_write = []
         write = [
         ]
       }
@@ -846,7 +719,6 @@ locals {
           "ListTagsLogGroup",
           "StartQuery",
         ]
-        public_write = []
         write = [
           # CreateLogGroup expressly not allowed: do not let services create goofy groups
           "TagLogGroup",
@@ -859,8 +731,6 @@ locals {
         public_read = [
           "GetLogEvents",
         ]
-        read         = []
-        public_write = []
         write = [
           "CreateLogStream", # Listed incorrectly in docs
           "DeleteLogStream",
@@ -868,22 +738,16 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "DescribeLogGroups",
           "DescribeQueryDefinitions",
           "DescribeQueries",
           "StopQuery",
         ]
-        public_write = []
-        write        = []
       }
     }
     mobileanalytics = {
       star = {
-        public_read  = []
-        read         = []
-        public_write = []
         write = [
           "PutEvents",
         ]
@@ -955,13 +819,11 @@ locals {
     }
     secretsmanager = {
       secret = {
-        public_read = []
         read = [
           "DescribeSecret",
           "GetSecretValue",
           "ListSecretVersionIds",
         ]
-        public_write = []
         write = [
           "CancelRotateSecret",
           "PutSecretValue",
@@ -973,23 +835,18 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           # "BatchGetSecretValue",
           "GetRandomPassword",
           "ListSecrets",
         ]
-        public_write = []
-        write        = []
       }
     }
     sns = {
       topic = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "Publish",
           "TagResource",
@@ -999,41 +856,27 @@ locals {
     }
     sqs = {
       queue = {
-        public_read = []
-        read = [
+        pull = [
+          "ChangeMessageVisibility",
+          "DeleteMessage",
           "GetQueueAttributes",
           "GetQueueUrl",
-          "ListQueueTags",
-        ]
-        public_write = []
-        write = [
-          "DeleteMessage",
-          "PurgeQueue",
           "ReceiveMessage",
+        ]
+        push = [
+          "GetQueueUrl",
           "SendMessage",
-          "TagQueue",
-          "UntagQueue",
         ]
-      }
-      star = {
-        public_read = []
-        read = [
-          "ListQueues",
-        ]
-        public_write = []
-        write        = []
       }
     }
     ssm = {
       parameter = {
-        public_read = []
         read = [
           "GetParameter",
           "GetParameters",
           "GetParametersByPath",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "AddTagsToResource",
           "LabelParameterVersion",
@@ -1042,22 +885,17 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "DescribeParameters",
         ]
-        public_write = []
-        write        = []
       }
     }
     states = {
       activity = {
-        public_read = []
         read = [
           "DescribeActivity",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           #"CreateActivity",
           #"DeleteActivity",
@@ -1067,25 +905,21 @@ locals {
         ]
       }
       execution = {
-        public_read = []
         read = [
           "DescribeExecution",
           "DescribeStateMachineForExecution",
           "GetExecutionHistory",
         ]
-        public_write = []
         write = [
           "StopExecution",
         ]
       }
       state_machine = {
-        public_read = []
         read = [
           "DescribeStateMachine",
           "ListExecutions",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           #"CreateStateMachine",
           #"DeleteStateMachine",
@@ -1097,12 +931,10 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "ListActivities",
           "ListStateMachines",
         ]
-        public_write = []
         write = [
           "SendTaskFailure",
           "SendTaskHeartbeat",
@@ -1112,12 +944,10 @@ locals {
     }
     textract = {
       adapter = {
-        public_read = []
         read = [
           "GetAdapter",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           #"CreateAdapterVersion",
           #"DeleteAdapter",
@@ -1127,12 +957,10 @@ locals {
         ]
       }
       adapterversion = {
-        public_read = []
         read = [
           "GetAdapterVersion",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           #"DeleteAdapterVersion",
           "TagResource",
@@ -1140,7 +968,6 @@ locals {
         ]
       }
       star = {
-        public_read = []
         read = [
           "AnalyzeDocument",
           "AnalyzeExpense",
@@ -1154,7 +981,6 @@ locals {
           "ListAdapterVersions",
           "ListAdapters",
         ]
-        public_write = []
         write = [
           #"CreateAdapter",
           "StartDocumentAnalysis",
@@ -1166,30 +992,25 @@ locals {
     }
     xray = {
       group = {
-        public_read = []
         read = [
           "GetGroup",
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       sampling_rule = {
-        public_read = []
         read = [
           "ListTagsForResource",
         ]
-        public_write = []
         write = [
           "TagResource",
           "UntagResource",
         ]
       }
       star = {
-        public_read = []
         read = [
           "BatchGetTraces",
           "GetGroups",
@@ -1205,7 +1026,6 @@ locals {
           "GetTraceGraph",
           "GetTraceSummaries",
         ]
-        public_write = []
         write = [
           "PutTelemetryRecords",
           "PutTraceSegments",

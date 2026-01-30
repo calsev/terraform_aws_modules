@@ -5,7 +5,7 @@ variable "alert_level_default" {
 
 {{ name.var() }}
 
-{{ iam.policy_var_ar(access=["read", "write"], append="queue") }}
+{{ iam.policy_var_ar(access=["pull", "push"], append="queue") }}
 
 variable "monitor_data" {
   type = object({

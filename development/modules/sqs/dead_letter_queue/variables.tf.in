@@ -1,6 +1,6 @@
 {{ name.var(append="dead_letter") }}
 
-{{ iam.policy_var_ar(access=["read", "write"], append="queue") }}
+{{ iam.policy_var_ar(access=["pull", "push"], append="queue") }}
 
 variable "monitor_data" {
   type = object({

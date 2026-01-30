@@ -60,8 +60,8 @@ variable "policy_map" {
 variable "policy_access_list_default" {
   type = list(string)
   default = [
-    "read",
-    "write",
+    "pull",
+    "push",
   ]
 }
 

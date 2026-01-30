@@ -8,6 +8,6 @@ variable "policy_map" {
   }))
 }
 
-{{ iam.policy_var_ar(access=["read", "write"], append="queue") }}
+{{ iam.policy_var_ar(access=["pull", "push"], append="queue") }}
 
 {{ std.map() }}
