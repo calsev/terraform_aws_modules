@@ -51,7 +51,7 @@ locals {
   source_account_condition = {
     test       = "StringEquals"
     value_list = [var.std_map.aws_account_id]
-    variable   = "AWS:SourceAccount" # SourceOwner does not work
+    variable   = "aws:SourceAccount" # SourceOwner does not work
   }
   subscription_flattened_list = flatten([
     for k, v in local.subscription_map : [

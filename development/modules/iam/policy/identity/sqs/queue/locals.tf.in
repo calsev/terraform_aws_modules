@@ -11,7 +11,6 @@ locals {
     for k, v in local.l0_map : k => {
       resource_map = {
         queue = [local.l1_map[k].queue_arn]
-        star  = ["*"]
       }
     }
   }

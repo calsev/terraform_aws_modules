@@ -11,7 +11,7 @@ module "resource_policy" {
           value_list = [
             "arn:${var.std_map.iam_partition}:events:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:rule/*",
           ]
-          variable = "AWS:SourceArn"
+          variable = "aws:SourceArn"
         }
       }
       identifier_list = ["events.amazonaws.com"]

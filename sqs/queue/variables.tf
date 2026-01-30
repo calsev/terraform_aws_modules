@@ -49,8 +49,8 @@ variable "name_suffix_default" {
 variable "policy_access_list_default" {
   type = list(string)
   default = [
-    "read",
-    "write",
+    "pull",
+    "push",
   ]
 }
 

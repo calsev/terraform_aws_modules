@@ -25,7 +25,7 @@ module "function_role" {
     }
     queue_dead_letter_write = {
       condition = each.value.dead_letter_queue_enabled
-      policy    = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.key].policy_map["write"].iam_policy_arn : null
+      policy    = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.key].policy_map["push"].iam_policy_arn : null
     }
     vpc_networking = {
       condition = each.value.vpc_key != null

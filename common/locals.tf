@@ -1,10 +1,12 @@
 locals {
   access_title_map = {
     public_read       = "PublicRead"
-    read              = "Read"
     public_read_write = "PublicReadWrite"
-    read_write        = "ReadWrite"
     public_write      = "PublicWrite"
+    pull              = "Pull"
+    push              = "Push"
+    read              = "Read"
+    read_write        = "ReadWrite"
     write             = "Write"
   }
   aws_region_abbreviation = local.aws_region_to_abbrev[var.std_var.aws_region_name]
@@ -45,12 +47,14 @@ locals {
   service_resource_access_action = {
     for k_service, resource_map in local.service_resource_access_action_raw : k_service => {
       for k_resource, action_map in resource_map : k_resource => {
-        public_read       = [for action in action_map.public_read : "${k_service}:${action}"]
-        read              = [for action in distinct(concat(action_map.public_read, action_map.read)) : "${k_service}:${action}"]
-        public_read_write = [for action in distinct(concat(action_map.public_read, action_map.public_write)) : "${k_service}:${action}"]
-        read_write        = [for action in distinct(concat(action_map.public_read, action_map.read, action_map.public_write, action_map.write)) : "${k_service}:${action}"]
-        public_write      = [for action in action_map.public_write : "${k_service}:${action}"]
-        write             = [for action in distinct(concat(action_map.public_write, action_map.write)) : "${k_service}:${action}"]
+        public_read       = [for action in lookup(action_map, "public_read", []) : "${k_service}:${action}"]
+        public_read_write = [for action in distinct(concat(lookup(action_map, "public_read", []), lookup(action_map, "public_write", []))) : "${k_service}:${action}"]
+        public_write      = [for action in lookup(action_map, "public_write", []) : "${k_service}:${action}"]
+        pull              = [for action in lookup(action_map, "pull", []) : "${k_service}:${action}"]
+        push              = [for action in lookup(action_map, "push", []) : "${k_service}:${action}"]
+        read              = [for action in distinct(concat(lookup(action_map, "public_read", []), lookup(action_map, "read", []))) : "${k_service}:${action}"]
+        read_write        = [for action in distinct(concat(lookup(action_map, "public_read", []), lookup(action_map, "read", []), lookup(action_map, "public_write", []), lookup(action_map, "write", []))) : "${k_service}:${action}"]
+        write             = [for action in distinct(concat(lookup(action_map, "public_write", []), lookup(action_map, "write", []))) : "${k_service}:${action}"]
       }
     }
   }

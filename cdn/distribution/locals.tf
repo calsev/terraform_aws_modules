@@ -30,7 +30,7 @@ locals {
               cloudfront_distribution = {
                 test       = "StringEquals"
                 value_list = [aws_cloudfront_distribution.this_distribution[k].arn]
-                variable   = "AWS:SourceArn"
+                variable   = "aws:SourceArn"
               }
             }
             identifier_list = ["cloudfront.amazonaws.com"]

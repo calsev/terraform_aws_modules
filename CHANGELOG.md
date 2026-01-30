@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.134.0
+
+### General
+
+* New permission levels pull/push
+* Expressiveness of ECR repo policy parameters
+* SQS permissions adapted to pull/push
+* SQS permissions removed PurgeQueue
+
+### Bugfix
+
+* Capitalization for some policy condition variables
+
 ## 0.133.0
 
 ### General

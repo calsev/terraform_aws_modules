@@ -26,6 +26,11 @@ data "aws_iam_policy_document" "base_policy" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
     ]
+    condition {
+      test     = "StringLike"
+      values   = ["arn:${var.std_map.iam_partition}:lambda:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:function:*"]
+      variable = "aws:SourceArn"
+    }
     principals {
       identifiers = ["lambda.amazonaws.com"]
       type        = "Service"

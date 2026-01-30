@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "config_policy" {
     condition {
       test     = "StringEquals"
       values   = [var.std_map.aws_account_id]
-      variable = "AWS:SourceAccount"
+      variable = "aws:SourceAccount"
     }
     principals {
       identifiers = ["config.amazonaws.com"]
@@ -102,7 +102,7 @@ data "aws_iam_policy_document" "config_policy" {
     condition {
       test     = "StringEquals"
       values   = [var.std_map.aws_account_id]
-      variable = "AWS:SourceAccount"
+      variable = "aws:SourceAccount"
     }
     principals {
       identifiers = ["config.amazonaws.com"]
@@ -116,7 +116,7 @@ data "aws_iam_policy_document" "config_policy" {
     condition {
       test     = "StringEquals"
       values   = [var.std_map.aws_account_id]
-      variable = "AWS:SourceAccount"
+      variable = "aws:SourceAccount"
     }
     condition {
       test     = "StringEquals"
@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "trail_policy" {
     condition {
       test     = "StringLike"
       values   = [local.cloud_trail_arn_prefix]
-      variable = "AWS:SourceArn"
+      variable = "aws:SourceArn"
     }
     principals {
       identifiers = ["cloudtrail.amazonaws.com"]
@@ -162,7 +162,7 @@ data "aws_iam_policy_document" "trail_policy" {
     condition {
       test     = "StringLike"
       values   = [local.cloud_trail_arn_prefix]
-      variable = "AWS:SourceArn"
+      variable = "aws:SourceArn"
     }
     principals {
       identifiers = ["cloudtrail.amazonaws.com"]
@@ -201,12 +201,12 @@ data "aws_iam_policy_document" "log_delivery_policy" {
     condition {
       test     = "ArnLike"
       values   = [local.logs_arn_prefix]
-      variable = "AWS:SourceArn"
+      variable = "aws:SourceArn"
     }
     condition {
       test     = "StringEquals"
       values   = [var.std_map.aws_account_id]
-      variable = "AWS:SourceAccount"
+      variable = "aws:SourceAccount"
     }
     principals {
       identifiers = ["delivery.logs.amazonaws.com"]
@@ -222,12 +222,12 @@ data "aws_iam_policy_document" "log_delivery_policy" {
     condition {
       test     = "ArnLike"
       values   = [local.logs_arn_prefix]
-      variable = "AWS:SourceArn"
+      variable = "aws:SourceArn"
     }
     condition {
       test     = "StringEquals"
       values   = [var.std_map.aws_account_id]
-      variable = "AWS:SourceAccount"
+      variable = "aws:SourceAccount"
     }
     condition {
       test     = "StringEquals"
