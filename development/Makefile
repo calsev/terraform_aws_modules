@@ -268,6 +268,8 @@ tf-lint: tflint-install
 	cd ../iam/policy/identity/efs && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/event && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/event/bus && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/glue && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/policy/identity/glue/job && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/kms && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/kms/key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/policy/identity/lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

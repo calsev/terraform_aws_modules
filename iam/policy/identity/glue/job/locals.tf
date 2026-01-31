@@ -1,0 +1,33 @@
+locals {
+  l0_map = {
+    for k, v in var.policy_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, {
+      job_arn_list = [
+        for job_name in v.job_name_list : startswith(job_name, "arn:") ? job_name : "arn:${var.std_map.iam_partition}:glue:${var.std_map.aws_region_name}:${var.std_map.aws_account_id}:job/${job_name}"
+      ]
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+      resource_map = {
+        job  = local.l1_map[k].job_arn_list
+        star = ["*"]
+      }
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
+      },
+      module.this_policy.data[k],
+      {
+      }
+    )
+  }
+}
