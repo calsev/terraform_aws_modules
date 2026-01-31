@@ -1,0 +1,15 @@
+module "job_role" {
+  source                   = "../../iam/role/base"
+  for_each                 = local.lx_map
+  assume_role_service_list = ["glue"]
+  embedded_role_policy_managed_name_map = {
+    service = {
+      policy    = "service-role/AWSGlueServiceRole"
+    }
+  }
+  map_policy               = each.value
+  name                     = each.key
+  name_prepend_default     = "glue"
+  {{ iam.role_map_item() }}
+  std_map                  = var.std_map
+}
