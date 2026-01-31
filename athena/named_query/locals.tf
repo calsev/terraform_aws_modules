@@ -18,6 +18,7 @@ locals {
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       database_key = v.database_key == null ? var.query_database_key_default : v.database_key
+      query        = replace(replace(v.query, "\r\n", "\n"), "\r", "\n")
       workgroup_id = v.workgroup_id == null ? var.query_workgroup_id_default : v.workgroup_id
     })
   }

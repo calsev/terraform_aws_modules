@@ -7,6 +7,7 @@ locals {
           name      = replace(k_sg, var.std_map.name_replace_regex, "-")
           rule_map = {
             for k_rule, v_rule in v_sg.rule_map : replace(k_rule, var.std_map.name_replace_regex, "-") => merge(v_rule, {
+              has_source  = v_rule.source_is_self != null || v_rule.source_security_group_id != null
               k_rule_full = replace("${k_vpc}-${k_sg}-${k_rule}", var.std_map.name_replace_regex, "-")
             })
           }
@@ -19,6 +20,12 @@ locals {
       security_group_map = {
         for k_sg, v_sg in local.l1_map[k_vpc].security_group_map : k_sg => merge(v_sg, {
           name_context = "${var.std_map.resource_name_prefix}${local.l1_map[k_vpc].name_simple}-${v_sg.name}${var.std_map.resource_name_suffix}"
+          rule_map = {
+            for k_rule, v_rule in v_sg.rule_map : k_rule => merge(v_rule, {
+              cidr_blocks      = v_rule.has_source ? null : v_rule.cidr_blocks
+              ipv6_cidr_blocks = v_rule.has_source ? null : v_rule.ipv6_cidr_blocks
+            })
+          }
         })
       }
     }

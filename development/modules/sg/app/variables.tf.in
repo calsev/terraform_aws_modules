@@ -1,45 +1,52 @@
 variable "cidr_blocks_internal" {
   type        = list(string)
   default     = ["10.0.0.0/8"]
-  description = "Set null to disable internal security groups"
+  description = "Set null to disable internal security groups. Ignored for any rule with source specified."
 }
 
 variable "cidr_blocks_internal_ipv6" {
   type        = list(string)
   default     = null
-  description = "Defaults to IPV6 CIDR blocks of all VPCs. Set to empty list to bootstrap a new VPC."
+  description = "Defaults to IPV6 CIDR blocks of all VPCs. Set to empty list to bootstrap a new VPC. Ignored for any rule with source specified."
 }
 
 variable "cidr_blocks_public" {
-  type    = list(string)
-  default = ["0.0.0.0/0"]
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "Ignored for any rule with source specified."
 }
 
 variable "cidr_blocks_public_ipv6" {
-  type    = list(string)
-  default = ["::/0"]
+  type        = list(string)
+  default     = ["::/0"]
+  description = "Ignored for any rule with source specified."
 }
 
 variable "cidr_blocks_private" {
   type        = list(string)
-  default     = null
-  description = "Set null to disable private security groups"
+  default     = []
+  description = "Set null to disable private security groups. Ignored for any rule with source specified."
 }
 
 variable "cidr_blocks_private_ipv6" {
-  type    = list(string)
-  default = null
+  type        = list(string)
+  default     = null
+  description = "Ignored for any rule with source specified."
 }
 
 variable "sg_map_internal" {
   type = map(object({
+    revoke_rules_on_delete = optional(bool, false)
     rule_map = map(object({
-      cidr_blocks      = optional(list(string))
-      from_port        = optional(number)
-      ipv6_cidr_blocks = optional(list(string))
-      protocol         = optional(string)
-      to_port          = optional(number)
-      type             = optional(string)
+      cidr_blocks              = optional(list(string))
+      from_port                = optional(number)
+      ipv6_cidr_blocks         = optional(list(string))
+      prefix_id_list           = optional(list(string), null)
+      protocol                 = optional(string)
+      to_port                  = optional(number)
+      source_is_self           = optional(bool, null)
+      source_security_group_id = optional(string, null)
+      type                     = optional(string)
     }))
   }))
   default     = {}
@@ -48,13 +55,17 @@ variable "sg_map_internal" {
 
 variable "sg_map_public" {
   type = map(object({
+    revoke_rules_on_delete = optional(bool, false)
     rule_map = map(object({
-      cidr_blocks      = optional(list(string))
-      from_port        = optional(number)
-      ipv6_cidr_blocks = optional(list(string))
-      protocol         = optional(string)
-      to_port          = optional(number)
-      type             = optional(string)
+      cidr_blocks              = optional(list(string))
+      from_port                = optional(number)
+      ipv6_cidr_blocks         = optional(list(string))
+      prefix_id_list           = optional(list(string), null)
+      protocol                 = optional(string)
+      to_port                  = optional(number)
+      source_is_self           = optional(bool, null)
+      source_security_group_id = optional(string, null)
+      type                     = optional(string)
     }))
   }))
   default = {}
@@ -62,13 +73,17 @@ variable "sg_map_public" {
 
 variable "sg_map_private" {
   type = map(object({
+    revoke_rules_on_delete = optional(bool, false)
     rule_map = map(object({
-      cidr_blocks      = optional(list(string))
-      from_port        = optional(number)
-      ipv6_cidr_blocks = optional(list(string))
-      protocol         = optional(string)
-      to_port          = optional(number)
-      type             = optional(string)
+      cidr_blocks              = optional(list(string))
+      from_port                = optional(number)
+      ipv6_cidr_blocks         = optional(list(string))
+      prefix_id_list           = optional(list(string), null)
+      protocol                 = optional(string)
+      to_port                  = optional(number)
+      source_is_self           = optional(bool, null)
+      source_security_group_id = optional(string, null)
+      type                     = optional(string)
     }))
   }))
   default = {}
