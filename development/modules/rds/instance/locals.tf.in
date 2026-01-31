@@ -96,7 +96,7 @@ locals {
       #ignore_change_list = [
       #  for k_attrib, _ in local.l2_map[k].ignore_change_map : k_attrib
       #]
-      security_group_id_list = sort([
+      vpc_security_group_id_list = sort([
         for k_sg in var.engine_to_security_group_key_list[local.l1_map[k].engine] : var.vpc_data_map[local.l2_map[k].vpc_key].security_group_id_map[k_sg]
       ])
     }

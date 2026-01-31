@@ -2,7 +2,7 @@
 # so use a static interface that outlives instances
 resource "aws_network_interface" "this_interface" {
   for_each          = local.nat_map
-  security_groups   = each.value.security_group_id_list
+  security_groups   = each.value.vpc_security_group_id_list
   source_dest_check = false
   subnet_id         = each.value.subnet_id
   tags              = each.value.tags
