@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.137.0
+
+### New modules
+
+* Glue job
+
 ## 0.136.0
 
 ### New modules
