@@ -215,6 +215,8 @@ tf-lint: tflint-install
 	cd ../event/trigger/base && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/trigger/s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../event/trigger/s3/bucket && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../glue && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../glue/connection && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../guard_duty && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../guard_duty/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../guard_duty/detector && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

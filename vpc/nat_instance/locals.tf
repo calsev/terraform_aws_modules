@@ -19,7 +19,7 @@ locals {
   }
   l2_map = {
     for k, v in var.nat_map : k => {
-      security_group_id_list = [
+      vpc_security_group_id_list = [
         for k_sg in local.l1_map[k].nat_vpc_security_group_key_list : var.vpc_data_map[local.l1_map[k].k_vpc].security_group_id_map[k_sg]
       ]
     }

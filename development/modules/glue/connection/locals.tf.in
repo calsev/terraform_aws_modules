@@ -1,0 +1,36 @@
+{{ name.map() }}
+
+{{ vpc.map() }}
+
+locals {
+  l0_map = {
+    for k, v in var.connection_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
+      catalog_id          = v.catalog_id == null ? var.connection_catalog_id_default == null ? var.std_map.aws_account_id : var.connection_catalog_id_default : v.catalog_id
+      connection_type     = v.connection_type == null ? var.connection_type_default : v.connection_type
+      match_criteria_list = v.match_criteria_list == null ? var.connection_match_criteria_list_default : v.match_criteria_list
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+      availability_zone_name = var.vpc_data_map[local.l1_map[k].vpc_key].segment_map[local.l1_map[k].vpc_segment_key].subnet_map[local.l1_map[k].vpc_az_key_list[0]].availability_zone_name
+      vpc_subnet_id          = local.l1_map[k].vpc_subnet_id_list[0]
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
+      },
+      {
+        connection_arn = aws_glue_connection.this_connection[k].arn
+        connection_id  = aws_glue_connection.this_connection[k].id
+      },
+    )
+  }
+}

@@ -1,0 +1,35 @@
+variable "connection_map" {
+  type = map(object({
+    catalog_id           = optional(string)
+    connection_type      = optional(string)
+    match_criteria_list  = optional(list(string))
+    {{ name.var_item() }}
+    {{ vpc.var_item() }}
+  }))
+}
+
+variable "connection_catalog_id_default" {
+  type        = string
+  default     = null
+  description = "Defaults to AWS account ID"
+}
+
+variable "connection_type_default" {
+  type = string
+  default = "NETWORK"
+  validation {
+      condition     = contains(["AZURECOSMOS", "AZURESQL", "BIGQUERY", "CUSTOM", "DYNAMODB", "JDBC", "KAFKA", "MARKETPLACE", "MONGODB", "NETWORK", "OPENSEARCH", "SNOWFLAKE"], var.connection_type_default)
+      error_message = "Invalid connection type"
+  }
+}
+
+variable "connection_match_criteria_list_default" {
+  type = list(string)
+  default = []
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+{{ vpc.var(az=["a"], map_default="null", map_desc="Must be provided if any connection is configured in a VPC", sg=["private_self_tcp_in", "world_all_out"], sg_desc="Glue requires a self-referencing TCP rule and ingress rules for outbound connections.") }}

@@ -82,7 +82,7 @@ resource "aws_db_instance" "this_db" {
   tags                   = each.value.tags
   timezone               = each.value.timezone_for_ms_sql
   username               = each.value.username
-  vpc_security_group_ids = each.value.security_group_id_list
+  vpc_security_group_ids = each.value.vpc_security_group_id_list
 }
 
 {{ alarm.main(prepend="db") }}
