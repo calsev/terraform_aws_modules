@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.135.0
+
+### New modules
+
+* IAM role for glue job
+
+### General
+
+* Athena named query line ending normalization
+* Security group support for new parameters
+* Security group default TCP self in
+
 ## 0.134.0
 
 ### General

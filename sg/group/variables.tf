@@ -19,13 +19,17 @@ variable "vpc_map" {
     name_simple = string
     security_group_map = map(object({
       # This can be synthesized using module security_group_rule_set
+      revoke_rules_on_delete = bool
       rule_map = map(object({
-        cidr_blocks      = list(string)
-        from_port        = number
-        ipv6_cidr_blocks = list(string)
-        protocol         = string
-        to_port          = number
-        type             = string
+        cidr_blocks              = list(string)
+        from_port                = number
+        ipv6_cidr_blocks         = list(string)
+        prefix_id_list           = list(string)
+        protocol                 = string
+        to_port                  = number
+        source_is_self           = bool
+        source_security_group_id = string
+        type                     = string
       }))
     }))
     vpc_id = string

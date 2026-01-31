@@ -312,6 +312,8 @@ tf-lint: tflint-install
 	cd ../iam/role/ecs/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/task && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/ecs/task_execution && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/glue && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../iam/role/glue/job && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/policy_map && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/rds_monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../iam/role/service_linked && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
