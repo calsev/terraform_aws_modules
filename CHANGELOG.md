@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.137.1
+
+### Bugfix
+
+* Glue name reference connection by name instead of ID
+
 ## 0.137.0
 
 ### New modules
