@@ -1,6 +1,6 @@
 variable "connection_data_map" {
   type = map(object({
-    connection_id = string
+    name_effective = string
   }))
   default     = null
   description = "Must be provided if any job specifies a connection key."

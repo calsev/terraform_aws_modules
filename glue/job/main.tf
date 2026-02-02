@@ -6,7 +6,7 @@ resource "aws_glue_job" "this_job" {
     runtime         = each.value.command_runtime
     script_location = each.value.command_script_s3_uri
   }
-  connections       = each.value.connection_id_list
+  connections       = each.value.connection_name_list
   default_arguments = each.value.argument_default_map
   execution_class   = each.value.execution_class
   execution_property {
