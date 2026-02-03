@@ -135,7 +135,7 @@ locals {
     )
   }
   user_data_map = {
-    for k, v in local.lx_map : k => templatefile(
+    for k, v in local.lx_map : k => replace(replace(templatefile(
       "${path.module}/ec2_user_data.yml",
       {
         arch                     = v.arch
@@ -145,7 +145,7 @@ locals {
         user_data_command_list   = v.user_data_command_list
         user_data_file_map       = v.user_data_file_map
       }
-    )
+    ), "\r\n", "\n"), "\r", "\n")
   }
   user_data_encoded_map = {
     for k, v in local.lx_map : k => base64encode(local.user_data_map[k])

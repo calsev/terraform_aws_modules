@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.138.1
+
+### Bugfix
+
+* Compatibility and validation for new Lambda attributes
+
 ## 0.138.0
 
 ### General
