@@ -20,8 +20,11 @@ resource "aws_glue_job" "this_job" {
   max_retries               = each.value.retries_max
   name                      = each.value.name_effective
   non_overridable_arguments = each.value.argument_non_overridable_map
-  notification_property {
-    notify_delay_after = each.value.notification_run_delay_minutes
+  dynamic "notification_property" {
+    for_each = each.value.notification_run_delay_minutes == null ? {} : { this = {} }
+    content {
+      notify_delay_after = each.value.notification_run_delay_minutes
+    }
   }
   number_of_workers      = each.value.capacity_num_worker_per_job
   region                 = var.std_map.aws_region_name
@@ -29,15 +32,18 @@ resource "aws_glue_job" "this_job" {
   tags                   = each.value.tags
   timeout                = each.value.timeout_minutes
   security_configuration = each.value.security_configuration_name
-  source_control_details {
-    auth_strategy  = each.value.source_control_auth_strategy
-    auth_token     = each.value.source_control_auth_token
-    branch         = each.value.source_control_branch
-    folder         = each.value.source_control_rel_path_in_repo
-    last_commit_id = each.value.source_control_last_commit_id
-    owner          = each.value.source_control_owner
-    provider       = each.value.source_control_provider
-    repository     = each.value.source_control_repository
+  dynamic "source_control_details" {
+    for_each = each.value.has_source_control ? { this = {} } : {}
+    content {
+      auth_strategy  = each.value.source_control_auth_strategy
+      auth_token     = each.value.source_control_auth_token
+      branch         = each.value.source_control_branch
+      folder         = each.value.source_control_rel_path_in_repo
+      last_commit_id = each.value.source_control_last_commit_id
+      owner          = each.value.source_control_owner
+      provider       = each.value.source_control_provider
+      repository     = each.value.source_control_repository
+    }
   }
   worker_type = each.value.worker_type
 }

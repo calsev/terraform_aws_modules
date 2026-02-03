@@ -54,6 +54,16 @@ locals {
       connection_name_list = [
         for k_conn in local.l1_map[k].connection_key_list : var.connection_data_map[k_conn].name_effective
       ]
+      has_source_control = (
+        local.l1_map[k].source_control_auth_strategy != null ||
+        local.l1_map[k].source_control_auth_token != null ||
+        local.l1_map[k].source_control_branch != null ||
+        local.l1_map[k].source_control_last_commit_id != null ||
+        local.l1_map[k].source_control_owner != null ||
+        local.l1_map[k].source_control_provider != null ||
+        local.l1_map[k].source_control_rel_path_in_repo != null ||
+        local.l1_map[k].source_control_repository != null
+      )
       maintenance_window_utc = local.l1_map[k].command_name == "gluestreaming" ? v.maintenance_window_utc == null ? var.job_maintenance_window_utc_default : v.maintenance_window_utc : null
       timeout_minutes        = v.timeout_minutes == null ? var.job_timeout_minutes_default == null ? local.l1_map[k].command_name == "gluestreaming" ? 0 : local.l1_map[k].command_name == "glueray" ? null : 48 * 60 : var.job_timeout_minutes_default : v.timeout_minutes
     }

@@ -3,15 +3,13 @@ variable "alert_level_default" {
   default = "general_medium"
 }
 
-variable "ecr_data" {
-  type = object({
-    repo_map = map(object({
-      policy_map = map(object({
-        iam_policy_arn = string
-      }))
-      repo_url = string
+variable "ecr_data_map" {
+  type = map(object({
+    policy_map = map(object({
+      iam_policy_arn = string
     }))
-  })
+    repo_url = string
+  }))
   default     = null
   description = "Must be provided if any function is configured with an image"
 }
@@ -26,6 +24,9 @@ variable "function_map" {
     ephemeral_storage_mib                            = optional(number)
     kms_key_arn                                      = optional(string)
     layer_version_arn_list                           = optional(list(string))
+    log_format                                       = optional(string)
+    log_level_application                            = optional(string)
+    log_level_system                                 = optional(string)
     memory_size_mib                                  = optional(number)
     {{ name.var_item() }}
     policy_access_list                               = optional(list(string))
@@ -42,6 +43,7 @@ variable "function_map" {
     source_image_repo_key                            = optional(string)
     source_image_repo_tag                            = optional(string)
     source_image_working_directory                   = optional(string)
+    source_kms_key_arn                               = optional(string)
     source_package_archive_local_path                = optional(string)
     source_package_created_archive_path              = optional(string) # Defaults to the directory with .zip appended or content file parent with package.zip appended
     source_package_directory_local_path              = optional(string)
@@ -98,6 +100,33 @@ variable "function_layer_version_arn_list_default" {
   default = []
 }
 
+variable "function_log_format_default" {
+  type    = string
+  default = "Text"
+  validation {
+    condition     = contains(["JSON", "Text"], var.function_log_format_default)
+    error_message = "Invalid log format"
+  }
+}
+
+variable "function_log_level_application_default" {
+  type    = string
+  default = "INFO"
+  validation {
+    condition     = contains(["DEBUG", "ERROR", "FATAL", "INFO", "TRACE", "WARN"], var.function_log_level_application_default)
+    error_message = "Invalid log level"
+  }
+}
+
+variable "function_log_level_system_default" {
+  type    = string
+  default = "INFO"
+  validation {
+    condition     = contains(["DEBUG", "INFO", "WARN"], var.function_log_level_system_default)
+    error_message = "Invalid log level"
+  }
+}
+
 variable "function_memory_size_mib_default" {
   type    = number
   default = 128
@@ -136,7 +165,7 @@ variable "function_source_image_command_default" {
 
 variable "function_source_image_entry_point_default" {
   type    = list(string)
-  default = null
+  default = []
 }
 
 variable "function_source_image_repo_key_default" {
@@ -150,6 +179,11 @@ variable "function_source_image_repo_tag_default" {
 }
 
 variable "function_source_image_working_directory_default" {
+  type    = string
+  default = null
+}
+
+variable "function_source_kms_key_arn_default" {
   type    = string
   default = null
 }
@@ -214,7 +248,11 @@ variable "function_timeout_seconds_default" {
 
 variable "function_tracing_mode_default" {
   type    = string
-  default = null
+  default = "PassThrough"
+  validation {
+    condition     = contains(["Active", "PassThrough"], var.function_tracing_mode_default)
+    error_message = "Invalid log format"
+  }
 }
 
 variable "function_vpc_ipv6_allowed_default" {
