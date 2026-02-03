@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.138.0
+
+### General
+
+* Lambda image-based functions
+
+### Bugfix
+
+* Dirty diff due to empty blocks in Glue job
+
 ## 0.137.1
 
 ### Bugfix

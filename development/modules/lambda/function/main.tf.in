@@ -1,12 +1,12 @@
 module "log_group" {
   source  = "../../cw/log_group"
-  log_map = local.log_map
+  log_map = local.create_log_map
   {{ log.map_item() }}
   std_map = var.std_map
 }
 
 module "dead_letter_queue" {
-  source    = "../../sqs/dead_letter_queue"
+  source       = "../../sqs/dead_letter_queue"
   monitor_data = var.monitor_data
   queue_map    = local.lx_map
   std_map      = var.std_map
@@ -35,9 +35,21 @@ resource "aws_s3_object" "package" {
 }
 
 resource "aws_lambda_function" "this_function" {
-  for_each                = local.lx_map
-  architectures           = each.value.architecture_list
+  for_each      = local.create_function_map
+  architectures = each.value.architecture_list
+  dynamic "capacity_provider_config" {
+    for_each = {}
+    content {
+      lambda_managed_instances_capacity_provider_config {
+        capacity_provider_arn                     = null
+        execution_environment_memory_gib_per_vcpu = null
+        per_execution_environment_max_concurrency = null
+      }
+    }
+  }
+  code_sha256             = local.create_hash_map[each.key]
   code_signing_config_arn = each.value.code_signing_config_arn
+  # durable_config
   dynamic "dead_letter_config" {
     for_each = each.value.dead_letter_queue_enabled ? { this = {} } : {}
     content {
@@ -62,28 +74,42 @@ resource "aws_lambda_function" "this_function" {
       working_directory = each.value.source_image_working_directory
     }
   }
-  image_uri                      = each.value.source_image_uri
-  kms_key_arn                    = each.value.kms_key_arn
-  layers                         = each.value.layer_version_arn_list
-  memory_size                    = each.value.memory_size_mib
-  package_type                   = each.value.source_package_type
-  publish                        = each.value.publish_numbered_version
-  reserved_concurrent_executions = each.value.reserved_concurrent_executions
-  role                           = module.function_role[each.key].data.iam_role_arn
-  runtime                        = each.value.source_package_runtime
-  s3_bucket                      = each.value.source_final_is_s3_object ? each.value.source_package_s3_bucket_name : null
-  s3_key                         = each.value.source_final_is_s3_object ? each.value.source_package_s3_object_key : null
-  s3_object_version              = each.value.source_package_s3_object_version
-  skip_destroy                   = false
+  image_uri   = each.value.source_image_uri
+  kms_key_arn = each.value.kms_key_arn
+  layers      = each.value.layer_version_arn_list
+  logging_config {
+    application_log_level = each.value.log_level_application
+    log_format            = each.value.log_format
+    log_group             = each.value.log_group_name
+    system_log_level      = each.value.log_level_system
+  }
+  memory_size                        = each.value.memory_size_mib
+  package_type                       = each.value.source_package_type
+  publish                            = each.value.publish_numbered_version
+  publish_to                         = null
+  region                             = var.std_map.aws_region_name
+  replacement_security_group_ids     = null
+  replace_security_groups_on_destroy = false
+  reserved_concurrent_executions     = each.value.reserved_concurrent_executions
+  role                               = module.function_role[each.key].data.iam_role_arn
+  runtime                            = each.value.source_package_runtime
+  s3_bucket                          = each.value.source_final_is_s3_object ? each.value.source_package_s3_bucket_name : null
+  s3_key                             = each.value.source_final_is_s3_object ? each.value.source_package_s3_object_key : null
+  s3_object_version                  = each.value.source_package_s3_object_version
+  skip_destroy                       = false
   dynamic "snap_start" {
     for_each = each.value.source_package_snap_start_enabled ? { this = {} } : {}
     content {
       apply_on = "PublishedVersions"
     }
   }
-  source_code_hash = local.create_hash_map[each.key]
-  tags             = each.value.tags
-  timeout          = each.value.timeout_seconds
+  # source_code_hash # Using code_sha_256 instead
+  source_kms_key_arn = each.value.source_kms_key_arn
+  tags               = each.value.tags
+  tenancy_config {
+    tenant_isolation_mode = "PER_TENANT"
+  }
+  timeout = each.value.timeout_seconds
   dynamic "tracing_config" {
     for_each = each.value.tracing_mode == null ? {} : { this = {} }
     content {

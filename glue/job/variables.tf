@@ -157,6 +157,10 @@ variable "job_maintenance_window_utc_default" {
 variable "job_notification_run_delay_minutes_default" {
   type    = number
   default = null
+  validation {
+    condition     = var.job_notification_run_delay_minutes_default == null ? true : var.job_notification_run_delay_minutes_default > 0
+    error_message = "Delay must be nonzero"
+  }
 }
 
 variable "job_retries_max_default" {
