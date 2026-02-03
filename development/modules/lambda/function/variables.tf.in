@@ -54,6 +54,7 @@ variable "function_map" {
     source_package_s3_object_key                     = optional(string) # Defaults to ${var.function_source_package_s3_object_key_base_default}/deployment_package_${key}zip
     source_package_s3_object_version                 = optional(number)
     source_package_snap_start_enabled                = optional(bool)
+    tenant_isolation_mode                            = optional(string)
     timeout_seconds                                  = optional(number)
     tracing_mode                                     = optional(string)
     vpc_ipv6_allowed                                 = optional(bool)
@@ -110,8 +111,9 @@ variable "function_log_format_default" {
 }
 
 variable "function_log_level_application_default" {
-  type    = string
-  default = "INFO"
+  type        = string
+  default     = "INFO"
+  description = "Ignored unless log_format = JSON."
   validation {
     condition     = contains(["DEBUG", "ERROR", "FATAL", "INFO", "TRACE", "WARN"], var.function_log_level_application_default)
     error_message = "Invalid log level"
@@ -119,8 +121,9 @@ variable "function_log_level_application_default" {
 }
 
 variable "function_log_level_system_default" {
-  type    = string
-  default = "INFO"
+  type        = string
+  default     = "INFO"
+  description = "Ignored unless log_format = JSON."
   validation {
     condition     = contains(["DEBUG", "INFO", "WARN"], var.function_log_level_system_default)
     error_message = "Invalid log level"
@@ -239,6 +242,16 @@ variable "function_package_snap_start_enabled_default" {
   type        = bool
   default     = true
   description = "Ignored except for Java source_package_runtime"
+}
+
+variable "function_tenant_isolation_mode_default" {
+  type        = string
+  default     = null
+  description = "Lambda permissions not supported for functions with tenancy mode specified."
+  validation {
+    condition     = var.function_tenant_isolation_mode_default == null ? true : contains(["PER_TENANT"], var.function_tenant_isolation_mode_default)
+    error_message = "Invalid log format"
+  }
 }
 
 variable "function_timeout_seconds_default" {

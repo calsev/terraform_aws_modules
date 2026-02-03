@@ -49,7 +49,7 @@ resource "aws_lambda_function" "this_function" {
       }
     }
   }
-  code_sha256             = local.create_hash_map[each.key]
+  # code_sha256 # TODO
   code_signing_config_arn = each.value.code_signing_config_arn
   # durable_config
   dynamic "dead_letter_config" {
@@ -105,11 +105,14 @@ resource "aws_lambda_function" "this_function" {
       apply_on = "PublishedVersions"
     }
   }
-  # source_code_hash # Using code_sha_256 instead
+  source_code_hash   = local.create_hash_map[each.key]
   source_kms_key_arn = each.value.source_kms_key_arn
   tags               = each.value.tags
-  tenancy_config {
-    tenant_isolation_mode = "PER_TENANT"
+  dynamic "tenancy_config" {
+    for_each = each.value.tenant_isolation_mode == null ? {} : { this = {} }
+    content {
+      tenant_isolation_mode = each.value.tenant_isolation_mode
+    }
   }
   timeout = each.value.timeout_seconds
   dynamic "tracing_config" {
