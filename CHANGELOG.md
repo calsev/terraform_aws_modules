@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.139.0
+
+### New modules
+
+* Cognito pool log
+
+### General
+
+* Codebuild default image aliases updated
+* Cognito pool logging
+* Cloudwatch log group default policy for write only
+* Lambda VPC permissions updated
+
 ## 0.138.1
 
 ### Bugfix

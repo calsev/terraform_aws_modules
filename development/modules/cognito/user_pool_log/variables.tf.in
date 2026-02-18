@@ -1,0 +1,69 @@
+variable "pool_map" {
+  type = map(object({
+    log_map = optional(map(object({
+      event_source        = optional(string)
+      log_level           = optional(string)
+      cloudwatch_log_key  = optional(string)
+      firehose_stream_arn = optional(string)
+      s3_bucket_key       = optional(string)
+    })))
+    {{ name.var_item() }}
+    user_pool_id          = string
+  }))
+}
+
+variable "pool_log_map_default" {
+  type = map(object({
+    event_source        = optional(string)
+    log_level           = optional(string)
+    cloudwatch_log_key  = optional(string)
+    firehose_stream_arn = optional(string)
+    s3_bucket_key       = optional(string)
+  }))
+  default = {
+    auth = {
+      event_source        = null
+      log_level           = "INFO" # No ERROR level
+      cloudwatch_log_key  = "auth"
+      firehose_stream_arn = null
+      s3_bucket_key       = null
+    }
+    notification = {
+      event_source        = "userNotification"
+      log_level           = null
+      cloudwatch_log_key  = "notification"
+      firehose_stream_arn = null
+      s3_bucket_key       = null
+    }
+  }
+}
+
+variable "pool_log_event_source_default" {
+  type    = string
+  default = "userAuthEvents"
+  validation {
+    condition     = contains(["userAuthEvents", "userNotification"], var.pool_log_event_source_default)
+    error_message = "Invalid log event source"
+  }
+}
+
+variable "pool_log_level_default" {
+  type    = string
+  default = "ERROR"
+  validation {
+    condition     = contains(["ERROR", "INFO"], var.pool_log_level_default)
+    error_message = "Invalid log level"
+  }
+}
+
+{{ name.var() }}
+
+variable "s3_data_map" {
+  type = map(object({
+    bucket_arn = string
+  }))
+  default = null
+  description = "Must be provided if any log specifies s3_bucket_key"
+}
+
+{{ std.map() }}

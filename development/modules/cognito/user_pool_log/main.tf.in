@@ -1,0 +1,38 @@
+module "log_group" {
+  source                     = "../../cw/log_group"
+  log_map                    = local.create_cw_x_map
+  name_prepend_default       = "cognito"
+  policy_access_list_default = []
+  std_map                    = var.std_map
+}
+
+resource "aws_cognito_log_delivery_configuration" "this_log" {
+  for_each = local.create_log_map
+  dynamic "log_configurations" {
+    for_each = each.value.log_map
+    content {
+        dynamic "cloud_watch_logs_configuration" {
+            for_each = log_configurations.value.log_group_arn == null ? {} : { this = {} }
+            content {
+                log_group_arn = log_configurations.value.log_group_arn
+            }
+        }
+        event_source = log_configurations.value.event_source
+        dynamic "firehose_configuration" {
+            for_each = log_configurations.value.firehose_stream_arn == null ? {} : { this = {} }
+            content {
+                stream_arn = log_configurations.value.firehose_stream_arn
+            }
+        }
+        log_level = log_configurations.value.log_level
+        dynamic "s3_configuration" {
+            for_each = log_configurations.value.s3_bucket_arn == null ? {} : { this = {} }
+            content {
+                bucket_arn = log_configurations.value.s3_bucket_arn
+            }
+        }
+    }
+  }
+  region       = var.std_map.aws_region_name
+  user_pool_id = each.value.user_pool_id
+}

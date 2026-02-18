@@ -3,14 +3,17 @@ data "aws_iam_policy_document" "network_policy" {
   statement {
     actions = [
       "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeSubnets",
     ]
     resources = ["*"]
     sid       = "StarRead"
   }
   statement {
     actions = [
+      "ec2:AssignPrivateIpAddresses",
       "ec2:CreateNetworkInterface",
       "ec2:DeleteNetworkInterface",
+      "ec2:UnassignPrivateIpAddresses",
     ]
     resources = ["*"]
     sid       = "StarWrite"
