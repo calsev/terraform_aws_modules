@@ -25,6 +25,6 @@ variable "log_skip_destroy_default" {
 
 {{ name.var() }}
 
-{{ iam.policy_var_ar(access=["read", "write"], append="log") }}
+{{ iam.policy_var_ar(access=["write"], append="log") }}
 
 {{ std.map() }}

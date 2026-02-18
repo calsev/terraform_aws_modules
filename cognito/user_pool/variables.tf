@@ -188,21 +188,28 @@ variable "pool_map" {
     lambda_arn_user_migration                 = optional(string)
     lambda_arn_verify_auth_challenge_response = optional(string)
     lambda_kms_key_id                         = optional(string)
-    mfa_configuration                         = optional(string)
-    mfa_software_token_enabled                = optional(bool)
-    name_append                               = optional(string)
-    name_include_app_fields                   = optional(bool)
-    name_infix                                = optional(bool)
-    name_prefix                               = optional(string)
-    name_prepend                              = optional(string)
-    name_suffix                               = optional(string)
-    only_admin_create_user                    = optional(bool)
-    password_minimum_length                   = optional(number)
-    password_require_lowercase                = optional(bool)
-    password_require_numbers                  = optional(bool)
-    password_require_symbols                  = optional(bool)
-    password_require_uppercase                = optional(bool)
-    password_temporary_validity_days          = optional(number)
+    log_map = optional(map(object({
+      event_source        = optional(string)
+      log_level           = optional(string)
+      cloudwatch_log_key  = optional(string)
+      firehose_stream_arn = optional(string)
+      s3_bucket_key       = optional(string)
+    })))
+    mfa_configuration                = optional(string)
+    mfa_software_token_enabled       = optional(bool)
+    name_append                      = optional(string)
+    name_include_app_fields          = optional(bool)
+    name_infix                       = optional(bool)
+    name_prefix                      = optional(string)
+    name_prepend                     = optional(string)
+    name_suffix                      = optional(string)
+    only_admin_create_user           = optional(bool)
+    password_minimum_length          = optional(number)
+    password_require_lowercase       = optional(bool)
+    password_require_numbers         = optional(bool)
+    password_require_symbols         = optional(bool)
+    password_require_uppercase       = optional(bool)
+    password_temporary_validity_days = optional(number)
     schema_map = optional(map(object({
       data_type         = optional(string)
       is_developer_only = optional(bool)
@@ -423,6 +430,32 @@ variable "pool_lambda_arn_verify_auth_challenge_response_default" {
 variable "pool_lambda_kms_key_id_default" {
   type    = string
   default = null
+}
+
+variable "pool_log_map_default" {
+  type = map(object({
+    event_source        = optional(string)
+    log_level           = optional(string)
+    cloudwatch_log_key  = optional(string)
+    firehose_stream_arn = optional(string)
+    s3_bucket_key       = optional(string)
+  }))
+  default = {
+    auth = {
+      event_source        = null
+      log_level           = "INFO" # No ERROR level
+      cloudwatch_log_key  = "auth"
+      firehose_stream_arn = null
+      s3_bucket_key       = null
+    }
+    notification = {
+      event_source        = "userNotification"
+      log_level           = null
+      cloudwatch_log_key  = "notification"
+      firehose_stream_arn = null
+      s3_bucket_key       = null
+    }
+  }
 }
 
 variable "pool_mfa_configuration_default" {

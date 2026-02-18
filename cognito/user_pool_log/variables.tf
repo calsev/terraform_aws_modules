@@ -1,52 +1,64 @@
-variable "log_map" {
+variable "pool_map" {
   type = map(object({
-    allow_public_read       = optional(bool)
-    kms_key_id              = optional(string)
-    log_group_class         = optional(string)
-    log_retention_days      = optional(number)
+    log_map = optional(map(object({
+      event_source        = optional(string)
+      log_level           = optional(string)
+      cloudwatch_log_key  = optional(string)
+      firehose_stream_arn = optional(string)
+      s3_bucket_key       = optional(string)
+    })))
     name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
     name_prefix             = optional(string)
     name_prepend            = optional(string)
     name_suffix             = optional(string)
-    policy_create           = optional(bool)
-    policy_name_append      = optional(string)
-    skip_destroy            = optional(bool)
+    user_pool_id            = string
   }))
 }
 
-variable "log_allow_public_read_default" {
-  type    = bool
-  default = false
-}
-
-variable "log_group_class_default" {
-  type    = string
-  default = "STANDARD"
-  validation {
-    condition     = contains(["INFREQUENT_ACCESS", "STANDARD"], var.log_group_class_default)
-    error_message = "Invalid log group class"
+variable "pool_log_map_default" {
+  type = map(object({
+    event_source        = optional(string)
+    log_level           = optional(string)
+    cloudwatch_log_key  = optional(string)
+    firehose_stream_arn = optional(string)
+    s3_bucket_key       = optional(string)
+  }))
+  default = {
+    auth = {
+      event_source        = null
+      log_level           = "INFO" # No ERROR level
+      cloudwatch_log_key  = "auth"
+      firehose_stream_arn = null
+      s3_bucket_key       = null
+    }
+    notification = {
+      event_source        = "userNotification"
+      log_level           = null
+      cloudwatch_log_key  = "notification"
+      firehose_stream_arn = null
+      s3_bucket_key       = null
+    }
   }
 }
 
-variable "log_kms_key_id_default" {
+variable "pool_log_event_source_default" {
   type    = string
-  default = null
-}
-
-variable "log_retention_days_default" {
-  type    = number
-  default = 14
+  default = "userAuthEvents"
   validation {
-    condition     = contains([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.log_retention_days_default)
-    error_message = "Log retention must be one of a set of allowed values"
+    condition     = contains(["userAuthEvents", "userNotification"], var.pool_log_event_source_default)
+    error_message = "Invalid log event source"
   }
 }
 
-variable "log_skip_destroy_default" {
-  type    = bool
-  default = false
+variable "pool_log_level_default" {
+  type    = string
+  default = "ERROR"
+  validation {
+    condition     = contains(["ERROR", "INFO"], var.pool_log_level_default)
+    error_message = "Invalid log level"
+  }
 }
 
 variable "name_append_default" {
@@ -92,26 +104,12 @@ variable "name_suffix_default" {
   description = "Appended after context suffix"
 }
 
-variable "policy_access_list_default" {
-  type = list(string)
-  default = [
-    "write",
-  ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
-}
-
-variable "policy_name_append_default" {
-  type    = string
-  default = "log"
-}
-
-variable "policy_name_prefix_default" {
-  type    = string
-  default = ""
+variable "s3_data_map" {
+  type = map(object({
+    bucket_arn = string
+  }))
+  default     = null
+  description = "Must be provided if any log specifies s3_bucket_key"
 }
 
 variable "std_map" {

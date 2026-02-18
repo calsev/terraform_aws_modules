@@ -112,6 +112,14 @@ resource "aws_cognito_user_pool" "this_pool" {
   }
 }
 
+module "pool_log" {
+  source               = "../../cognito/user_pool_log"
+  {{ name.map_item() }}
+  pool_log_map_default = var.pool_log_map_default
+  pool_map             = local.create_client_map
+  std_map              = var.std_map
+}
+
 module "lambda_permission" {
   source                       = "../../lambda/permission"
   for_each                     = local.create_lambda_permission_x_map
