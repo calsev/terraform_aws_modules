@@ -6,9 +6,10 @@ resource "aws_s3_bucket_cors_configuration" "this_cors" {
     allowed_methods = each.value.cors_allowed_methods
     allowed_origins = each.value.cors_allowed_origins
     expose_headers  = each.value.cors_expose_headers
+    id = null # TODO
     max_age_seconds = 3600
   }
-  expected_bucket_owner = var.std_map.aws_account_id
+  region = var.std_map.aws_region_name
 }
 
 resource "aws_s3_bucket_website_configuration" "this_web_config" {
@@ -17,10 +18,34 @@ resource "aws_s3_bucket_website_configuration" "this_web_config" {
   error_document {
     key = each.value.website_error_document
   }
-  expected_bucket_owner = var.std_map.aws_account_id
   index_document {
     suffix = each.value.website_index_document
   }
+  dynamic "redirect_all_requests_to" {
+    for_each = {} # TODO
+    content {
+      host_name = null # TODO
+      protocol = null # TODO
+    }
+  }
+  region = var.std_map.aws_region_name
+  dynamic "routing_rule" {
+    for_each = {} # TODO
+    content {
+      condition {
+        http_error_code_returned_equals = null # TODO
+        key_prefix_equals               = null # TODO
+      }
+      redirect {
+        host_name               = null # TODO
+        http_redirect_code      = null # TODO
+        protocol                = null # TODO
+        replace_key_prefix_with = null # TODO
+        replace_key_with        = null # TODO
+      }
+    }
+  }
+  routing_rules = null # TODO
 }
 
 module "dns_alias" {

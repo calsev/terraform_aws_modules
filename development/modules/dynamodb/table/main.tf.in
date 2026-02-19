@@ -12,11 +12,20 @@ resource "aws_dynamodb_table" "this_table" {
   dynamic "global_secondary_index" {
     for_each = each.value.gsi_map
     content {
-      hash_key           = global_secondary_index.value.hash_key
+      key_schema {
+        attribute_name = global_secondary_index.value.hash_key
+        key_type       = "HASH"
+      }
+      dynamic "key_schema" {
+        for_each = global_secondary_index.value.range_key == null ? {} : { this = {} }
+        content {
+          attribute_name = global_secondary_index.value.range_key
+          key_type       = "RANGE"
+        }
+      }
       name               = global_secondary_index.key
       non_key_attributes = global_secondary_index.value.non_key_attribute_list
       projection_type    = global_secondary_index.value.projection_type
-      range_key          = global_secondary_index.value.range_key
       read_capacity      = global_secondary_index.value.read_capacity
       write_capacity     = global_secondary_index.value.write_capacity
     }

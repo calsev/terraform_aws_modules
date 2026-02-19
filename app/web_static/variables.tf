@@ -106,6 +106,15 @@ variable "domain_dns_from_zone_key_default" {
   default = null
 }
 
+variable "domain_error_response_map_default" {
+  type = map(object({
+    error_caching_min_ttl_seconds = number
+    response_code                 = number
+    response_page_path            = string
+  }))
+  default = {}
+}
+
 variable "domain_logging_bucket_key_default" {
   type    = string
   default = null
@@ -188,11 +197,16 @@ variable "site_map" {
       }))
       name = string
     }))
-    cdn_invalidation_path                                 = optional(string)
-    ci_cd_pipeline_webhook_secret_is_param                = optional(bool)
-    dns_alias_enabled                                     = optional(bool)
-    dns_alias_san_list                                    = optional(list(string))
-    dns_from_zone_key                                     = optional(string)
+    cdn_invalidation_path                  = optional(string)
+    ci_cd_pipeline_webhook_secret_is_param = optional(bool)
+    dns_alias_enabled                      = optional(bool)
+    dns_alias_san_list                     = optional(list(string))
+    dns_from_zone_key                      = optional(string)
+    error_response_map = optional(map(object({
+      error_caching_min_ttl_seconds = number
+      response_code                 = number
+      response_page_path            = string
+    })))
     logging_bucket_key                                    = optional(string)
     logging_include_cookies                               = optional(bool)
     logging_object_prefix                                 = optional(string)

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.140.0
+
+### General
+
+* Cloudfront error responses
+* Latest AWS provider updates (Dynamo, S3)
+* Latest tflint fixes
+
 ## 0.139.0
 
 ### New modules

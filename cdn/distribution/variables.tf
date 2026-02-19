@@ -80,18 +80,23 @@ variable "domain_map" {
     dns_alias_enabled            = optional(bool)
     dns_alias_san_list           = optional(list(string))
     dns_from_zone_key            = optional(string)
-    enabled                      = optional(bool)
-    http_version_max_supported   = optional(string)
-    ipv6_enabled                 = optional(bool)
-    logging_bucket_key           = optional(string)
-    logging_include_cookies      = optional(bool)
-    logging_object_prefix        = optional(string)
-    name_append                  = optional(string)
-    name_include_app_fields      = optional(bool)
-    name_infix                   = optional(bool)
-    name_prefix                  = optional(string)
-    name_prepend                 = optional(string)
-    name_suffix                  = optional(string)
+    error_response_map = optional(map(object({
+      error_caching_min_ttl_seconds = number
+      response_code                 = number
+      response_page_path            = string
+    })))
+    enabled                    = optional(bool)
+    http_version_max_supported = optional(string)
+    ipv6_enabled               = optional(bool)
+    logging_bucket_key         = optional(string)
+    logging_include_cookies    = optional(bool)
+    logging_object_prefix      = optional(string)
+    name_append                = optional(string)
+    name_include_app_fields    = optional(bool)
+    name_infix                 = optional(bool)
+    name_prefix                = optional(string)
+    name_prepend               = optional(string)
+    name_suffix                = optional(string)
     notification_lambda_map = optional(map(object({
       event_list          = optional(list(string))
       filter_prefix       = optional(string)
@@ -190,6 +195,15 @@ variable "domain_dns_from_zone_key_default" {
 variable "domain_enabled_default" {
   type    = bool
   default = true
+}
+
+variable "domain_error_response_map_default" {
+  type = map(object({
+    error_caching_min_ttl_seconds = number
+    response_code                 = number
+    response_page_path            = string
+  }))
+  default = {}
 }
 
 variable "domain_http_version_max_supported_default" {
