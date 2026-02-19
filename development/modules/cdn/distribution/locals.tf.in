@@ -55,6 +55,7 @@ locals {
       dns_alias_san_list                                    = v.dns_alias_san_list == null ? var.domain_dns_alias_san_list_default : v.dns_alias_san_list
       dns_from_zone_key                                     = v.dns_from_zone_key == null ? var.domain_dns_from_zone_key_default : v.dns_from_zone_key
       enabled                                               = v.enabled == null ? var.domain_enabled_default : v.enabled
+      error_response_map                                    = v.error_response_map == null ? var.domain_error_response_map_default : v.error_response_map
       http_version_max_supported                            = v.http_version_max_supported == null ? var.domain_http_version_max_supported_default : v.http_version_max_supported
       ipv6_enabled                                          = v.ipv6_enabled == null ? var.domain_ipv6_enabled_default : v.ipv6_enabled
       logging_bucket_key                                    = v.logging_bucket_key == null ? var.domain_logging_bucket_key_default : v.logging_bucket_key

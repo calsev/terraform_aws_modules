@@ -7,6 +7,7 @@ module "cdn" {
   domain_dns_alias_enabled_default                                     = var.domain_dns_alias_enabled_default
   domain_dns_alias_san_list_default                                    = var.domain_dns_alias_san_list_default
   domain_dns_from_zone_key_default                                     = var.domain_dns_from_zone_key_default
+  domain_error_response_map_default                                    = var.domain_error_response_map_default
   domain_logging_bucket_key_default                                    = var.domain_logging_bucket_key_default
   domain_logging_include_cookies_default                               = var.domain_logging_include_cookies_default
   domain_logging_object_prefix_default                                 = var.domain_logging_object_prefix_default

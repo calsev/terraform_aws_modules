@@ -61,7 +61,6 @@ locals {
       read_capacity                  = v.read_capacity == null ? var.table_read_capacity_default : v.read_capacity
       server_side_encryption_enabled = v.server_side_encryption_enabled == null ? var.table_server_side_encryption_enabled_default : v.server_side_encryption_enabled
       stream_enabled                 = v.stream_enabled == null ? var.table_stream_enabled_default : v.stream_enabled
-      stream_view_type               = v.stream_view_type == null ? var.table_stream_view_type_default : v.stream_view_type
       ttl_attribute_name             = v.ttl_attribute_name == null ? var.table_ttl_attribute_name_default : v.ttl_attribute_name
       write_capacity                 = v.write_capacity == null ? var.table_write_capacity_default : v.write_capacity
     })
@@ -78,10 +77,11 @@ locals {
           write_capacity         = v_gsi.write_capacity == null ? var.table_gsi_write_capacity_default : v_gsi.write_capacity
         })
       }
-      has_gsi     = length(local.l1_map[k].gsi_map) != 0
-      has_lsi     = local.l1_map[k].lsi_name != null && local.l1_map[k].lsi_range_key != null
-      policy_name = "${k}_dynamodb"
-      ttl_enabled = local.l1_map[k].ttl_attribute_name != null
+      has_gsi          = length(local.l1_map[k].gsi_map) != 0
+      has_lsi          = local.l1_map[k].lsi_name != null && local.l1_map[k].lsi_range_key != null
+      policy_name      = "${k}_dynamodb"
+      stream_view_type = local.l1_map[k].stream_enabled ? v.stream_view_type == null ? var.table_stream_view_type_default : v.stream_view_type : null
+      ttl_enabled      = local.l1_map[k].ttl_attribute_name != null
     }
   }
   lx_map = {

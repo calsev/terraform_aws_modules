@@ -88,12 +88,12 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   aliases                         = each.value.alias_name_list_final
   continuous_deployment_policy_id = null # TODO
   dynamic "custom_error_response" {
-    for_each = {} # TODO
+    for_each = each.value.error_response_map
     content {
-      error_caching_min_ttl = each.value.error_response_caching_min_ttl
-      error_code            = each.value.error_response_code
-      response_code         = each.value.error_response_code
-      response_page_path    = each.value.error_response_page_path
+      error_caching_min_ttl = custom_error_response.value.error_caching_min_ttl_seconds
+      error_code            = tonumber(custom_error_response.key)
+      response_code         = custom_error_response.value.response_code
+      response_page_path    = custom_error_response.value.response_page_path
     }
   }
   default_cache_behavior {

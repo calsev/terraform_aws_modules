@@ -322,8 +322,9 @@ variable "table_stream_enabled_default" {
 }
 
 variable "table_stream_view_type_default" {
-  type    = string
-  default = "KEYS_ONLY"
+  type        = string
+  default     = "KEYS_ONLY"
+  description = "Ignored unless stream_enabled"
   validation {
     condition     = contains(["KEYS_ONLY", "NEW_IMAGE", "OLD_IMAGE", "NEW_AND_OLD_IMAGES"], var.table_stream_view_type_default)
     error_message = "Invalid stream view type"
