@@ -1,0 +1,310 @@
+variable "app_path_repo_root_to_app_directory_default" {
+  type    = string
+  default = null
+}
+
+variable "app_path_terraform_app_to_repo_root_default" {
+  type    = string
+  default = null
+}
+
+variable "build_image_ecr_repo_key_default" {
+  type    = string
+  default = null
+}
+
+variable "build_image_tag_base_default" {
+  type        = string
+  default     = "latest"
+  description = "The tag of the final manifest. Each arch-specific image tag will have the arch appended"
+}
+
+variable "build_role_policy_attach_arn_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "The special sauce for the role; log write and artifact read/write come free"
+}
+
+variable "build_role_policy_create_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "build_role_policy_inline_json_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "build_role_policy_managed_name_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'"
+}
+
+variable "build_source_build_spec_image_default" {
+  type    = string
+  default = null
+}
+
+variable "build_source_build_spec_manifest_default" {
+  type    = string
+  default = null
+}
+
+variable "ci_cd_account_data" {
+  type = object({
+    bucket = object({
+      name_effective = string
+      policy = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      })
+    })
+    code_star = object({
+      connection = map(object({
+        connection_arn = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      }))
+    })
+    log = object({
+      log_group_name = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+    policy = object({
+      vpc_net = object({
+        iam_policy_arn = string
+      })
+    })
+    role = object({
+      build = object({
+        basic = object({
+          iam_role_arn = string
+        })
+      })
+      deploy = object({
+        ecs = object({
+          iam_role_arn = string
+        })
+      })
+    })
+  })
+}
+
+variable "compute_instance_type_default" {
+  type    = string
+  default = "t4g.micro"
+}
+
+variable "dns_data" {
+  type = object({
+    domain_to_dns_zone_map = map(object({
+      dns_zone_id = string
+    }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
+    region_domain_cert_map = map(map(object({
+      certificate_arn = string
+      name_simple     = string
+    })))
+  })
+}
+
+variable "ecr_data_map" {
+  type = map(object({
+    policy_map = map(object({
+      iam_policy_arn = string
+    }))
+    repo_url = string
+  }))
+  default     = null
+  description = "Must be provided if any app enables image build"
+}
+
+variable "elb_data_map" {
+  type = map(object({
+    elb_arn            = string
+    elb_dns_name       = string
+    elb_dns_zone_id    = string
+    load_balancer_type = string
+    port_to_protocol_to_listener_map = map(map(object({
+      elb_listener_arn = string
+    })))
+  }))
+}
+
+variable "iam_data" {
+  type = object({
+    iam_instance_profile_arn_ecs        = string
+    iam_policy_arn_batch_submit_job     = string
+    iam_policy_arn_ec2_modify_attribute = string
+    iam_policy_arn_ecs_exec_ssm         = string
+    iam_policy_arn_ecs_start_task       = string
+    iam_policy_arn_ecs_task_execution   = string
+    iam_role_arn_ecs_task_execution     = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
+  })
+}
+
+variable "listener_dns_from_zone_key_default" {
+  type    = string
+  default = null
+}
+
+variable "listener_dns_alias_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        topic_arn = string
+      }))
+    })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        name_effective = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      })
+      gpu = object({
+        name_effective = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      })
+    })
+  })
+}
+
+{{ name.var() }}
+
+variable "pipe_source_branch_default" {
+  type    = string
+  default = "main"
+}
+
+variable "pipe_source_code_star_connection_key_default" {
+  type    = string
+  default = null
+}
+
+variable "pipe_source_repository_id_default" {
+  type    = string
+  default = null
+}
+
+variable "pipe_webhook_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "s3_data_map" {
+  type = map(object({
+    name_effective = string
+    policy = object({
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+  }))
+}
+
+{{ secret.var(
+    key="admin_password",
+    map={
+        "admin_username": "openvpn",
+        "license_key": "INSERT LICENSE KEY HERE",
+        "license_website_password": "INSERT WEBSITE PASSWORD",
+        "license_website_url": "https://myaccount.openvpn.com",
+        "license_website_username": "INSERT WEBSITE USERNAME"
+    },
+    type=False,
+) }}
+
+variable "service_desired_count_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for DAEMON scheduling strategy"
+}
+
+{{ std.map() }}
+
+{{ vpc.var(sg=False) }}
+
+variable "vpc_security_group_key_list_efs_default" {
+  type = list(string)
+  default = [
+    "internal_nfs_in",
+    "world_all_out",
+  ]
+}
+
+variable "vpc_security_group_key_list_instance_default" {
+  type = list(string)
+  default = [
+    "internal_http_in",
+    "internal_open_vpn_in",
+    "world_all_out",
+    "world_icmp_in",
+  ]
+}
+
+variable "vpn_backup_bucket_key_default" {
+  type    = string
+  default = null
+}
+
+variable "vpn_elb_key_alb_default" {
+  type    = string
+  default = null
+}
+
+variable "vpn_elb_key_nlb_default" {
+  type    = string
+  default = null
+}
+
+variable "vpn_image_source_uri_default" {
+  type    = string
+  default = null
+}
+
+variable "vpn_map" {
+  type = map(object({
+    backup_bucket_key                   = optional(string)
+    build_role_policy_attach_arn_map    = optional(map(string))
+    build_role_policy_create_json_map   = optional(map(string))
+    build_role_policy_inline_json_map   = optional(map(string))
+    build_role_policy_managed_name_map  = optional(map(string))
+    desired_count                       = optional(number)
+    dns_alias_enabled                   = optional(bool)
+    dns_alias_fqdn_admin                = optional(string) # Defaults to vpn-admin.${from_zone_key}
+    dns_alias_fqdn_tunnel               = optional(string) # Defaults to vpn.${from_zone_key}
+    dns_from_zone_key                   = optional(string)
+    elb_key_alb                         = optional(string)
+    elb_key_nlb                         = optional(string)
+    elb_rule_priority_alb               = number
+    image_ecr_repo_key                  = optional(string)
+    image_source_uri                    = optional(string)
+    image_tag_base                      = optional(string)
+    instance_type                       = optional(string)
+    {{ name.var_item() }}
+    path_repo_root_to_app_directory     = optional(string)
+    path_terraform_app_to_repo_root     = optional(string)
+    {{ secret.var_item(type=False) }}
+    source_branch                       = optional(string)
+    source_repository_id                = optional(string)
+    {{ vpc.var_item() }}
+  }))
+}
