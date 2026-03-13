@@ -44,6 +44,7 @@ locals {
       environment_map = merge(
         {
           AWS_DEFAULT_REGION = var.std_map.aws_region_name
+          AWS_REGION         = var.std_map.aws_region_name
         },
         v.environment_map == null ? var.job_environment_map_default : v.environment_map
       )

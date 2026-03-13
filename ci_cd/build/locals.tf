@@ -59,6 +59,10 @@ locals {
             type  = "PLAINTEXT"
             value = var.std_map.aws_region_name
           }
+          AWS_REGION = {
+            type  = "PLAINTEXT"
+            value = var.std_map.aws_region_name
+          }
           CODEBUILD_CONFIG_AUTO_DISCOVER = {
             type  = "PLAINTEXT"
             value = "true"

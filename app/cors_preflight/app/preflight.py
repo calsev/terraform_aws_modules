@@ -14,13 +14,10 @@ def _load_env_list(
 ) -> list[str]:
     raw = os.environ.get(env_name, default)
     try:
-        value = raw.split(",")
-        if isinstance(value, list):
-            return [str(v) for v in value]
-        logger.warning(f"Env {env_name} is not a list, using default")
+        return [item.strip() for item in raw.split(",") if item.strip()]
     except Exception:
         logger.exception(f"Failed to parse {env_name}, using default")
-    return raw.split(",")
+        return [item.strip() for item in default.split(",") if item.strip()]
 
 
 ALLOWED_HEADERS = _load_env_list(
@@ -46,18 +43,55 @@ ORIGIN_DEFAULT = os.environ.get(
     "${origin_default}",
 )
 
+ALLOWED_METHODS_UPPER = {method.upper() for method in ALLOWED_METHODS}
+
+
+def _normalize_host_pattern(host: str) -> str:
+    return host.strip().lower().rstrip(".")
+
+
+def _split_allowed_hosts(
+    hosts: list[str],
+) -> tuple[set[str], set[str]]:
+    exact_hosts: set[str] = set()
+    wildcard_suffixes: set[str] = set()
+
+    for host in hosts:
+        normalized = _normalize_host_pattern(host)
+        if not normalized:
+            continue
+
+        if normalized.startswith("*."):
+            suffix = normalized[1:]  # keeps ".example.com"
+            if len(suffix) > 1:
+                wildcard_suffixes.add(suffix)
+        else:
+            exact_hosts.add(normalized)
+
+    return exact_hosts, wildcard_suffixes
+
+
+EXACT_ALLOWED_HOSTS, WILDCARD_ALLOWED_SUFFIXES = _split_allowed_hosts(ALLOWED_HOSTS)
+
+
+def _hostname_allowed(hostname: str) -> bool:
+    normalized = _normalize_host_pattern(hostname)
+
+    if normalized in EXACT_ALLOWED_HOSTS:
+        return True
+
+    return any(normalized.endswith(suffix) for suffix in WILDCARD_ALLOWED_SUFFIXES)
+
 
 def extract_allowed_origin(
     event: dict[str, typing.Any],
     headers: dict[str, typing.Any],
 ) -> str:
     if not headers:
-        logger.info(
-            f"Invalid event, no headers:\n{json.dumps(obj=list(event.keys()), indent='')}"
-        )
+        logger.info(f"Invalid event, no headers: {list(event.keys())}")
         return ORIGIN_DEFAULT
 
-    origin = headers.get("origin")
+    origin: str | None = headers.get("origin")
     if not origin:
         logger.info("No Origin header, falling back to default origin")
         return ORIGIN_DEFAULT
@@ -68,53 +102,66 @@ def extract_allowed_origin(
 
     parsed_url = urllib.parse.urlparse(origin)
     hostname = parsed_url.hostname
-    if not hostname:
+    scheme = parsed_url.scheme
+    if not hostname or not scheme:
         logger.info(f"Origin parse failed ({origin}), falling back to default")
         return ORIGIN_DEFAULT
 
-    if hostname not in ALLOWED_HOSTS:
-        logger.info(f"Origin host {hostname} not in allowlist, falling back to default")
+    if not _hostname_allowed(hostname):
+        logger.info(
+            f"Origin host {hostname} not in allowlist, falling back to default origin"
+        )
         return ORIGIN_DEFAULT
 
     # Reconstruct origin from scheme + hostname + optional port
-    port_part = f":{parsed_url.port}" if parsed_url.port else ""
-    allowed_origin = f"{parsed_url.scheme}://{hostname}{port_part}"
+    try:
+        port = parsed_url.port
+    except ValueError:
+        logger.info(f"Origin port parse failed ({origin}), falling back to default")
+        return ORIGIN_DEFAULT
+    port_part = f":{port}" if port else ""
+    allowed_origin = f"{scheme}://{hostname}{port_part}"
     logger.info(f"Allowing origin {allowed_origin}")
     return allowed_origin
+
+
+def security_headers() -> dict[str, str]:
+    return {
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        "X-Content-Type-Options": "nosniff",
+    }
 
 
 def cors_headers(
     event: dict[str, typing.Any],
     headers: dict[str, typing.Any],
 ) -> dict[str, str]:
-    # Optionally tailor allowed methods/headers to the request
-    req_method = headers.get("access-control-request-method", "")
-    req_headers_raw = headers.get("access-control-request-headers", "")
-    req_headers = (
-        [h.strip() for h in req_headers_raw.split(",") if h.strip()]
-        if req_headers_raw
-        else []
-    )
-
-    if req_method and req_method.upper() not in (m.upper() for m in ALLOWED_METHODS):
+    # We do not mirror headers or method, opting for clarity rather than minimality
+    req_method = str(headers.get("access-control-request-method", "")).strip()
+    if req_method and req_method.upper() not in ALLOWED_METHODS_UPPER:
         logger.info(f"Requested method {req_method} not allowed")
-        # Could 405 here instead; keeping 2XX but not listing the method is also valid
-
-    # Echo back intersection of requested headers and allowed headers
-    allowed_header_set = {h.lower() for h in ALLOWED_HEADERS}
-    effective_headers = [
-        h for h in req_headers if h.lower() in allowed_header_set
-    ] or ALLOWED_HEADERS
 
     value = {
+        **security_headers(),
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Headers": ",".join(effective_headers),
-        "Access-Control-Allow-Origin": extract_allowed_origin(event, headers),
+        "Access-Control-Allow-Headers": ",".join(ALLOWED_HEADERS),
         "Access-Control-Allow-Methods": ",".join(ALLOWED_METHODS),
+        "Access-Control-Allow-Origin": extract_allowed_origin(event, headers),
         "Access-Control-Max-Age": str(MAX_AGE),
         "Content-Type": "application/json",
         "Vary": "Origin, Access-Control-Request-Headers, Access-Control-Request-Method",
     }
+    return value
+
+
+def status_code(
+    headers: dict[str, typing.Any],
+) -> int:
+    # No Content is conventional for preflight, but not accepted for health check
+    user_agent = headers.get("user-agent", "")
+    is_health_check = user_agent.startswith("ELB-HealthChecker")
+    value = 200 if is_health_check else 204
     return value
 
 
@@ -124,18 +171,16 @@ def preflight_response(
 ) -> dict[str, typing.Any]:
     # For ALB→Lambda or APIGW v1
     # For APIGW v2 adjust slightly
-    headers = event.get("headers", {})
-    # Normalize header keys to lowercase defensively
-    headers = {k.lower(): v for k, v in headers.items() if v is not None}
-    user_agent = headers.get("user-agent", "")
-    headers = cors_headers(event, headers)
+    headers: dict[str, typing.Any] = event.get("headers", {}) or {}
+    headers = {str(k).lower(): str(v) for k, v in headers.items() if v is not None}
+    status = status_code(headers)
+    response_headers = cors_headers(event, headers)
     value = {
-        # No Content is conventional for preflight
-        "statusCode": 200 if user_agent.startswith("ELB-HealthChecker") else 204,
-        "statusDescription": "204 No Content",
+        "statusCode": status,
+        "statusDescription": f"{status} {'OK' if status == 200 else 'No Content'}",
         "isBase64Encoded": False,
-        "headers": headers,
-        # "multiValueHeaders": {k: [v] for k, v in headers.items()},
+        "headers": response_headers,
+        # "multiValueHeaders": {k: [v] for k, v in response_headers.items()},
         "body": json.dumps(body or {}),
     }
     return value
@@ -143,7 +188,7 @@ def preflight_response(
 
 def lambda_handler(
     event: dict[str, typing.Any],
-    context: dict[str, typing.Any],
+    _context: typing.Any,
 ) -> dict[str, typing.Any]:
     logger.info("Preflight Lambda handler started")
     return preflight_response(event)

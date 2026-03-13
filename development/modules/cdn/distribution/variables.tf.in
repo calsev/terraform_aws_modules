@@ -15,6 +15,11 @@ variable "bucket_log_target_bucket_name_default" {
   default = null
 }
 
+variable "bucket_notification_enable_event_bridge_default" {
+  type    = bool
+  default = false
+}
+
 variable "bucket_notification_lambda_event_list_default" {
   type = list(string)
   default = [

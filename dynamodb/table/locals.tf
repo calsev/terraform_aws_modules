@@ -37,7 +37,9 @@ locals {
   create_policy_map = {
     for k, v in local.lx_map : k => merge(v, {
       name_map_table = {
-        (v.name_effective) = {}
+        (v.name_effective) = {
+          name_list_index = [for k_gsi, _ in v.gsi_map : k_gsi]
+        }
       }
     })
   }

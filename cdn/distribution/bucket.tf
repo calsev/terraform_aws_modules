@@ -4,6 +4,7 @@ module "cdn_origin_bucket" {
   bucket_lifecycle_version_count_default           = var.bucket_lifecycle_version_count_default
   bucket_lifecycle_version_expiration_days_default = var.bucket_lifecycle_version_expiration_days_default
   bucket_map                                       = local.create_bucket_map
+  bucket_notification_enable_event_bridge_default  = var.bucket_notification_enable_event_bridge_default
   bucket_notification_lambda_event_list_default    = var.bucket_notification_lambda_event_list_default
   bucket_notification_lambda_filter_prefix_default = var.bucket_notification_lambda_filter_prefix_default
   bucket_notification_lambda_filter_suffix_default = var.bucket_notification_lambda_filter_suffix_default
