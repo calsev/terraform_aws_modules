@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.141.0
+
+### General
+
+* CORS support for wildcard domains
+* AWS_REGION defined in all compute environments to support AWS JS SDK
+* CDN support for source bucket notifications
+
+### Bugfix
+
+* Missing index permissions for Dynamo policy
+
 ## 0.140.0
 
 ### General

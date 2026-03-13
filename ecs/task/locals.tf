@@ -165,6 +165,7 @@ locals {
             for k, v in merge(
               {
                 AWS_DEFAULT_REGION = var.std_map.aws_region_name
+                AWS_REGION         = var.std_map.aws_region_name
               },
               v_def.environment_map == null ? var.task_container_environment_map_default : v_def.environment_map
               ) : {
