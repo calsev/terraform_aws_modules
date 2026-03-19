@@ -22,7 +22,7 @@ locals {
   }
   create_db_destination_map = {
     for k, v in local.create_db_table_map : k => merge(v, {
-      query = <<-EOT
+      query = replace(replace(<<-EOT
       SELECT
         dstaddr,
         dstport,
@@ -35,11 +35,12 @@ locals {
       ORDER BY total_mib DESC
       LIMIT 50;
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     })
   }
   create_db_nat_map = {
     for k, v in local.create_db_table_map : k => merge(v, {
-      query = <<-EOT
+      query = replace(replace(<<-EOT
       SELECT
         pkt_dstaddr,
         dstport,
@@ -53,11 +54,12 @@ locals {
       ORDER BY total_mib DESC
       LIMIT 50;
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     })
   }
   create_db_source_map = {
     for k, v in local.create_db_table_map : k => merge(v, {
-      query = <<-EOT
+      query = replace(replace(<<-EOT
       SELECT
         srcaddr,
         dstport,
@@ -70,13 +72,14 @@ locals {
       ORDER BY total_mib DESC
       LIMIT 50;
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     })
   }
   create_db_table_map = {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.destination_s3_bucket
       database_key = v.log_db_key
-      query        = <<-EOT
+      query = replace(replace(<<-EOT
       CREATE EXTERNAL TABLE IF NOT EXISTS ${local.create_table_name[k]} (
         version int,
         account_id string,
@@ -137,6 +140,7 @@ locals {
         'storage.location.template'='s3://${v.destination_s3_bucket}/AWSLogs/${var.std_map.aws_account_id}/vpcflowlogs/${var.std_map.aws_region_name}/$${day}/'
       )
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     }) if v.log_db_enabled
   }
   create_table_name = {

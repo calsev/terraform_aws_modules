@@ -16,7 +16,7 @@ locals {
         reason          = "$.detail.stoppedReason"
         task_name       = "$.detail.group"
       }
-      alert_target_template  = <<-EOT
+      alert_target_template  = replace(replace(<<-EOT
       {
         "Message": "ECS task '<task_name>' failed!",
         "Reason": "<reason>",
@@ -24,6 +24,7 @@ locals {
         "URL": "https://<aws_region_name>.console.aws.amazon.com/ecs/v2/clusters/<cluster_id>/tasks"
       }
       EOT
+      , "\r\n", "\n"), "\r", "\n")
       docker_volume_map      = v.docker_volume_map == null ? var.task_docker_volume_map_default : v.docker_volume_map
       ecs_cluster_key        = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_exec_enabled       = v.ecs_exec_enabled == null ? var.task_ecs_exec_enabled_default : v.ecs_exec_enabled

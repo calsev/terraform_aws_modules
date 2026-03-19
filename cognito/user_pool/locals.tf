@@ -66,6 +66,8 @@ locals {
       deletion_protection                               = v.deletion_protection == null ? var.pool_deletion_protection_default : v.deletion_protection
       device_challenge_required_on_new                  = v.device_challenge_required_on_new == null ? var.pool_device_challenge_required_on_new_default : v.device_challenge_required_on_new
       device_only_remembered_on_user_prompt             = v.device_only_remembered_on_user_prompt == null ? var.pool_device_only_remembered_on_user_prompt_default : v.device_only_remembered_on_user_prompt
+      dns_from_zone_key                                 = v.dns_from_zone_key == null ? var.pool_dns_from_zone_key_default : v.dns_from_zone_key
+      dns_subdomain_key                                 = v.dns_subdomain_key == null ? var.pool_dns_subdomain_key_default : v.dns_subdomain_key
       email_from_username                               = v.email_from_username == null ? var.pool_email_from_username_default : v.email_from_username
       email_reply_to_address                            = v.email_reply_to_address == null ? var.pool_email_reply_to_address_default : v.email_reply_to_address
       email_ses_key                                     = v.email_ses_key == null ? var.pool_email_ses_key_default : v.email_ses_key
@@ -94,8 +96,8 @@ locals {
       username_attribute_list                           = v.username_attribute_list == null ? var.pool_username_attribute_list_default : v.username_attribute_list
       username_case_sensitive                           = v.username_case_sensitive == null ? var.pool_username_case_sensitive_default : v.username_case_sensitive
       verify_confirm_with_link                          = v.verify_confirm_with_link == null ? var.pool_verify_confirm_with_link_default : v.verify_confirm_with_link
-      dns_from_zone_key                                 = v.dns_from_zone_key == null ? var.pool_dns_from_zone_key_default : v.dns_from_zone_key
-      dns_subdomain_key                                 = v.dns_subdomain_key == null ? var.pool_dns_subdomain_key_default : v.dns_subdomain_key
+      web_auth_relying_party_id                         = v.web_auth_relying_party_id == null ? var.pool_web_auth_relying_party_id_default : v.web_auth_relying_party_id
+      web_auth_user_verification_required               = v.web_auth_user_verification_required == null ? var.pool_web_auth_user_verification_required_default : v.web_auth_user_verification_required
     })
   }
   l2_map = {

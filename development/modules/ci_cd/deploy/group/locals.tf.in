@@ -16,13 +16,14 @@ locals {
         deployment_group = "$.detail.deploymentGroup"
         deployment_id    = "$.detail.deploymentId"
       }
-      alert_target_template               = <<-EOT
+      alert_target_template               = replace(replace(<<-EOT
       {
         "Message": "CodeDeploy deployment '<deployment_id>' failed for application <application_name>!",
         "Deployment": "https://<aws_region_name>.console.aws.amazon.com/codesuite/codedeploy/deployments/<deployment_id>",
         "Group": "https://<aws_region_name>.console.aws.amazon.com/codesuite/codedeploy/applications/<application_name>/deployment-groups/<deployment_group>"
       }
       EOT
+      , "\r\n", "\n"), "\r", "\n")
       auto_rollback_enabled               = v.auto_rollback_enabled == null ? var.deployment_auto_rollback_enabled_default : v.auto_rollback_enabled
       auto_rollback_event_list            = v.auto_rollback_event_list == null ? var.deployment_auto_rollback_event_list_default : v.auto_rollback_event_list
       blue_green_terminate_on_success     = v.blue_green_terminate_on_success == null ? var.deployment_blue_green_terminate_on_success_default : v.blue_green_terminate_on_success

@@ -110,6 +110,10 @@ resource "aws_cognito_user_pool" "this_pool" {
     email_subject_by_link = each.value.verify_email_message_by_link_subject
     sms_message           = each.value.verify_sms_message_template
   }
+  web_authn_configuration {
+    relying_party_id = each.value.web_auth_relying_party_id
+    user_verification = each.value.web_auth_user_verification_required ? "required" : "preferred"
+  }
 }
 
 module "pool_log" {
