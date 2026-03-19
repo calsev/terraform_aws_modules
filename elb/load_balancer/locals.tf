@@ -62,7 +62,7 @@ locals {
       bucket_name  = v.log_db_bucket
       database_key = v.log_db_key
       # https://docs.aws.amazon.com/athena/latest/ug/application-load-balancer-logs.html
-      query = <<-EOT
+      query = replace(replace(<<-EOT
       CREATE EXTERNAL TABLE IF NOT EXISTS ${replace("${module.log_db.data[v.log_db_key].name_effective}.${v.name_effective}_access", "-", "_")} (
         type string,
         time string,
@@ -120,13 +120,14 @@ locals {
         "storage.location.template" = "s3://${v.log_db_bucket}/${v.log_prefix_access}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/$${day}"
       )
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     }) if v.log_db_enabled
   }
   create_db_connection_map = {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.log_db_bucket
       database_key = v.log_db_key
-      query        = <<-EOT
+      query = replace(replace(<<-EOT
       CREATE EXTERNAL TABLE IF NOT EXISTS ${replace("${module.log_db.data[v.log_db_key].name_effective}.${v.name_effective}_connection", "-", "_")} (
         time string,
         client_ip string,
@@ -162,6 +163,7 @@ locals {
         "storage.location.template" = "s3://${v.log_db_bucket}/${v.log_prefix_connection}/AWSLogs/${var.std_map.aws_account_id}/elasticloadbalancing/${var.std_map.aws_region_name}/$${day}"
       )
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     }) if v.log_db_enabled
   }
   create_listener_1_list = flatten([

@@ -27,7 +27,7 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       bucket_name  = v.s3_bucket_name
       database_key = v.cost_query_db_key
-      query        = <<-EOT
+      query = replace(replace(<<-EOT
       CREATE EXTERNAL TABLE IF NOT EXISTS ${local.create_table_name[k]} (
         fileversion string,
         configsnapshotid string,
@@ -53,11 +53,12 @@ locals {
       ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
       LOCATION 's3://${v.s3_bucket_name}${v.s3_log_key_prefix}/AWSLogs/${var.std_map.aws_account_id}/Config/${var.std_map.aws_region_name}/';
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     }) if v.cost_query_enabled
   }
   create_query_type_map = {
     for k, v in local.create_query_table_map : k => merge(v, {
-      query = <<-EOT
+      query = replace(replace(<<-EOT
       SELECT
         ci.resourcetype AS resource_type,
         COUNT(*)        AS ci_count
@@ -70,11 +71,12 @@ locals {
       ORDER BY 2 DESC
       LIMIT 50;
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     })
   }
   create_query_update_map = {
     for k, v in local.create_query_table_map : k => merge(v, {
-      query = <<-EOT
+      query = replace(replace(<<-EOT
       WITH per_resource AS (
         SELECT
           ci.resourcetype AS resource_type,
@@ -104,6 +106,7 @@ locals {
       ORDER BY total_cis_24h DESC
       LIMIT 50;
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     })
   }
   l0_map = {

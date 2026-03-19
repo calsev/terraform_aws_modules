@@ -229,6 +229,8 @@ variable "pool_map" {
     verify_email_message_by_code_subject  = optional(string)
     verify_email_message_by_link_subject  = optional(string)
     verify_sms_message_template           = optional(string)
+    web_auth_relying_party_id             = optional(string)
+    web_auth_user_verification_required   = optional(string)
   }))
 }
 
@@ -623,6 +625,17 @@ variable "pool_verify_sms_message_template_default" {
     condition     = var.pool_verify_sms_message_template_default == null ? true : strcontains(var.pool_verify_sms_message_template_default, "{####}")
     error_message = "Template must contain placeholder for code"
   }
+}
+
+variable "pool_web_auth_relying_party_id_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_web_auth_user_verification_required_default" {
+  type        = bool
+  default     = false
+  description = "If true, user verification is required, rather than preferred"
 }
 
 variable "std_map" {

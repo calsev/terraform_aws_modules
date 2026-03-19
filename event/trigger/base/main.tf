@@ -66,7 +66,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
     content {
       input_paths = each.value.input_transformer_path_map
       # jsonencode escapes angle brackets and breaks the template
-      input_template = each.value.input_transformer_template_string != null ? each.value.input_transformer_template_string : <<-EOT
+      input_template = each.value.input_transformer_template_string != null ? each.value.input_transformer_template_string : replace(replace(<<-EOT
       {
         "Parameters" : {%{for k, v in each.value.input_transformer_template_doc}
           "${k}": "${v}",%{endfor}
@@ -74,6 +74,7 @@ resource "aws_cloudwatch_event_target" "this_target" {
         }
       }
       EOT
+      , "\r\n", "\n"), "\r", "\n")
     }
   }
   # kinesis_target # TODO

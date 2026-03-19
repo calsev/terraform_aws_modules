@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.142.0
+
+### General
+
+* web_authn_configuration for Cognito user pool
+
+### Bugfix
+
+* Normalize EOL for multi-line strings
+
 ## 0.141.0
 
 ### General

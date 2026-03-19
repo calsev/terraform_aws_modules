@@ -30,17 +30,18 @@ locals {
         aws_region_name = "$.region"
         reason          = "$.detail.statusReason"
       }
-      alert_target_template = <<-EOT
+      alert_target_template = replace(replace(<<-EOT
       {
         "Message": "Batch job '<job_name>' failed!",
         "Reason": "<reason>",
         "URL": "https://<aws_region_name>.console.aws.amazon.com/batch/home?region=<aws_region_name>#jobs/detail/<job_id>"
       }
       EOT
-      batch_cluster_key     = v.batch_cluster_key == null ? var.job_batch_cluster_key_default == null ? k : var.job_batch_cluster_key_default : v.batch_cluster_key
-      command_list          = v.command_list == null ? var.job_command_list_default : v.command_list
-      efs_volume_map        = v.efs_volume_map == null ? var.job_efs_volume_map_default : v.efs_volume_map
-      entry_point           = v.entry_point == null ? var.job_entry_point_default : v.entry_point
+      , "\r\n", "\n"), "\r", "\n")
+      batch_cluster_key = v.batch_cluster_key == null ? var.job_batch_cluster_key_default == null ? k : var.job_batch_cluster_key_default : v.batch_cluster_key
+      command_list      = v.command_list == null ? var.job_command_list_default : v.command_list
+      efs_volume_map    = v.efs_volume_map == null ? var.job_efs_volume_map_default : v.efs_volume_map
+      entry_point       = v.entry_point == null ? var.job_entry_point_default : v.entry_point
       environment_map = merge(
         {
           AWS_DEFAULT_REGION = var.std_map.aws_region_name
