@@ -1,0 +1,27 @@
+variable "address_auto_suppress_reason_list" {
+  type    = list(string)
+  default = ["COMPLAINT"]
+  validation {
+    condition     = length(setsubtract(toset(var.address_auto_suppress_reason_list), toset(["BOUNCE", "COMPLAINT"]))) == 0
+    error_message = "Invalid suppression reasons"
+  }
+}
+
+variable "dashboard_engagement_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "guardian_shared_delivery_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "vdm_enabled" {
+  type    = bool
+  default = true
+}
+
+{{ name.var() }}
+
+{{ std.map() }}

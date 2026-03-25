@@ -18,7 +18,7 @@ variable "domain_map" {
   type = map(object({
     configuration_set_key       = optional(string)
     dkim_signing_key_length     = optional(string)
-    dmarc_record_string         = string # This should be something like "v=DMARC1; p=none; rua=mailto:dmarc@domain.com; ruf=mailto:dmarc@domain.com; sp=none; aspf=s; adkim=s; fo=1;"
+    dmarc_record_string         = optional(string)
     dns_from_zone_key           = optional(string)
     email_forwarding_enabled    = optional(bool)
     fallback_to_ses_send_domain = optional(bool)
@@ -40,6 +40,12 @@ variable "domain_dkim_signing_key_length_default" {
   }
 }
 
+variable "domain_dmarc_record_string_default" {
+  type        = string
+  default     = null
+  description = "This should be something like 'v=DMARC1; p=reject; rua=mailto:dmarc@domain.com; ruf=mailto:dmarc@domain.com; sp=none; aspf=r; adkim=s; fo=1;'"
+}
+
 variable "domain_dns_from_zone_key_default" {
   type    = string
   default = null
@@ -57,7 +63,7 @@ variable "domain_fallback_to_ses_send_domain_default" {
 
 variable "domain_mail_from_subdomain_default" {
   type    = string
-  default = "mail"
+  default = null
 }
 
 {{ std.map() }}

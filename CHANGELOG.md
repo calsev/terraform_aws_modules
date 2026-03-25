@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.143.0
+
+### New modules
+
+* SES account
+
+### General
+
+* Cognito user pool support for domain identity
+* SES engagement tracking off by default
+* SES support for root domain
+
 ## 0.142.0
 
 ### General

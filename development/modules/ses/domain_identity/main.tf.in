@@ -15,7 +15,7 @@ resource "aws_sesv2_email_identity_feedback_attributes" "forwarding" {
 }
 
 resource "aws_sesv2_email_identity_mail_from_attributes" "mail_from" {
-  for_each               = local.lx_map
+  for_each               = local.create_mail_from_map
   behavior_on_mx_failure = each.value.fallback_to_ses_send_domain ? "USE_DEFAULT_VALUE" : "REJECT_MESSAGE"
   email_identity         = aws_sesv2_email_identity.this_domain[each.key].email_identity
   mail_from_domain       = each.value.mail_from_fqdn
