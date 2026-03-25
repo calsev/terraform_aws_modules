@@ -73,8 +73,9 @@ variable "config_tracking_custom_redirect_domain_default" {
 }
 
 variable "config_vdm_dashboard_engagement_metrics_enabled_default" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = false
+  description = "Required for engagement metrics but may affect deliverability if enabled"
 }
 
 variable "config_vdm_guardian_optimized_shared_delivery_enabled_default" {

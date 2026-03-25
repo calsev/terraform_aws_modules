@@ -65,17 +65,6 @@ variable "client_refresh_token_validity_hours_default" {
   default = 30
 }
 
-variable "comms_data" {
-  type = object({
-    ses_email_map = map(object({
-      configuration_set_name = string
-      identity_arn           = string
-    }))
-  })
-  default     = null
-  description = "Must be provided if any pool uses SES email"
-}
-
 variable "dns_data" {
   type = object({
     domain_to_dns_zone_map = map(object({
@@ -120,7 +109,8 @@ variable "pool_map" {
     device_only_remembered_on_user_prompt = optional(bool)
     dns_from_zone_key                     = optional(string)
     dns_subdomain_key                     = optional(string)
-    email_from_username                   = optional(string)
+    email_from_address                    = optional(string)
+    email_from_display_name               = optional(string)
     email_reply_to_address                = optional(string)
     email_ses_key                         = optional(string)
     group_map = optional(map(object({
@@ -266,7 +256,12 @@ variable "pool_dns_subdomain_key_default" {
   default = "cognito"
 }
 
-variable "pool_email_from_username_default" {
+variable "pool_email_from_address_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_email_from_display_name_default" {
   type    = string
   default = null
 }
@@ -585,6 +580,15 @@ variable "pool_web_auth_user_verification_required_default" {
   type        = bool
   default     = false
   description = "If true, user verification is required, rather than preferred"
+}
+
+variable "ses_data_map" {
+  type = map(object({
+    configuration_set_name = string
+    identity_arn           = string
+  }))
+  default     = null
+  description = "Must be provided if any pool uses SES email"
 }
 
 {{ std.map() }}

@@ -30,16 +30,19 @@ locals {
   create_dns_mx_map = {
     for k, v in local.lx_map : k => merge(v, {
       # See AWs console for verified identities > "Custom MAIL FROM domain" > "Publish DNS records"
-      dns_from_fqdn   = aws_sesv2_email_identity_mail_from_attributes.mail_from[k].mail_from_domain
+      dns_from_fqdn   = v.mail_from_fqdn
       dns_record_list = ["10 feedback-smtp.${var.std_map.aws_region_name}.amazonses.com"]
     })
   }
   create_dns_txt_map = {
     for k, v in local.lx_map : k => merge(v, {
       # See AWs console for verified identities > "Custom MAIL FROM domain" > "Publish DNS records"
-      dns_from_fqdn   = aws_sesv2_email_identity_mail_from_attributes.mail_from[k].mail_from_domain
+      dns_from_fqdn   = v.mail_from_fqdn
       dns_record_list = ["v=spf1 include:amazonses.com -all"]
     })
+  }
+  create_mail_from_map = {
+    for k, v in local.lx_map : k => v if v.mail_from_subdomain != null
   }
   l0_map = {
     for k, v in var.domain_map : k => v
@@ -48,6 +51,7 @@ locals {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       configuration_set_key       = v.configuration_set_key == null ? var.domain_configuration_set_key_default : v.configuration_set_key
       dkim_signing_key_length     = v.dkim_signing_key_length == null ? var.domain_dkim_signing_key_length_default : v.dkim_signing_key_length
+      dmarc_record_string         = v.dmarc_record_string == null ? var.domain_dmarc_record_string_default : v.dmarc_record_string
       email_forwarding_enabled    = v.email_forwarding_enabled == null ? var.domain_email_forwarding_enabled_default : v.email_forwarding_enabled
       fallback_to_ses_send_domain = v.fallback_to_ses_send_domain == null ? var.domain_fallback_to_ses_send_domain_default : v.fallback_to_ses_send_domain
       mail_from_subdomain         = v.mail_from_subdomain == null ? var.domain_mail_from_subdomain_default : v.mail_from_subdomain
@@ -56,7 +60,7 @@ locals {
   l2_map = {
     for k, v in local.l0_map : k => {
       configuration_set_name = local.l1_map[k].configuration_set_key == null ? null : var.config_data_map[local.l1_map[k].configuration_set_key].configuration_set_name
-      mail_from_fqdn         = "${local.l1_map[k].mail_from_subdomain}.${local.l1_map[k].name_simple}"
+      mail_from_fqdn         = local.l1_map[k].mail_from_subdomain == null ? local.l1_map[k].name_simple : "${local.l1_map[k].mail_from_subdomain}.${local.l1_map[k].name_simple}"
     }
   }
   lx_map = {
@@ -71,12 +75,11 @@ locals {
         dns_dkim = [
           for index in range(3) : module.dns_dkim.data["${k}_${index}"]
         ]
-        dns_dmarc        = module.dns_dmarc.data[k]
-        dns_mx           = module.dns_mx.data[k]
-        dns_txt          = module.dns_txt.data[k]
-        identity_arn     = aws_sesv2_email_identity.this_domain[k].arn
-        mail_from_domain = aws_sesv2_email_identity_mail_from_attributes.mail_from[k].mail_from_domain
-        mail_from_id     = aws_sesv2_email_identity_mail_from_attributes.mail_from[k].id
+        dns_dmarc    = module.dns_dmarc.data[k]
+        dns_mx       = module.dns_mx.data[k]
+        dns_txt      = module.dns_txt.data[k]
+        identity_arn = aws_sesv2_email_identity.this_domain[k].arn
+        mail_from_id = local.l1_map[k].mail_from_subdomain == null ? null : aws_sesv2_email_identity_mail_from_attributes.mail_from[k].id
       }
     )
   }

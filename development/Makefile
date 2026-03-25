@@ -368,6 +368,7 @@ tf-lint: tflint-install
 	cd ../secret/init_value && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../secret/random && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ses/account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/configuration_set && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/domain_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/email_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
