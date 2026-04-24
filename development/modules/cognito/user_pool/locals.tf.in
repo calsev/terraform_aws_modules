@@ -82,6 +82,7 @@ locals {
       password_require_uppercase                        = v.password_require_uppercase == null ? var.pool_password_require_uppercase_default : v.password_require_uppercase
       password_temporary_validity_days                  = v.password_temporary_validity_days == null ? var.pool_password_temporary_validity_days_default : v.password_temporary_validity_days
       schema_map                                        = v.schema_map == null ? var.pool_schema_map_default : v.schema_map
+      sign_in_allowed_first_auth_factor_list            = v.sign_in_allowed_first_auth_factor_list == null ? var.pool_sign_in_allowed_first_auth_factor_list_default : v.sign_in_allowed_first_auth_factor_list
       username_alias_attribute_list                     = v.username_alias_attribute_list == null ? var.pool_username_alias_attribute_list_default : v.username_alias_attribute_list
       username_attribute_list                           = v.username_attribute_list == null ? var.pool_username_attribute_list_default : v.username_attribute_list
       username_case_sensitive                           = v.username_case_sensitive == null ? var.pool_username_case_sensitive_default : v.username_case_sensitive

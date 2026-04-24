@@ -1,8 +1,7 @@
 resource "aws_elasticache_parameter_group" "this_group" {
   for_each = local.lx_map
-  name     = each.value.name_effective
   family   = each.value.family
-  tags     = each.value.tags
+  name     = each.value.name_effective
   dynamic "parameter" {
     for_each = each.value.parameter_map
     content {
@@ -10,4 +9,6 @@ resource "aws_elasticache_parameter_group" "this_group" {
       value = parameter.value
     }
   }
+  region = var.std_map.aws_region_name
+  tags   = each.value.tags
 }

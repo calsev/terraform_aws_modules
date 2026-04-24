@@ -85,6 +85,9 @@ resource "aws_cognito_user_pool" "this_pool" {
       }
     }
   }
+  sign_in_policy {
+    allowed_first_auth_factors = each.value.sign_in_allowed_first_auth_factor_list
+  }
   sms_authentication_message = null # TODO
   # sms_configuration # TODO
   sms_verification_message = null # Conflicts with verification_message_template
