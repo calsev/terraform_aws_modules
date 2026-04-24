@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.144.0
+
+### General
+
+* Improved web auth for Cognito user pool
+* Valkey support for Elasticache
+
 ## 0.143.0
 
 ### New modules

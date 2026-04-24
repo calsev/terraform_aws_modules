@@ -8,7 +8,7 @@ variable "group_map" {
 
 variable "group_family_default" {
   type    = string
-  default = "redis7"
+  default = "valkey8"
 }
 
 variable "group_parameter_map_default" {

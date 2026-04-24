@@ -3,11 +3,14 @@ variable "cluster_map" {
     apply_change_immediately           = optional(bool)
     auto_minor_version_upgrade_enabled = optional(bool)
     availability_zone_key              = optional(string)
-    az_mode                            = optional(string)
+    cluster_mode                       = optional(string)
+    data_tiering_enabled               = optional(bool)
+    encryption_at_rest_enabled         = optional(bool)
     engine                             = optional(string)
     engine_version                     = optional(string)
     final_snapshot_enabled             = optional(bool)
     ip_discovery_v6                    = optional(bool)
+    kms_key_id                         = optional(string)
     log_map = optional(map(object({
       log_destination_name = optional(string)
       log_destination_type = optional(string)
@@ -15,6 +18,7 @@ variable "cluster_map" {
       log_type             = optional(string)
     })))
     maintenance_window_utc               = optional(string)
+    multi_az_enabled                     = optional(bool)
     name_append                          = optional(string)
     name_include_app_fields              = optional(bool)
     name_infix                           = optional(bool)
@@ -24,19 +28,20 @@ variable "cluster_map" {
     network_type                         = optional(string)
     node_type                            = optional(string)
     notification_topic_arn               = optional(string)
-    num_cache_nodes                      = optional(number)
     outpost_mode                         = optional(string)
     parameter_group_name                 = optional(string)
     port                                 = optional(number)
     preferred_availability_zone_key_list = optional(list(string))
     preferred_outpost_arn                = optional(string)
     replication_group_id                 = optional(string)
+    shard_count                          = optional(number)
+    shard_replica_count                  = optional(number)
     snapshot_arn                         = optional(string)
     snapshot_name                        = optional(string)
     snapshot_retention_days              = optional(number)
     snapshot_window_utc                  = optional(string)
     subnet_group_key                     = optional(bool)
-    transit_encryption_enabled           = optional(string)
+    transit_encryption_required          = optional(string)
     vpc_az_key_list                      = optional(list(string))
     vpc_key                              = optional(string)
     vpc_security_group_key_list          = optional(list(string))
@@ -60,28 +65,34 @@ variable "cluster_availability_zone_key_default" {
   description = "Ignored if engine is memcached and preferred_availability_zone_key_list is provided"
 }
 
-variable "cluster_az_mode_default" {
-  type        = string
-  default     = "cross-az"
-  description = "Ignored unless engine is redis"
-  validation {
-    condition     = contains(["cross-az", "single-az"], var.cluster_az_mode_default)
-    error_message = "Invalid az_mode"
-  }
+variable "cluster_data_tiering_enabled_default" {
+  type        = bool
+  default     = false
+  description = "Has no effect if shard_count < 2. Only supported for node_type = r6gd"
+}
+
+variable "cluster_encryption_at_rest_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Has no effect if shard_count < 2"
 }
 
 variable "cluster_engine_default" {
   type    = string
-  default = "redis"
+  default = "valkey"
   validation {
-    condition     = contains(["memcached", "redis"], var.cluster_engine_default)
+    condition     = contains(["memcached", "redis", "valkey"], var.cluster_engine_default)
     error_message = "Invalid engine"
   }
 }
 
-variable "cluster_engine_version_default" {
-  type    = string
-  default = "7.1"
+variable "cluster_engine_version_default_map" {
+  type = map(string)
+  default = {
+    memcached = "1.6.22"
+    redis     = "7.1"
+    valkey    = "8.2"
+  }
 }
 
 variable "cluster_final_snapshot_enabled_default" {
@@ -92,7 +103,13 @@ variable "cluster_final_snapshot_enabled_default" {
 variable "cluster_ip_discovery_v6_default" {
   type        = bool
   default     = false
-  description = "Has no effect if number of nodes is 1"
+  description = "Has no effect if shard_count < 2"
+}
+
+variable "cluster_kms_key_id_default" {
+  type        = string
+  default     = null
+  description = "Has no effect if shard_count < 2"
 }
 
 variable "cluster_log_map_default" {
@@ -154,6 +171,22 @@ variable "cluster_network_type_default" {
   }
 }
 
+variable "cluster_mode_default" {
+  type        = string
+  default     = "disabled"
+  description = "Has no effect for memcached or Redis without sharding or failover"
+  validation {
+    condition     = contains(["compatible", "disabled", "enabled"], var.cluster_mode_default)
+    error_message = "Invalid outpost_mode"
+  }
+}
+
+variable "cluster_multi_az_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Requires memcached or at least one replica per shard"
+}
+
 variable "cluster_node_type_default" {
   type    = string
   default = "cache.t4g.micro"
@@ -162,12 +195,6 @@ variable "cluster_node_type_default" {
 variable "cluster_notification_topic_arn_default" {
   type    = string
   default = null
-}
-
-variable "cluster_num_cache_nodes_default" {
-  type        = number
-  default     = 1
-  description = "Must be 1 for Redis, must be greater than 1 for Memcached and cross-az"
 }
 
 variable "cluster_outpost_mode_default" {
@@ -180,14 +207,22 @@ variable "cluster_outpost_mode_default" {
   }
 }
 
-variable "cluster_parameter_group_name_default" {
-  type    = string
-  default = "default.redis7"
+variable "cluster_parameter_group_name_default_map" {
+  type = map(string)
+  default = {
+    memcached = "default.memcached1.6"
+    redis     = "default.redis7"
+    valkey    = "default.valkey8"
+  }
 }
 
-variable "cluster_port_default" {
-  type        = number
-  default     = null
+variable "cluster_port_default_map" {
+  type = map(number)
+  default = {
+    memcached = 11211
+    redis     = 6379
+    valkey    = 6379
+  }
   description = "Defaults to standard port for engine"
 }
 
@@ -205,6 +240,17 @@ variable "cluster_preferred_outpost_arn_default" {
 variable "cluster_replication_group_id_default" {
   type    = string
   default = null
+}
+
+variable "cluster_shard_count_default" {
+  type    = number
+  default = 1
+}
+
+variable "cluster_shard_replica_count_default" {
+  type        = number
+  default     = 1
+  description = "If greater than 1, failover and multi-az will also be enabled"
 }
 
 variable "cluster_snapshot_arn_default" {
@@ -236,10 +282,9 @@ variable "cluster_subnet_group_key_default" {
   default = null
 }
 
-variable "cluster_transit_encryption_enabled_default" {
-  type        = bool
-  default     = true
-  description = "Ignored unless engine is memcached"
+variable "cluster_transit_encryption_required_default" {
+  type    = bool
+  default = false
 }
 
 variable "name_append_default" {

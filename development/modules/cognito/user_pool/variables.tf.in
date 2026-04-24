@@ -159,17 +159,18 @@ variable "pool_map" {
       string_length_max = optional(number)
       string_length_min = optional(number)
     })))
-    username_attribute_list               = optional(list(string))
-    username_alias_attribute_list         = optional(list(string))
-    username_case_sensitive               = optional(bool)
-    verify_confirm_with_link              = optional(bool)
-    verify_email_message_by_code_template = optional(string)
-    verify_email_message_by_link_template = optional(string)
-    verify_email_message_by_code_subject  = optional(string)
-    verify_email_message_by_link_subject  = optional(string)
-    verify_sms_message_template           = optional(string)
-    web_auth_relying_party_id             = optional(string)
-    web_auth_user_verification_required   = optional(string)
+    sign_in_allowed_first_auth_factor_list = optional(list(string))
+    username_attribute_list                = optional(list(string))
+    username_alias_attribute_list          = optional(list(string))
+    username_case_sensitive                = optional(bool)
+    verify_confirm_with_link               = optional(bool)
+    verify_email_message_by_code_template  = optional(string)
+    verify_email_message_by_link_template  = optional(string)
+    verify_email_message_by_code_subject   = optional(string)
+    verify_email_message_by_link_subject   = optional(string)
+    verify_sms_message_template            = optional(string)
+    web_auth_relying_party_id              = optional(string)
+    web_auth_user_verification_required    = optional(string)
   }))
 }
 
@@ -513,6 +514,18 @@ variable "pool_schema_string_length_min_default" {
   default = null
 }
 
+variable "pool_sign_in_allowed_first_auth_factor_list_default" {
+  type    = list(string)
+  default = [
+    "PASSWORD",
+    "WEB_AUTHN",
+  ]
+  validation {
+    condition     = length(setsubtract(toset(var.pool_sign_in_allowed_first_auth_factor_list_default), toset(["EMAIL_OTP", "PASSWORD", "SMS_OTP", "WEB_AUTHN"]))) == 0
+    error_message = "Invalid first factors"
+  }
+}
+
 variable "pool_username_alias_attribute_list_default" {
   type    = list(string)
   default = null
@@ -578,8 +591,8 @@ variable "pool_web_auth_relying_party_id_default" {
 
 variable "pool_web_auth_user_verification_required_default" {
   type        = bool
-  default     = false
-  description = "If true, user verification is required, rather than preferred"
+  default     = true
+  description = "If true, user verification for web authentication (passkey) is required, rather than preferred"
 }
 
 variable "ses_data_map" {
