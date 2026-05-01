@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.145.0
+
+### General
+
+* Cognito user pool custom email and sms sender support
+* IAM resource policy for KMS supports Cognito
+
 ## 0.144.0
 
 ### General

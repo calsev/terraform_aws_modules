@@ -122,7 +122,9 @@ variable "pool_map" {
     invite_email_subject                      = optional(string)
     invite_sms_message_template               = optional(string)
     lambda_arn_create_auth_challenge          = optional(string)
+    lambda_arn_custom_email_sender            = optional(string)
     lambda_arn_custom_message                 = optional(string)
+    lambda_arn_custom_sms_sender              = optional(string)
     lambda_arn_define_auth_challenge          = optional(string)
     lambda_arn_pre_authentication             = optional(string)
     lambda_arn_pre_sign_up                    = optional(string)
@@ -131,7 +133,7 @@ variable "pool_map" {
     lambda_arn_post_confirmation              = optional(string)
     lambda_arn_user_migration                 = optional(string)
     lambda_arn_verify_auth_challenge_response = optional(string)
-    lambda_kms_key_id                         = optional(string)
+    lambda_kms_key_arn                         = optional(string)
     log_map = optional(map(object({
       event_source        = optional(string)
       log_level           = optional(string)
@@ -329,7 +331,17 @@ variable "pool_lambda_arn_create_auth_challenge_default" {
   default = null
 }
 
+variable "pool_lambda_arn_custom_email_sender_default" {
+  type    = string
+  default = null
+}
+
 variable "pool_lambda_arn_custom_message_default" {
+  type    = string
+  default = null
+}
+
+variable "pool_lambda_arn_custom_sms_sender_default" {
   type    = string
   default = null
 }
@@ -374,7 +386,7 @@ variable "pool_lambda_arn_verify_auth_challenge_response_default" {
   default = null
 }
 
-variable "pool_lambda_kms_key_id_default" {
+variable "pool_lambda_kms_key_arn_default" {
   type    = string
   default = null
 }
