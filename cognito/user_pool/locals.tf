@@ -31,7 +31,9 @@ locals {
       name_prefix = "cognito_${k}_"
       permission_map = {
         create_auth_challenge          = v.lambda_arn_create_auth_challenge
+        custom_email_sender            = v.lambda_arn_custom_email_sender
         custom_message                 = v.lambda_arn_custom_message
+        custom_sms_sender              = v.lambda_arn_custom_sms_sender
         define_auth_challenge          = v.lambda_arn_define_auth_challenge
         pre_authentication             = v.lambda_arn_pre_authentication
         pre_sign_up                    = v.lambda_arn_pre_sign_up
@@ -73,7 +75,9 @@ locals {
       email_reply_to_address                            = v.email_reply_to_address == null ? var.pool_email_reply_to_address_default : v.email_reply_to_address
       email_ses_key                                     = v.email_ses_key == null ? var.pool_email_ses_key_default : v.email_ses_key
       lambda_arn_create_auth_challenge                  = v.lambda_arn_create_auth_challenge == null ? var.pool_lambda_arn_create_auth_challenge_default : v.lambda_arn_create_auth_challenge
+      lambda_arn_custom_email_sender                    = v.lambda_arn_custom_email_sender == null ? var.pool_lambda_arn_custom_email_sender_default : v.lambda_arn_custom_email_sender
       lambda_arn_custom_message                         = v.lambda_arn_custom_message == null ? var.pool_lambda_arn_custom_message_default : v.lambda_arn_custom_message
+      lambda_arn_custom_sms_sender                      = v.lambda_arn_custom_sms_sender == null ? var.pool_lambda_arn_custom_sms_sender_default : v.lambda_arn_custom_sms_sender
       lambda_arn_define_auth_challenge                  = v.lambda_arn_define_auth_challenge == null ? var.pool_lambda_arn_define_auth_challenge_default : v.lambda_arn_define_auth_challenge
       lambda_arn_pre_authentication                     = v.lambda_arn_pre_authentication == null ? var.pool_lambda_arn_pre_authentication_default : v.lambda_arn_pre_authentication
       lambda_arn_pre_sign_up                            = v.lambda_arn_pre_sign_up == null ? var.pool_lambda_arn_pre_sign_up_default : v.lambda_arn_pre_sign_up
@@ -82,7 +86,7 @@ locals {
       lambda_arn_post_confirmation                      = v.lambda_arn_post_confirmation == null ? var.pool_lambda_arn_post_confirmation_default : v.lambda_arn_post_confirmation
       lambda_arn_user_migration                         = v.lambda_arn_user_migration == null ? var.pool_lambda_arn_user_migration_default : v.lambda_arn_user_migration
       lambda_arn_verify_auth_challenge_response         = v.lambda_arn_verify_auth_challenge_response == null ? var.pool_lambda_arn_verify_auth_challenge_response_default : v.lambda_arn_verify_auth_challenge_response
-      lambda_kms_key_id                                 = v.lambda_kms_key_id == null ? var.pool_lambda_kms_key_id_default : v.lambda_kms_key_id
+      lambda_kms_key_arn                                = v.lambda_kms_key_arn == null ? var.pool_lambda_kms_key_arn_default : v.lambda_kms_key_arn
       mfa_configuration                                 = v.mfa_configuration == null ? var.pool_mfa_configuration_default : v.mfa_configuration
       mfa_software_token_enabled                        = v.mfa_software_token_enabled == null ? var.pool_mfa_software_token_enabled_default : v.mfa_software_token_enabled
       only_admin_create_user                            = v.only_admin_create_user == null ? var.pool_only_admin_create_user_default : v.only_admin_create_user
@@ -123,16 +127,20 @@ locals {
       invite_email_message_template    = v.invite_email_message_template == null ? var.pool_invite_email_message_template_default == null ? "Your username is {username} and your temporary password is {####}. This password is valid for only ${local.l1_map[k].password_temporary_validity_days} days and must be changed on first login." : v.var.pool_invite_email_message_template_default : v.invite_email_message_template
       invite_sms_message_template      = v.invite_sms_message_template == null ? var.pool_invite_sms_message_template_default == null ? "You are invited to ${local.l1_map[k].email_from_display_name}. Your username is {username} and your password is {####} but must be changed on first login within ${local.l1_map[k].password_temporary_validity_days} days." : var.pool_invite_sms_message_template_default : v.invite_sms_message_template
       lambda_has_config = local.l1_map[k].lambda_arn_create_auth_challenge != null || (
-        local.l1_map[k].lambda_arn_custom_message != null || (
-          local.l1_map[k].lambda_arn_define_auth_challenge != null || (
-            local.l1_map[k].lambda_arn_pre_authentication != null || (
-              local.l1_map[k].lambda_arn_pre_sign_up != null || (
-                local.l1_map[k].lambda_arn_pre_token_generation != null || (
-                  local.l1_map[k].lambda_arn_post_authentication != null || (
-                    local.l1_map[k].lambda_arn_post_confirmation != null || (
-                      local.l1_map[k].lambda_arn_user_migration != null || (
-                        local.l1_map[k].lambda_arn_verify_auth_challenge_response != null || (
-                          local.l1_map[k].lambda_kms_key_id != null
+        local.l1_map[k].lambda_arn_custom_email_sender != null || (
+          local.l1_map[k].lambda_arn_custom_message != null || (
+            local.l1_map[k].lambda_arn_custom_sms_sender != null || (
+              local.l1_map[k].lambda_arn_define_auth_challenge != null || (
+                local.l1_map[k].lambda_arn_pre_authentication != null || (
+                  local.l1_map[k].lambda_arn_pre_sign_up != null || (
+                    local.l1_map[k].lambda_arn_pre_token_generation != null || (
+                      local.l1_map[k].lambda_arn_post_authentication != null || (
+                        local.l1_map[k].lambda_arn_post_confirmation != null || (
+                          local.l1_map[k].lambda_arn_user_migration != null || (
+                            local.l1_map[k].lambda_arn_verify_auth_challenge_response != null || (
+                              local.l1_map[k].lambda_kms_key_arn != null
+                            )
+                          )
                         )
                       )
                     )

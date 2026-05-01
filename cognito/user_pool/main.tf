@@ -37,11 +37,23 @@ resource "aws_cognito_user_pool" "this_pool" {
     for_each = each.value.lambda_has_config ? { this = {} } : {}
     content {
       create_auth_challenge = each.value.lambda_arn_create_auth_challenge
-      # custom_email_sender # TODO
+      dynamic "custom_email_sender" {
+        for_each = each.value.lambda_arn_custom_email_sender == null ? {} : { this = {} }
+        content {
+          lambda_arn     = each.value.lambda_arn_custom_email_sender
+          lambda_version = "V1_0"
+        }
+      }
       custom_message = each.value.lambda_arn_custom_message
-      # custom_sms_sender # TODO
+      dynamic "custom_sms_sender" {
+        for_each = each.value.lambda_arn_custom_sms_sender == null ? {} : { this = {} }
+        content {
+          lambda_arn     = each.value.lambda_arn_custom_sms_sender
+          lambda_version = "V1_0"
+        }
+      }
       define_auth_challenge          = each.value.lambda_arn_define_auth_challenge
-      kms_key_id                     = each.value.lambda_kms_key_id
+      kms_key_id                     = each.value.lambda_kms_key_arn
       pre_authentication             = each.value.lambda_arn_pre_authentication
       pre_sign_up                    = each.value.lambda_arn_pre_sign_up
       pre_token_generation           = each.value.lambda_arn_pre_token_generation

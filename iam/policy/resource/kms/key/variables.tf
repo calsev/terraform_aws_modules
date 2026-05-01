@@ -3,6 +3,11 @@ variable "allow_cloudtrail" {
   default = true
 }
 
+variable "allow_cognito" {
+  type    = bool
+  default = true
+}
+
 variable "allow_iam_delegation" {
   type    = bool
   default = true

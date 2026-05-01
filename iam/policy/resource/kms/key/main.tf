@@ -14,6 +14,27 @@ data "aws_iam_policy_document" "cloudtrail_policy" {
   }
 }
 
+data "aws_iam_policy_document" "cognito_policy" {
+  for_each = var.allow_cloudtrail ? { this = {} } : {}
+  statement {
+    actions = [
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+    ]
+    condition {
+      test     = "StringEquals"
+      values   = [var.std_map.aws_account_id]
+      variable = "aws:SourceAccount"
+    }
+    principals {
+      identifiers = ["cognito-idp.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = ["*"]
+    sid       = "EnableCognitoPermissions"
+  }
+}
+
 data "aws_iam_policy_document" "iam_delegation_policy" {
   for_each = var.allow_iam_delegation ? { this = {} } : {}
   statement {
@@ -30,6 +51,7 @@ data "aws_iam_policy_document" "iam_delegation_policy" {
 data "aws_iam_policy_document" "final_policy" {
   source_policy_documents = concat(
     var.allow_cloudtrail ? [data.aws_iam_policy_document.cloudtrail_policy["this"].json] : [],
+    var.allow_cognito ? [data.aws_iam_policy_document.cognito_policy["this"].json] : [],
     var.allow_iam_delegation ? [data.aws_iam_policy_document.iam_delegation_policy["this"].json] : [],
   )
 }
