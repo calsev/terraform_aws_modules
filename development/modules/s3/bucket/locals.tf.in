@@ -9,7 +9,7 @@ locals {
   }
   create_alias_map = {
     for k, v in local.lx_map : k => merge(v, {
-      dns_alias_name    = aws_s3_bucket.this_bucket[k].website_domain # The s3 website uses the endpoint, but the alias uses the domain and sni
+      dns_alias_name    = aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint # The s3 website uses the endpoint, but the alias uses the domain and sni
       dns_alias_zone_id = aws_s3_bucket.this_bucket[k].hosted_zone_id
     }) if v.dns_enabled
   }
@@ -143,7 +143,7 @@ locals {
         bucket_arn              = aws_s3_bucket.this_bucket[k].arn
         bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
         bucket_policy_doc       = v.policy_resource_create ? module.this_bucket_policy[k].iam_policy_doc : null
-        bucket_website_endpoint = aws_s3_bucket.this_bucket[k].website_endpoint
+        bucket_website_endpoint = aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint
         dns_alias               = v.dns_enabled ? module.dns_alias.data[k] : null
         policy                  = v.policy_identity_create ? module.identity_policy.data[k] : null
       },
