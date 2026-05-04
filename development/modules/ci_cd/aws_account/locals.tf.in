@@ -17,7 +17,8 @@ locals {
     },
     var.log_public_enabled ? {
       (local.public_name) = merge(local.log_map_base, {
-        allow_public_read = true
+        allow_public_read  = true
+        policy_access_list = ["public_read", "write"]
       })
     } : null
   )

@@ -1,19 +1,12 @@
 variable "log_map" {
   type = map(object({
-    allow_public_read       = optional(bool)
     kms_key_id              = optional(string)
     log_group_class         = optional(string)
     log_retention_days      = optional(number)
     {{ name.var_item() }}
-    policy_create           = optional(bool)
-    policy_name_append      = optional(string)
+    {{ iam.policy_var_item() }}
     skip_destroy            = optional(bool)
   }))
-}
-
-variable "log_allow_public_read_default" {
-  type    = bool
-  default = false
 }
 
 {{ log.var() }}

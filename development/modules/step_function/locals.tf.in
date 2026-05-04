@@ -7,7 +7,7 @@ locals {
   }
   create_policy_map = {
     for k, v in local.lx_map : k => merge({
-      machine_name = each.value.name_effective
+      machine_name = v.name_effective
     })
   }
   l0_map = {
