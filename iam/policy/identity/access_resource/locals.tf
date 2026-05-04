@@ -40,9 +40,9 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, {
-      access_list   = v.access_list == null ? var.policy_access_list_default : v.access_list
-      policy_create = v.policy_create == null ? var.policy_create_default : v.policy_create
-      service_name  = v.service_name == null ? var.policy_service_name_default : v.service_name
+      policy_access_list = v.policy_access_list == null ? var.policy_access_list_default : v.policy_access_list
+      policy_create      = v.policy_create == null ? var.policy_create_default : v.policy_create
+      service_name       = v.service_name == null ? var.policy_service_name_default : v.service_name
     })
   }
   l2_map = {
@@ -55,7 +55,7 @@ locals {
   l3_map = {
     for k, v in local.l0_map : k => {
       sid_map = {
-        for k_access in local.l1_map[k].access_list : k_access => {
+        for k_access in local.l1_map[k].policy_access_list : k_access => {
           k_all = replace("${k}_${local.l0_map[k].name_append}_${k_access}", "__", "_")
           resource_map = {
             for resource_type, resource_name_list in v.resource_map : resource_type => {

@@ -66,15 +66,16 @@ variable "policy_name_prefix_default" {
 
 variable "policy_map" {
   type = map(object({
-    access_list             = optional(list(string))
     name_append             = optional(string)
     name_include_app_fields = optional(bool)
     name_infix              = optional(bool)
     name_prefix             = optional(string)
     name_prepend            = optional(string)
     name_suffix             = optional(string)
+    policy_access_list      = optional(list(string))
     policy_create           = optional(bool)
     policy_name_append      = optional(string)
+    policy_name_prefix      = optional(string)
     sm_secret_name          = optional(string)
     sm_secret_name_list     = optional(list(string), [])
     ssm_param_name          = optional(string)

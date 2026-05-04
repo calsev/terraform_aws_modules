@@ -4,7 +4,6 @@
 
 variable "policy_map" {
   type = map(object({
-    access_list                             = optional(list(string))
     {{ name.var_item() }}
     name_list_application_inference_profile = optional(list(string))
     name_list_job_evaluation                = optional(list(string))
@@ -15,8 +14,7 @@ variable "policy_map" {
     name_list_model_custom                  = optional(list(string))
     name_list_model_foundation              = optional(list(string))
     name_list_model_provisioned             = optional(list(string))
-    policy_create                           = optional(bool)
-    policy_name_append                      = optional(string)
+    {{ iam.policy_var_item() }}
   }))
 }
 

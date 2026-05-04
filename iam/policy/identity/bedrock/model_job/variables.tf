@@ -65,7 +65,6 @@ variable "policy_name_prefix_default" {
 
 variable "policy_map" {
   type = map(object({
-    access_list                             = optional(list(string))
     name_append                             = optional(string)
     name_include_app_fields                 = optional(bool)
     name_infix                              = optional(bool)
@@ -81,8 +80,10 @@ variable "policy_map" {
     name_list_model_custom                  = optional(list(string))
     name_list_model_foundation              = optional(list(string))
     name_list_model_provisioned             = optional(list(string))
+    policy_access_list                      = optional(list(string))
     policy_create                           = optional(bool)
     policy_name_append                      = optional(string)
+    policy_name_prefix                      = optional(string)
   }))
 }
 

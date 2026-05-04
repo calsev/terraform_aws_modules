@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.146.0
+
+### General
+
+* Code pipe webhook policy not created
+
+### Bugfix
+
+* S3 bucket website_endpoint deprecation
+* Step function name scope
+
 ## 0.145.0
 
 ### General

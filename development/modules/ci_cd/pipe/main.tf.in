@@ -114,6 +114,7 @@ resource "aws_codepipeline" "this_pipeline" {
 
 module "webhook_secret" {
   source                  = "../../secret/random"
+  policy_create_default   = false
   secret_is_param_default = var.pipe_webhook_secret_is_param_default
   secret_map              = local.create_secret_map
   std_map                 = var.std_map

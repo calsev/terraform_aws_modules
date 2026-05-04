@@ -41,7 +41,7 @@ locals {
         account_arn         = aws_organizations_account.this[k].arn
         account_govcloud_id = aws_organizations_account.this[k].govcloud_id
         account_id          = aws_organizations_account.this[k].id
-        account_status      = aws_organizations_account.this[k].status
+        account_status      = aws_organizations_account.this[k].state
       }
     )
   }

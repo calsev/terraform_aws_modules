@@ -4,11 +4,8 @@
 
 variable "policy_map" {
   type = map(object({
-    access_list             = optional(list(string))
     {{ name.var_item() }}
-    policy_create           = optional(bool)
-    policy_name_append      = optional(string)
-    policy_name_prefix      = optional(string)
+    {{ iam.policy_var_item() }}
     resource_map            = map(list(string)) # A map of resource type to resource names
     service_name            = optional(string)
   }))
