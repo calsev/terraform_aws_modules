@@ -1,4 +1,4 @@
-FROM public.ecr.aws/ubuntu/ubuntu:26.04
+FROM public.ecr.aws/ubuntu/ubuntu:26.04 AS remote
 
 SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive \

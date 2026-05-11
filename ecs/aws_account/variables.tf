@@ -8,14 +8,24 @@ variable "ecs_aws_vpc_trunking_enabled" {
   default = true
 }
 
+variable "ecs_container_arn_long_format_enabled" {
+  type        = bool
+  default     = true
+  description = "Not yet supported by AWS provider. Will be enabled after support is added."
+}
+
 variable "ecs_container_instance_arn_long_format_enabled" {
   type    = bool
   default = true
 }
 
-variable "ecs_container_insights_enabled" {
-  type    = bool
-  default = true
+variable "ecs_container_insights_mode" {
+  type    = string
+  default = "enhanced"
+  validation {
+    condition     = contains(["disabled", "enabled", "enhanced"], var.ecs_container_insights_mode)
+    error_message = "Invalid insights mode"
+  }
 }
 
 variable "ecs_dual_stack_ipv6_enabled" {
@@ -30,6 +40,11 @@ variable "ecs_fargate_fips_mode_enabled" {
   description = "Ignored if iam_partition is aws"
 }
 
+variable "ecs_fargate_maintenance_window_delay_enabled" {
+  type    = bool
+  default = false
+}
+
 variable "ecs_fargate_task_retirement_wait_period_days" {
   type    = number
   default = 0
@@ -37,6 +52,17 @@ variable "ecs_fargate_task_retirement_wait_period_days" {
     condition     = contains([0, 7, 14], var.ecs_fargate_task_retirement_wait_period_days)
     error_message = "Invalid retirement wait period"
   }
+}
+
+variable "ecs_fargate_vcpu_quota_management_enabled" {
+  type        = bool
+  default     = true
+  description = "Not yet supported by AWS provider. Will be enabled after support is added."
+}
+
+variable "ecs_log_driver_non_blocking" {
+  type    = bool
+  default = true
 }
 
 variable "ecs_service_arn_long_format_enabled" {
