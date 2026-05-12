@@ -7,20 +7,35 @@ resource "aws_ecs_account_setting_default" "ecs_aws_vpc_trunking_enabled" {
   value = var.ecs_aws_vpc_trunking_enabled ? "enabled" : "disabled"
 }
 
+#resource "aws_ecs_account_setting_default" "ecs_container_arn_long_format_enabled" {
+#  name  = "containerLongArnFormat"
+#  value = var.ecs_container_arn_long_format_enabled ? "enabled" : "disabled"
+#}
+
 resource "aws_ecs_account_setting_default" "ecs_container_instance_arn_long_format_enabled" {
   name  = "containerInstanceLongArnFormat"
   value = var.ecs_container_instance_arn_long_format_enabled ? "enabled" : "disabled"
 }
 
-resource "aws_ecs_account_setting_default" "ecs_container_insights_enabled" {
+resource "aws_ecs_account_setting_default" "ecs_container_insights_mode" {
   name  = "containerInsights"
-  value = var.ecs_container_insights_enabled ? "enabled" : "disabled"
+  value = var.ecs_container_insights_mode
 }
 
-# resource "aws_ecs_account_setting_default" "ecs_dual_stack_ipv6_enabled" {
-#   name     = "dualStackIPv6"
-#   value    = var.ecs_dual_stack_ipv6_enabled ? "enabled" : "disabled"
-# }
+resource "aws_ecs_account_setting_default" "ecs_log_driver_non_blocking" {
+  name  = "defaultLogDriverMode"
+  value = var.ecs_log_driver_non_blocking ? "non-blocking" : "blocking"
+}
+
+#resource "aws_ecs_account_setting_default" "ecs_dual_stack_ipv6_enabled" {
+#  name  = "dualStackIPv6"
+#  value = var.ecs_dual_stack_ipv6_enabled ? "enabled" : "disabled"
+#}
+
+resource "aws_ecs_account_setting_default" "ecs_fargate_maintenance_window_delay_enabled" {
+  name  = "fargateEventWindows"
+  value = var.ecs_fargate_maintenance_window_delay_enabled ? "enabled" : "disabled"
+}
 
 resource "aws_ecs_account_setting_default" "ecs_fargate_fips_mode_enabled" {
   for_each = var.std_map.iam_partition == "aws" ? {} : { this = {} }
@@ -32,6 +47,11 @@ resource "aws_ecs_account_setting_default" "ecs_fargate_task_retirement_wait_per
   name  = "fargateTaskRetirementWaitPeriod"
   value = var.ecs_fargate_task_retirement_wait_period_days
 }
+
+#resource "aws_ecs_account_setting_default" "ecs_fargate_vcpu_quota_management_enabled" {
+#  name  = "fargateVCPULimit"
+#  value = var.ecs_fargate_vcpu_quota_management_enabled ? "enabled" : "disabled"
+#}
 
 resource "aws_ecs_account_setting_default" "ecs_service_arn_long_format_enabled" {
   name  = "serviceLongArnFormat"

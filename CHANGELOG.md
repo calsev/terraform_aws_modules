@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.147.0
+
+### General
+
+* ECR repo mirror Python version update
+* ECS account settings update
+
 ## 0.146.0
 
 ### General
