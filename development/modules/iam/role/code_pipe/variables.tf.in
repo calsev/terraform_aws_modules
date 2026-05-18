@@ -6,25 +6,7 @@ variable "deploy_group_to_app" {
   type = map(string)
 }
 
-variable "ci_cd_account_data" {
-  type = object({
-    bucket = object({
-      policy = object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-      })
-    })
-    code_star = object({
-      connection = map(object({
-        connection_arn = string
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-      }))
-    })
-  })
-}
+{{ ci_cd.account_data() }}
 
 variable "code_star_connection_key" {
   type = string

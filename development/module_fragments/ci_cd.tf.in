@@ -1,0 +1,474 @@
+{% macro account_data() -%}
+variable "ci_cd_account_data" {
+  type = object({
+    bucket = object({
+      name_effective = string
+      policy = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      })
+    })
+    code_star = object({
+      connection = map(object({
+        connection_arn = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      }))
+    })
+    log = object({
+      log_group_name = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+      log_group_name = string
+    }))
+    policy = object({
+      vpc_net = object({
+        iam_policy_arn = string
+      })
+    })
+    role = object({
+      build = object({
+        basic = object({
+          iam_role_arn = string
+        })
+      })
+      deploy = object({
+        ecs = object({
+          iam_role_arn = string
+        })
+      })
+    })
+  })
+}
+{%- endmacro %}
+
+{% macro build_var_item() -%}
+      build_artifact_encryption_disabled = optional(bool)
+      build_artifact_location            = optional(string)
+      build_artifact_namespace_type      = optional(string)
+      build_artifact_packaging           = optional(string)
+      build_artifact_path                = optional(string)
+      build_artifact_type                = optional(string) # Ignored for pipeline sources
+      build_badge_enabled                = optional(bool)   # Ignored for pipeline sources
+      build_cache_modes                  = optional(list(string))
+      build_cache_type                   = optional(string)
+      build_concurrent_limit             = optional(number)
+      build_environment_image_custom     = optional(string)
+      build_environment_privileged_mode  = optional(bool)
+      build_environment_type             = optional(string) # e.g. cpu-arm-ubuntu-small or gpu-amd-amazon-large
+      build_environment_variable_map = optional(map(object({
+        type  = string
+        value = string
+      })))
+      build_file_system_map = optional(map(object({
+        location_dns  = optional(string)
+        location_path = optional(string)
+        mount_options = optional(string)
+        mount_point   = optional(string)
+      })))
+      build_iam_role_arn                 = optional(string)
+      build_iam_role_arn_resource_access = optional(string)
+      build_log_cloudwatch_enabled       = optional(bool)
+      build_log_s3_bucket_name           = optional(string)
+      build_log_s3_enabled               = optional(bool)
+      build_log_s3_encryption_disabled   = optional(bool)
+      build_public_visibility            = optional(bool)
+      build_source_build_spec            = optional(string)
+      build_source_fetch_submodules      = optional(bool)
+      build_source_git_clone_depth       = optional(number)
+      build_source_location              = optional(string)
+      build_source_report_build_status   = optional(bool)   # Ignored for pipeline sources
+      build_source_type                  = optional(string) # e.g. GITHUB, GITHUB_ENTERPRISE
+      build_source_version               = optional(string)
+      build_timeout_minutes              = optional(number)
+      build_webhook_enabled              = optional(bool)
+      build_webhook_filter_map = optional(map(map(object({ # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_webhook#filter
+        exclude_matched_pattern = optional(bool)     # Defaults to false
+        pattern                 = string
+        type                    = string
+      }))))
+{%- endmacro %}
+
+{% macro build_var() -%}
+variable "build_artifact_encryption_disabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "build_artifact_location_default" {
+  type    = string
+  default = null
+}
+
+variable "build_artifact_namespace_type_default" {
+  type    = string
+  default = "BUILD_ID"
+  validation {
+    condition     = contains(["BUILD_ID", "NONE"], var.build_artifact_namespace_type_default)
+    error_message = "Must be a valid namespace type"
+  }
+}
+
+variable "build_artifact_packaging_default" {
+  type        = string
+  default     = "ZIP"
+  description = "Ignored if artifact type is NO_ARTIFACTS"
+}
+
+variable "build_artifact_path_default" {
+  type    = string
+  default = null
+}
+
+variable "build_artifact_type_default" {
+  type        = string
+  default     = "NO_ARTIFACTS"
+  description = "For Code Pipeline, the default is always NONE"
+}
+
+variable "build_badge_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "build_cache_modes_default" {
+  type = list(string)
+  default = [
+    "LOCAL_SOURCE_CACHE",
+    "LOCAL_DOCKER_LAYER_CACHE",
+  ]
+  description = "See https://docs.aws.amazon.com/codebuild/latest/userguide/build-caching.html.Ignored unless cache mode is LOCAL."
+}
+
+variable "build_cache_type_default" {
+  type    = string
+  default = "NO_CACHE"
+  validation {
+    condition     = contains(["LOCAL", "NO_CACHE", "S3"], var.build_cache_type_default)
+    error_message = "Must be a valid cache type"
+  }
+}
+
+variable "build_concurrent_limit_default" {
+  type    = number
+  default = null
+}
+
+variable "build_environment_image_custom_default" {
+  type    = string
+  default = null
+}
+
+variable "build_environment_privileged_mode_default" {
+  type        = bool
+  default     = false
+  description = "Will be set true if file system locations are specified"
+}
+
+variable "build_environment_type_default" {
+  type    = string
+  default = "cpu-amd-ubuntu-small"
+}
+
+variable "build_environment_variable_map_default" {
+  type = map(object({
+    type  = string
+    value = string
+  }))
+  default = {}
+}
+
+variable "build_file_system_location_dns_default" {
+  type    = string
+  default = null
+}
+
+variable "build_file_system_location_path_default" {
+  type    = string
+  default = "/"
+}
+
+variable "build_file_system_mount_options_default" {
+  type    = string
+  default = "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2"
+}
+
+variable "build_file_system_mount_point_default" {
+  type    = string
+  default = null
+}
+
+variable "build_iam_role_arn_default" {
+  type        = string
+  default     = null
+  description = "Defaults to the basic role in cicd account data"
+}
+
+variable "build_iam_role_arn_resource_access_default" {
+  type        = string
+  default     = null
+  description = "Required for public access to logs"
+}
+
+variable "build_log_cloudwatch_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "build_log_s3_bucket_name_default" {
+  type    = string
+  default = null
+}
+
+variable "build_log_s3_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "build_log_s3_encryption_disabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "build_public_visibility_default" {
+  type    = bool
+  default = false
+}
+
+variable "build_source_build_spec_default" {
+  type    = string
+  default = "build_spec/build.yml"
+}
+
+variable "build_source_fetch_submodules_default" {
+  type    = bool
+  default = true
+}
+
+variable "build_source_git_clone_depth_default" {
+  type    = number
+  default = 1
+}
+
+variable "build_source_report_build_status_default" {
+  type    = bool
+  default = true
+}
+
+variable "build_source_type_default" {
+  type    = string
+  default = "GITHUB"
+  validation {
+    condition     = contains(["CODECOMMIT", "CODEPIPELINE", "GITHUB", "GITHUB_ENTERPRISE", "BITBUCKET", "S3", "NO_SOURCE"], var.build_source_type_default)
+    error_message = "Must be a valid source type"
+  }
+}
+
+variable "build_source_version_default" {
+  type    = string
+  default = null
+}
+
+variable "build_timeout_minutes_default" {
+  type    = number
+  default = 30
+}
+
+variable "build_webhook_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for pipe builds"
+}
+
+variable "build_webhook_filter_map_default" {
+  type = map(map(object({
+    exclude_matched_pattern = optional(bool)
+    pattern                 = string
+    type                    = string
+  })))
+  default = {
+    # The default is to build PR commits
+    pr = {
+      all = {
+        exclude_matched_pattern = false
+        pattern                 = "PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_REOPENED"
+        type                    = "EVENT"
+      }
+    }
+  }
+}
+{%- endmacro %}
+
+{% macro build_map_item(source="var", override=False, append=None, prefix=None) -%}
+    build_artifact_encryption_disabled_default = var.build_artifact_encryption_disabled_default
+    build_artifact_location_default            = var.build_artifact_location_default
+    build_artifact_namespace_type_default      = var.build_artifact_namespace_type_default
+    build_artifact_packaging_default           = var.build_artifact_packaging_default
+    build_artifact_path_default                = var.build_artifact_path_default
+    build_artifact_type_default                = var.build_artifact_type_default
+    build_badge_enabled_default                = var.build_badge_enabled_default
+    build_cache_modes_default                  = var.build_cache_modes_default
+    build_cache_type_default                   = var.build_cache_type_default
+    build_concurrent_limit_default             = var.build_concurrent_limit_default
+    build_environment_image_custom_default     = var.build_environment_image_custom_default
+    build_environment_privileged_mode_default  = var.build_environment_privileged_mode_default
+    build_environment_type_default             = var.build_environment_type_default
+    build_environment_variable_map_default     = var.build_environment_variable_map_default
+    build_file_system_location_dns_default     = var.build_file_system_location_dns_default
+    build_file_system_location_path_default    = var.build_file_system_location_path_default
+    build_file_system_mount_options_default    = var.build_file_system_mount_options_default
+    build_file_system_mount_point_default      = var.build_file_system_mount_point_default
+    build_iam_role_arn_default                 = var.build_iam_role_arn_default
+    build_iam_role_arn_resource_access_default = var.build_iam_role_arn_resource_access_default
+    build_log_cloudwatch_enabled_default       = var.build_log_cloudwatch_enabled_default
+    build_log_s3_bucket_name_default           = var.build_log_s3_bucket_name_default
+    build_log_s3_enabled_default               = var.build_log_s3_enabled_default
+    build_log_s3_encryption_disabled_default   = var.build_log_s3_encryption_disabled_default
+    build_public_visibility_default            = var.build_public_visibility_default
+    build_source_build_spec_default            = var.build_source_build_spec_default
+    build_source_fetch_submodules_default      = var.build_source_fetch_submodules_default
+    build_source_git_clone_depth_default       = var.build_source_git_clone_depth_default
+    build_source_report_build_status_default   = var.build_source_report_build_status_default
+    build_source_type_default                  = var.build_source_type_default
+    build_source_version_default               = var.build_source_version_default
+    build_timeout_minutes_default              = var.build_timeout_minutes_default
+    build_webhook_enabled_default              = var.build_webhook_enabled_default
+    build_webhook_filter_map_default           = var.build_webhook_filter_map_default
+{%- endmacro %}
+
+{% macro deploy_var() -%}
+variable "deployment_auto_rollback_enabled_default" {
+  type    = string
+  default = true
+}
+
+variable "deployment_auto_rollback_event_list_default" {
+  type    = list(string)
+  default = ["DEPLOYMENT_FAILURE", "DEPLOYMENT_STOP_ON_ALARM", "DEPLOYMENT_STOP_ON_REQUEST"]
+  validation {
+    condition     = length(setsubtract(toset(var.deployment_auto_rollback_event_list_default), toset(["DEPLOYMENT_FAILURE", "DEPLOYMENT_STOP_ON_ALARM", "DEPLOYMENT_STOP_ON_REQUEST"]))) == 0
+    error_message = "Invalid event list"
+  }
+}
+
+variable "deployment_blue_green_terminate_on_success_default" {
+  type    = bool
+  default = true
+}
+
+variable "deployment_blue_green_termination_wait_minutes_default" {
+  type        = number
+  default     = 0
+  description = "Ignored unless terminate_on_success is true. No other deployment can commence during this wait."
+}
+
+variable "deployment_blue_green_timeout_action_default" {
+  type        = string
+  default     = "CONTINUE_DEPLOYMENT"
+  description = "Set to STOP_DEPLOYMENT if something will `aws deploy continue-deployment` else CONTINUE_DEPLOYMENT"
+  validation {
+    condition     = contains(["CONTINUE_DEPLOYMENT", "STOP_DEPLOYMENT"], var.deployment_blue_green_timeout_action_default)
+    error_message = "Invalid action"
+  }
+}
+
+variable "deployment_blue_green_timeout_wait_minutes_default" {
+  type        = number
+  default     = 5
+  description = "Ignored unless timeout action is STOP_DEPLOYMENT"
+}
+
+variable "deployment_app_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to group key"
+}
+
+variable "deployment_config_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to group key"
+}
+
+variable "deployment_style_use_load_balancer_default" {
+  type        = bool
+  default     = true
+  description = "If true a target group and load balancer must be provided"
+}
+
+variable "deployment_environment_map_default" {
+  type = object({
+    blue = object({
+      elb_listener_key     = optional(string) # Defaults to key_blue
+      elb_target_group_key = optional(string) # Defaults to key_blue
+    })
+    green = optional(object({                 # If this is included, the depoyment will use blue-green
+      elb_listener_key     = optional(string) # Defaults to key_green
+      elb_target_group_key = optional(string) # Defaults to key_green
+    }))
+  })
+  default = {
+    blue  = {}
+    green = {}
+  }
+}
+
+variable "deployment_ecs_service_cluster_key_default" {
+  type    = string
+  default = null
+}
+
+variable "deployment_trigger_map_default" {
+  type = map(object({
+    event_list    = optional(list(string))
+    sns_topic_arn = optional(string)
+  }))
+  default = {}
+}
+
+variable "deployment_trigger_event_list_default" {
+  type    = list(string)
+  default = ["DEPLOYMENT_FAILURE"]
+  validation {
+    condition     = length(setsubtract(toset(var.deployment_trigger_event_list_default), toset(["DEPLOYMENT_FAILURE", "DEPLOYMENT_STOP_ON_ALARM", "DEPLOYMENT_STOP_ON_REQUEST"]))) == 0
+    error_message = "Invalid event list"
+  }
+}
+
+variable "deployment_trigger_sns_topic_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "deployment_update_new_instances_default" {
+  type    = bool
+  default = true
+}
+{%- endmacro %}
+
+{% macro deploy_map_item() -%}
+  deployment_app_key_default                             = var.deployment_app_key_default
+  deployment_auto_rollback_enabled_default               = var.deployment_auto_rollback_enabled_default
+  deployment_auto_rollback_event_list_default            = var.deployment_auto_rollback_event_list_default
+  deployment_blue_green_terminate_on_success_default     = var.deployment_blue_green_terminate_on_success_default
+  deployment_blue_green_termination_wait_minutes_default = var.deployment_blue_green_termination_wait_minutes_default
+  deployment_blue_green_timeout_action_default           = var.deployment_blue_green_timeout_action_default
+  deployment_blue_green_timeout_wait_minutes_default     = var.deployment_blue_green_timeout_wait_minutes_default
+  deployment_config_data_map                             = module.codedeploy_config.data
+  deployment_config_key_default                          = var.deployment_config_key_default
+  deployment_ecs_service_cluster_key_default             = var.deployment_ecs_service_cluster_key_default
+  deployment_environment_map_default                     = var.deployment_environment_map_default
+  deployment_style_use_load_balancer_default             = var.deployment_style_use_load_balancer_default
+  deployment_trigger_event_list_default                  = var.deployment_trigger_event_list_default
+  deployment_trigger_map_default                         = var.deployment_trigger_map_default
+  deployment_trigger_sns_topic_arn_default               = var.deployment_trigger_sns_topic_arn_default
+  deployment_update_new_instances_default                = var.deployment_update_new_instances_default
+{%- endmacro %}

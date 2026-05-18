@@ -163,6 +163,11 @@ variable "target_health_check_success_code_list_default" {
   description = "Ingored unless health_check_protocol is HTTP/HTTPS"
 }
 
+variable "target_ip_use_v6_default" {
+  type    = bool
+  default = false
+}
+
 variable "target_lambda_multi_value_headers_enabled_default" {
   type    = bool
   default = false
@@ -246,11 +251,6 @@ variable "target_sticky_type_default" {
     ], var.target_sticky_type_default)
     error_message = "Invalid sticky_type"
   }
-}
-
-variable "target_ip_use_v6_default" {
-  type    = bool
-  default = false
 }
 
 variable "target_port_default" {

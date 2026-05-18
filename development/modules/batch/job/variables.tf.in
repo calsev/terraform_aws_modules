@@ -17,13 +17,7 @@ variable "batch_cluster_data" {
   }))
 }
 
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_batch_submit_job = string
-    iam_policy_arn_ecs_start_task   = string
-    iam_role_arn_ecs_task_execution = string
-  })
-}
+{{ iam.data() }}
 
 variable "job_map" {
   type = map(object({
@@ -226,15 +220,7 @@ variable "job_username_default" {
   default = "ubuntu"
 }
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var() }}
 

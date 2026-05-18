@@ -335,14 +335,7 @@ variable "bucket_website_index_document_default" {
   default = "index.html"
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-  })
-  default = null
-}
+{{ dns.data(default="Must be provided if any bucket has DNS enabled") }}
 
 {{ name.var(regex=["."]) }}
 

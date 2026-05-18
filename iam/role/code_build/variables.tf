@@ -1,6 +1,7 @@
 variable "ci_cd_account_data" {
   type = object({
     bucket = object({
+      name_effective = string
       policy = object({
         policy_map = map(object({
           iam_policy_arn = string
@@ -9,24 +10,39 @@ variable "ci_cd_account_data" {
     })
     code_star = object({
       connection = map(object({
+        connection_arn = string
         policy_map = map(object({
           iam_policy_arn = string
         }))
       }))
     })
     log = object({
+      log_group_name = string
       policy_map = map(object({
         iam_policy_arn = string
       }))
     })
-    log_public = optional(object({ # Must be provided if log public access is enabled
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
       policy_map = map(object({
         iam_policy_arn = string
       }))
+      log_group_name = string
     }))
     policy = object({
       vpc_net = object({
         iam_policy_arn = string
+      })
+    })
+    role = object({
+      build = object({
+        basic = object({
+          iam_role_arn = string
+        })
+      })
+      deploy = object({
+        ecs = object({
+          iam_role_arn = string
+        })
       })
     })
   })
@@ -43,6 +59,7 @@ variable "ecr_data_map" {
     policy_map = map(object({
       iam_policy_arn = string
     }))
+    repo_url = string
   }))
   default     = null
   description = "Must be provided if image key is specified"
@@ -50,7 +67,23 @@ variable "ecr_data_map" {
 
 variable "iam_data" {
   type = object({
-    iam_policy_arn_ecr_get_token = string
+    iam_instance_profile_arn_ecs        = string
+    iam_policy_arn_batch_submit_job     = string
+    iam_policy_arn_ec2_associate_eip    = string
+    iam_policy_arn_ec2_modify_attribute = string
+    iam_policy_arn_ecr_get_token        = string
+    iam_policy_arn_ecs_exec_ssm         = string
+    iam_policy_arn_ecs_start_task       = string
+    iam_policy_arn_ecs_task_execution   = string
+    iam_policy_arn_lambda_vpc           = string
+    iam_role_arn_backup_create          = string
+    iam_role_arn_batch_service          = string
+    iam_role_arn_batch_spot_fleet       = string
+    iam_role_arn_ecs_task_execution     = string
+    iam_role_arn_rds_monitor            = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
   })
   default     = null
   description = "If provided ECR login permissions will be added"

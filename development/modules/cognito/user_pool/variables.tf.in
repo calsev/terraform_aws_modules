@@ -65,13 +65,7 @@ variable "client_refresh_token_validity_hours_default" {
   default = 30
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-  })
-}
+{{ dns.data() }}
 
 {{ name.var() }}
 

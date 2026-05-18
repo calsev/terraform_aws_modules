@@ -127,31 +127,9 @@ variable "api_version_default" {
   default = "1"
 }
 
-variable "cognito_data_map" {
-  type = map(object({
-    user_pool_client = object({
-      client_app_map = map(object({
-        client_app_id = string
-      }))
-    })
-    user_pool_endpoint = string
-  }))
-  default     = {}
-  description = "Must be provided if any API uses a Cognito authorizer"
-}
+{{ cognito.data_map(default="Must be provided if any API uses a Cognito authorizer") }}
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-    region_domain_cert_map = map(map(object({
-      certificate_arn = string
-    })))
-  })
-  default     = null
-  description = "Must be provided if any stage has a DNS mapping"
-}
+{{ dns.data(default="Must be provided if any stage has a DNS mapping") }}
 
 variable "domain_map" {
   type = map(object({

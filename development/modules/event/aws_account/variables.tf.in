@@ -16,6 +16,9 @@ variable "log_retention_days_for_default_bus" {
 variable "alert_data_map" {
   type = object({
     topic_map = map(object({
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
       topic_arn = string
     }))
   })

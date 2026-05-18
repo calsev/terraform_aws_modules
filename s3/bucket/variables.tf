@@ -346,8 +346,16 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
+    region_domain_cert_map = map(map(object({
+      certificate_arn = string
+      name_simple     = string
+    })))
   })
-  default = null
+  default     = null
+  description = "Must be provided if any bucket has DNS enabled"
 }
 
 variable "name_append_default" {

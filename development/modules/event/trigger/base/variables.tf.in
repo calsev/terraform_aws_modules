@@ -125,24 +125,9 @@ variable "event_task_count_default" {
   description = "Number of Batch jobs or ECS tasks to launch"
 }
 
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_batch_submit_job = string
-    iam_policy_arn_ecs_start_task   = string
-  })
-  default     = null
-  description = "Must be provided for Batch and ECS targets"
-}
+{{ iam.data(default="Must be provided for Batch and ECS targets") }}
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var(append="trigger") }}
 

@@ -3,6 +3,9 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
       name_simple     = string
@@ -154,6 +157,12 @@ variable "rule_query_string_map_default" {
 variable "rule_source_ip_list_default" {
   type    = list(string)
   default = []
+}
+
+variable "rule_listener_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to protocol. Has no effect if no condition is set."
 }
 
 variable "std_map" {

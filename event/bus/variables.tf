@@ -55,8 +55,25 @@ variable "monitor_data" {
   type = object({
     alert = object({
       topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         topic_arn = string
       }))
+    })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
+      gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
     })
   })
 }

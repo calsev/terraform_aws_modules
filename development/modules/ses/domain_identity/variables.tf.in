@@ -6,13 +6,7 @@ variable "config_data_map" {
   description = "Must be provided if any domain uses a default config"
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-  })
-}
+{{ dns.data() }}
 
 variable "domain_map" {
   type = map(object({

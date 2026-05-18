@@ -10,16 +10,17 @@ variable "ci_cd_account_data" {
     })
     code_star = object({
       connection = map(object({
+        connection_arn = string
         policy_map = map(object({
           iam_policy_arn = string
         }))
       }))
     })
     log = object({
+      log_group_name = string
       policy_map = map(object({
         iam_policy_arn = string
       }))
-      log_group_name = string
     })
     log_public = optional(object({ # Must be provided if any of the projects allow public access
       policy_map = map(object({
@@ -38,6 +39,11 @@ variable "ci_cd_account_data" {
           iam_role_arn = string
         })
       })
+      deploy = object({
+        ecs = object({
+          iam_role_arn = string
+        })
+      })
     })
   })
 }
@@ -47,6 +53,7 @@ variable "ecr_data_map" {
     policy_map = map(object({
       iam_policy_arn = string
     }))
+    repo_url = string
   }))
 }
 

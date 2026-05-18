@@ -461,23 +461,9 @@ variable "db_username_default" {
   default = null
 }
 
-variable "iam_data" {
-  type = object({
-    iam_role_arn_rds_monitor = string
-  })
-  default     = null
-  description = "Must be provided if performance insights are enabled - they are by default"
-}
+{{ iam.data(default="Must be provided if performance insights are enabled - they are by default") }}
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var(app_fields=False) }}
 

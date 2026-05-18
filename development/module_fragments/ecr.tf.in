@@ -1,0 +1,12 @@
+{% macro data_map(default=None) -%}
+variable "ecr_data_map" {
+  type = map(object({
+    policy_map = map(object({
+      iam_policy_arn = string
+    }))
+    repo_url = string
+  })){% if default %}
+  default     = null
+  description = "{{ default }}"{% endif %}
+}
+{%- endmacro %}

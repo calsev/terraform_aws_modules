@@ -15,15 +15,7 @@ variable "alarm_rollback_enabled_default" {
   description = "Ignored unless at least one alarm is specified"
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_sd_zone_map = map(object({
-      namespace_id = string
-    }))
-  })
-  default     = null
-  description = "Must be provided is service discovery is enabled for any service"
-}
+{{ dns.data(default="Must be provided is service discovery is enabled for any service") }}
 
 variable "ecs_cluster_data" {
   type = map(object({

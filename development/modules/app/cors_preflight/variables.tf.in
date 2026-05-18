@@ -59,29 +59,9 @@ variable "cors_origin_default" {
   default = null
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-    region_domain_cert_map = map(map(object({
-      certificate_arn = string
-      name_simple     = string
-    })))
-  })
-}
+{{ dns.data() }}
 
-variable "elb_data_map" {
-  type = map(object({
-    elb_arn            = string
-    elb_dns_name       = string
-    elb_dns_zone_id    = string
-    load_balancer_type = string
-    port_to_protocol_to_listener_map = map(map(object({
-      elb_listener_arn = string
-    })))
-  }))
-}
+{{ vpc.elb_data_map() }}
 
 variable "function_reserved_concurrent_executions_default" {
   type    = number
@@ -99,13 +79,7 @@ variable "function_vpc_ipv6_allowed_default" {
   description = "Ignored for functions not in VPC"
 }
 
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_lambda_vpc = string
-  })
-  default     = null
-  description = "Must be provided if any function is configured in a VPC"
-}
+{{ iam.data(default="Must be provided if any function is configured in a VPC") }}
 
 variable "listener_acm_certificate_key_default" {
   type        = string
@@ -131,15 +105,7 @@ variable "listener_elb_key_default" {
 
 {{ log.var() }}
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var() }}
 

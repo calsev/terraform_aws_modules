@@ -17,7 +17,45 @@ variable "alarm_monitoring_enabled_default" {
 
 variable "ci_cd_account_data" {
   type = object({
+    bucket = object({
+      name_effective = string
+      policy = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      })
+    })
+    code_star = object({
+      connection = map(object({
+        connection_arn = string
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+      }))
+    })
+    log = object({
+      log_group_name = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+      log_group_name = string
+    }))
+    policy = object({
+      vpc_net = object({
+        iam_policy_arn = string
+      })
+    })
     role = object({
+      build = object({
+        basic = object({
+          iam_role_arn = string
+        })
+      })
       deploy = object({
         ecs = object({
           iam_role_arn = string
@@ -233,8 +271,25 @@ variable "monitor_data" {
   type = object({
     alert = object({
       topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         topic_arn = string
       }))
+    })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
+      gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
     })
   })
 }

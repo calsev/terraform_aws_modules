@@ -8,6 +8,9 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
       name_simple     = string
@@ -388,8 +391,25 @@ variable "monitor_data" {
   type = object({
     alert = object({
       topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         topic_arn = string
       }))
+    })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
+      gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
     })
   })
 }

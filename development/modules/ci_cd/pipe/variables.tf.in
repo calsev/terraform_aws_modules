@@ -1,15 +1,4 @@
-variable "ci_cd_account_data" {
-  type = object({
-    bucket = object({
-      name_effective = string
-    })
-    code_star = object({
-      connection = map(object({
-        connection_arn = string
-      }))
-    })
-  })
-}
+{{ ci_cd.account_data() }}
 
 {{ name.var() }}
 

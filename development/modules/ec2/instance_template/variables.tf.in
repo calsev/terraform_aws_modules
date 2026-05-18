@@ -235,13 +235,7 @@ variable "compute_user_data_suppress_generation_default" {
   default = false
 }
 
-variable "iam_data" {
-  type = object({
-    key_pair_map = map(object({
-      key_pair_name = string
-    }))
-  })
-}
+{{ iam.data() }}
 
 variable "image_search_ecs_gpu_tag_name" {
   type = object({
@@ -286,18 +280,7 @@ variable "image_search_tag_owner" {
   description = "A mapping of tag to owner"
 }
 
-variable "monitor_data" {
-  type = object({
-    ecs_ssm_param_map = object({
-      cpu = object({
-        name_effective = string
-      })
-      gpu = object({
-        name_effective = string
-      })
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var() }}
 

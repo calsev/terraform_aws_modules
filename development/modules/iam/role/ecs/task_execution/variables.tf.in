@@ -1,8 +1,4 @@
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_ecs_task_execution = string
-  })
-}
+{{ iam.data() }}
 
 variable "map_policy" {
   type = object({

@@ -3,7 +3,7 @@ SHELL := /bin/bash
 # Below is the interface for the Python environment
 PY_VER ?= 3.14
 WD := .
-UP := $(shell v=$$(printf '%s\n' "$(WD)" | sed 's#^\.$$##; s#[^/][^/]*#..#g'); echo "$${v:-.}")
+UP := $(shell v=$$(printf '%s\n' "$(WD)" | sed 's|^\.$$||; s|[^/][^/]*|..|g'); echo "$${v:-.}")
 REQ ?= requirements/requirements
 VENV_SUB ?= ecr_mirror
 

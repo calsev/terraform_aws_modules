@@ -17,11 +17,17 @@ variable "ci_cd_account_data" {
       }))
     })
     log = object({
+      log_group_name = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
       policy_map = map(object({
         iam_policy_arn = string
       }))
       log_group_name = string
-    })
+    }))
     policy = object({
       vpc_net = object({
         iam_policy_arn = string
@@ -30,6 +36,11 @@ variable "ci_cd_account_data" {
     role = object({
       build = object({
         basic = object({
+          iam_role_arn = string
+        })
+      })
+      deploy = object({
+        ecs = object({
           iam_role_arn = string
         })
       })

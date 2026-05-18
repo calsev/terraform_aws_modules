@@ -1,54 +1,6 @@
-variable "ci_cd_account_data" {
-  type = object({
-    bucket = object({
-      name_effective = string
-      policy = object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-      })
-    })
-    code_star = object({
-      connection = map(object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-      }))
-    })
-    log = object({
-      policy_map = map(object({
-        iam_policy_arn = string
-      }))
-      log_group_name = string
-    })
-    log_public = optional(object({ # Must be provided if any of the projects allow public access
-      policy_map = map(object({
-        iam_policy_arn = string
-      }))
-      log_group_name = string
-    }))
-    policy = object({
-      vpc_net = object({
-        iam_policy_arn = string
-      })
-    })
-    role = object({
-      build = object({
-        basic = object({
-          iam_role_arn = string
-        })
-      })
-    })
-  })
-}
+{{ ci_cd.account_data() }}
 
-variable "ecr_data_map" {
-  type = map(object({
-    policy_map = map(object({
-      iam_policy_arn = string
-    }))
-  }))
-}
+{{ ecr.data_map() }}
 
 variable "repo_map" {
   type = map(object({

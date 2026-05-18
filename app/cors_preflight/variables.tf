@@ -85,6 +85,9 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
       name_simple     = string
@@ -122,7 +125,23 @@ variable "function_vpc_ipv6_allowed_default" {
 
 variable "iam_data" {
   type = object({
-    iam_policy_arn_lambda_vpc = string
+    iam_instance_profile_arn_ecs        = string
+    iam_policy_arn_batch_submit_job     = string
+    iam_policy_arn_ec2_associate_eip    = string
+    iam_policy_arn_ec2_modify_attribute = string
+    iam_policy_arn_ecr_get_token        = string
+    iam_policy_arn_ecs_exec_ssm         = string
+    iam_policy_arn_ecs_start_task       = string
+    iam_policy_arn_ecs_task_execution   = string
+    iam_policy_arn_lambda_vpc           = string
+    iam_role_arn_backup_create          = string
+    iam_role_arn_batch_service          = string
+    iam_role_arn_batch_spot_fleet       = string
+    iam_role_arn_ecs_task_execution     = string
+    iam_role_arn_rds_monitor            = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
   })
   default     = null
   description = "Must be provided if any function is configured in a VPC"
@@ -177,8 +196,25 @@ variable "monitor_data" {
   type = object({
     alert = object({
       topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         topic_arn = string
       }))
+    })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
+      gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
     })
   })
 }
