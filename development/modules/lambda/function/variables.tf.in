@@ -3,16 +3,7 @@ variable "alert_level_default" {
   default = "general_medium"
 }
 
-variable "ecr_data_map" {
-  type = map(object({
-    policy_map = map(object({
-      iam_policy_arn = string
-    }))
-    repo_url = string
-  }))
-  default     = null
-  description = "Must be provided if any function is configured with an image"
-}
+{{ ecr.data_map(default="Must be provided if any function is configured with an image") }}
 
 variable "function_map" {
   type = map(object({
@@ -274,25 +265,11 @@ variable "function_vpc_ipv6_allowed_default" {
   description = "Ignored for functions not in VPC"
 }
 
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_lambda_vpc = string
-  })
-  default     = null
-  description = "Must be provided if any function is configured in a VPC"
-}
+{{ iam.data(default="Must be provided if any function is configured in a VPC") }}
 
 {{ log.var() }}
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var() }}
 

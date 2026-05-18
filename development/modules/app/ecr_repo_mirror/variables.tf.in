@@ -3,19 +3,7 @@ variable "ecr_repo_name" {
   default = "ecr_repo_mirror"
 }
 
-variable "iam_data" {
-  type = object({
-    iam_instance_profile_arn_ecs    = string
-    iam_policy_arn_batch_submit_job = string
-    iam_policy_arn_ecr_get_token    = string
-    iam_policy_arn_ecs_exec_ssm     = string
-    iam_policy_arn_ecs_start_task   = string
-    iam_role_arn_ecs_task_execution = string
-    key_pair_map = map(object({
-      key_pair_name = string
-    }))
-  })
-}
+{{ iam.data() }}
 
 variable "instance_type" {
   type    = string
@@ -27,23 +15,7 @@ variable "min_instances" {
   default = 0
 }
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-    ecs_ssm_param_map = object({
-      cpu = object({
-        name_effective = string
-      })
-      gpu = object({
-        name_effective = string
-      })
-    })
-  })
-}
+{{ monitor.data() }}
 
 variable "schedule_expression" {
   type    = string

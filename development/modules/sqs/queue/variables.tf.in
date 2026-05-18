@@ -7,15 +7,7 @@ variable "alert_level_default" {
 
 {{ iam.policy_var_ar(access=["pull", "push"], append="queue") }}
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 variable "queue_map" {
   type = map(object({

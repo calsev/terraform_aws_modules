@@ -1,36 +1,4 @@
-variable "ci_cd_account_data" {
-  type = object({
-    bucket = object({
-      policy = object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-      })
-    })
-    code_star = object({
-      connection = map(object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-      }))
-    })
-    log = object({
-      policy_map = map(object({
-        iam_policy_arn = string
-      }))
-    })
-    log_public = optional(object({ # Must be provided if log public access is enabled
-      policy_map = map(object({
-        iam_policy_arn = string
-      }))
-    }))
-    policy = object({
-      vpc_net = object({
-        iam_policy_arn = string
-      })
-    })
-  })
-}
+{{ ci_cd.account_data() }}
 
 variable "code_star_connection_key" {
   type        = string
@@ -38,23 +6,9 @@ variable "code_star_connection_key" {
   description = "If provided, permission to use the connection will be attached"
 }
 
-variable "ecr_data_map" {
-  type = map(object({
-    policy_map = map(object({
-      iam_policy_arn = string
-    }))
-  }))
-  default     = null
-  description = "Must be provided if image key is specified"
-}
+{{ ecr.data_map(default="Must be provided if image key is specified") }}
 
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_ecr_get_token = string
-  })
-  default     = null
-  description = "If provided ECR login permissions will be added"
-}
+{{ iam.data(default="If provided ECR login permissions will be added") }}
 
 variable "map_policy" {
   type = object({

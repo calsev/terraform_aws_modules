@@ -25,6 +25,7 @@ module "listener" {
   rule_priority_default                 = var.rule_priority_default
   rule_query_string_map_default         = var.rule_query_string_map_default
   rule_source_ip_list_default           = var.rule_source_ip_list_default
+  rule_listener_key_default             = var.rule_listener_key_default
   std_map                               = var.std_map
 }
 

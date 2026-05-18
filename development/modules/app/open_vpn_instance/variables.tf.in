@@ -1,38 +1,8 @@
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-    region_domain_cert_map = map(map(object({
-      certificate_arn = string
-      name_simple     = string
-    })))
-  })
-}
+{{ dns.data() }}
 
-variable "elb_data_map" {
-  type = map(object({
-    elb_arn            = string
-    elb_dns_name       = string
-    elb_dns_zone_id    = string
-    load_balancer_type = string
-    port_to_protocol_to_listener_map = map(map(object({
-      elb_listener_arn = string
-    })))
-  }))
-  default     = null
-  description = "Must be provided if any ELB key is specified"
-}
+{{ vpc.elb_data_map(default="Must be provided if any ELB key is specified") }}
 
-variable "iam_data" {
-  type = object({
-    iam_policy_arn_ec2_associate_eip    = string
-    iam_policy_arn_ec2_modify_attribute = string
-    key_pair_map = map(object({
-      key_pair_name = string
-    }))
-  })
-}
+{{ iam.data() }}
 
 variable "instance_map" {
   type = map(object({
@@ -173,29 +143,7 @@ variable "instance_type_default" {
   description = "Arm not supported"
 }
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-    ecs_ssm_param_map = object({
-      cpu = object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-        name_effective = string
-      })
-      gpu = object({
-        policy_map = map(object({
-          iam_policy_arn = string
-        }))
-        name_effective = string
-      })
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var(app_fields=False) }}
 

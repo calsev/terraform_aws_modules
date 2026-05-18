@@ -54,11 +54,17 @@ variable "ci_cd_account_data" {
       }))
     })
     log = object({
+      log_group_name = string
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+    })
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
       policy_map = map(object({
         iam_policy_arn = string
       }))
       log_group_name = string
-    })
+    }))
     policy = object({
       vpc_net = object({
         iam_policy_arn = string
@@ -67,6 +73,11 @@ variable "ci_cd_account_data" {
     role = object({
       build = object({
         basic = object({
+          iam_role_arn = string
+        })
+      })
+      deploy = object({
+        ecs = object({
           iam_role_arn = string
         })
       })
@@ -87,6 +98,13 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
+    region_domain_cert_map = map(map(object({
+      certificate_arn = string
+      name_simple     = string
+    })))
   })
 }
 

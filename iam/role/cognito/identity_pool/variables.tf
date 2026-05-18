@@ -1,6 +1,14 @@
 variable "cognito_data_map" {
   type = map(object({
-    identity_pool_id = string
+    identity_pool_id = optional(string)
+    user_pool_arn    = string
+    user_pool_client = object({
+      client_app_map = map(object({
+        client_app_id = string
+      }))
+    })
+    user_pool_endpoint = string
+    user_pool_fqdn     = string
   }))
 }
 

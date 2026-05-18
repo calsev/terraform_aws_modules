@@ -1,15 +1,4 @@
-variable "cognito_data_map" {
-  type = map(object({
-    user_pool_client = object({
-      client_app_map = map(object({
-        client_app_id = string
-      }))
-    })
-    user_pool_endpoint = string
-  }))
-  default     = {}
-  description = "Must be provided if any pool specifies a Cognito provider"
-}
+{{ cognito.data_map(default="Must be provided if any pool specifies a Cognito provider") }}
 
 {{ name.var() }}
 

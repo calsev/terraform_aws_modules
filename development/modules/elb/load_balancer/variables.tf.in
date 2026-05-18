@@ -3,17 +3,7 @@ variable "alert_level_default" {
   default = "general_medium"
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-    region_domain_cert_map = map(map(object({
-      certificate_arn = string
-      name_simple     = string
-    })))
-  })
-}
+{{ dns.data() }}
 
 variable "elb_map" {
   type = map(object({
@@ -350,15 +340,7 @@ variable "elb_xff_header_processing_mode_default" {
   }
 }
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var(app_fields=False) }}
 

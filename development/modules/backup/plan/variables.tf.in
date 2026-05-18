@@ -1,8 +1,4 @@
-variable "iam_data" {
-  type = object({
-    iam_role_arn_backup_create = string
-  })
-}
+{{ iam.data() }}
 
 {{ name.var() }}
 

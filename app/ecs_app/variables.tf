@@ -214,6 +214,11 @@ variable "app_map" {
   }))
 }
 
+variable "app_action_order_default_forward_default" {
+  type    = number
+  default = 40000
+}
+
 variable "app_deployment_listen_port_prod_default" {
   type    = number
   default = 443
@@ -338,6 +343,12 @@ variable "ci_cd_account_data" {
         iam_policy_arn = string
       }))
     })
+    log_public = optional(object({ # Must be provided if any of the projects allow public access
+      policy_map = map(object({
+        iam_policy_arn = string
+      }))
+      log_group_name = string
+    }))
     policy = object({
       vpc_net = object({
         iam_policy_arn = string
@@ -368,16 +379,23 @@ variable "ci_cd_build_data_map" {
 
 variable "cognito_data_map" {
   type = map(object({
-    user_pool_arn = string
+    identity_pool_id = optional(string)
+    user_pool_arn    = string
     user_pool_client = object({
       client_app_map = map(object({
         client_app_id = string
       }))
     })
-    user_pool_fqdn = string
+    user_pool_endpoint = string
+    user_pool_fqdn     = string
   }))
   default     = {}
   description = "Must be provided if any action uses a Cognito authorizer"
+}
+
+variable "compute_auto_scaling_iam_role_arn_service_linked_default" {
+  type    = string
+  default = null
 }
 
 variable "compute_auto_scaling_num_instances_max_default" {
@@ -396,15 +414,39 @@ variable "compute_auto_scaling_protect_from_scale_in_default" {
   description = "Prevents instance cycling but required for ECS delegation. Sticks to instances once created. Defaults to provider_managed_termination_protection."
 }
 
-variable "compute_image_id_default" {
-  type    = string
-  default = null
+variable "compute_elb_target_group_key_list_default" {
+  type    = list(string)
+  default = []
+}
+
+variable "compute_health_check_type_default" {
+  type        = string
+  default     = "ELB"
+  description = "Defaults to EC2 if no target is attached, otherwise ELB. Must be set to ELB manually for any service attached to an ELB."
+  validation {
+    condition     = var.compute_health_check_type_default == null ? true : contains(["EC2", "ELB"], var.compute_health_check_type_default)
+    error_message = "Invalid health check type"
+  }
 }
 
 variable "compute_iam_instance_profile_arn_default" {
   type        = string
   default     = null
   description = "Defaults to role from iam_data"
+}
+
+variable "compute_image_id_default" {
+  type    = string
+  default = null
+}
+
+variable "compute_instance_allocation_type_default" {
+  type    = string
+  default = "EC2"
+  validation {
+    condition     = contains(["EC2", "SPOT"], var.compute_instance_allocation_type_default)
+    error_message = "Invalid allocation type"
+  }
 }
 
 variable "compute_instance_lifetime_max_hours_default" {
@@ -420,8 +462,9 @@ variable "compute_instance_refresh_protected_instance_enabled_default" {
 }
 
 variable "compute_instance_storage_gib_default" {
-  type    = number
-  default = 30
+  type        = number
+  default     = 30
+  description = "This is the minimum allowed"
 }
 
 variable "compute_instance_type_default" {
@@ -434,9 +477,21 @@ variable "compute_key_pair_key_default" {
   default = null
 }
 
-variable "compute_provider_instance_warmup_period_s_default" {
+variable "compute_log_retention_days_default" {
   type    = number
-  default = 300
+  default = 7
+}
+
+variable "compute_provider_instance_warmup_period_s_default" {
+  type        = number
+  default     = 300
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_provider_managed_scaling_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for Fargate capacity type"
 }
 
 variable "compute_provider_managed_termination_protection_default" {
@@ -451,21 +506,21 @@ variable "compute_provider_step_size_max_default" {
   description = "Ignored for Fargate capacity type"
 }
 
+variable "compute_provider_step_size_min_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for Fargate capacity type"
+}
+
+variable "compute_provider_target_capacity_default" {
+  type        = number
+  default     = 100
+  description = "Ignored for Fargate capacity type"
+}
+
 variable "compute_user_data_command_list_default" {
   type    = list(string)
   default = null
-}
-
-variable "deployment_blue_green_termination_wait_minutes_default" {
-  type        = number
-  default     = 0
-  description = "Ignored unless terminate_on_success is true. No other deployment can commence during this wait."
-}
-
-variable "deployment_blue_green_timeout_wait_minutes_default" {
-  type        = number
-  default     = 5
-  description = "Ignored unless timeout action is STOP_DEPLOYMENT"
 }
 
 variable "deployment_style_use_blue_green_default" {
@@ -474,12 +529,112 @@ variable "deployment_style_use_blue_green_default" {
   description = "If true a target group and load balancer must be provided. Ignored if a custom elb_target_map is provided with more than one target or deployment controller is not CODE_DEPLOY: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/register-multiple-targetgroups.html"
 }
 
+variable "deployment_auto_rollback_enabled_default" {
+  type    = string
+  default = true
+}
+
+variable "deployment_auto_rollback_event_list_default" {
+  type    = list(string)
+  default = ["DEPLOYMENT_FAILURE", "DEPLOYMENT_STOP_ON_ALARM", "DEPLOYMENT_STOP_ON_REQUEST"]
+  validation {
+    condition     = length(setsubtract(toset(var.deployment_auto_rollback_event_list_default), toset(["DEPLOYMENT_FAILURE", "DEPLOYMENT_STOP_ON_ALARM", "DEPLOYMENT_STOP_ON_REQUEST"]))) == 0
+    error_message = "Invalid event list"
+  }
+}
+
+variable "deployment_blue_green_terminate_on_success_default" {
+  type    = bool
+  default = true
+}
+
+variable "deployment_blue_green_termination_wait_minutes_default" {
+  type        = number
+  default     = 0
+  description = "Ignored unless terminate_on_success is true. No other deployment can commence during this wait."
+}
+
+variable "deployment_blue_green_timeout_action_default" {
+  type        = string
+  default     = "CONTINUE_DEPLOYMENT"
+  description = "Set to STOP_DEPLOYMENT if something will `aws deploy continue-deployment` else CONTINUE_DEPLOYMENT"
+  validation {
+    condition     = contains(["CONTINUE_DEPLOYMENT", "STOP_DEPLOYMENT"], var.deployment_blue_green_timeout_action_default)
+    error_message = "Invalid action"
+  }
+}
+
+variable "deployment_blue_green_timeout_wait_minutes_default" {
+  type        = number
+  default     = 5
+  description = "Ignored unless timeout action is STOP_DEPLOYMENT"
+}
+
+variable "deployment_app_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to group key"
+}
+
+variable "deployment_config_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to group key"
+}
+
+variable "deployment_style_use_load_balancer_default" {
+  type        = bool
+  default     = true
+  description = "If true a target group and load balancer must be provided"
+}
+
+variable "deployment_environment_map_default" {
+  type = object({
+    blue = object({
+      elb_listener_key     = optional(string) # Defaults to key_blue
+      elb_target_group_key = optional(string) # Defaults to key_blue
+    })
+    green = optional(object({                 # If this is included, the depoyment will use blue-green
+      elb_listener_key     = optional(string) # Defaults to key_green
+      elb_target_group_key = optional(string) # Defaults to key_green
+    }))
+  })
+  default = {
+    blue  = {}
+    green = {}
+  }
+}
+
+variable "deployment_ecs_service_cluster_key_default" {
+  type    = string
+  default = null
+}
+
 variable "deployment_trigger_map_default" {
   type = map(object({
     event_list    = optional(list(string))
     sns_topic_arn = optional(string)
   }))
   default = {}
+}
+
+variable "deployment_trigger_event_list_default" {
+  type    = list(string)
+  default = ["DEPLOYMENT_FAILURE"]
+  validation {
+    condition     = length(setsubtract(toset(var.deployment_trigger_event_list_default), toset(["DEPLOYMENT_FAILURE", "DEPLOYMENT_STOP_ON_ALARM", "DEPLOYMENT_STOP_ON_REQUEST"]))) == 0
+    error_message = "Invalid event list"
+  }
+}
+
+variable "deployment_trigger_sns_topic_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "deployment_update_new_instances_default" {
+  type    = bool
+  default = true
 }
 
 variable "dns_data" {
@@ -522,11 +677,20 @@ variable "elb_data_map" {
 
 variable "iam_data" {
   type = object({
-    iam_instance_profile_arn_ecs    = string
-    iam_policy_arn_batch_submit_job = string
-    iam_policy_arn_ecs_exec_ssm     = string
-    iam_policy_arn_ecs_start_task   = string
-    iam_role_arn_ecs_task_execution = string
+    iam_instance_profile_arn_ecs        = string
+    iam_policy_arn_batch_submit_job     = string
+    iam_policy_arn_ec2_associate_eip    = string
+    iam_policy_arn_ec2_modify_attribute = string
+    iam_policy_arn_ecr_get_token        = string
+    iam_policy_arn_ecs_exec_ssm         = string
+    iam_policy_arn_ecs_start_task       = string
+    iam_policy_arn_ecs_task_execution   = string
+    iam_policy_arn_lambda_vpc           = string
+    iam_role_arn_backup_create          = string
+    iam_role_arn_batch_service          = string
+    iam_role_arn_batch_spot_fleet       = string
+    iam_role_arn_ecs_task_execution     = string
+    iam_role_arn_rds_monitor            = string
     key_pair_map = map(object({
       key_pair_name = string
     }))
@@ -536,12 +700,7 @@ variable "iam_data" {
 variable "listener_acm_certificate_key_default" {
   type        = string
   default     = null
-  description = "Must be provided if a listener uses HTTPS"
-}
-
-variable "app_action_order_default_forward_default" {
-  type    = number
-  default = 40000
+  description = "Must be provided if a listener uses HTTPS. Ignored for other protocols."
 }
 
 variable "listener_action_map_default" {
@@ -617,6 +776,20 @@ variable "listener_action_forward_stickiness_enabled_default" {
   default = false
 }
 
+variable "listener_action_forward_target_group_map_default" {
+  type = map(object({
+    target_group_weight = optional(number)
+  }))
+  default     = null
+  description = "A map of target group key to configuration. When action type is forward, defaults to key for the listener and default weight. Defaults to empty map otherwise."
+}
+
+variable "listener_action_forward_target_group_weight_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for network load balancers"
+}
+
 variable "listener_action_order_default" {
   type    = number
   default = 10000
@@ -633,7 +806,7 @@ variable "listener_action_redirect_host_default" {
 
 variable "listener_action_redirect_path_default" {
   type    = string
-  default = "#{path}"
+  default = "/#{path}"
 }
 
 variable "listener_action_redirect_port_default" {
@@ -671,6 +844,16 @@ variable "listener_action_type_default" {
   validation {
     condition     = var.listener_action_type_default == null ? true : contains(["authenticate-cognito", "authenticate-oidc", "fixed-response", "forward", "redirect"], var.listener_action_type_default)
     error_message = "Invalid action_type"
+  }
+}
+
+variable "listener_alpn_policy_default" {
+  type        = string
+  default     = "HTTP2Preferred"
+  description = "Ignored unless protocol is TLS"
+  validation {
+    condition     = contains(["HTTP1Only", "HTTP2Only", "HTTP2Optional", "HTTP2Preferred"], var.listener_alpn_policy_default)
+    error_message = "Invalid alpn policy"
   }
 }
 
@@ -771,6 +954,11 @@ variable "listener_elb_key_default" {
   default = null
 }
 
+variable "listener_listen_port_default" {
+  type    = number
+  default = 443
+}
+
 variable "listener_listen_protocol_default" {
   type    = string
   default = "HTTPS"
@@ -781,6 +969,31 @@ variable "listener_listen_protocol_default" {
     ], var.listener_listen_protocol_default)
     error_message = "Invalid protocol"
   }
+}
+
+variable "listener_listen_ssl_policy_default" {
+  type        = string
+  default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  description = "Ignored unless protocol is HTTPS. See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html."
+}
+
+variable "listener_mutual_authentication_ignore_client_certificate_expiry_default" {
+  type    = bool
+  default = false
+}
+
+variable "listener_mutual_authentication_mode_default" {
+  type    = string
+  default = null
+  validation {
+    condition     = var.listener_mutual_authentication_mode_default == null ? true : contains(["off", "passthrough", "verify"], var.listener_mutual_authentication_mode_default)
+    error_message = "Invalid mutual_authentication_mode"
+  }
+}
+
+variable "listener_mutual_authentication_trust_store_arn_default" {
+  type    = string
+  default = null
 }
 
 variable "log_group_class_default" {
@@ -810,14 +1023,23 @@ variable "monitor_data" {
   type = object({
     alert = object({
       topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         topic_arn = string
       }))
     })
     ecs_ssm_param_map = object({
       cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         name_effective = string
       })
       gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         name_effective = string
       })
     })
@@ -956,7 +1178,7 @@ variable "rule_condition_map_default" {
 variable "rule_host_header_pattern_list_default" {
   type        = list(string)
   default     = null
-  description = "Defaults to fqdn for cert if no other condition is specified"
+  description = "Defaults to fqdn for cert if no other condition is specified. Set to [] to disable."
 }
 
 variable "rule_http_header_map_default" {
@@ -1003,7 +1225,7 @@ variable "rule_source_ip_list_default" {
 variable "rule_listener_key_default" {
   type        = string
   default     = null
-  description = "Ignored if no condition is set"
+  description = "Defaults to protocol. Has no effect if no condition is set."
 }
 
 variable "service_deployment_controller_type_default" {
@@ -1088,6 +1310,16 @@ variable "std_map" {
   })
 }
 
+variable "target_draining_to_unused_delay_seconds_default" {
+  type    = number
+  default = 300
+}
+
+variable "target_glb_failover_on_deregistration_or_unhealthy_default" {
+  type    = bool
+  default = false
+}
+
 variable "target_health_check_consecutive_fail_threshold_default" {
   type    = number
   default = 3
@@ -1158,6 +1390,96 @@ variable "target_health_check_success_code_list_default" {
   description = "Ingored unless health_check_protocol is HTTP/HTTPS"
 }
 
+variable "target_ip_use_v6_default" {
+  type    = bool
+  default = false
+}
+
+variable "target_lambda_multi_value_headers_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "target_load_balancing_algorithm_type_default" {
+  type        = string
+  default     = "round_robin"
+  description = "Ignored for network load balancers"
+  validation {
+    condition     = contains(["least_outstanding_requests", "round_robin", "weighted_random"], var.target_load_balancing_algorithm_type_default)
+    error_message = "Invalid load_balancing_algorithm_type"
+  }
+}
+
+variable "target_load_balancing_anomaly_mitigation_enabled_default" {
+  type        = bool
+  default     = null
+  description = "Ignored for network load balancers. Only supported for weighted_random algorithm. Defaults to true if stickiness is also off."
+}
+
+variable "target_load_balancing_cross_zone_mode_default" {
+  type    = string
+  default = "use_load_balancer_configuration"
+  validation {
+    condition     = contains(["use_load_balancer_configuration", "false", "true"], var.target_load_balancing_cross_zone_mode_default)
+    error_message = "Invalid cross-zone mode"
+  }
+}
+
+variable "target_nlb_enable_proxy_protocol_v2_default" {
+  type        = bool
+  default     = false
+  description = "Make sure target supports protocol headers before enabling this."
+}
+
+variable "target_nlb_preserve_client_ip_default" {
+  type    = bool
+  default = true
+}
+
+variable "target_nlb_terminate_connection_on_deregistration_timeout_default" {
+  type        = bool
+  default     = false
+  description = "Ignored for UDP targets"
+}
+
+variable "target_nlb_terminate_connection_on_unhealthy_default" {
+  type        = bool
+  default     = true
+  description = "Ignored for UDP targets"
+}
+
+variable "target_sticky_cookie_duration_seconds_default" {
+  type        = number
+  default     = 60 * 60 * 24
+  description = "Ignored for Lambda targets"
+}
+
+variable "target_sticky_cookie_enabled_default" {
+  type        = bool
+  default     = false
+  description = "Ignored for Lambda targets"
+}
+
+variable "target_sticky_cookie_name_default" {
+  type        = string
+  default     = null
+  description = "Ignored for Lambda targets"
+}
+
+variable "target_sticky_type_default" {
+  type        = string
+  default     = null
+  description = "Defaults to lb_cookie for target_protocol HTTP/HTTPS, source_ip otherwise. Cookie type is set, but not enabled by default. Ignored for Lambda targets."
+  validation {
+    condition = var.target_sticky_type_default == null ? true : contains([
+      "lb_cookie", "app_cookie",                      # ALB
+      "source_ip",                                    # NLB
+      "source_ip_dest_ip", "source_ip_dest_ip_proto", # GWLB
+    ], var.target_sticky_type_default)
+    error_message = "Invalid sticky_type"
+  }
+}
+
 variable "target_protocol_default" {
   type        = string
   default     = "HTTP"
@@ -1169,17 +1491,13 @@ variable "target_protocol_default" {
 }
 
 variable "target_protocol_http_version_default" {
-  type    = string
-  default = "HTTP1"
+  type        = string
+  default     = "HTTP1"
+  description = "Ingored unless target protocol is HTTP or HTTPS"
   validation {
     condition     = contains(["GRPC", "HTTP1", "HTTP2"], var.target_protocol_http_version_default)
     error_message = "Invalid target protocol version"
   }
-}
-
-variable "target_sticky_cookie_enabled_default" {
-  type    = bool
-  default = false
 }
 
 variable "target_type_default" {
@@ -1189,6 +1507,15 @@ variable "target_type_default" {
   validation {
     condition     = contains(["instance", "ip", "lambda", "alb"], var.target_type_default)
     error_message = "Invalid target_type"
+  }
+}
+
+variable "target_warm_up_seconds_default" {
+  type    = number
+  default = 0
+  validation {
+    condition     = var.target_warm_up_seconds_default == 0 || var.target_warm_up_seconds_default >= 30 && var.target_warm_up_seconds_default <= 900
+    error_message = "Invalid target_warm_up_seconds"
   }
 }
 
@@ -1216,6 +1543,11 @@ variable "task_container_environment_map_default" {
 variable "task_container_image_default" {
   type    = string
   default = "public.ecr.aws/lts/ubuntu:latest"
+}
+
+variable "task_container_is_essential_default" {
+  type    = bool
+  default = true
 }
 
 variable "task_container_linux_capability_add_list_default" {
@@ -1310,7 +1642,8 @@ variable "task_docker_volume_map_default" {
     label_map              = optional(map(string))
     scope                  = optional(string)
   }))
-  default = {}
+  default     = {}
+  description = "If ECS ecs_exec_enabled, this will be merged with volumes at /var/lib/amazon and /var/log/amazon"
 }
 
 variable "task_docker_volume_auto_provision_enabled_default" {
@@ -1337,6 +1670,16 @@ variable "task_docker_volume_label_map_default" {
 variable "task_docker_volume_scope_default" {
   type    = string
   default = "task"
+  validation {
+    condition     = contains(["shared", "task"], var.task_docker_volume_scope_default)
+    error_message = "invalid volume scope"
+  }
+}
+
+variable "task_ecs_cluster_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to the key for the task"
 }
 
 variable "task_ecs_exec_enabled_default" {
@@ -1431,6 +1774,11 @@ variable "task_resource_num_vcpu_default" {
     condition     = var.task_resource_num_vcpu_default == null ? true : var.task_resource_num_vcpu_default >= 0.25
     error_message = "Invalid vCPU requirement: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size"
   }
+}
+
+variable "task_schedule_expression_default" {
+  type    = string
+  default = null
 }
 
 variable "use_fargate" {

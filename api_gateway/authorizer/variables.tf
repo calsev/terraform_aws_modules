@@ -71,12 +71,15 @@ variable "auth_request_simple_response_enabled_default" {
 
 variable "cognito_data_map" {
   type = map(object({
+    identity_pool_id = optional(string)
+    user_pool_arn    = string
     user_pool_client = object({
       client_app_map = map(object({
         client_app_id = string
       }))
     })
     user_pool_endpoint = string
+    user_pool_fqdn     = string
   }))
   default     = {}
   description = "Must be provided if any API uses a Cognito authorizer"

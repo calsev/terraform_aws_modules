@@ -1,23 +1,6 @@
-variable "iam_data" {
-  type = object({
-    key_pair_map = map(object({
-      key_pair_name = string
-    }))
-  })
-}
+{{ iam.data() }}
 
-variable "monitor_data" {
-  type = object({
-    ecs_ssm_param_map = object({
-      cpu = object({
-        name_effective = string
-      })
-      gpu = object({
-        name_effective = string
-      })
-    })
-  })
-}
+{{ monitor.data() }}
 
 variable "nat_map" {
   type = map(object({

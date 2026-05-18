@@ -245,6 +245,20 @@ variable "compute_user_data_suppress_generation_default" {
 
 variable "iam_data" {
   type = object({
+    iam_instance_profile_arn_ecs        = string
+    iam_policy_arn_batch_submit_job     = string
+    iam_policy_arn_ec2_associate_eip    = string
+    iam_policy_arn_ec2_modify_attribute = string
+    iam_policy_arn_ecr_get_token        = string
+    iam_policy_arn_ecs_exec_ssm         = string
+    iam_policy_arn_ecs_start_task       = string
+    iam_policy_arn_ecs_task_execution   = string
+    iam_policy_arn_lambda_vpc           = string
+    iam_role_arn_backup_create          = string
+    iam_role_arn_batch_service          = string
+    iam_role_arn_batch_spot_fleet       = string
+    iam_role_arn_ecs_task_execution     = string
+    iam_role_arn_rds_monitor            = string
     key_pair_map = map(object({
       key_pair_name = string
     }))
@@ -296,11 +310,25 @@ variable "image_search_tag_owner" {
 
 variable "monitor_data" {
   type = object({
+    alert = object({
+      topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        topic_arn = string
+      }))
+    })
     ecs_ssm_param_map = object({
       cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         name_effective = string
       })
       gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
         name_effective = string
       })
     })

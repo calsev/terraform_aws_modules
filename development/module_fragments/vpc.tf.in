@@ -1,5 +1,21 @@
 {% import 'development/module_fragments/name.tf.in' as name %}
 
+{% macro elb_data_map(default=None) -%}
+variable "elb_data_map" {
+  type = map(object({
+    elb_arn            = string
+    elb_dns_name       = string
+    elb_dns_zone_id    = string
+    load_balancer_type = string
+    port_to_protocol_to_listener_map = map(map(object({
+      elb_listener_arn = string
+    })))
+  })){% if default %}
+  default     = null
+  description = "{{ default }}"{% endif %}
+}
+{%- endmacro %}
+
 {% macro var_item(vpc=True, az=True, sg=True, seg=True) -%}
   {{ [
     ("vpc_az_key_list             = optional(list(string))", az),

@@ -64,18 +64,7 @@ variable "auth_request_simple_response_enabled_default" {
   description = "Ignored for JWT authorizers"
 }
 
-variable "cognito_data_map" {
-  type = map(object({
-    user_pool_client = object({
-      client_app_map = map(object({
-        client_app_id = string
-      }))
-    })
-    user_pool_endpoint = string
-  }))
-  default     = {}
-  description = "Must be provided if any API uses a Cognito authorizer"
-}
+{{ cognito.data_map(default="Must be provided if any API uses a Cognito authorizer") }}
 
 variable "lambda_data_map" {
   type = map(object({

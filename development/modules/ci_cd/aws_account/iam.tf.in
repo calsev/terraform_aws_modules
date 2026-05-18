@@ -12,8 +12,10 @@ module "basic_build_role" {
     code_star = {
       connection = {}
     }
-    log    = module.build_log.data[local.base_name]
-    policy = null
+    log        = module.build_log.data[local.base_name]
+    log_public = null
+    policy     = null
+    role       = null
   }
   name    = "build_basic"
   std_map = var.std_map

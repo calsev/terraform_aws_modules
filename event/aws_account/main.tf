@@ -9,7 +9,8 @@ module "default_event_bus" {
     }
   }
   monitor_data = {
-    alert = var.alert_data_map
+    alert             = var.alert_data_map
+    ecs_ssm_param_map = null
   }
   std_map = var.std_map
 }

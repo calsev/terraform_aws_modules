@@ -17,9 +17,16 @@ variable "alarm_rollback_enabled_default" {
 
 variable "dns_data" {
   type = object({
+    domain_to_dns_zone_map = map(object({
+      dns_zone_id = string
+    }))
     domain_to_sd_zone_map = map(object({
       namespace_id = string
     }))
+    region_domain_cert_map = map(map(object({
+      certificate_arn = string
+      name_simple     = string
+    })))
   })
   default     = null
   description = "Must be provided is service discovery is enabled for any service"

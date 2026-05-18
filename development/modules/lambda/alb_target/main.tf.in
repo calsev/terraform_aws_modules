@@ -16,14 +16,7 @@ module "listener" {
   listener_dns_from_zone_key_default    = var.listener_dns_from_zone_key_default
   listener_elb_key_default              = var.listener_elb_key_default
   listener_map                          = local.lx_map
-  rule_condition_map_default            = var.rule_condition_map_default
-  rule_host_header_pattern_list_default = var.rule_host_header_pattern_list_default
-  rule_http_header_map_default          = var.rule_http_header_map_default
-  rule_http_request_method_list_default = var.rule_http_request_method_list_default
-  rule_path_pattern_list_default        = var.rule_path_pattern_list_default
-  rule_priority_default                 = var.rule_priority_default
-  rule_query_string_map_default         = var.rule_query_string_map_default
-  rule_source_ip_list_default           = var.rule_source_ip_list_default
+  {{ elb.rule_map_item() }}
   std_map                               = var.std_map
 }
 

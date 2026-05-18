@@ -23,12 +23,6 @@ variable "domain_key_algorithm_default" {
   description = "See https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms"
 }
 
-variable "dns_data" {
-  type = object({
-    domain_to_dns_zone_map = map(object({
-      dns_zone_id = string
-    }))
-  })
-}
+{{ dns.data() }}
 
 {{ std.map() }}

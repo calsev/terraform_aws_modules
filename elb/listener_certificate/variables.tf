@@ -3,6 +3,9 @@ variable "dns_data" {
     domain_to_dns_zone_map = map(object({
       dns_zone_id = string
     }))
+    domain_to_sd_zone_map = map(object({
+      namespace_id = string
+    }))
     region_domain_cert_map = map(map(object({
       certificate_arn = string
       name_simple     = string
@@ -12,8 +15,13 @@ variable "dns_data" {
 
 variable "elb_data_map" {
   type = map(object({
-    elb_dns_name    = string
-    elb_dns_zone_id = string
+    elb_arn            = string
+    elb_dns_name       = string
+    elb_dns_zone_id    = string
+    load_balancer_type = string
+    port_to_protocol_to_listener_map = map(map(object({
+      elb_listener_arn = string
+    })))
   }))
 }
 

@@ -1,29 +1,8 @@
 {{ vpc.endpoint_map_default() }}
 
-variable "iam_data" {
-  type = object({
-    key_pair_map = map(object({
-      key_pair_name = string
-    }))
-  })
-  default     = null
-  description = "Must be provided if using a nat instance"
-}
+{{ iam.data(default="Must be provided if using a nat instance") }}
 
-variable "monitor_data" {
-  type = object({
-    ecs_ssm_param_map = object({
-      cpu = object({
-        name_effective = string
-      })
-      gpu = object({
-        name_effective = string
-      })
-    })
-  })
-  default     = null
-  description = "Must be provided if using a nat instance"
-}
+{{ monitor.data(default="Must be provided if using a nat instance") }}
 
 variable "s3_data_map" {
   type = map(object({

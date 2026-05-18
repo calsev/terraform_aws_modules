@@ -5,15 +5,7 @@ variable "alert_level_default" {
 
 {{ lambda.var_alarm_default() }}
 
-variable "monitor_data" {
-  type = object({
-    alert = object({
-      topic_map = map(object({
-        topic_arn = string
-      }))
-    })
-  })
-}
+{{ monitor.data() }}
 
 {{ name.var() }}
 

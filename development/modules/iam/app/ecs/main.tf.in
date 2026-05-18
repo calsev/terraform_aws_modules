@@ -17,7 +17,21 @@ module "ecs_task_execution_role" {
   # ecsTaskExecutionRole does not exist in all accounts
   source = "../../../iam/role/ecs/task_execution"
   iam_data = {
-    iam_policy_arn_ecs_task_execution = module.managed_policies.data.iam_policy_arn_ecs_task_execution
+    iam_instance_profile_arn_ecs        = null
+    iam_policy_arn_batch_submit_job     = null
+    iam_policy_arn_ec2_associate_eip    = null
+    iam_policy_arn_ec2_modify_attribute = null
+    iam_policy_arn_ecr_get_token        = null
+    iam_policy_arn_ecs_exec_ssm         = null
+    iam_policy_arn_ecs_start_task       = null
+    iam_policy_arn_ecs_task_execution   = module.managed_policies.data.iam_policy_arn_ecs_task_execution
+    iam_policy_arn_lambda_vpc           = null
+    iam_role_arn_backup_create          = null
+    iam_role_arn_batch_service          = null
+    iam_role_arn_batch_spot_fleet       = null
+    iam_role_arn_ecs_task_execution     = null
+    iam_role_arn_rds_monitor            = null
+    key_pair_map                        = null
   }
   name        = "ecs_task_execution"
   {{ name.map_item() }}
