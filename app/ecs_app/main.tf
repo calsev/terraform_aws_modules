@@ -195,23 +195,38 @@ module "ecs_task" {
 }
 
 module "ecs_service" {
-  source                                                = "../../ecs/service"
-  dns_data                                              = var.dns_data
-  ecs_cluster_data                                      = local.ecs_cluster_data
-  ecs_task_definition_data_map                          = module.ecs_task.data
-  elb_target_data_map                                   = module.elb_target.data
-  service_desired_count_default                         = var.service_desired_count_default
-  service_elb_health_check_grace_period_seconds_default = var.service_elb_health_check_grace_period_seconds_default
-  service_elb_target_map_default                        = var.service_elb_target_map_default
-  service_elb_target_container_name_default             = var.service_elb_target_container_name_default
-  service_elb_target_container_port_default             = var.service_elb_target_container_port_default
-  service_map                                           = local.create_service_map
-  std_map                                               = var.std_map
-  vpc_az_key_list_default                               = var.vpc_az_key_list_default
-  vpc_data_map                                          = var.vpc_data_map
-  vpc_key_default                                       = var.vpc_key_default
-  vpc_security_group_key_list_default                   = var.vpc_security_group_key_list_default
-  vpc_segment_key_default                               = var.vpc_segment_key_default
+  source                                                         = "../../ecs/service"
+  dns_data                                                       = var.dns_data
+  ecs_cluster_data                                               = local.ecs_cluster_data
+  ecs_task_definition_data_map                                   = module.ecs_task.data
+  elb_target_data_map                                            = module.elb_target.data
+  service_assign_public_ip_default                               = var.service_assign_public_ip_default
+  service_deployment_controller_circuit_breaker_enabled_default  = var.service_deployment_controller_circuit_breaker_enabled_default
+  service_deployment_controller_circuit_breaker_rollback_default = var.service_deployment_controller_circuit_breaker_rollback_default
+  service_deployment_controller_type_default                     = var.service_deployment_controller_type_default
+  service_deployment_maximum_percent_default                     = var.service_deployment_maximum_percent_default
+  service_deployment_minimum_healthy_percent_default             = var.service_deployment_minimum_healthy_percent_default
+  service_desired_count_default                                  = var.service_desired_count_default
+  service_ecs_cluster_key_default                                = var.service_ecs_cluster_key_default
+  service_ecs_task_definition_key_default                        = var.service_ecs_task_definition_key_default
+  service_elb_health_check_grace_period_seconds_default          = var.service_elb_health_check_grace_period_seconds_default
+  service_elb_target_map_default                                 = var.service_elb_target_map_default
+  service_elb_target_container_name_default                      = var.service_elb_target_container_name_default
+  service_elb_target_container_port_default                      = var.service_elb_target_container_port_default
+  service_execute_command_enabled_default                        = var.service_execute_command_enabled_default
+  service_force_new_deployment_default                           = var.service_force_new_deployment_default
+  service_iam_role_arn_elb_calls_default                         = var.service_iam_role_arn_elb_calls_default
+  service_managed_tags_enabled_default                           = var.service_managed_tags_enabled_default
+  service_propagate_tag_source_default                           = var.service_propagate_tag_source_default
+  service_scheduling_strategy_default                            = var.service_scheduling_strategy_default
+  service_sd_namespace_key_default                               = var.service_sd_namespace_key_default
+  service_map                                                    = local.create_service_map
+  std_map                                                        = var.std_map
+  vpc_az_key_list_default                                        = var.vpc_az_key_list_default
+  vpc_data_map                                                   = var.vpc_data_map
+  vpc_key_default                                                = var.vpc_key_default
+  vpc_security_group_key_list_default                            = var.vpc_security_group_key_list_default
+  vpc_segment_key_default                                        = var.vpc_segment_key_default
 }
 
 module "codedeploy_app" {
@@ -330,12 +345,26 @@ module "code_pipe" {
   name_include_app_fields_default              = var.name_include_app_fields_default
   name_infix_default                           = var.name_infix_default
   pipe_build_data_key_default                  = var.pipe_build_data_key_default
+  pipe_map                                     = local.create_cicd_pipe_map
+  pipe_iam_role_arn_default                    = var.pipe_iam_role_arn_default
+  pipe_pipeline_type_default                   = var.pipe_pipeline_type_default
+  pipe_source_artifact_encryption_key_default  = var.pipe_source_artifact_encryption_key_default
+  pipe_source_artifact_format_default          = var.pipe_source_artifact_format_default
   pipe_source_branch_default                   = var.pipe_source_branch_default
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
   pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
   pipe_source_repository_id_default            = var.pipe_source_repository_id_default
+  pipe_stage_category_default                  = var.pipe_stage_category_default
+  pipe_stage_iam_role_arn_default              = var.pipe_stage_iam_role_arn_default
+  pipe_stage_input_artifact_list_default       = var.pipe_stage_input_artifact_list_default
+  pipe_stage_owner_default                     = var.pipe_stage_owner_default
+  pipe_stage_provider_default                  = var.pipe_stage_provider_default
+  pipe_stage_version_default                   = var.pipe_stage_version_default
+  pipe_trigger_pull_request_event_list_default = var.pipe_trigger_pull_request_event_list_default
+  pipe_variable_map_default                    = var.pipe_variable_map_default
   pipe_webhook_enabled_default                 = var.pipe_webhook_enabled_default
+  pipe_webhook_event_list_default              = var.pipe_webhook_event_list_default
+  pipe_webhook_filter_map_default              = var.pipe_webhook_filter_map_default
   pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
-  pipe_map                                     = local.create_cicd_pipe_map
   std_map                                      = var.std_map
 }

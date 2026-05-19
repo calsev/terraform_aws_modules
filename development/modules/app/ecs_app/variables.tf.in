@@ -6,37 +6,7 @@ variable "alert_enabled_default" {
 variable "app_map" {
   type = map(object({
     app_action_order_default_forward = optional(number)
-    action_map = optional(map(object({
-      action_fixed_response_content_type         = optional(string)
-      action_fixed_response_message_body         = optional(string)
-      action_fixed_response_status_code          = optional(number)
-      action_forward_stickiness_duration_seconds = optional(number)
-      action_forward_stickiness_enabled          = optional(bool)
-      action_forward_target_group_map = optional(map(object({
-        target_group_weight = optional(number)
-      })))
-      action_order                                = optional(number)
-      action_redirect_host                        = optional(string)
-      action_redirect_path                        = optional(string)
-      action_redirect_port                        = optional(number)
-      action_redirect_protocol                    = optional(string)
-      action_redirect_query                       = optional(string)
-      action_redirect_status_code                 = optional(string)
-      action_type                                 = optional(string)
-      auth_authentication_request_extra_param_map = optional(map(string))
-      auth_cognito_client_app_key                 = optional(string)
-      auth_cognito_pool_key                       = optional(string)
-      auth_oidc_authorization_endpoint            = optional(string)
-      auth_oidc_client_id                         = optional(string)
-      auth_oidc_client_secret                     = optional(string)
-      auth_oidc_issuer                            = optional(string)
-      auth_oidc_token_endpoint                    = optional(string)
-      auth_oidc_user_info_endpoint                = optional(string)
-      auth_on_unauthenticated_request             = optional(string)
-      auth_scope_list                             = optional(list(string))
-      auth_session_cookie_name                    = optional(string)
-      auth_session_timeout_seconds                = optional(number)
-    })))
+    {{ elb.listener_action_map_item() }}
     alert_enabled                       = optional(bool)
     auto_scaling_num_instances_max      = optional(number)
     auto_scaling_num_instances_min      = optional(number)
@@ -71,36 +41,7 @@ variable "app_map" {
       }))
       name = string
     }))
-    container_definition_map = map(object({
-      command_join               = optional(bool)
-      command_list               = optional(list(string))
-      environment_file_list      = optional(list(string))
-      environment_map            = optional(map(string))
-      entry_point                = optional(list(string))
-      hostname                   = optional(string)
-      image                      = optional(string) # Will be defaulted if image_ecr_repo_create
-      is_essential               = optional(bool)
-      linux_capability_add_list  = optional(list(string))
-      linux_capability_drop_list = optional(list(string))
-      linux_device_map = optional(map(object({
-        container_path  = optional(string)
-        permission_list = optional(list(string))
-      })), {})
-      mount_point_map = optional(map(object({
-        container_path = optional(string)
-        read_only      = optional(bool)
-      })))
-      port_map = optional(map(object({
-        host_port = optional(number) # Defaults to container port (key)
-        protocol  = optional(string)
-      })))
-      privileged                 = optional(bool)
-      read_only_root_file_system = optional(bool)
-      reserved_memory_gib        = optional(number)
-      reserved_num_vcpu          = optional(number)
-      secret_map                 = optional(map(string))
-      username                   = optional(string)
-    }))
+    {{ ecs.task_container_map_item() }}
     deployment_controller_type      = optional(string)
     deployment_style_use_blue_green = optional(bool)
     desired_count                   = optional(number)
@@ -357,62 +298,11 @@ variable "pipe_build_data_key_default" {
   description = "Defaults to map key"
 }
 
-variable "pipe_source_branch_default" {
-  type    = string
-  default = "main"
-}
-
-variable "pipe_source_code_star_connection_key_default" {
-  type    = string
-  default = null
-}
-
-variable "pipe_source_detect_changes_default" {
-  type    = bool
-  default = true
-}
-
-variable "pipe_source_repository_id_default" {
-  type    = string
-  default = null
-}
-
-variable "pipe_webhook_enabled_default" {
-  type    = bool
-  default = true
-}
-
-variable "pipe_webhook_secret_is_param_default" {
-  type        = bool
-  default     = false
-  description = "If true, an SSM param will be created, otherwise a SM secret"
-}
+{{ ci_cd.pipe_var() }}
 
 {{ iam.role_var() }}
 
 {{ elb.rule_var() }}
-
-variable "service_deployment_controller_type_default" {
-  type        = string
-  default     = "CODE_DEPLOY"
-  description = "Ignored if more than one ELB target is specified"
-  validation {
-    condition     = contains(["CODE_DEPLOY", "ECS", "EXTERNAL"], var.service_deployment_controller_type_default)
-    error_message = "Invalid deployment controller type"
-  }
-}
-
-variable "service_desired_count_default" {
-  type        = number
-  default     = 1
-  description = "Ignored for DAEMON scheduling strategy"
-}
-
-variable "service_elb_health_check_grace_period_seconds_default" {
-  type        = number
-  default     = 300
-  description = "Ignored unless attached to at least one target group"
-}
 
 variable "service_elb_target_map_default" {
   type = map(object({
@@ -447,16 +337,7 @@ variable "service_elb_target_map_default" {
   description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."
 }
 
-variable "service_elb_target_container_name_default" {
-  type        = string
-  default     = null
-  description = "Every service attached to an ELB must provide an ELB container name or a container map with a single container"
-}
-
-variable "service_elb_target_container_port_default" {
-  type    = number
-  default = 80
-}
+{{ ecs.service_var(controller="CODE_DEPLOY", elb_target=False) }}
 
 {{ std.map() }}
 

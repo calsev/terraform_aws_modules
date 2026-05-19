@@ -7,35 +7,7 @@ variable "listener_acm_certificate_key_default" {
 
 variable "listener_action_map_default" {
   type = map(object({
-    action_fixed_response_content_type         = optional(string)
-    action_fixed_response_message_body         = optional(string)
-    action_fixed_response_status_code          = optional(number)
-    action_forward_stickiness_duration_seconds = optional(number)
-    action_forward_stickiness_enabled          = optional(bool)
-    action_forward_target_group_map = optional(map(object({
-      target_group_weight = optional(number)
-    })))
-    action_order                                = optional(number)
-    action_redirect_host                        = optional(string)
-    action_redirect_path                        = optional(string)
-    action_redirect_port                        = optional(number)
-    action_redirect_protocol                    = optional(string)
-    action_redirect_query                       = optional(string)
-    action_redirect_status_code                 = optional(string)
-    action_type                                 = optional(string)
-    auth_authentication_request_extra_param_map = optional(map(string))
-    auth_cognito_client_app_key                 = optional(string)
-    auth_cognito_pool_key                       = optional(string)
-    auth_oidc_authorization_endpoint            = optional(string)
-    auth_oidc_client_id                         = optional(string)
-    auth_oidc_client_secret                     = optional(string)
-    auth_oidc_issuer                            = optional(string)
-    auth_oidc_token_endpoint                    = optional(string)
-    auth_oidc_user_info_endpoint                = optional(string)
-    auth_on_unauthenticated_request             = optional(string)
-    auth_scope_list                             = optional(list(string))
-    auth_session_cookie_name                    = optional(string)
-    auth_session_timeout_seconds                = optional(number)
+    {{ listener_action_map_items() }}
   }))
   default = {}{% if action_map_desc %}
   description = "{{ action_map_desc }}"{% endif %}
@@ -297,6 +269,44 @@ variable "listener_mutual_authentication_trust_store_arn_default" {
   type    = string
   default = null
 }
+{%- endmacro %}
+
+{% macro listener_action_map_items() -%}
+    action_fixed_response_content_type         = optional(string)
+    action_fixed_response_message_body         = optional(string)
+    action_fixed_response_status_code          = optional(number)
+    action_forward_stickiness_duration_seconds = optional(number)
+    action_forward_stickiness_enabled          = optional(bool)
+    action_forward_target_group_map = optional(map(object({
+      target_group_weight = optional(number)
+    })))
+    action_order                                = optional(number)
+    action_redirect_host                        = optional(string)
+    action_redirect_path                        = optional(string)
+    action_redirect_port                        = optional(number)
+    action_redirect_protocol                    = optional(string)
+    action_redirect_query                       = optional(string)
+    action_redirect_status_code                 = optional(string)
+    action_type                                 = optional(string)
+    auth_authentication_request_extra_param_map = optional(map(string))
+    auth_cognito_client_app_key                 = optional(string)
+    auth_cognito_pool_key                       = optional(string)
+    auth_oidc_authorization_endpoint            = optional(string)
+    auth_oidc_client_id                         = optional(string)
+    auth_oidc_client_secret                     = optional(string)
+    auth_oidc_issuer                            = optional(string)
+    auth_oidc_token_endpoint                    = optional(string)
+    auth_oidc_user_info_endpoint                = optional(string)
+    auth_on_unauthenticated_request             = optional(string)
+    auth_scope_list                             = optional(list(string))
+    auth_session_cookie_name                    = optional(string)
+    auth_session_timeout_seconds                = optional(number)
+{%- endmacro %}
+
+{% macro listener_action_map_item() -%}
+    action_map = optional(map(object({
+      {{ listener_action_map_items() }}
+    })))
 {%- endmacro %}
 
 {% macro listener_map_item() -%}

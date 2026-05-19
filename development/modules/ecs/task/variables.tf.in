@@ -36,36 +36,7 @@ variable "task_map" {
   type = map(object({
     alert_enabled = optional(bool)
     alert_level   = optional(string)
-    container_definition_map = map(object({
-      command_join               = optional(bool)
-      command_list               = optional(list(string))
-      environment_file_list      = optional(list(string))
-      environment_map            = optional(map(string))
-      entry_point                = optional(list(string))
-      hostname                   = optional(string)
-      image                      = optional(string)
-      is_essential               = optional(bool)
-      linux_capability_add_list  = optional(list(string))
-      linux_capability_drop_list = optional(list(string))
-      linux_device_map = optional(map(object({
-        container_path = optional(string)
-        permission_list = optional(list(string))
-      })), {})
-      mount_point_map = optional(map(object({
-        container_path = optional(string)
-        read_only      = optional(bool)
-      })))
-      port_map = optional(map(object({
-        host_port = optional(number) # Defaults to container port (key)
-        protocol  = optional(string)
-      })))
-      privileged                 = optional(bool)
-      read_only_root_file_system = optional(bool)
-      reserved_memory_gib        = optional(number)
-      reserved_num_vcpu          = optional(number)
-      secret_map                 = optional(map(string))
-      username                   = optional(string)
-    }))
+    {{ ecs.task_container_map_item() }}
     docker_volume_map = optional(map(object({
       auto_provision_enabled = optional(bool)
       driver                 = optional(string)

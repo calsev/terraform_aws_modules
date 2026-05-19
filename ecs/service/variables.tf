@@ -157,8 +157,9 @@ variable "service_deployment_controller_circuit_breaker_rollback_default" {
 }
 
 variable "service_deployment_controller_type_default" {
-  type    = string
-  default = "ECS"
+  type        = string
+  default     = "ECS"
+  description = "Ignored if more than one ELB target is specified"
   validation {
     condition     = contains(["CODE_DEPLOY", "ECS", "EXTERNAL"], var.service_deployment_controller_type_default)
     error_message = "Invalid deployment controller type"
@@ -206,8 +207,8 @@ variable "service_elb_target_map_default" {
     container_name = optional(string)
     container_port = optional(number)
   }))
-  default     = {}
-  description = "Map of target group key to container port"
+  default     = null
+  description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."
 }
 
 variable "service_elb_target_container_name_default" {

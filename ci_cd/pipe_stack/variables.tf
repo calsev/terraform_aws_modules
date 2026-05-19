@@ -183,6 +183,21 @@ variable "pipe_build_data_key_default" {
   description = "Defaults to map key"
 }
 
+variable "pipe_iam_role_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "pipe_pipeline_type_default" {
+  type    = string
+  default = "V2"
+}
+
+variable "pipe_source_artifact_encryption_key_default" {
+  type    = string
+  default = "alias/aws/s3"
+}
+
 variable "pipe_source_artifact_format_default" {
   type    = string
   default = "CODE_ZIP"
@@ -217,9 +232,64 @@ variable "pipe_stage_category_default" {
   default = "Build"
 }
 
+variable "pipe_stage_iam_role_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "pipe_stage_input_artifact_list_default" {
+  type    = list(string)
+  default = ["SourceArtifact"]
+}
+
+variable "pipe_stage_owner_default" {
+  type    = string
+  default = "AWS"
+}
+
+variable "pipe_stage_provider_default" {
+  type    = string
+  default = "CodeBuild"
+}
+
+variable "pipe_stage_version_default" {
+  type    = string
+  default = "1"
+}
+
+variable "pipe_trigger_pull_request_event_list_default" {
+  type    = list(string)
+  default = []
+  validation {
+    condition     = length(setsubtract(toset(var.pipe_trigger_pull_request_event_list_default), toset(["CLOSED", "OPEN", "UPDATED"]))) == 0
+    error_message = "Invalid event list"
+  }
+}
+
+variable "pipe_variable_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of variable name to variable value"
+}
+
 variable "pipe_webhook_enabled_default" {
   type    = bool
   default = true
+}
+
+variable "pipe_webhook_event_list_default" {
+  type        = list(string)
+  default     = ["push"]
+  description = "See https://docs.github.com/en/webhooks/webhook-events-and-payloads#push"
+}
+
+variable "pipe_webhook_filter_map_default" {
+  type = map(object({
+    json_path    = string
+    match_equals = string
+  }))
+  default     = {}
+  description = "This will be merged over the filter for branch at source_branch"
 }
 
 variable "pipe_webhook_secret_is_param_default" {

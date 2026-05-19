@@ -51,18 +51,14 @@ module "ecs_task" {
 }
 
 module "ecs_service" {
-  source                                                = "../../ecs/service"
-  dns_data                                              = var.dns_data
-  ecs_cluster_data                                      = local.ecs_cluster_data
-  ecs_task_definition_data_map                          = module.ecs_task.data
-  elb_target_data_map                                   = module.elb_target.data
-  service_desired_count_default                         = var.service_desired_count_default
-  service_elb_health_check_grace_period_seconds_default = var.service_elb_health_check_grace_period_seconds_default
-  service_elb_target_map_default                        = var.service_elb_target_map_default
-  service_elb_target_container_name_default             = var.service_elb_target_container_name_default
-  service_elb_target_container_port_default             = var.service_elb_target_container_port_default
-  service_map                                           = local.create_service_map
-  std_map                                               = var.std_map
+  source                                                         = "../../ecs/service"
+  dns_data                                                       = var.dns_data
+  ecs_cluster_data                                               = local.ecs_cluster_data
+  ecs_task_definition_data_map                                   = module.ecs_task.data
+  elb_target_data_map                                            = module.elb_target.data
+  {{ ecs.service_map_item() }}
+  service_map                                                    = local.create_service_map
+  std_map                                                        = var.std_map
   {{ vpc.map_item() }}
 }
 
@@ -159,12 +155,7 @@ module "code_pipe" {
   name_include_app_fields_default              = var.name_include_app_fields_default
   name_infix_default                           = var.name_infix_default
   pipe_build_data_key_default                  = var.pipe_build_data_key_default
-  pipe_source_branch_default                   = var.pipe_source_branch_default
-  pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
-  pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
-  pipe_source_repository_id_default            = var.pipe_source_repository_id_default
-  pipe_webhook_enabled_default                 = var.pipe_webhook_enabled_default
-  pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
   pipe_map                                     = local.create_cicd_pipe_map
+  {{ ci_cd.pipe_map_item() }}
   std_map                                      = var.std_map
 }
