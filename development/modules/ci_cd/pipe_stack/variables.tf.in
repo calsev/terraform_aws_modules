@@ -85,49 +85,6 @@ variable "pipe_build_data_key_default" {
   description = "Defaults to map key"
 }
 
-variable "pipe_source_artifact_format_default" {
-  type    = string
-  default = "CODE_ZIP"
-  validation {
-    condition     = contains(["CODEBUILD_CLONE_REF", "CODE_ZIP"], var.pipe_source_artifact_format_default)
-    error_message = "Invalid artifact format"
-  }
-}
-
-variable "pipe_source_branch_default" {
-  type    = string
-  default = "main"
-}
-
-variable "pipe_source_code_star_connection_key_default" {
-  type    = string
-  default = null
-}
-
-variable "pipe_source_detect_changes_default" {
-  type    = bool
-  default = true
-}
-
-variable "pipe_source_repository_id_default" {
-  type    = string
-  default = null
-}
-
-variable "pipe_stage_category_default" {
-  type    = string
-  default = "Build"
-}
-
-variable "pipe_webhook_enabled_default" {
-  type    = bool
-  default = true
-}
-
-variable "pipe_webhook_secret_is_param_default" {
-  type        = bool
-  default     = false
-  description = "If true, an SSM param will be created, otherwise a SM secret"
-}
+{{ ci_cd.pipe_var() }}
 
 {{ std.map() }}

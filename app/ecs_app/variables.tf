@@ -78,7 +78,7 @@ variable "app_map" {
       environment_map            = optional(map(string))
       entry_point                = optional(list(string))
       hostname                   = optional(string)
-      image                      = optional(string) # Will be defaulted if image_ecr_repo_create
+      image                      = optional(string)
       is_essential               = optional(bool)
       linux_capability_add_list  = optional(list(string))
       linux_capability_drop_list = optional(list(string))
@@ -1101,6 +1101,30 @@ variable "pipe_build_data_key_default" {
   description = "Defaults to map key"
 }
 
+variable "pipe_iam_role_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "pipe_pipeline_type_default" {
+  type    = string
+  default = "V2"
+}
+
+variable "pipe_source_artifact_encryption_key_default" {
+  type    = string
+  default = "alias/aws/s3"
+}
+
+variable "pipe_source_artifact_format_default" {
+  type    = string
+  default = "CODE_ZIP"
+  validation {
+    condition     = contains(["CODEBUILD_CLONE_REF", "CODE_ZIP"], var.pipe_source_artifact_format_default)
+    error_message = "Invalid artifact format"
+  }
+}
+
 variable "pipe_source_branch_default" {
   type    = string
   default = "main"
@@ -1121,9 +1145,69 @@ variable "pipe_source_repository_id_default" {
   default = null
 }
 
+variable "pipe_stage_category_default" {
+  type    = string
+  default = "Build"
+}
+
+variable "pipe_stage_iam_role_arn_default" {
+  type    = string
+  default = null
+}
+
+variable "pipe_stage_input_artifact_list_default" {
+  type    = list(string)
+  default = ["SourceArtifact"]
+}
+
+variable "pipe_stage_owner_default" {
+  type    = string
+  default = "AWS"
+}
+
+variable "pipe_stage_provider_default" {
+  type    = string
+  default = "CodeBuild"
+}
+
+variable "pipe_stage_version_default" {
+  type    = string
+  default = "1"
+}
+
+variable "pipe_trigger_pull_request_event_list_default" {
+  type    = list(string)
+  default = []
+  validation {
+    condition     = length(setsubtract(toset(var.pipe_trigger_pull_request_event_list_default), toset(["CLOSED", "OPEN", "UPDATED"]))) == 0
+    error_message = "Invalid event list"
+  }
+}
+
+variable "pipe_variable_map_default" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of variable name to variable value"
+}
+
 variable "pipe_webhook_enabled_default" {
   type    = bool
   default = true
+}
+
+variable "pipe_webhook_event_list_default" {
+  type        = list(string)
+  default     = ["push"]
+  description = "See https://docs.github.com/en/webhooks/webhook-events-and-payloads#push"
+}
+
+variable "pipe_webhook_filter_map_default" {
+  type = map(object({
+    json_path    = string
+    match_equals = string
+  }))
+  default     = {}
+  description = "This will be merged over the filter for branch at source_branch"
 }
 
 variable "pipe_webhook_secret_is_param_default" {
@@ -1228,28 +1312,6 @@ variable "rule_listener_key_default" {
   description = "Defaults to protocol. Has no effect if no condition is set."
 }
 
-variable "service_deployment_controller_type_default" {
-  type        = string
-  default     = "CODE_DEPLOY"
-  description = "Ignored if more than one ELB target is specified"
-  validation {
-    condition     = contains(["CODE_DEPLOY", "ECS", "EXTERNAL"], var.service_deployment_controller_type_default)
-    error_message = "Invalid deployment controller type"
-  }
-}
-
-variable "service_desired_count_default" {
-  type        = number
-  default     = 1
-  description = "Ignored for DAEMON scheduling strategy"
-}
-
-variable "service_elb_health_check_grace_period_seconds_default" {
-  type        = number
-  default     = 300
-  description = "Ignored unless attached to at least one target group"
-}
-
 variable "service_elb_target_map_default" {
   type = map(object({
     acm_certificate_key   = optional(string)
@@ -1283,6 +1345,70 @@ variable "service_elb_target_map_default" {
   description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."
 }
 
+variable "service_assign_public_ip_default" {
+  type        = bool
+  default     = null
+  description = "Ignored for EC2 launch type. Defaults to the subnet default for Fargate."
+}
+
+variable "service_deployment_controller_circuit_breaker_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless deployment controller type is ECS"
+}
+
+variable "service_deployment_controller_circuit_breaker_rollback_default" {
+  type        = bool
+  default     = true
+  description = "Ignored unless deployment controller type is ECS"
+}
+
+variable "service_deployment_controller_type_default" {
+  type        = string
+  default     = "CODE_DEPLOY"
+  description = "Ignored if more than one ELB target is specified"
+  validation {
+    condition     = contains(["CODE_DEPLOY", "ECS", "EXTERNAL"], var.service_deployment_controller_type_default)
+    error_message = "Invalid deployment controller type"
+  }
+}
+
+variable "service_deployment_maximum_percent_default" {
+  type        = number
+  default     = 200
+  description = "Ignored for DAEMON scheduling strategy"
+}
+
+variable "service_deployment_minimum_healthy_percent_default" {
+  type        = number
+  default     = 100
+  description = "Ignored for DAEMON scheduling strategy"
+}
+
+variable "service_desired_count_default" {
+  type        = number
+  default     = 1
+  description = "Ignored for DAEMON scheduling strategy"
+}
+
+variable "service_ecs_cluster_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to service key"
+}
+
+variable "service_ecs_task_definition_key_default" {
+  type        = string
+  default     = null
+  description = "Defaults to service key"
+}
+
+variable "service_elb_health_check_grace_period_seconds_default" {
+  type        = number
+  default     = 300
+  description = "Ignored unless attached to at least one target group"
+}
+
 variable "service_elb_target_container_name_default" {
   type        = string
   default     = null
@@ -1292,6 +1418,53 @@ variable "service_elb_target_container_name_default" {
 variable "service_elb_target_container_port_default" {
   type    = number
   default = 80
+}
+
+variable "service_execute_command_enabled_default" {
+  type        = bool
+  default     = true
+  description = "To troubleshoot, see https://github.com/aws-containers/amazon-ecs-exec-checker"
+}
+
+variable "service_force_new_deployment_default" {
+  type        = bool
+  default     = true
+  description = "Avoids several configuration headaches. Ignored for CODE_DEPLOY controller."
+}
+
+variable "service_iam_role_arn_elb_calls_default" {
+  type        = string
+  default     = null
+  description = "Ignored if networking mode is awvpc"
+}
+
+variable "service_managed_tags_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "service_propagate_tag_source_default" {
+  type    = string
+  default = "SERVICE"
+  validation {
+    condition     = contains(["SERVICE", "TASK_DEFINITION"], var.service_propagate_tag_source_default)
+    error_message = "Invalid scheduling strategy"
+  }
+}
+
+variable "service_scheduling_strategy_default" {
+  type        = string
+  default     = "REPLICA"
+  description = "DAEMON is compatible with only ECS deployment controller and conflicts with desired count."
+  validation {
+    condition     = contains(["DAEMON", "REPLICA"], var.service_scheduling_strategy_default)
+    error_message = "Invalid scheduling strategy"
+  }
+}
+
+variable "service_sd_namespace_key_default" {
+  type    = string
+  default = null
 }
 
 variable "std_map" {

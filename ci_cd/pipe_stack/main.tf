@@ -2,13 +2,25 @@ module "code_pipe" {
   source                                       = "../../ci_cd/pipe"
   ci_cd_account_data                           = var.ci_cd_account_data
   pipe_map                                     = local.create_pipe_map
+  pipe_iam_role_arn_default                    = var.pipe_iam_role_arn_default
+  pipe_pipeline_type_default                   = var.pipe_pipeline_type_default
+  pipe_source_artifact_encryption_key_default  = var.pipe_source_artifact_encryption_key_default
   pipe_source_artifact_format_default          = var.pipe_source_artifact_format_default
   pipe_source_branch_default                   = var.pipe_source_branch_default
   pipe_source_code_star_connection_key_default = var.pipe_source_code_star_connection_key_default
   pipe_source_detect_changes_default           = var.pipe_source_detect_changes_default
   pipe_source_repository_id_default            = var.pipe_source_repository_id_default
   pipe_stage_category_default                  = var.pipe_stage_category_default
+  pipe_stage_iam_role_arn_default              = var.pipe_stage_iam_role_arn_default
+  pipe_stage_input_artifact_list_default       = var.pipe_stage_input_artifact_list_default
+  pipe_stage_owner_default                     = var.pipe_stage_owner_default
+  pipe_stage_provider_default                  = var.pipe_stage_provider_default
+  pipe_stage_version_default                   = var.pipe_stage_version_default
+  pipe_trigger_pull_request_event_list_default = var.pipe_trigger_pull_request_event_list_default
+  pipe_variable_map_default                    = var.pipe_variable_map_default
   pipe_webhook_enabled_default                 = var.pipe_webhook_enabled_default
+  pipe_webhook_event_list_default              = var.pipe_webhook_event_list_default
+  pipe_webhook_filter_map_default              = var.pipe_webhook_filter_map_default
   pipe_webhook_secret_is_param_default         = var.pipe_webhook_secret_is_param_default
   std_map                                      = var.std_map
 }

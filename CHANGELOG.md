@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.149.0
+
+### General
+
+* Templating for ECS variables
+
 ## 0.148.0
 
 ### General
