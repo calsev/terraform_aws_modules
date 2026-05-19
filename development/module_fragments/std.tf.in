@@ -1,6 +1,4 @@
-{% macro map() -%}
-variable "std_map" {
-  type = object({
+{% macro map_items() -%}
     access_title_map               = map(string)
     aws_account_id                 = string
     aws_region_name                = string
@@ -12,6 +10,21 @@ variable "std_map" {
     resource_name_suffix           = string
     service_resource_access_action = map(map(map(list(string))))
     tags                           = map(string)
+{%- endmacro %}
+
+
+{% macro map() -%}
+variable "std_map" {
+  type = object({
+    {{ map_items() }}
   })
+}
+{%- endmacro %}
+
+{% macro map_map() -%}
+variable "std_map_map" {
+  type = map(object({
+    {{ map_items() }}
+  }))
 }
 {%- endmacro %}
