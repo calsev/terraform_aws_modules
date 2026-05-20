@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.150.0
+
+### General
+
+* Std and VPC map templates improved
+
+### Bugfix
+
+* ECR mirror target removal revert
+* IAM role policy dependency added
+
 ## 0.149.1
 
 ### General

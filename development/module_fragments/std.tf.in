@@ -24,7 +24,9 @@ variable "std_map" {
 {% macro map_map() -%}
 variable "std_map_map" {
   type = map(object({
-    {{ map_items() }}
+    std_map = object({
+      {{ map_items() }}
+    })
   }))
 }
 {%- endmacro %}
