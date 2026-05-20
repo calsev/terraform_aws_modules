@@ -39,7 +39,8 @@ resource "aws_iam_role_policy" "inline_policies" {
 }
 
 resource "aws_iam_role_policies_exclusive" "inline_policies" {
-  role_name = aws_iam_role.this_iam_role.name
+  depends_on = [aws_iam_role_policy.inline_policies]
+  role_name  = aws_iam_role.this_iam_role.name
   policy_names = length(local.l1_map.role_policy_inline_doc_map) == 0 ? [] : [
     for k, v in local.l1_map.role_policy_inline_doc_map : k
   ]

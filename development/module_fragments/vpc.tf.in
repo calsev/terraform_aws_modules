@@ -25,15 +25,7 @@ variable "elb_data_map" {
   ] | conditional_lines }}
 {%- endmacro %}
 
-{% macro var(precedence="_default", map_map=False, az=None, az_desc=None, map_default=None, map_desc=None, vpc=None, vpc_default=True, sg=None, sg_desc=None, seg=None, seg_desc=None) -%}
-{% if az != False %}variable "vpc_az_key_list{{ precedence }}" {
-  type        = list(string)
-  default     = {{ (["a", "b"] if az is none else az) | tf_list }}{% if az_desc != None %}
-  description = "{{ az_desc }}"{% endif %}
-}
-
-{% endif %}variable "vpc_data_map{{ "_map" if map_map else "" }}" {
-  type = {{ "map(map(object({" if map_map else "map(object({" }}
+{% macro data_map_items() -%}
     name_simple           = string
     security_group_id_map = map(string)
     segment_map = map(object({
@@ -47,7 +39,26 @@ variable "elb_data_map" {
     vpc_cidr_block        = string
     vpc_id                = string
     vpc_ipv6_cidr_block   = string
-  {{ "})))" if map_map else "}))" }}{% if map_default != None %}
+{%- endmacro %}
+
+{% macro var(precedence="_default", map_map=False, az=None, az_desc=None, map_default=None, map_desc=None, vpc=None, vpc_default=True, sg=None, sg_desc=None, seg=None, seg_desc=None) -%}
+{% if az != False %}variable "vpc_az_key_list{{ precedence }}" {
+  type        = list(string)
+  default     = {{ (["a", "b"] if az is none else az) | tf_list }}{% if az_desc != None %}
+  description = "{{ az_desc }}"{% endif %}
+}
+
+{% endif %}{% if map_map -%}
+variable "vpc_data_map_map" {
+  type = map(object({
+    vpc_map = map(object({
+      {{ data_map_items() }}
+    }))
+  })){% else -%}
+variable "vpc_data_map" {
+  type = map(object({
+    {{ data_map_items() }}
+  })){% endif %}{% if map_default != None %}
   default     = {{ map_default }}{% endif %}{% if map_desc %}
   description = "{{ map_desc }}"{% endif %}
 }{% if vpc != False %}
@@ -82,9 +93,9 @@ module "vpc_map" {
 }
 {%- endmacro %}
 
-{% macro map_item(precedence="_default", source="var", map_map=False, append=None, vpc=True, az=True, sg=True, sg_sub="", seg=True) -%}
+{% macro map_item(precedence="_default", source="var", map_map=None, append=None, vpc=True, az=True, sg=True, sg_sub="", seg=True) -%}
     {% if az != False %}vpc_az_key_list_default             = {{ source }}.vpc_az_key_list{{ precedence }}
-    {% endif %}vpc_data_map                        = {{ source }}.vpc_data_map{{ "_map[each.key]" if map_map else "" }}{% if vpc != False %}
+    {% endif %}vpc_data_map                        = {{ map_map if map_map else source ~ ".vpc_data_map" }}{% if vpc != False %}
     vpc_key_default                     = {{ source }}.vpc_key{{ precedence }}{% endif %}{% if sg != False %}
     vpc_security_group_key_list_default = {{ source }}.vpc_security_group_key_list{{ sg_sub }}{{ precedence }}{% endif %}{% if seg != False %}
     vpc_segment_key_default             = {{ source }}.vpc_segment_key{{ precedence }}{% endif %}

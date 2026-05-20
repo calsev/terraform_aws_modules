@@ -120,6 +120,9 @@ docker-up: docker-build-local
 ecr-login:
 	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(REPO)
 
+ecr-mirror:
+	$(PY) ecr-mirror --override-arch all --registry-id $(AWS_ACCOUNT) sync
+
 $(VENV): python-ensure
 	@$(call _python_resolve_sh); \
 	if [ -z "$$BASE_PY_RESOLVED" ] || [ ! -x "$$BASE_PY_RESOLVED" ]; then \
