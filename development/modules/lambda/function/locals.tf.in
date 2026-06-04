@@ -122,11 +122,13 @@ locals {
       module.alarm.data[k],
       module.function_policy.data[k],
       {
-        dead_letter_queue   = module.dead_letter_queue.data[k]
-        invoke_arn          = aws_lambda_function.this_function[k].invoke_arn
-        lambda_arn          = aws_lambda_function.this_function[k].arn
-        role                = module.function_role[k].data
-        source_package_hash = local.create_hash_map[k]
+        dead_letter_queue    = module.dead_letter_queue.data[k]
+        invoke_arn           = aws_lambda_function.this_function[k].invoke_arn
+        lambda_arn           = aws_lambda_function.this_function[k].arn
+        lambda_qualified_arn = aws_lambda_function.this_function[k].qualified_arn
+        lambda_version       = aws_lambda_function.this_function[k].version
+        role                 = module.function_role[k].data
+        source_package_hash  = local.create_hash_map[k]
       },
     )
   }

@@ -33,10 +33,10 @@ variable "iam_data" {
     policy_name_prefix = optional(string)
 {%- endmacro %}
 
-{% macro _policy_var(precedence="", access=["read", "read_write", "write"], append="") -%}
+{% macro _policy_var(precedence="", access=["read", "read_write", "write"], create=True, append="") -%}
 variable "policy_create{{ precedence }}" {
   type    = bool
-  default = true
+  default = {% if create %}true{% else %}false{% endif %}
 }
 
 variable "policy_name_append{{ precedence }}" {
@@ -50,18 +50,18 @@ variable "policy_name_prefix{{ precedence }}" {
 }
 {%- endmacro %}
 
-{% macro policy_var_base(access=["read", "read_write", "write"], append="") -%}{{ _policy_var(precedence="_default", access=access, append=append) }}{%- endmacro %}
+{% macro policy_var_base(access=["read", "read_write", "write"], create=True, append="") -%}{{ _policy_var(precedence="_default", access=access, create=create, append=append) }}{%- endmacro %}
 
-{% macro _policy_var_ar(precedence="", access=["read", "read_write", "write"], append="") -%}
+{% macro _policy_var_ar(precedence="", access=["read", "read_write", "write"], create=True, append="") -%}
 variable "policy_access_list{{ precedence }}" {
   type    = list(string)
   default = {{ access | tf_list }}
 }
 
-{{ _policy_var(precedence=precedence, access=access, append=append) }}
+{{ _policy_var(precedence=precedence, access=access, create=create, append=append) }}
 {%- endmacro %}
 
-{% macro policy_var_ar(access=["read", "read_write", "write"], append="") -%}{{ _policy_var_ar(precedence="_default", access=access, append=append) }}{%- endmacro %}
+{% macro policy_var_ar(access=["read", "read_write", "write"], create=True, append="") -%}{{ _policy_var_ar(precedence="_default", access=access, create=create, append=append) }}{%- endmacro %}
 
 {% macro _policy_map_item(precedence="", source="var", append=None) -%}
     policy_create{{ precedence }}      = {{ source }}.policy_create{{ precedence }}

@@ -104,9 +104,9 @@ docker-down: docker-env
 
 docker-env:
 	[[ -f "$(DC_ENV)/.env" ]] || sed 's/\r$$//' "$(DC_ENV)/template.env" > "$(DC_ENV)/.env"
-	@if ! grep -E "UID=" $(DC_ENV)/.env > /dev/null 2>&1; then \
-		echo "GID=$(shell id -g)" >> $(DC_ENV)/.env; \
-		echo "UID=$(shell id -u)" >> $(DC_ENV)/.env; \
+	@if ! grep -E "HOST_UID=" $(DC_ENV)/.env > /dev/null 2>&1; then \
+		echo "HOST_GID=$(shell id -g)" >> $(DC_ENV)/.env; \
+		echo "HOST_UID=$(shell id -u)" >> $(DC_ENV)/.env; \
 		echo "USERNAME=$(shell [ "$(id -u)" = "1000" ] && echo $(id -un) || echo ubuntu)" >> $(DC_ENV)/.env; \
 	fi
 
@@ -157,7 +157,7 @@ env-install: env-init
 ifdef REQ
 	$(PY) python $(PIP) -r "$(UP)/$(REQ).lock.txt"
 else ifdef POETRY_DIR
-	$(PY) poetry -C "$(UP)/$(POETRY_DIR)" install --no-interaction --without dev,test
+	$(PY) cd "$(UP)/$(POETRY_DIR)" && poetry install --no-interaction --without dev,test
 else
 	@echo "ERROR: Either REQ or POETRY_DIR must be set"
 	@exit 1
@@ -167,7 +167,7 @@ env-test: env-init
 ifdef REQ
 	$(PY) python $(PIP) -r "$(UP)/$(REQ).lock.txt"
 else ifdef POETRY_DIR
-	$(PY) poetry -C "$(UP)/$(POETRY_DIR)" install --no-interaction --without dev --with test
+	$(PY) cd "$(UP)/$(POETRY_DIR)" && poetry install --no-interaction --without dev --with test
 else
 	@echo "ERROR: Either REQ or POETRY_DIR must be set"
 	@exit 1
@@ -178,8 +178,8 @@ ifdef REQ
 	$(PY) python $(PIP) --no-cache-dir -r "$(UP)/$(REQ).txt"
 	$(PY) python -m pip freeze --all > "$(UP)/$(REQ).lock.txt"
 else ifdef POETRY_DIR
-	$(PY) poetry -C "$(UP)/$(POETRY_DIR)" lock --regenerate
-	$(PY) poetry -C "$(UP)/$(POETRY_DIR)" install --no-interaction --without dev,test
+	$(PY) cd "$(UP)/$(POETRY_DIR)" && poetry lock --regenerate
+	$(PY) cd "$(UP)/$(POETRY_DIR)" && poetry install --no-interaction --without dev,test
 else
 	@echo "ERROR: Either REQ or POETRY_DIR must be set"
 	@exit 1
