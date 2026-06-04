@@ -96,8 +96,9 @@ locals {
         alarm = {
           for k_alarm, v_alarm in v.alarm_map : k_alarm => module.alarm.data["${k}_${k_alarm}"]
         }
-        policy    = v.create_policy ? module.policy.data[k] : null
-        table_arn = aws_dynamodb_table.this_table[k].arn
+        policy     = v.create_policy ? module.policy.data[k] : null
+        stream_arn = v.stream_enabled ? aws_dynamodb_table.this_table[k].stream_arn : null
+        table_arn  = aws_dynamodb_table.this_table[k].arn
       },
     )
   }

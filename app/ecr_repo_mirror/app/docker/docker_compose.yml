@@ -13,7 +13,6 @@ services:
           - ecr-mirror
     read_only: true
     restart: unless-stopped
-    user: ubuntu
     volumes:
       - ~/.aws:/home/ubuntu/.aws
 networks:

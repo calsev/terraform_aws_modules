@@ -84,7 +84,10 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      connection_arn           = var.ci_cd_account_data.code_star.connection[local.l1_map[k].source_code_star_connection_key].connection_arn
+      connection_arn = var.ci_cd_account_data.code_star.connection[local.l1_map[k].source_code_star_connection_key].connection_arn
+      # V2 pipelines use a trigger block instead of DetectChanges on the source action.
+      # Only create the block when there is actually something to trigger on.
+      has_trigger              = local.l1_map[k].pipeline_type == "V2" && (local.l1_map[k].source_detect_changes || length(local.l1_map[k].trigger_pull_request_event_list) > 0)
       webhook_filter_map_final = merge(local.l1_map[k].webhook_filter_map_default, local.l1_map[k].webhook_filter_map)
       source_repository_name   = split("/", local.l1_map[k].source_repository_id)[1]
     }

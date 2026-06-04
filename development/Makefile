@@ -105,6 +105,7 @@ tf-lint: tflint-install
 	cd ../app/ecr_repo_mirror && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app/docker && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/ecr_repo_mirror/app/docker/env && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app/requirements && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecs_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/log_group_retainer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

@@ -67,7 +67,7 @@ resource "aws_codepipeline" "this_pipeline" {
   }
   tags = each.value.tags
   dynamic "trigger" {
-    for_each = each.value.pipeline_type == "V2" ? { this = {} } : {}
+    for_each = each.value.has_trigger ? { this = {} } : {}
     content {
       provider_type = "CodeStarSourceConnection"
       git_configuration {
@@ -85,18 +85,21 @@ resource "aws_codepipeline" "this_pipeline" {
             }
           }
         }
-        push {
-          branches {
-            excludes = null                       # TRIGGER
-            includes = [each.value.source_branch] # TRIGGER
-          }
-          file_paths {
-            excludes = null # TRIGGER
-            includes = null # TRIGGER
-          }
-          tags {
-            excludes = null # TRIGGER
-            includes = null # TRIGGER
+        dynamic "push" {
+          for_each = each.value.source_detect_changes ? { this = {} } : {}
+          content {
+            branches {
+              excludes = null                       # TRIGGER
+              includes = [each.value.source_branch] # TRIGGER
+            }
+            file_paths {
+              excludes = null # TRIGGER
+              includes = null # TRIGGER
+            }
+            tags {
+              excludes = null # TRIGGER
+              includes = null # TRIGGER
+            }
           }
         }
         source_action_name = "Source"

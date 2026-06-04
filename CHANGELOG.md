@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.151.0
+
+### General
+
+* Codepipeline support for non-triggered pipe
+* ECR repo mirror app updated
+
 ## 0.150.0
 
 ### General
