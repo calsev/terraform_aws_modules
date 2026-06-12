@@ -100,6 +100,8 @@ module "ecs_cluster" {
   compute_auto_scaling_num_instances_min_default              = var.compute_auto_scaling_num_instances_min_default
   compute_auto_scaling_protect_from_scale_in_default          = var.compute_auto_scaling_protect_from_scale_in_default
   compute_elb_target_group_key_list_default                   = var.compute_elb_target_group_key_list_default
+  compute_execute_command_log_encryption_enabled_default      = var.compute_execute_command_log_encryption_enabled_default
+  compute_execute_command_log_retention_days_default          = var.compute_execute_command_log_retention_days_default
   compute_health_check_type_default                           = var.compute_health_check_type_default
   compute_iam_instance_profile_arn_default                    = var.compute_iam_instance_profile_arn_default
   compute_image_id_default                                    = var.compute_image_id_default

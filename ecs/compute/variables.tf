@@ -5,6 +5,8 @@ variable "compute_map" {
     auto_scaling_num_instances_min              = optional(number)
     auto_scaling_protect_from_scale_in          = optional(bool)
     elb_target_group_key_list                   = optional(list(string))
+    execute_command_log_encryption_enabled      = optional(bool)
+    execute_command_log_retention_days          = optional(number)
     health_check_type                           = optional(string)
     iam_instance_profile_arn                    = optional(string)
     image_id                                    = optional(string)
@@ -53,6 +55,16 @@ variable "compute_auto_scaling_protect_from_scale_in_default" {
 variable "compute_elb_target_group_key_list_default" {
   type    = list(string)
   default = []
+}
+
+variable "compute_execute_command_log_encryption_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_execute_command_log_retention_days_default" {
+  type    = number
+  default = 7
 }
 
 variable "compute_health_check_type_default" {

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.152.0
+
+### General
+
+* Image build injects arch tag into manifest project
+* ECR repo lifecycle max count default parameters added
+* ECS compute params for exec log
+
 ## 0.151.0
 
 ### General

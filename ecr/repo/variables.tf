@@ -85,18 +85,19 @@ variable "repo_map" {
       }
     )))
     lifecycle_tag_map = optional(map(object({
-      tag_max_count    = number
+      tag_max_count    = optional(number)
       tag_pattern_list = list(string)
     })))
-    name_append             = optional(string)
-    name_include_app_fields = optional(bool)
-    name_infix              = optional(bool)
-    name_prefix             = optional(string)
-    name_prepend            = optional(string)
-    name_suffix             = optional(string)
-    policy_access_list      = optional(list(string))
-    policy_create           = optional(bool)
-    policy_name_append      = optional(string)
+    lifecycle_tag_max_count_default = optional(number)
+    name_append                     = optional(string)
+    name_include_app_fields         = optional(bool)
+    name_infix                      = optional(bool)
+    name_prefix                     = optional(string)
+    name_prepend                    = optional(string)
+    name_suffix                     = optional(string)
+    policy_access_list              = optional(list(string))
+    policy_create                   = optional(bool)
+    policy_name_append              = optional(string)
   }))
 }
 
@@ -142,15 +143,20 @@ variable "repo_lifecycle_rule_map_default" {
 
 variable "repo_lifecycle_tag_map_default" {
   type = map(object({
-    tag_max_count    = number
+    tag_max_count    = optional(number)
     tag_pattern_list = list(string)
   }))
   default = {
     2 = {
-      tag_max_count    = 9
+      tag_max_count    = null
       tag_pattern_list = ["*"]
     }
   }
+}
+
+variable "repo_lifecycle_tag_max_count_default" {
+  type    = number
+  default = 9
 }
 
 variable "std_map" {

@@ -419,6 +419,16 @@ variable "compute_elb_target_group_key_list_default" {
   default = []
 }
 
+variable "compute_execute_command_log_encryption_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "compute_execute_command_log_retention_days_default" {
+  type    = number
+  default = 7
+}
+
 variable "compute_health_check_type_default" {
   type        = string
   default     = "ELB"
