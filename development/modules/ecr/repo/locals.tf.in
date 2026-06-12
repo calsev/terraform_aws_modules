@@ -30,7 +30,7 @@ locals {
           for k_tag, v_tag in local.l1_map[k].lifecycle_tag_map : k_tag => {
             rulePriority = tonumber(k_tag)
             selection = {
-              countNumber    = v_tag.tag_max_count
+              countNumber    = v_tag.tag_max_count == null ? v.lifecycle_tag_max_count_default == null ? var.repo_lifecycle_tag_max_count_default : v.lifecycle_tag_max_count_default : v_tag.tag_max_count
               countType      = "imageCountMoreThan"
               tagPatternList = v_tag.tag_pattern_list
               tagStatus      = "tagged"

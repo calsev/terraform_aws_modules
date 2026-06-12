@@ -12,12 +12,19 @@ locals {
       placement_group_id = module.compute_common.data[k].placement_group_id
     })
   }
+  create_log_map = {
+    for k, v in local.lx_map : v.k_log => merge(v, {
+      log_retention_days = v.execute_command_log_retention_days
+    })
+  }
   l0_map = {
     for k, v in var.compute_map : k => v
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       capability_type                         = "EC2" # Consumed by ecs_task
+      execute_command_log_encryption_enabled  = v.execute_command_log_encryption_enabled == null ? var.compute_execute_command_log_encryption_enabled_default : v.execute_command_log_encryption_enabled
+      execute_command_log_retention_days      = v.execute_command_log_retention_days == null ? var.compute_execute_command_log_retention_days_default : v.execute_command_log_retention_days
       iam_instance_profile_arn                = v.iam_instance_profile_arn == null ? var.compute_iam_instance_profile_arn_default == null ? var.iam_data.iam_instance_profile_arn_ecs : var.compute_iam_instance_profile_arn_default : v.iam_instance_profile_arn
       instance_lifetime_max_hours             = v.instance_lifetime_max_hours == null ? var.compute_instance_lifetime_max_hours_default : v.instance_lifetime_max_hours
       k_log                                   = "${k}_exec"

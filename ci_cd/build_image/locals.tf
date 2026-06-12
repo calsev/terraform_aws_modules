@@ -77,6 +77,13 @@ locals {
         {
           pipe_image_manifest = merge(local.repo_build_image_common, {
             environment_variable_map = {
+              (local.l1_map[k].image_environment_key_arch) = {
+                type = "PLAINTEXT"
+                value = join(",", [
+                  for arch in local.l1_map[k].image_build_arch_list :
+                  arch == "amd" ? "linux/amd64" : "linux/arm64"
+                ])
+              }
               (local.l1_map[k].image_environment_key_tag) = {
                 type  = "PLAINTEXT"
                 value = local.l1_map[k].image_tag_base

@@ -58,10 +58,8 @@ resource "aws_ecs_capacity_provider" "this_capacity_provider" {
 }
 
 module "log_group" {
-  source = "../../cw/log_group"
-  log_map = {
-    for k, v in local.lx_map : v.k_log => v
-  }
+  source                = "../../cw/log_group"
+  log_map               = local.create_log_map
   policy_create_default = false
   std_map               = var.std_map
 }
@@ -72,7 +70,7 @@ resource "aws_ecs_cluster" "this_ecs_cluster" {
     execute_command_configuration {
       #      kms_key_id = aws_kms_key.this_kms_key.arn
       log_configuration {
-        cloud_watch_encryption_enabled = false # TODO
+        cloud_watch_encryption_enabled = each.value.execute_command_log_encryption_enabled
         cloud_watch_log_group_name     = module.log_group.data[each.value.k_log].log_group_name
         s3_bucket_encryption_enabled   = false # TODO
         s3_bucket_name                 = null  # TODO
