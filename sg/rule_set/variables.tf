@@ -368,6 +368,22 @@ variable "sg_map_internal" {
         }
       }
     }
+    influx_in = {
+      revoke_rules_on_delete = false
+      rule_map = {
+        http = {
+          cidr_blocks              = null
+          from_port                = 8086
+          ipv6_cidr_blocks         = null
+          prefix_id_list           = null
+          protocol                 = null
+          source_is_self           = null
+          source_security_group_id = null
+          to_port                  = null
+          type                     = null
+        }
+      }
+    }
     memcached_in = {
       revoke_rules_on_delete = false
       rule_map = {

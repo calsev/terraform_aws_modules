@@ -1,0 +1,74 @@
+module "initial_password" {
+  source                     = "../../random/password"
+  random_map                 = local.create_instance_map
+  random_min_special_default = 0 # Must be alpha-numeric
+}
+
+resource "aws_timestreaminfluxdb_db_cluster" "this" {
+  for_each                      = local.create_cluster_map
+  allocated_storage             = each.value.has_parameter_group ? null : each.value.storage_gib
+  bucket                        = each.value.has_parameter_group ? null : each.value.bucket_name
+  db_instance_type              = each.value.instance_type
+  db_parameter_group_identifier = each.value.parameter_group_name
+  db_storage_type               = each.value.storage_type == "InfluxIOIncludedT1" ? null : each.value.storage_type # There is a bug in the provider
+  deployment_type               = each.value.has_parameter_group ? null : each.value.deployment_type
+  failover_mode                 = each.value.cluster_failover_mode
+  dynamic "log_delivery_configuration" {
+    for_each = each.value.log_s3_bucket_name == null ? {} : { this = {} }
+    content {
+      s3_configuration {
+        bucket_name = each.value.log_s3_bucket_name
+        enabled     = true
+      }
+    }
+  }
+  maintenance_schedule {
+    preferred_maintenance_window = each.value.maintenance_window
+    timezone                     = each.value.maintenance_timezone
+  }
+  name                   = each.value.name_effective
+  network_type           = each.value.network_type
+  password               = each.value.has_parameter_group ? null : module.initial_password.secret_map[each.key]
+  port                   = each.value.port
+  publicly_accessible    = each.value.publicly_access_enabled
+  region                 = var.std_map.aws_region_name
+  organization           = each.value.has_parameter_group ? null : each.value.organization
+  tags                   = each.value.tags
+  username               = each.value.has_parameter_group ? null : each.value.username
+  vpc_security_group_ids = each.value.vpc_security_group_id_list
+  vpc_subnet_ids         = each.value.vpc_subnet_id_list
+}
+
+resource "aws_timestreaminfluxdb_db_instance" "this" {
+  for_each                      = local.create_instance_map
+  allocated_storage             = each.value.storage_gib
+  bucket                        = each.value.bucket_name
+  db_instance_type              = each.value.instance_type
+  db_parameter_group_identifier = null # Default is not actually a parameter group
+  db_storage_type               = each.value.storage_type
+  deployment_type               = each.value.deployment_type
+  dynamic "log_delivery_configuration" {
+    for_each = each.value.log_s3_bucket_name == null ? {} : { this = {} }
+    content {
+      s3_configuration {
+        bucket_name = each.value.log_s3_bucket_name
+        enabled     = true
+      }
+    }
+  }
+  maintenance_schedule {
+    preferred_maintenance_window = each.value.maintenance_window
+    timezone                     = each.value.maintenance_timezone
+  }
+  name                   = each.value.name_effective
+  network_type           = each.value.network_type
+  password               = module.initial_password.secret_map[each.key]
+  port                   = each.value.port
+  publicly_accessible    = each.value.publicly_access_enabled
+  region                 = var.std_map.aws_region_name
+  organization           = each.value.organization
+  tags                   = each.value.tags
+  username               = each.value.username
+  vpc_security_group_ids = each.value.vpc_security_group_id_list
+  vpc_subnet_ids         = each.value.vpc_subnet_id_list
+}

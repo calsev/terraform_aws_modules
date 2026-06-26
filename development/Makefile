@@ -392,6 +392,8 @@ tf-lint: tflint-install
 	cd ../ssm/parameter_plain && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ssm/parameter_secret && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../step_function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../timestream && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../timestream/influxdb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/default && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../vpc/endpoint && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

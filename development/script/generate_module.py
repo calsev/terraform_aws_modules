@@ -74,7 +74,7 @@ class ModuleData:
 
 
 def read_module(module_path: str) -> ModuleData:
-    with open(os.path.join(module_path, "main.tf")) as f:
+    with open(os.path.join(module_path, "main.tf.in")) as f:
         main_data = typing.cast(
             dict[str, typing.Any],
             hcl2.load(f),  # type: ignore

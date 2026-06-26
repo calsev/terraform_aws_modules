@@ -1,0 +1,142 @@
+variable "db_map" {
+  type = map(object({
+    bucket_name             = optional(string)
+    cluster_failover_mode   = optional(string)
+    deployment_type         = optional(string)
+    instance_type           = optional(string)
+    is_cluster              = optional(bool)
+    log_s3_bucket_name      = optional(string)
+    maintenance_timezone    = optional(string)
+    maintenance_window      = optional(string)
+    {{ name.var_item() }}
+    network_type            = optional(string)
+    organization            = optional(string)
+    parameter_group_name    = optional(string)
+    port                    = optional(number)
+    publicly_access_enabled = optional(bool)
+    storage_gib             = optional(number)
+    storage_type            = optional(string)
+    username                = optional(string)
+    {{ vpc.var_item() }}
+  }))
+}
+
+variable "db_bucket_name_default" {
+  type        = string
+  default     = null
+  description = "Initial DB bucket to be created. Ignored for clusters with parameter group"
+}
+
+variable "db_cluster_failover_mode_default" {
+  type    = string
+  default = null
+  description = "Not supported for V3 clusters"
+  validation {
+      condition     = var.db_cluster_failover_mode_default == null ? true : contains(["AUTOMATIC", "NO_FAILOVER"], var.db_cluster_failover_mode_default)
+      error_message = "Invalid failover mode"
+  }
+}
+
+variable "db_deployment_type_default" {
+  type        = string
+  default     = "SINGLE_AZ"
+  description = "Ignored for clusters with parameter group"
+  validation {
+      condition     = contains(["WITH_MULTIAZ_STANDBY", "SINGLE_AZ"], var.db_deployment_type_default)
+      error_message = "Invalid deployment type"
+  }
+}
+
+variable "db_instance_type_default" {
+  type    = string
+  default = "db.influx.medium"
+}
+
+variable "db_is_cluster_default" {
+  type    = bool
+  default = true
+}
+
+variable "db_log_s3_bucket_name_default" {
+  type    = string
+  default = null
+}
+
+variable "db_maintenance_timezone_default" {
+  type    = string
+  default = "UTC"
+}
+
+variable "db_maintenance_window_default" {
+  type    = string
+  default = "Sun:05:00-Sun:07:00"
+  description = "Must be at least 2 hours"
+}
+
+variable "db_network_type_default" {
+  type    = string
+  default = "DUAL"
+  validation {
+      condition     = contains(["DUAL", "IPV4"], var.db_network_type_default)
+      error_message = "Invalid network type"
+  }
+}
+
+variable "db_organization_default" {
+  type         = string
+  default      = null
+   description = "Ignored for clusters with parameter group"
+}
+
+variable "db_parameter_group_name_production_default" {
+  type        = string
+  default     = "InfluxDBV3Enterprise1Node"
+  description = "Will be used for any env starting with 'pr'."
+}
+
+variable "db_parameter_group_name_test_default" {
+  type        = string
+  default     = "InfluxDBV3Core"
+  description = "Will be used for any env not starting with 'pr'."
+}
+
+variable "db_port_default" {
+  type    = number
+  default = 8086
+}
+
+variable "db_publicly_access_enabled_default" {
+  type    = bool
+  default = false
+}
+
+variable "db_storage_gib_default" {
+  type        = number
+  default     = 20
+  description = "Ignored for clusters with parameter group"
+  validation {
+      condition     = var.db_storage_gib_default >= 20
+      error_message = "Minimum storage is 20 GiB"
+  }
+}
+
+variable "db_storage_type_default" {
+  type    = string
+  default = "InfluxIOIncludedT1"
+  validation {
+      condition     = contains(["InfluxIOIncludedT1", "InfluxIOIncludedT2", "InfluxIOIncludedT3"], var.db_storage_type_default)
+      error_message = "Invalid storage type"
+  }
+}
+
+variable "db_username_default" {
+  type         = string
+  default      = null
+   description = "Ignored for clusters with parameter group"
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+{{ vpc.var(sg=["internal_influx_in", "world_all_out"]) }}

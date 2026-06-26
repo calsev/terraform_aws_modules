@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.153.0
+
+### New modules
+
+* Timestream InfluxDB instance
+
+### General
+
+* ECR repo mirror default schedule daily from weekly
+* SG rule set default Influx rule
+* VPC Gateway endpoints by default
+
 ## 0.152.0
 
 ### General

@@ -36,6 +36,7 @@ module "vpc_peer" {
 module "vpc_endpoint" {
   source                        = "../../vpc/endpoint"
   endpoint_map_custom_default   = var.endpoint_map_custom_default
+  endpoint_map_free_default     = var.endpoint_map_free_default
   endpoint_map_standard_default = var.endpoint_map_standard_default
   vpc_map                       = local.create_3_vpc_peer_map
   std_map                       = var.std_map

@@ -3,6 +3,7 @@ variable "vpc_map" {
     endpoint_map = optional(map(object({
       add_region_name      = optional(bool)
       auto_accept_enabled  = optional(bool)
+      dns_enabled          = optional(bool)
       dns_record_ip_type   = optional(string)
       endpoint_segment_key = optional(string)
       endpoint_subnet_map = optional(map(object({
@@ -45,6 +46,12 @@ variable "endpoint_auto_accept_enabled_default" {
   default = true
 }
 
+variable "endpoint_dns_enabled_default" {
+  type        = bool
+  default     = true
+  description = "Not supported for all endpoints"
+}
+
 variable "endpoint_dns_record_ip_type_default" {
   type        = string
   default     = null
@@ -73,6 +80,7 @@ variable "endpoint_ip_address_type_default" {
 variable "endpoint_private_dns_enabled_default" {
   type    = bool
   default = true
+  description = "Ignored for Gateway endpoints"
 }
 
 variable "endpoint_private_dns_for_inbound_resolver_endpoint_only_default" {
@@ -114,6 +122,7 @@ variable "endpoint_vpc_security_group_key_list_default" {
     "internal_http_in",
     "world_all_out",
   ]
+  description = "Ignored for Gateway interfaces"
 }
 
 {{ name.var() }}

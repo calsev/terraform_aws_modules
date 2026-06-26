@@ -47,6 +47,7 @@ module "db" {
   db_subnet_group_key_default = "default"
   db_username_default         = "example_user"
   iam_data                    = data.terraform_remote_state.iam.outputs.data
+  monitor_data                = data.terraform_remote_state.monitor.outputs.data
   std_map                     = module.com_lib[each.key].std_map
   subnet_group_map            = module.db_sub[each.key].data
   vpc_data_map                = data.terraform_remote_state.net.outputs.data.vpc_map # Could use separate VPCs
@@ -81,7 +82,6 @@ module "user_pool" {
   source          = "path/to/modules/cognito/user_pool"
   for_each        = local.env_list_instance
   cdn_global_data = data.terraform_remote_state.cdn_global.outputs.data
-  comms_data      = data.terraform_remote_state.comms.outputs.data
   dns_data        = data.terraform_remote_state.dns.outputs.data
   pool_client_app_map_default = {
     app = {
@@ -97,8 +97,9 @@ module "user_pool" {
       generate_secret   = true
     }
   }
-  pool_dns_from_zone_key_default   = "example.com"
-  pool_email_from_username_default = "ExampleApp"
+  pool_dns_from_zone_key_default       = "example.com"
+  pool_email_from_display_name_default = "ExampleApp"
+  pool_email_from_address_default      = "noreply@example.com"
   pool_group_map_default = {
     user = {
       precedence = 200
@@ -115,6 +116,7 @@ module "user_pool" {
   }
   pool_only_admin_create_user_default  = false
   pool_username_attribute_list_default = ["email", ]
+  ses_data_map                         = data.terraform_remote_state.comms.outputs.data.ses_domain_map
   std_map                              = module.com_lib[each.key].std_map
 }
 
