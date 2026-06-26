@@ -2,6 +2,7 @@ variable "endpoint_map_custom_default" {
   type = map(object({
     add_region_name      = optional(bool)
     auto_accept_enabled  = optional(bool)
+    dns_enabled          = optional(bool)
     dns_record_ip_type   = optional(string)
     endpoint_segment_key = optional(string)
     endpoint_subnet_map = optional(map(object({
@@ -33,6 +34,7 @@ variable "endpoint_map_standard_default" {
   type = map(object({
     add_region_name      = optional(bool)
     auto_accept_enabled  = optional(bool)
+    dns_enabled          = optional(bool)
     dns_record_ip_type   = optional(string)
     endpoint_segment_key = optional(string)
     endpoint_subnet_map = optional(map(object({
@@ -59,6 +61,7 @@ variable "endpoint_map_standard_default" {
     ec2 = {
       add_region_name                                = null
       auto_accept_enabled                            = null
+      dns_enabled                                    = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
       endpoint_subnet_map                            = {}
@@ -80,6 +83,7 @@ variable "endpoint_map_standard_default" {
     "ecr.api" = {
       add_region_name                                = null
       auto_accept_enabled                            = null
+      dns_enabled                                    = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
       endpoint_subnet_map                            = {}
@@ -101,6 +105,7 @@ variable "endpoint_map_standard_default" {
     "ecr.dkr" = {
       add_region_name                                = null
       auto_accept_enabled                            = null
+      dns_enabled                                    = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
       endpoint_subnet_map                            = {}
@@ -122,6 +127,7 @@ variable "endpoint_map_standard_default" {
     ssm = {
       add_region_name                                = null
       auto_accept_enabled                            = null
+      dns_enabled                                    = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
       endpoint_subnet_map                            = {}
@@ -143,6 +149,7 @@ variable "endpoint_map_standard_default" {
     ssm-contacts = {
       add_region_name                                = null
       auto_accept_enabled                            = null
+      dns_enabled                                    = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
       endpoint_subnet_map                            = {}
@@ -164,6 +171,7 @@ variable "endpoint_map_standard_default" {
     ssm-incidents = {
       add_region_name                                = null
       auto_accept_enabled                            = null
+      dns_enabled                                    = null
       dns_record_ip_type                             = null
       endpoint_segment_key                           = null
       endpoint_subnet_map                            = {}
@@ -184,6 +192,82 @@ variable "endpoint_map_standard_default" {
     }
   }
   description = "These endpoints are required to avoid security violations, and are merged with custom defaults"
+}
+
+variable "endpoint_map_free_default" {
+  type = map(object({
+    add_region_name      = optional(bool)
+    auto_accept_enabled  = optional(bool)
+    dns_enabled          = optional(bool)
+    dns_record_ip_type   = optional(string)
+    endpoint_segment_key = optional(string)
+    endpoint_subnet_map = optional(map(object({
+      # Optional addresses, for Gateway endpoints only
+      ipv4_address = optional(string)
+      ipv6_address = optional(string)
+    })), {})
+    endpoint_type                                  = optional(string)
+    iam_policy_json                                = optional(string)
+    ip_address_type                                = optional(string)
+    name_append                                    = optional(string)
+    name_include_app_fields                        = optional(bool)
+    name_infix                                     = optional(bool)
+    name_prefix                                    = optional(string)
+    name_prepend                                   = optional(string)
+    name_suffix                                    = optional(string)
+    private_dns_enabled                            = optional(bool)
+    private_dns_for_inbound_resolver_endpoint_only = optional(bool)
+    service_name_override                          = optional(string)
+    service_name_short                             = optional(string)
+    vpc_security_group_key_list                    = optional(list(string))
+  }))
+  default = {
+    dynamodb = {
+      add_region_name                                = null
+      auto_accept_enabled                            = null
+      dns_enabled                                    = false
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = "Gateway"
+      iam_policy_json                                = null
+      ip_address_type                                = "ipv4"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+    s3 = {
+      add_region_name                                = null
+      auto_accept_enabled                            = null
+      dns_enabled                                    = null
+      dns_record_ip_type                             = null
+      endpoint_segment_key                           = null
+      endpoint_subnet_map                            = {}
+      endpoint_type                                  = "Gateway"
+      iam_policy_json                                = null
+      ip_address_type                                = "dualstack"
+      name_append                                    = null
+      name_include_app_fields                        = null
+      name_infix                                     = null
+      name_prefix                                    = null
+      name_prepend                                   = null
+      name_suffix                                    = null
+      private_dns_enabled                            = null
+      private_dns_for_inbound_resolver_endpoint_only = null
+      service_name_override                          = null
+      service_name_short                             = null
+      vpc_security_group_key_list                    = null
+    }
+  }
+  description = "These endpoints are 100% free and reduce egress traffic"
 }
 
 variable "iam_data" {

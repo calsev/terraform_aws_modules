@@ -109,8 +109,8 @@ resource "aws_codepipeline" "this_pipeline" {
   dynamic "variable" {
     for_each = each.value.variable_map
     content {
-      name          = each.key
-      default_value = each.value
+      name          = variable.key
+      default_value = variable.value
     }
   }
 }

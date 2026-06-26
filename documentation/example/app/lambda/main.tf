@@ -9,7 +9,7 @@ module "com_lib" {
 
 module "lambda" {
   source                                 = "path/to/modules/lambda/function"
-  ecr_data                               = data.terraform_remote_state.ecs.outputs.data["com"]
+  ecr_data_map                           = data.terraform_remote_state.ecs.outputs.data["com"].repo_map
   function_ephemeral_storage_mib_default = 512
   function_map = {
     dir_create_local_archive_only = {
@@ -48,6 +48,7 @@ module "lambda" {
   function_source_package_handler_default = "function.main"
   function_source_package_runtime_default = "python3.13"
   iam_data                                = data.terraform_remote_state.iam.outputs.data
+  monitor_data                            = data.terraform_remote_state.monitor.outputs.data
   std_map                                 = module.com_lib.std_map
   vpc_data_map                            = data.terraform_remote_state.net.outputs.data.vpc_map
 }
@@ -58,13 +59,13 @@ module "lambda_target" {
   elb_data_map                         = data.terraform_remote_state.net.outputs.data.elb_map
   lambda_data_map                      = module.lambda.data
   listener_acm_certificate_key_default = "lambda.example.com"
-  listener_action_order_default        = 24000
   listener_dns_from_zone_key_default   = "example.com"
   listener_elb_key_default             = "main"
   rule_condition_map_default = {
     host_match = {}
   }
-  std_map = module.com_lib.std_map
+  rule_priority_default = 24000
+  std_map               = module.com_lib.std_map
   target_map = {
     example = {
       lambda_key = "dir_create_local_and_s3_archive"

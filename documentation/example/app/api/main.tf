@@ -38,6 +38,7 @@ module "lambda" {
   function_source_package_handler_default              = "function.main"
   function_source_package_runtime_default              = "python3.13"
   iam_data                                             = data.terraform_remote_state.iam.outputs.data
+  monitor_data                                         = data.terraform_remote_state.monitor.outputs.data
   std_map                                              = module.com_lib.std_map
   vpc_data_map                                         = data.terraform_remote_state.net.outputs.data.vpc_map
   vpc_key_default                                      = "main"
