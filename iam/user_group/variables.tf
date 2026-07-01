@@ -9,10 +9,10 @@ variable "group_map" {
     name_prepend            = optional(string)
     name_suffix             = optional(string)
     path                    = optional(string)
-    policy_attach_arn_map   = optional(map(string), {})
-    policy_create_json_map  = optional(map(string), {})
-    policy_inline_json_map  = optional(map(string), {})
-    policy_managed_name_map = optional(map(string), {})
+    policy_attach_arn_map   = optional(map(string))
+    policy_create_json_map  = optional(map(string))
+    policy_inline_json_map  = optional(map(string))
+    policy_managed_name_map = optional(map(string)) # The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'
   }))
   default = {}
 }
@@ -30,6 +30,33 @@ variable "group_name_infix_default" {
 variable "group_path_default" {
   type    = string
   default = "/"
+}
+
+variable "role_map" {
+  type = map(object({
+    role_policy_attach_arn_map   = optional(map(string))
+    role_policy_create_json_map  = optional(map(string))
+    role_policy_inline_json_map  = optional(map(string))
+    role_policy_managed_name_map = optional(map(string))
+    role_path                    = optional(string)
+  }))
+  default = {
+    admin = {
+      role_policy_attach_arn_map  = null
+      role_policy_create_json_map = null
+      role_policy_inline_json_map = null
+      role_policy_managed_name_map = {
+        admin   = "AdministratorAccess"
+        billing = "job-function/Billing"
+      }
+      role_path = null
+    }
+  }
+}
+
+variable "role_user_list_map" {
+  type    = map(list(string))
+  default = {}
 }
 
 variable "std_map" {
@@ -65,7 +92,7 @@ variable "user_map" {
     policy_attach_arn_map   = optional(map(string))
     policy_create_json_map  = optional(map(string))
     policy_inline_json_map  = optional(map(string))
-    policy_managed_name_map = optional(map(string))
+    policy_managed_name_map = optional(map(string)) # The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'
     tags                    = optional(map(string))
   }))
 }

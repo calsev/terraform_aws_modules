@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.154.0
+
+### General
+
+* IAM assume role policy and base role support user list
+* IAM user group module creates and attaches roles
+
 ## 0.153.0
 
 ### New modules

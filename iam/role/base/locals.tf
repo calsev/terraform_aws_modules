@@ -68,11 +68,12 @@ locals {
     },
   )
   l1_map = merge(module.name_map.data[var.name], {
-    assume_role_account_map  = var.assume_role_account_map
-    assume_role_service_list = var.assume_role_service_list
-    enable_assume_role       = length(var.assume_role_account_map) > 0 || length(var.assume_role_service_list) > 0
-    create_instance_profile  = var.create_instance_profile
-    max_session_duration_m   = var.max_session_duration_m
+    assume_role_account_map   = var.assume_role_account_map
+    assume_role_service_list  = var.assume_role_service_list
+    assume_role_user_arn_list = var.assume_role_user_arn_list
+    enable_assume_role        = length(var.assume_role_account_map) > 0 || length(var.assume_role_service_list) > 0 || length(var.assume_role_user_arn_list) > 0
+    create_instance_profile   = var.create_instance_profile
+    max_session_duration_m    = var.max_session_duration_m
     role_policy_attach_arn_map = {
       for name, arn in module.role_policy_map.data[var.name].role_policy_attach_arn_map : "2-attached-${name}" => arn
     }

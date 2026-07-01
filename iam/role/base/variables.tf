@@ -16,6 +16,11 @@ variable "assume_role_service_list" {
   default = []
 }
 
+variable "assume_role_user_arn_list" {
+  type    = list(string)
+  default = []
+}
+
 variable "create_instance_profile" {
   type    = bool
   default = false
