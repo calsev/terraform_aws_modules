@@ -3,10 +3,7 @@ variable "group_map" {
     k_user_list             = optional(list(string))
     {{ name.var_item(override=True) }}
     path                    = optional(string)
-    policy_attach_arn_map   = optional(map(string), {})
-    policy_create_json_map  = optional(map(string), {})
-    policy_inline_json_map  = optional(map(string), {})
-    policy_managed_name_map = optional(map(string), {})
+    {{ iam.policy_map_var_item() }}
   }))
   default = {}
 }
@@ -26,6 +23,29 @@ variable "group_path_default" {
   default = "/"
 }
 
+variable "role_map" {
+  type = map(object({
+    {{ iam.role_var_item() }}
+  }))
+  default = {
+    admin = {
+      role_policy_attach_arn_map   = null
+      role_policy_create_json_map  = null
+      role_policy_inline_json_map  = null
+      role_policy_managed_name_map = {
+        admin   = "AdministratorAccess"
+        billing = "job-function/Billing"
+      }
+      role_path = null
+    }
+  }
+}
+
+variable "role_user_list_map" {
+  type = map(list(string))
+  default = {}
+}
+
 {{ std.map() }}
 
 variable "user_map" {
@@ -36,10 +56,7 @@ variable "user_map" {
     {{ name.var_item(override=True) }}
     path                    = optional(string)
     pgp_key                 = optional(string)
-    policy_attach_arn_map   = optional(map(string))
-    policy_create_json_map  = optional(map(string))
-    policy_inline_json_map  = optional(map(string))
-    policy_managed_name_map = optional(map(string))
+    {{ iam.policy_map_var_item() }}
     tags                    = optional(map(string))
   }))
 }

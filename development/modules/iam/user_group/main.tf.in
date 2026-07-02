@@ -1,11 +1,11 @@
 resource "aws_iam_group" "this_group" {
-  for_each = local.group_map
+  for_each = local.group_x_map
   name     = each.value.name_effective
   path     = each.value.path
 }
 
 resource "aws_iam_user" "this_user" {
-  for_each             = local.user_map
+  for_each             = local.user_x_map
   force_destroy        = each.value.force_destroy
   name                 = each.value.name_effective
   path                 = each.value.path
@@ -14,14 +14,14 @@ resource "aws_iam_user" "this_user" {
 }
 
 resource "aws_iam_access_key" "this_access_key" {
-  for_each = local.user_key_map
+  for_each = local.create_user_key_map
   pgp_key  = each.value.pgp_key
   status   = "Active"
   user     = aws_iam_user.this_user[each.key].name
 }
 
 resource "aws_iam_user_login_profile" "this_login" {
-  for_each = local.user_console_map
+  for_each = local.create_user_console_map
   lifecycle {
     ignore_changes = [
       password_length,
@@ -35,7 +35,7 @@ resource "aws_iam_user_login_profile" "this_login" {
 }
 
 resource "aws_iam_group_membership" "this_membership" {
-  for_each = local.group_map
+  for_each = local.group_x_map
   group    = aws_iam_group.this_group[each.key].name
   name     = each.value.name_effective
   users = [
@@ -67,4 +67,13 @@ resource "aws_iam_user_policy_attachment" "this_user_attachment" {
   for_each   = module.user_policy_map.policy_attach_map_flattened
   policy_arn = each.value.iam_policy_arn
   user       = aws_iam_user.this_user[each.value.k].name
+}
+
+module "user_role" {
+  source                    = "../../iam/role/base"
+  for_each                  = local.create_role_map
+  assume_role_user_arn_list = each.value.user_arn_list
+  map_policy                = each.value
+  name                      = each.key
+  std_map                   = var.std_map
 }

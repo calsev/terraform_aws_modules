@@ -124,6 +124,13 @@ resource "aws_iam_policy" "policy" {
 }
 {%- endmacro %}
 
+{% macro policy_map_var_item() -%}
+    policy_attach_arn_map   = optional(map(string))
+    policy_create_json_map  = optional(map(string))
+    policy_inline_json_map  = optional(map(string))
+    policy_managed_name_map = optional(map(string)) # The short identifier of the managed policy, the part after 'arn:<iam_partition>:iam::aws:policy/'
+{%- endmacro %}
+
 {% macro role_var_item(type=None) -%}
     role_policy_attach_arn_map   = {{ type if type else "optional(map(string))" }}
     role_policy_create_json_map  = {{ type if type else "optional(map(string))" }}

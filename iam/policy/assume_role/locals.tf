@@ -36,5 +36,12 @@ locals {
         identifier_type = v_sid.identifier_type == null ? var.sid_identifier_type_default : v_sid.identifier_type
       }
     },
+    length(var.user_arn_list) > 0 ? {
+      User = {
+        condition_map   = {}
+        identifier_list = sort(var.user_arn_list)
+        identifier_type = "AWS"
+      }
+    } : {},
   )
 }

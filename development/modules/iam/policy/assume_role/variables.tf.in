@@ -36,4 +36,9 @@ variable "sid_identifier_type_default" {
   default = "AWS"
 }
 
+variable "user_arn_list" {
+  type    = list(string)
+  default = []
+}
+
 {{ std.map() }}

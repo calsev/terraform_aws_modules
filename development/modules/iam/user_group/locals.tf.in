@@ -26,16 +26,42 @@ module "user_policy_map" {
 }
 
 locals {
-  g1_map = {
+  create_role_map = {
+    for k, v in local.role_x_map : k => merge(v, {
+      user_arn_list = [
+        for k_user in v.k_user_list : aws_iam_user.this_user[k_user].arn
+      ]
+    }) if v.create_role
+  }
+  create_user_console_map = {
+    for k, v in local.user_x_map : k => v if v.enable_console_access
+  }
+  create_user_key_map = {
+    for k, v in local.user_x_map : k => v if v.create_access_key
+  }
+  group_1_map = {
     for k, v in var.group_map : k => merge(v, module.group_name_map.data[k], module.group_policy_map.policy_map[k], {
       k_user_list = v.k_user_list == null ? var.group_k_user_list_default : v.k_user_list
       path        = v.path == null ? var.group_path_default : v.path
     })
   }
-  group_map = {
-    for k, v in var.group_map : k => merge(local.g1_map[k])
+  group_x_map = {
+    for k, v in var.group_map : k => merge(local.group_1_map[k])
   }
-  u1_map = {
+  role_1_map = {
+    for k, v in var.role_map : k => merge(v, {
+      k_user_list = lookup(var.role_user_list_map, k, [])
+    })
+  }
+  role_2_map = {
+    for k, v in var.role_map : k => {
+      create_role = length(local.role_1_map[k].k_user_list) > 0
+    }
+  }
+  role_x_map = {
+    for k, v in var.role_map : k => merge(local.role_1_map[k], local.role_2_map[k])
+  }
+  user_1_map = {
     for k, v in var.user_map : k => merge(v, module.user_name_map.data[k], module.user_policy_map.policy_map[k], {
       create_access_key       = v.create_access_key == null ? var.user_create_access_key_default : v.create_access_key
       enable_console_access   = v.enable_console_access == null ? var.user_enable_console_access_default : v.enable_console_access
@@ -48,29 +74,31 @@ locals {
       policy_managed_name_map = v.policy_managed_name_map == null ? var.user_policy_managed_name_map_default : v.policy_managed_name_map
     })
   }
-  user_console_map = {
-    for k, v in local.user_map : k => v if v.enable_console_access
-  }
-  user_key_map = {
-    for k, v in local.user_map : k => v if v.create_access_key
-  }
-  user_map = {
-    for k, v in var.user_map : k => merge(local.u1_map[k])
+  user_x_map = {
+    for k, v in var.user_map : k => merge(local.user_1_map[k])
   }
   output_data = {
     group = {
-      for k, v in local.group_map : k => merge(v, {
+      for k, v in local.group_x_map : k => merge(v, {
         arn = aws_iam_group.this_group[k].arn
       })
     }
     user = {
-      for k, v in local.user_map : k => merge(
+      for k, v in local.user_x_map : k => merge(
         {
           for k_user, v_user in v : k_user => v_user if !contains([], k_user)
         },
         {
           arn = aws_iam_user.this_user[k].arn
         },
+      )
+    }
+    role = {
+      for k, v in local.role_x_map : k => merge(
+        {
+          for k_role, v_role in v : k_role => v_role if !contains([], k_role)
+        },
+        v.create_role ? module.user_role[k].data : null,
       )
     }
   }
