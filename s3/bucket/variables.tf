@@ -45,6 +45,9 @@ variable "bucket_map" {
       filter_suffix       = optional(string)
       lambda_function_arn = optional(string)
     })), {})
+    object_lock_days       = optional(number)
+    object_lock_mode       = optional(string)
+    object_lock_years      = optional(number)
     policy_access_list     = optional(list(string))
     policy_name_append     = optional(string)
     policy_identity_create = optional(bool)
@@ -272,6 +275,27 @@ variable "bucket_notification_lambda_filter_suffix_default" {
 variable "bucket_notification_lambda_function_arn_default" {
   type    = string
   default = null
+}
+
+variable "bucket_object_lock_days_default" {
+  type        = number
+  default     = null
+  description = "If object_lock_mode is set, either days or years must be specified"
+}
+
+variable "bucket_object_lock_mode_default" {
+  type    = string
+  default = null
+  validation {
+    condition     = var.bucket_object_lock_mode_default == null ? true : contains(["COMPLIANCE", "GOVERNANCE"], var.bucket_object_lock_mode_default)
+    error_message = "Invalid object lock mode"
+  }
+}
+
+variable "bucket_object_lock_years_default" {
+  type        = number
+  default     = null
+  description = "If object_lock_mode is set, either days or years must be specified"
 }
 
 variable "bucket_policy_identity_create_default" {

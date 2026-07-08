@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.155.0
+
+### General
+
+* CORS preflight additional headers
+* S3 object lock support
+
 ## 0.154.0
 
 ### General

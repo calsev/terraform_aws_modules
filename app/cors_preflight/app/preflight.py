@@ -127,9 +127,11 @@ def extract_allowed_origin(
 
 def security_headers() -> dict[str, str]:
     return {
-        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+        "Referrer-Policy": "strict-origin",
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
     }
 
 

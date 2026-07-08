@@ -29,6 +29,9 @@ locals {
       cors_allowed_origins = concat(v.cors_allowed_origins, v.website_enabled ? ["http://${aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint}"] : [])
     })
   }
+  create_lock_map = {
+    for k, v in local.lx_map : k => v if v.object_lock_mode != null
+  }
   create_log_map = {
     for k, v in local.lx_map : k => v if v.log_target_bucket_name != null
   }
@@ -83,6 +86,9 @@ locals {
           lambda_function_arn = v_n.lambda_function_arn == null ? var.bucket_notification_lambda_function_arn_default : v_n.lambda_function_arn
         })
       }
+      object_lock_days              = v.object_lock_days == null ? var.bucket_object_lock_days_default : v.object_lock_days
+      object_lock_mode              = v.object_lock_mode == null ? var.bucket_object_lock_mode_default : v.object_lock_mode
+      object_lock_years             = v.object_lock_years == null ? var.bucket_object_lock_years_default : v.object_lock_years
       policy_identity_create        = v.policy_identity_create == null ? var.bucket_policy_identity_create_default : v.policy_identity_create
       policy_resource_create        = v.policy_resource_create == null ? var.bucket_policy_resource_create_default : v.policy_resource_create
       requester_pays                = v.requester_pays == null ? var.bucket_requester_pays_default : v.requester_pays
