@@ -126,6 +126,20 @@ resource "aws_s3_bucket_lifecycle_configuration" "this_lifecycle" {
   transition_default_minimum_object_size = "all_storage_classes_128K"
 }
 
+resource "aws_s3_bucket_object_lock_configuration" "this_lock" {
+  for_each            = local.create_lock_map
+  bucket              = aws_s3_bucket.this_bucket[each.key].id
+  object_lock_enabled = "Enabled" # Disabled not supported
+  region              = var.std_map.aws_region_name
+  rule {
+    default_retention {
+      days  = each.value.object_lock_days
+      mode  = each.value.object_lock_mode
+      years = each.value.object_lock_years
+    }
+  }
+}
+
 resource "aws_s3_bucket_request_payment_configuration" "this_payment" {
   for_each = local.lx_map
   bucket   = aws_s3_bucket.this_bucket[each.key].id
