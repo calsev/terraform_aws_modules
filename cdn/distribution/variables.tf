@@ -429,8 +429,8 @@ variable "domain_smooth_streaming_enabled_default" {
 
 variable "domain_viewer_certificate_minimum_protocol_version_default" {
   type        = string
-  default     = "TLSv1.2_2021"
-  description = "Ignored unless DNS alias is enabled"
+  default     = "TLSv1.2_2025"
+  description = "Ignored unless DNS alias is enabled. See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html."
 }
 
 variable "domain_viewer_certificate_ssl_support_method_default" {

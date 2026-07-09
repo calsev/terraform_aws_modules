@@ -1,3 +1,7 @@
+{% macro tls_default(action_map_desc=None) -%}
+ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09
+{%- endmacro %}
+
 {% macro listener_var(action_map_desc=None) -%}
 variable "listener_acm_certificate_key_default" {
   type        = string
@@ -247,7 +251,7 @@ variable "listener_listen_protocol_default" {
 
 variable "listener_listen_ssl_policy_default" {
   type        = string
-  default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  default     = "{{ tls_default() }}"
   description = "Ignored unless protocol is HTTPS. See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html."
 }
 

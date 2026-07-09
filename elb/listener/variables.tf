@@ -396,7 +396,7 @@ variable "listener_listen_protocol_default" {
 
 variable "listener_listen_ssl_policy_default" {
   type        = string
-  default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  default     = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
   description = "Ignored unless protocol is HTTPS. See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html."
 }
 
