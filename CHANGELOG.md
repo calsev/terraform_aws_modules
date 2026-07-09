@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.156.0
+
+### General
+
+* TLS policies updated
+
 ## 0.155.0
 
 ### General

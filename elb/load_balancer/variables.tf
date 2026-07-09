@@ -342,7 +342,7 @@ variable "elb_type_to_port_to_protocol_to_listener_map_default" {
               action_type                        = "fixed-response"
             }
           }
-          listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+          listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
         }
       }
       8443 = {
@@ -362,7 +362,7 @@ variable "elb_type_to_port_to_protocol_to_listener_map_default" {
               action_type                        = "fixed-response"
             }
           }
-          listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+          listen_ssl_policy = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
         }
       }
     }
