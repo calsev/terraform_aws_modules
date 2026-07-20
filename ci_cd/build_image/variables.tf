@@ -59,31 +59,34 @@ variable "ecr_data_map" {
 
 variable "repo_map" {
   type = map(object({
-    code_star_connection_key     = optional(string)
-    build_environment_size       = optional(string) # e.g. small, medium, large
-    image_build_arch_list        = optional(list(string))
-    image_ecr_repo_key           = optional(string)
-    image_environment_key_arch   = optional(string)
-    image_environment_key_tag    = optional(string)
-    image_tag_base               = optional(string)
-    name_append                  = optional(string)
-    name_include_app_fields      = optional(bool)
-    name_infix                   = optional(bool)
-    name_prefix                  = optional(string)
-    name_prepend                 = optional(string)
-    name_suffix                  = optional(string)
-    role_policy_attach_arn_map   = optional(map(string))
-    role_policy_create_json_map  = optional(map(string))
-    role_policy_inline_json_map  = optional(map(string))
-    role_policy_managed_name_map = optional(map(string))
-    role_path                    = optional(string)
-    source_build_spec_image      = optional(string)
-    source_build_spec_manifest   = optional(string)
-    vpc_access                   = optional(bool)
-    vpc_az_key_list              = optional(list(string))
-    vpc_key                      = optional(string)
-    vpc_security_group_key_list  = optional(list(string))
-    vpc_segment_key              = optional(string)
+    code_star_connection_key        = optional(string)
+    build_environment_size          = optional(string) # e.g. small, medium, large
+    image_build_arch_list           = optional(list(string))
+    image_ecr_repo_key              = optional(string)
+    image_environment_key_arch      = optional(string)
+    image_environment_key_repo_url  = optional(string)
+    image_environment_key_prefix    = optional(string)
+    image_environment_key_tag       = optional(string)
+    image_environment_variable_list = optional(list(string))
+    image_tag_base                  = optional(string)
+    name_append                     = optional(string)
+    name_include_app_fields         = optional(bool)
+    name_infix                      = optional(bool)
+    name_prefix                     = optional(string)
+    name_prepend                    = optional(string)
+    name_suffix                     = optional(string)
+    role_policy_attach_arn_map      = optional(map(string))
+    role_policy_create_json_map     = optional(map(string))
+    role_policy_inline_json_map     = optional(map(string))
+    role_policy_managed_name_map    = optional(map(string))
+    role_path                       = optional(string)
+    source_build_spec_image         = optional(string)
+    source_build_spec_manifest      = optional(string)
+    vpc_access                      = optional(bool)
+    vpc_az_key_list                 = optional(list(string))
+    vpc_key                         = optional(string)
+    vpc_security_group_key_list     = optional(list(string))
+    vpc_segment_key                 = optional(string)
   }))
 }
 
@@ -119,13 +122,33 @@ variable "build_image_ecr_repo_key_default" {
 }
 
 variable "build_image_environment_key_arch_default" {
-  type    = string
-  default = "ARCH"
+  type        = string
+  default     = "ARCH"
+  description = "Prepended by image_environment_key_prefix"
+}
+
+variable "build_image_environment_key_repo_url_default" {
+  type        = string
+  default     = "REPO_URL"
+  description = "Prepended by image_environment_key_prefix"
+}
+
+variable "build_image_environment_key_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended to all other environment keys"
 }
 
 variable "build_image_environment_key_tag_default" {
-  type    = string
-  default = "TAG"
+  type        = string
+  default     = "TAG"
+  description = "Prepended by image_environment_key_prefix"
+}
+
+variable "build_image_environment_variable_list_default" {
+  type        = list(string)
+  default     = []
+  description = "Environment to be passed through from pipeline variables - variable.EXAMPLE will be mapped to the environment as EXAMPLE."
 }
 
 variable "build_image_tag_base_default" {

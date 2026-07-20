@@ -366,8 +366,9 @@ variable "domain_response_security_header_content_type_override_default" {
 }
 
 variable "domain_response_security_header_frame_option_default" {
-  type    = string
-  default = "DENY"
+  type        = string
+  default     = "DENY"
+  description = "Set to null to omit the X-Frame-Options header entirely (e.g. when framing is controlled by CSP frame-ancestors)."
 }
 
 variable "domain_response_security_header_frame_override_default" {
