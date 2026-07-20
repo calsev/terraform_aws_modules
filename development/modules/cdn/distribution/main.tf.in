@@ -61,9 +61,15 @@ resource "aws_cloudfront_response_headers_policy" "header_policy" {
     content_type_options {
       override = each.value.response_security_header_content_type_override
     }
-    frame_options {
-      frame_option = each.value.response_security_header_frame_option
-      override     = each.value.response_security_header_frame_override
+    # A null frame_option omits X-Frame-Options entirely, e.g. when cross-origin
+    # framing is governed by CSP frame-ancestors instead. Any non-null value is
+    # passed through to CloudFront, which validates it.
+    dynamic "frame_options" {
+      for_each = each.value.response_security_header_frame_option == null ? {} : { this = {} }
+      content {
+        frame_option = each.value.response_security_header_frame_option
+        override     = each.value.response_security_header_frame_override
+      }
     }
     referrer_policy {
       override        = each.value.response_security_header_referrer_override

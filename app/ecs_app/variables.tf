@@ -161,14 +161,17 @@ variable "app_map" {
     host_volume_map = optional(map(object({
       host_path = optional(string)
     })))
+    iam_instance_profile_arn                    = optional(string)
     iam_role_arn_execution                      = optional(string)
     image_build_arch_list                       = optional(list(string))
     image_ecr_repo_key                          = optional(string)
     image_environment_key_arch                  = optional(string)
+    image_environment_key_repo_url              = optional(string)
+    image_environment_key_prefix                = optional(string)
     image_environment_key_tag                   = optional(string)
-    image_id                                    = optional(string) # This is for the AMI
-    iam_instance_profile_arn                    = optional(string)
+    image_environment_variable_list             = optional(list(string))
     image_tag_base                              = optional(string)
+    image_id                                    = optional(string) # This is for the AMI
     instance_lifetime_max_hours                 = optional(number)
     instance_refresh_protected_instance_enabled = optional(bool)
     instance_storage_gib                        = optional(number)
@@ -259,6 +262,10 @@ variable "build_image_build_arch_list_default" {
     "amd",
     "arm",
   ]
+  validation {
+    condition     = length(setsubtract(toset(var.build_image_build_arch_list_default), toset(["amd", "arm"]))) == 0
+    error_message = "Invalid architectures"
+  }
 }
 
 variable "build_image_ecr_repo_key_default" {
@@ -267,13 +274,33 @@ variable "build_image_ecr_repo_key_default" {
 }
 
 variable "build_image_environment_key_arch_default" {
-  type    = string
-  default = "ARCH"
+  type        = string
+  default     = "ARCH"
+  description = "Prepended by image_environment_key_prefix"
+}
+
+variable "build_image_environment_key_repo_url_default" {
+  type        = string
+  default     = "REPO_URL"
+  description = "Prepended by image_environment_key_prefix"
+}
+
+variable "build_image_environment_key_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended to all other environment keys"
 }
 
 variable "build_image_environment_key_tag_default" {
-  type    = string
-  default = "TAG"
+  type        = string
+  default     = "TAG"
+  description = "Prepended by image_environment_key_prefix"
+}
+
+variable "build_image_environment_variable_list_default" {
+  type        = list(string)
+  default     = []
+  description = "Environment to be passed through from pipeline variables - variable.EXAMPLE will be mapped to the environment as EXAMPLE."
 }
 
 variable "build_image_tag_base_default" {

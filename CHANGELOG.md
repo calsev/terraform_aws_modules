@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.157.0
+
+### General
+
+* Cloudfront remove X-Frame-Options supported
+* Codebuild variable env mapping
+
 ## 0.156.0
 
 ### General

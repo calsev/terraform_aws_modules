@@ -102,14 +102,10 @@ variable "app_map" {
     host_volume_map = optional(map(object({
       host_path = optional(string)
     })))
-    iam_role_arn_execution                      = optional(string)
-    image_build_arch_list                       = optional(list(string))
-    image_ecr_repo_key                          = optional(string)
-    image_environment_key_arch                  = optional(string)
-    image_environment_key_tag                   = optional(string)
-    image_id                                    = optional(string) # This is for the AMI
     iam_instance_profile_arn                    = optional(string)
-    image_tag_base                              = optional(string)
+    iam_role_arn_execution                      = optional(string)
+    {{ ci_cd.image_build_var_item() }}
+    image_id                                    = optional(string) # This is for the AMI
     instance_lifetime_max_hours                 = optional(number)
     instance_refresh_protected_instance_enabled = optional(bool)
     instance_storage_gib                        = optional(number)
@@ -182,34 +178,7 @@ variable "build_environment_size_default" {
   }
 }
 
-variable "build_image_build_arch_list_default" {
-  type = list(string)
-  default = [
-    "amd",
-    "arm",
-  ]
-}
-
-variable "build_image_ecr_repo_key_default" {
-  type    = string
-  default = null
-}
-
-variable "build_image_environment_key_arch_default" {
-  type    = string
-  default = "ARCH"
-}
-
-variable "build_image_environment_key_tag_default" {
-  type    = string
-  default = "TAG"
-}
-
-variable "build_image_tag_base_default" {
-  type        = string
-  default     = "latest"
-  description = "The tag of the final manifest. Each arch-specific image tag will have the arch appended"
-}
+{{ ci_cd.image_build_var() }}
 
 variable "build_role_policy_attach_arn_map_default" {
   type        = map(string)
