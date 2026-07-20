@@ -1,0 +1,39 @@
+# This file is managed with Terraform!
+name: openvpn
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    cap_add:
+      - NET_ADMIN
+      - MKNOD
+    container_name: openvpn-server
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - OPENVPN_ADMIN_PASSWORD=$${OPENVPN_ADMIN_PASSWORD:-}
+      - OPENVPN_LICENSE_KEY=$${OPENVPN_LICENSE_KEY:-}
+      - TMPDIR=/tmp
+    image: openvpn-server
+    networks:
+      openvpn:
+        aliases:
+          - openvpn-server
+    ports:
+      - '943:943'
+      - '945:945'
+      - '1194:1194/udp'
+    privileged: false
+    read_only: true
+    restart: unless-stopped
+    tmpfs:
+      - /tmp
+      - /var/log
+      - /var/run
+      - /usr/local/openvpn_as:exec
+      - /openvpn:exec
+    user: root
+networks:
+  openvpn:
+    driver: bridge
