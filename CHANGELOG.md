@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.158.0
+
+### General
+
+* VPC Flow log additional fields
+
 ## 0.157.0
 
 ### General

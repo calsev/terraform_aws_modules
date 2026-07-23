@@ -8,7 +8,7 @@ variable "log_map" {
     iam_role_arn_cloudwatch_logs                   = optional(string)
     iam_role_arn_cross_account_delivery            = optional(string)
     log_db_key                                     = optional(string)
-    log_format                                     = optional(string)
+    log_field_list                                 = optional(list(map(string)))
     max_aggregation_interval_seconds               = optional(number)
     {{ name.var_item() }}
     source_id                                      = string
@@ -57,9 +57,64 @@ variable "log_db_key_default" {
   description = "If provided an Athena DB of this name will be created. Ignored if destination_type != s3."
 }
 
-variable "log_format_default" {
-  type    = string
-  default = "$${version} $${account-id} $${interface-id} $${srcaddr} $${dstaddr} $${srcport} $${dstport} $${protocol} $${packets} $${bytes} $${start} $${end} $${action} $${log-status} $${pkt-srcaddr} $${pkt-dstaddr} $${pkt-src-aws-service} $${pkt-dst-aws-service} $${ecs-cluster-name} $${ecs-service-name} $${ecs-task-id} $${reject-reason}"
+variable "log_field_list_default" {
+  type = list(map(string))
+  default = [
+    { name = "version",                    type = "int" },
+    { name = "account-id",                 type = "string" },
+    { name = "interface-id",               type = "string" },
+    { name = "vpc-id",                     type = "string" },
+    { name = "subnet-id",                  type = "string" },
+    { name = "instance-id",                type = "string" },
+    { name = "interface-type",             type = "string" },
+
+    { name = "srcaddr",                    type = "string" },
+    { name = "dstaddr",                    type = "string" },
+    { name = "srcport",                    type = "int" },
+    { name = "dstport",                    type = "int" },
+    { name = "protocol",                   type = "bigint" },
+    { name = "packets",                    type = "bigint" },
+    { name = "bytes",                      type = "bigint" },
+    { name = "start",                      type = "bigint" },
+    { name = "end",                        type = "bigint", athena_name = "end_time" },
+    { name = "action",                     type = "string" },
+    { name = "log-status",                 type = "string" },
+
+    { name = "tcp-flags",                  type = "int" },
+    { name = "type",                       type = "string" },
+    { name = "pkt-srcaddr",                type = "string" },
+    { name = "pkt-dstaddr",                type = "string" },
+    { name = "pkt-src-aws-service",        type = "string" },
+    { name = "pkt-dst-aws-service",        type = "string" },
+
+    { name = "region",                     type = "string" },
+    { name = "az-id",                      type = "string" },
+    { name = "sublocation-type",           type = "string" },
+    { name = "sublocation-id",             type = "string" },
+    { name = "flow-direction",             type = "string" },
+    { name = "traffic-path",               type = "int" },
+
+    { name = "next-hop-interface-id",       type = "string" },
+    { name = "next-hop-subnet-id",          type = "string" },
+    { name = "next-hop-az-id",              type = "string" },
+    { name = "next-hop-vpc-id",             type = "string" },
+    { name = "next-hop-interface-type",     type = "string" },
+
+    { name = "ecs-cluster-name",            type = "string" },
+    { name = "ecs-cluster-arn",             type = "string" },
+    { name = "ecs-container-instance-id",   type = "string" },
+    { name = "ecs-container-instance-arn",  type = "string" },
+    { name = "ecs-service-name",            type = "string" },
+    { name = "ecs-task-definition-arn",     type = "string" },
+    { name = "ecs-task-id",                 type = "string" },
+    { name = "ecs-task-arn",                type = "string" },
+    { name = "ecs-container-id",            type = "string" },
+    { name = "ecs-second-container-id",     type = "string" },
+
+    { name = "reject-reason",               type = "string" },
+    { name = "resource-id",                 type = "string" },
+    { name = "encryption-status",           type = "string" },
+  ]
 }
 
 variable "log_iam_role_arn_cloudwatch_logs_default" {
