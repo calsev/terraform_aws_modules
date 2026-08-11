@@ -87,6 +87,7 @@ variable "dns_data" {
 variable "domain_map" {
   type = map(object({
     cache_policy_key             = optional(string)
+    cache_policy_id              = optional(string) # Pin a specific policy id (e.g. an AWS-managed policy); overrides cache_policy_key when set
     cache_viewer_protocol_policy = optional(string)
     default_root_object          = optional(string)
     dns_alias_enabled            = optional(bool)

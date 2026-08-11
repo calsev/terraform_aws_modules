@@ -4,6 +4,7 @@ locals {
     (local.bucket_name) = {
       lifecycle_expiration_days         = var.bucket_lifecycle_expiration_days
       lifecycle_version_expiration_days = 1
+      notification_enable_event_bridge  = var.bucket_notification_enable_event_bridge
     }
   }
   bucket_name = "build"

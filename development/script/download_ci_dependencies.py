@@ -13,7 +13,7 @@ import hcl2
 import s3path  # type: ignore
 import typer
 
-from script.plan import run_command_as_process  # type:ignore
+from script.plan import run_command_as_process  # type: ignore
 
 BUCKET = "cdn-bucket.calsev.com"
 
@@ -30,7 +30,12 @@ def get_linters(system: str, arch: str) -> dict[str, dict[str, str]]:
     with open("development/.tflint.hcl") as f:
         linter_data = typing.cast(
             dict[str, list[dict[str, dict[str, str]]]],
-            hcl2.load(f),  # type: ignore
+            hcl2.load(
+                f,
+                serialization_options=hcl2.SerializationOptions(
+                    strip_string_quotes=True
+                ),
+            ),
         )
     linter_list: list[dict[str, dict[str, str]]] = linter_data["plugin"]
     linter_map: dict[str, dict[str, str]] = {}

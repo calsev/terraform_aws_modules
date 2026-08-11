@@ -3,6 +3,12 @@ variable "bucket_lifecycle_expiration_days" {
   default = 7
 }
 
+variable "bucket_notification_enable_event_bridge" {
+  type        = bool
+  default     = true
+  description = "Required by AWS Backup S3 continuous backup (data/admin plan); AWS Backup enables this out of band."
+}
+
 variable "log_public_enabled" {
   type        = bool
   default     = false

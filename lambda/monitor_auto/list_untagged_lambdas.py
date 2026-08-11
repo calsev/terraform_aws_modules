@@ -1,8 +1,8 @@
+import argparse
 import json
 import typing
 
 import boto3
-import typer
 
 
 def list_all_lambdas(
@@ -39,14 +39,20 @@ def list_untagged_lambdas(
     print(json.dumps(untagged))
 
 
-def main(
-    tag: list[str] = typer.Option(
-        ["tf.workspace"],
-        help="Filter out Lambda that matches any of these tags",
-    ),
-) -> None:
-    list_untagged_lambdas(**locals())
+def main() -> None:
+    # argparse (stdlib) rather than typer so this runs in any python (e.g. the
+    # drift-detection CodeBuild plan environment, which has no third-party deps).
+    parser = argparse.ArgumentParser(
+        description="List Lambda functions not matching any of the given tags",
+    )
+    parser.add_argument(
+        "--tag",
+        action="append",
+        help="Filter out Lambda that matches any of these tags (repeatable)",
+    )
+    args = parser.parse_args()
+    list_untagged_lambdas(tag=args.tag or ["tf.workspace"])
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    main()

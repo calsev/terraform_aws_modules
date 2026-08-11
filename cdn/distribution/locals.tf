@@ -114,7 +114,7 @@ locals {
       acm_certificate_arn               = local.l1_map[k].dns_alias_enabled ? var.cdn_global_data.domain_cert_map[k].certificate_arn : null
       acm_certificate_use_default       = !local.l1_map[k].dns_alias_enabled
       alias_name_list                   = concat([local.l1_map[k].name_simple], local.l1_map[k].dns_alias_san_list)
-      cache_policy_id                   = var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
+      cache_policy_id                   = v.cache_policy_id != null ? v.cache_policy_id : var.cdn_global_data.cache_policy_map[local.l1_map[k].cache_policy_key].policy_id
       logging_bucket_name               = local.l1_map[k].logging_bucket_key == null ? null : var.s3_data_map[local.l1_map[k].logging_bucket_key].name_effective
       origin_request_policy_id          = var.cdn_global_data.origin_request_policy_map[local.l1_map[k].origin_request_policy_key].policy_id
       response_cors_allowed_origin_list = [for origin in local.l1_map[k].response_cors_allowed_origin_list : origin == "*" ? "*" : startswith(origin, "http") ? origin : "https://${origin}"]

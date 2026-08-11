@@ -32,9 +32,14 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], module.vpc_map.data[k], {
-      access_point_map    = v.access_point_map == null ? var.fs_access_point_map_default : v.access_point_map
-      encrypt_file_system = v.encrypt_file_system == null ? var.fs_encrypt_file_system_default : v.encrypt_file_system
-      k_fs                = k
+      access_point_map             = v.access_point_map == null ? var.fs_access_point_map_default : v.access_point_map
+      encrypt_file_system          = v.encrypt_file_system == null ? var.fs_encrypt_file_system_default : v.encrypt_file_system
+      k_fs                         = k
+      kms_key_id                   = v.kms_key_id == null ? var.fs_kms_key_id_default : v.kms_key_id
+      mount_ip_address_type        = v.mount_ip_address_type == null ? var.fs_mount_ip_address_type_default : v.mount_ip_address_type
+      performance_mode             = v.performance_mode == null ? var.fs_performance_mode_default : v.performance_mode
+      provisioned_throughput_mibps = v.provisioned_throughput_mibps == null ? var.fs_provisioned_throughput_mibps_default : v.provisioned_throughput_mibps
+      throughput_mode              = v.throughput_mode == null ? var.fs_throughput_mode_default : v.throughput_mode
     })
   }
   l2_map = {

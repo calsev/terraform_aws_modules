@@ -381,6 +381,13 @@ resource "aws_sagemaker_domain" "this_domain" {
   retention_policy {
     home_efs_file_system = each.value.retention_home_efs_file_system_enabled ? "Retain" : "Delete"
   }
+  lifecycle {
+    # RStudio user_group only persists when access_status is ENABLED. While access
+    # is DISABLED the provider still defaults the field (R_STUDIO_USER) but AWS
+    # drops it, so terraform would re-plan it on every run. Ignore it to stay
+    # converged; manage it explicitly if RStudio access is ever enabled here.
+    ignore_changes = [default_user_settings[0].r_studio_server_pro_app_settings[0].user_group]
+  }
   subnet_ids      = each.value.vpc_subnet_id_list
   tag_propagation = "ENABLED"
   tags            = each.value.tags
