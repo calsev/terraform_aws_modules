@@ -26,7 +26,7 @@ locals {
   }
   create_policy_map = {
     for k, v in local.lx_map : k => merge(v, {
-      sm_secret_name = aws_secretsmanager_secret.this_secret[k].name
+      sm_secret_name = contains(keys(aws_secretsmanager_secret.this_secret), k) ? aws_secretsmanager_secret.this_secret[k].name : null
     })
   }
   l0_map = {
@@ -52,11 +52,11 @@ locals {
       {
         for k_secret, v_secret in v : k_secret => v_secret if !contains(["resource_policy_json"], k_secret)
       },
-      module.this_policy.data[k], # This is just the iam maps
+      contains(keys(module.this_policy.data), k) ? module.this_policy.data[k] : null, # This is just the iam maps
       {
         secret_init_value = v.secret_random_init ? module.initial_value.data[k] : null
-        secret_arn        = aws_secretsmanager_secret.this_secret[k].arn
-        secret_id         = aws_secretsmanager_secret.this_secret[k].id
+        secret_arn        = contains(keys(aws_secretsmanager_secret.this_secret), k) ? aws_secretsmanager_secret.this_secret[k].arn : null
+        secret_id         = contains(keys(aws_secretsmanager_secret.this_secret), k) ? aws_secretsmanager_secret.this_secret[k].id : null
       },
     )
   }

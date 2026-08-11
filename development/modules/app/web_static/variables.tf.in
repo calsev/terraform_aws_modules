@@ -3,6 +3,11 @@ variable "bucket_log_target_bucket_name_default" {
   default = null
 }
 
+variable "bucket_notification_enable_event_bridge_default" {
+  type    = bool
+  default = false
+}
+
 variable "bucket_website_error_document_default" {
   type    = string
   default = "error.html"

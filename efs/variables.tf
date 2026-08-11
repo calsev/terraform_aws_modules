@@ -9,20 +9,25 @@ variable "fs_map" {
       user_gid_secondary_list = optional(list(number))
       user_uid                = optional(number)
     })))
-    encrypt_file_system         = optional(bool)
-    name_append                 = optional(string)
-    name_include_app_fields     = optional(bool)
-    name_infix                  = optional(bool)
-    name_prefix                 = optional(string)
-    name_prepend                = optional(string)
-    name_suffix                 = optional(string)
-    policy_access_list          = optional(list(string))
-    policy_create               = optional(bool)
-    policy_name_append          = optional(string)
-    vpc_az_key_list             = optional(list(string))
-    vpc_key                     = optional(string)
-    vpc_security_group_key_list = optional(list(string))
-    vpc_segment_key             = optional(string)
+    encrypt_file_system          = optional(bool)
+    kms_key_id                   = optional(string)
+    mount_ip_address_type        = optional(string)
+    name_append                  = optional(string)
+    name_include_app_fields      = optional(bool)
+    name_infix                   = optional(bool)
+    name_prefix                  = optional(string)
+    name_prepend                 = optional(string)
+    name_suffix                  = optional(string)
+    performance_mode             = optional(string)
+    policy_access_list           = optional(list(string))
+    policy_create                = optional(bool)
+    policy_name_append           = optional(string)
+    provisioned_throughput_mibps = optional(number)
+    throughput_mode              = optional(string)
+    vpc_az_key_list              = optional(list(string))
+    vpc_key                      = optional(string)
+    vpc_security_group_key_list  = optional(list(string))
+    vpc_segment_key              = optional(string)
   }))
 }
 
@@ -72,6 +77,43 @@ variable "fs_access_point_user_uid_default" {
 variable "fs_encrypt_file_system_default" {
   type    = bool
   default = true
+}
+
+variable "fs_kms_key_id_default" {
+  type    = string
+  default = null
+}
+
+variable "fs_mount_ip_address_type_default" {
+  type    = string
+  default = "DUAL_STACK"
+  validation {
+    condition     = contains(["DUAL_STACK", "IPV4_ONLY", "IPV6_ONLY"], var.fs_mount_ip_address_type_default)
+    error_message = "Invalid performance mode"
+  }
+}
+
+variable "fs_performance_mode_default" {
+  type    = string
+  default = "generalPurpose"
+  validation {
+    condition     = contains(["generalPurpose", "maxIO"], var.fs_performance_mode_default)
+    error_message = "Invalid performance mode"
+  }
+}
+
+variable "fs_throughput_mode_default" {
+  type    = string
+  default = "elastic"
+  validation {
+    condition     = contains(["bursting", "elastic", "provisioned"], var.fs_throughput_mode_default)
+    error_message = "Invalid throughput mode"
+  }
+}
+
+variable "fs_provisioned_throughput_mibps_default" {
+  type    = number
+  default = null
 }
 
 variable "name_append_default" {

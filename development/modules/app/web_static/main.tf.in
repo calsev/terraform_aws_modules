@@ -1,6 +1,7 @@
 module "cdn" {
   source                                                               = "../../cdn/distribution"
   bucket_log_target_bucket_name_default                                = var.bucket_log_target_bucket_name_default
+  bucket_notification_enable_event_bridge_default                      = var.bucket_notification_enable_event_bridge_default
   bucket_website_error_document_default                                = var.bucket_website_error_document_default
   bucket_website_index_document_default                                = var.bucket_website_index_document_default
   cdn_global_data                                                      = var.cdn_global_data

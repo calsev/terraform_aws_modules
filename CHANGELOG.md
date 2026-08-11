@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.159.0
+
+### General
+
+* CDN bucket notification supported
+* CDN cache policy override
+* CI/CD bucket notifications enabled by default
+* Lambda auto monitor can run as Lambda
+* EFS module updated, elastic throughput by default
+* Secret Manager import improved
+
+### Bugfix
+
+* Sagemaker domain user group ignored by lifecycle to prevent dirty plans (bug in AWS API)
+
 ## 0.158.0
 
 ### General

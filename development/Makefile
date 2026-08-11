@@ -3,7 +3,7 @@ SHELL := /bin/bash
 DEV_ROOT = $(shell pwd)
 REQ := requirements/requirements.ci
 VER_REGEX := sed -nre 's/.*?([0-9]+\.[0-9]+)\.[0-9]+.*/\1/p'
-PY_VER ?= $(shell echo 3.12.0 | $(VER_REGEX))
+PY_VER ?= $(shell echo 3.14.0 | $(VER_REGEX))
 SYS_PY_BIN := $(shell command -v python) # Go ahead and diagnose env issues now
 SYS_PY_VER := $(shell $(SYS_PY_BIN) --version | $(VER_REGEX))
 PYENV_ROOT ?= /usr/local/pyenv
@@ -45,14 +45,14 @@ $(VENV):
 env-clean:
 	rm -rf $(VENV)
 
-env-install: $(VENV)
+env-install: $(ENV) $(VENV)
 	$(FULL) $(ENV_INIT)
 	$(FULL) python $(PIP) -r $(REQ).lock.txt
 
-env-update: $(VENV)
+env-update: $(ENV) $(VENV)
 	$(FULL) $(ENV_INIT)
 	$(FULL) python $(PIP) --no-cache-dir -r $(REQ).txt
-	$(PFULLY) python -m pip freeze --all > $(REQ).lock.txt
+	$(FULL) python -m pip freeze --all > $(REQ).lock.txt
 
 git-lint:
 	git diff --exit-code

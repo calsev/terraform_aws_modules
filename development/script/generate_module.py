@@ -208,24 +208,16 @@ def generate_variables(
     variable_map = {k: variable_map[k] for k in sorted(variable_map.keys())}
     path = os.path.abspath(os.path.join("development", "module_gen", "variables.tf"))
     with open(path, "w") as f:
-        f.write(
-            textwrap.dedent(
-                f"""
+        f.write(textwrap.dedent(f"""
                 variable "{variable_prefix}_map" {{
                   type = map(object({{
-                """
-            )
-        )
+                """))
         for k_var, t_var in variable_map.items():
             f.write(f"    {k_var} = optional({t_var})\n")
-        f.write(
-            textwrap.dedent(
-                """
+        f.write(textwrap.dedent("""
                   }))
                 }
-                """
-            )
-        )
+                """))
         for k_var, t_var in variable_map.items():
             variable_name = (
                 f"{k_var}_default"
@@ -235,22 +227,16 @@ def generate_variables(
                 )
                 else f"{variable_prefix}_{k_var}_default"
             )
-            f.write(
-                textwrap.dedent(
-                    f"""
+            f.write(textwrap.dedent(f"""
                     variable "{variable_name}" {{
                       type = {t_var}
-                      default = null"""
-                )
-            )
+                      default = null"""))
             if t_var != "bool":
-                f.write(
-                    f"""
+                f.write(f"""
   validation {{
       condition     = contains([], var.{variable_prefix}_{k_var}_default)
       error_message = "Invalid {k_var.replace('_', ' ')}"
-  }}"""
-                )
+  }}""")
             f.write("\n}\n")
 
 
