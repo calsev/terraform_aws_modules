@@ -355,6 +355,7 @@ tf-lint: tflint-install
 	cd ../random/tls_key && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../rds/parameter_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/proxy && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../rds/subnet_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../s3 && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

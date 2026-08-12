@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.160.0
+
+### New modules
+
+* RDS parameter group
+
 ## 0.159.0
 
 ### General

@@ -81,7 +81,7 @@ variable "fs_mount_ip_address_type_default" {
   default = "DUAL_STACK"
   validation {
     condition     = contains(["DUAL_STACK", "IPV4_ONLY", "IPV6_ONLY"], var.fs_mount_ip_address_type_default)
-    error_message = "Invalid performance mode"
+    error_message = "Invalid IP address type"
   }
 }
 

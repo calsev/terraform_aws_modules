@@ -7,7 +7,10 @@ Generate a resource map and locals for a resource.
 
 Example
 
-  python -m development.script.generate_module elb/load_balancer resource.aws_lb.this_lb elb
+  source development/.venv/bin/activate
+  python -m development.script.generate_module \
+    development/modules/rds/parameter_group \
+    resource.aws_db_parameter_group.this parameter
 """
 
 import argparse
@@ -77,7 +80,12 @@ def read_module(module_path: str) -> ModuleData:
     with open(os.path.join(module_path, "main.tf.in")) as f:
         main_data = typing.cast(
             dict[str, typing.Any],
-            hcl2.load(f),  # type: ignore
+            hcl2.load(
+                f,
+                serialization_options=hcl2.SerializationOptions(
+                    strip_string_quotes=True
+                ),
+            ),
         )
     return ModuleData(module_path, {}, {}, main_data)
 
