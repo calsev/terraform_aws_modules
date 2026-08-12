@@ -1,0 +1,42 @@
+variable "parameter_map" {
+  type = map(object({
+    db_family = optional(string)
+    {{ name.var_item() }}
+    param_map = optional(map(object({
+      apply_method = optional(string)
+      value        = string
+    })))
+    skip_destroy = optional(string)
+  }))
+}
+
+{{ name.var() }}
+
+variable "parameter_db_family_default" {
+  type    = string
+  default = null
+}
+
+variable "parameter_param_apply_method_default" {
+  type    = string
+  default = "pending-reboot"
+  validation {
+    condition     = contains(["immediate", "pending-reboot"], var.parameter_param_apply_method_default)
+    error_message = "Must be a valid namespace type"
+  }
+}
+
+variable "parameter_param_map_default" {
+  type = map(object({
+    apply_method = optional(string)
+    value        = string
+  }))
+  default = {}
+}
+
+variable "parameter_skip_destroy_default" {
+  type    = bool
+  default = false
+}
+
+{{ std.map() }}

@@ -1,0 +1,48 @@
+module "name_map" {
+  source                          = "../../name_map"
+  name_append_default             = var.name_append_default
+  name_include_app_fields_default = var.name_include_app_fields_default
+  name_infix_default              = var.name_infix_default
+  name_map                        = local.l0_map
+  name_prefix_default             = var.name_prefix_default
+  name_prepend_default            = var.name_prepend_default
+  name_regex_allow_list           = var.name_regex_allow_list
+  name_suffix_default             = var.name_suffix_default
+  std_map                         = var.std_map
+}
+
+locals {
+  l0_map = {
+    for k, v in var.parameter_map : k => v
+  }
+  l1_map = {
+    for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
+      db_family    = v.db_family == null ? var.parameter_db_family_default : v.db_family
+      param_map    = v.param_map == null ? var.parameter_param_map_default : v.param_map
+      skip_destroy = v.skip_destroy == null ? var.parameter_skip_destroy_default : v.skip_destroy
+    })
+  }
+  l2_map = {
+    for k, v in local.l0_map : k => {
+      param_map = {
+        for k_param, v_param in local.l1_map[k].param_map : k_param => merge(v_param, {
+          apply_method = v_param.apply_method == null ? var.parameter_param_apply_method_default : v_param.apply_method
+        })
+      }
+    }
+  }
+  lx_map = {
+    for k, _ in local.l0_map : k => merge(local.l1_map[k], local.l2_map[k])
+  }
+  output_data = {
+    for k, v in local.lx_map : k => merge(
+      {
+        for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
+      },
+      {
+        param_group_arn = aws_db_parameter_group.this[k].arn
+        param_group_id  = aws_db_parameter_group.this[k].id
+      },
+    )
+  }
+}
