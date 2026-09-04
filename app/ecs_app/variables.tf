@@ -102,6 +102,8 @@ variable "app_map" {
       username                   = optional(string)
     }))
     deployment_controller_type      = optional(string)
+    deployment_listen_port_prod     = optional(number)
+    deployment_listen_port_test     = optional(number)
     deployment_style_use_blue_green = optional(bool)
     desired_count                   = optional(number)
     dns_alias_enabled               = optional(bool)

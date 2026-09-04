@@ -160,7 +160,7 @@ locals {
         bucket_arn              = aws_s3_bucket.this_bucket[k].arn
         bucket_domain_name      = aws_s3_bucket.this_bucket[k].bucket_regional_domain_name
         bucket_policy_doc       = v.policy_resource_create ? module.this_bucket_policy[k].iam_policy_doc : null
-        bucket_website_endpoint = aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint
+        bucket_website_endpoint = v.website_enabled ? aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint : null
         dns_alias               = v.dns_enabled ? module.dns_alias.data[k] : null
         policy                  = v.policy_identity_create ? module.identity_policy.data[k] : null
       },

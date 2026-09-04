@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.160.1
+
+### Bugfix
+
+* ECS app missing item parameters for listen ports
+* S3 bucket output support for website disabled
+
 ## 0.160.0
 
 ### New modules
