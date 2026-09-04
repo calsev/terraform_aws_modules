@@ -228,12 +228,12 @@ locals {
         # Consumed by create_deployment_map; ports are not actually used by deployments, only below when unrolling targets
         {
           blue = {
-            listen_port = var.app_deployment_listen_port_prod_default
+            listen_port = v.deployment_listen_port_prod == null ? var.app_deployment_listen_port_prod_default : v.deployment_listen_port_prod
           }
         },
         local.l3_map[k].deployment_style_use_blue_green ? {
           green = {
-            listen_port = var.app_deployment_listen_port_test_default
+            listen_port = v.deployment_listen_port_test == null ? var.app_deployment_listen_port_test_default : v.deployment_listen_port_test
           }
         } : {}
       )
