@@ -230,7 +230,7 @@ variable "bucket_lifecycle_version_count_default" {
 variable "bucket_lifecycle_version_expiration_days_default" {
   type        = number
   default     = 183
-  description = "Both version count and days must be satisfied to expire an object"
+  description = "Both version count and days must be satisfied to expire an object. Ignored if greater than lifecycle_expiration_days."
 }
 
 variable "bucket_log_target_bucket_name_default" {

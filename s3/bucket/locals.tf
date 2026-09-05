@@ -27,7 +27,7 @@ locals {
   create_cors_map = {
     for k, v in local.lx_map : k => merge(v, {
       cors_allowed_origins = concat(v.cors_allowed_origins, v.website_enabled ? ["http://${aws_s3_bucket_website_configuration.this_web_config[k].website_endpoint}"] : [])
-    })
+    }) if v.website_enabled
   }
   create_lock_map = {
     for k, v in local.lx_map : k => v if v.object_lock_mode != null
@@ -113,6 +113,7 @@ locals {
           storage_class = v_life.storage_class == null ? var.bucket_lifecycle_transition_storage_class_default : v_life.storage_class
         })
       }
+      lifecycle_version_expiration_days = local.l1_map[k].lifecycle_expiration_days == null ? local.l1_map[k].lifecycle_version_expiration_days : min(local.l1_map[k].lifecycle_expiration_days, local.l1_map[k].lifecycle_version_expiration_days)
       sid_map_l2 = local.l1_map[k].cloudfront_origin_access_identity == null ? local.l1_map[k].sid_map_l1 : merge(local.l1_map[k].sid_map_l1, {
         CloudFront = {
           access        = "public_read"
