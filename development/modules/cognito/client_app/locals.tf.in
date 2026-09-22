@@ -30,6 +30,7 @@ locals {
           refresh_token_rotation_retry_grace_period_seconds = v_app.refresh_token_rotation_retry_grace_period_seconds == null ? var.client_refresh_token_rotation_retry_grace_period_seconds_default : v_app.refresh_token_rotation_retry_grace_period_seconds
           refresh_token_validity_hours                      = v_app.refresh_token_validity_hours == null ? var.client_refresh_token_validity_hours_default : v_app.refresh_token_validity_hours
           supported_identity_provider_list                  = v_app.supported_identity_provider_list == null ? var.client_supported_identity_provider_list_default : v_app.supported_identity_provider_list
+          user_pool_id                                      = v_pool.user_pool_id == null ? var.pool_user_pool_id_default : v_pool.user_pool_id
           write_attribute_list                              = v_app.write_attribute_list == null ? var.client_write_attribute_list_default : v_app.write_attribute_list
         }
       )

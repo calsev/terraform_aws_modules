@@ -155,6 +155,7 @@ tf-lint: tflint-install
 	cd ../cognito && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/client_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/identity_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../cognito/resource_server && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/user_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../cognito/user_pool_log && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

@@ -16,6 +16,16 @@ locals {
     for k, v in local.lx_map : k => merge(v, {
       build_map = {
         for k_build, v_build in v.build_map : k_build => merge(v_build, {
+          environment_variable_map = merge(
+            {
+              ("${v.image_environment_key_prefix}ENV") = {
+                type  = "PLAINTEXT"
+                value = var.std_map.env
+              }
+            },
+            var.build_environment_variable_map_default,
+            v_build.environment_variable_map,
+          )
           iam_role_arn = module.image_build_role[k].data.iam_role_arn
         })
       }

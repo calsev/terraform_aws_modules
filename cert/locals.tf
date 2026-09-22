@@ -38,7 +38,11 @@ locals {
   }
   l1_map = {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
-      dns_from_zone_key           = v.dns_from_zone_key == null ? var.domain_dns_from_zone_key_default : v.dns_from_zone_key
+      dns_from_zone_key = v.dns_from_zone_key == null ? (
+        var.domain_dns_from_zone_key_default == null ?
+        join(".", slice(split(".", k), length(split(".", k)) - 2, length(split(".", k)))) :
+        var.domain_dns_from_zone_key_default
+      ) : v.dns_from_zone_key
       enable_transparency_logging = v.enable_transparency_logging == null ? var.domain_enable_transparency_logging_default : v.enable_transparency_logging
       key_algorithm               = v.key_algorithm == null ? var.domain_key_algorithm_default : v.key_algorithm
     })

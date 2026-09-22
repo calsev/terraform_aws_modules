@@ -10,7 +10,7 @@ import typing
 
 import boto3
 
-LOGGING_LEVEL = os.environ.get("LOGGING_LEVEL", "INFO")
+LOG_LEVEL = (os.environ.get("LOG_LEVEL") or "INFO").upper()
 RANDOM_STRING_CHARACTERS_TO_EXCLUDE = os.environ.get(
     "RANDOM_STRING_CHARACTERS_TO_EXCLUDE", ""
 )
@@ -21,7 +21,7 @@ ROTATION_METHOD = os.environ.get("ROTATION_METHOD", "")
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
-    level=LOGGING_LEVEL,
+    level=LOG_LEVEL,
 )
 logger = logging.getLogger()
 

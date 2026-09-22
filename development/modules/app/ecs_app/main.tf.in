@@ -117,6 +117,7 @@ module "image_build" {
   source                                   = "../../ci_cd/build_image"
   build_code_star_connection_key_default       = var.pipe_source_code_star_connection_key_default
   build_environment_size_default               = var.build_environment_size_default
+  build_environment_variable_map_default       = var.build_environment_variable_map_default
   {{ ci_cd.image_build_map_item() }}
   build_source_build_spec_image_default        = var.build_source_build_spec_image_default
   build_source_build_spec_manifest_default     = var.build_source_build_spec_manifest_default

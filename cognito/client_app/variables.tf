@@ -1,6 +1,6 @@
 variable "pool_map" {
   type = map(object({
-    user_pool_id = string
+    user_pool_id = optional(string)
     client_app_map = map(object({
       access_token_validity_minutes                     = optional(number)
       auth_session_validity_minutes                     = optional(number)
@@ -23,6 +23,11 @@ variable "pool_map" {
       write_attribute_list                              = optional(list(string))
     }))
   }))
+}
+
+variable "pool_user_pool_id_default" {
+  type    = string
+  default = null
 }
 
 variable "client_access_token_validity_minutes_default" {

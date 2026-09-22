@@ -13,8 +13,9 @@ variable "domain_enable_transparency_logging_default" {
 }
 
 variable "domain_dns_from_zone_key_default" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "Defaults to the last two segments of domain_map key."
 }
 
 variable "domain_key_algorithm_default" {

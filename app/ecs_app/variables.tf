@@ -258,6 +258,14 @@ variable "build_environment_size_default" {
   }
 }
 
+variable "build_environment_variable_map_default" {
+  type = map(object({
+    type  = string
+    value = string
+  }))
+  default = {}
+}
+
 variable "build_image_build_arch_list_default" {
   type = list(string)
   default = [

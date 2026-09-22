@@ -180,6 +180,14 @@ variable "build_environment_size_default" {
   }
 }
 
+variable "build_environment_variable_map_default" {
+  type = map(object({
+    type  = string
+    value = string
+  }))
+  default = {}
+}
+
 {{ ci_cd.image_build_var() }}
 
 variable "build_role_policy_attach_arn_map_default" {
