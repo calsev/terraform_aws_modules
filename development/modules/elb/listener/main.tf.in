@@ -209,6 +209,10 @@ resource "aws_lb_listener_rule" "this_rule" {
   lifecycle {
     ignore_changes = [
       action[0].forward[0].target_group, # TODO: Eye roll: https://github.com/hashicorp/terraform/issues/24188
+      # CodeDeploy blue-green flips the forward target group at runtime. When an
+      # auth action is present it sorts before the forward action, moving the
+      # forward to action[1], so that position must be ignored as well.
+      action[1].forward[0].target_group,
     ]
   }
   listener_arn = each.value.elb_listener_arn

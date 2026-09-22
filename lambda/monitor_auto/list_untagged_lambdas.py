@@ -40,8 +40,7 @@ def list_untagged_lambdas(
 
 
 def main() -> None:
-    # argparse (stdlib) rather than typer so this runs in any python (e.g. the
-    # drift-detection CodeBuild plan environment, which has no third-party deps).
+    # argparse (stdlib) rather than typer so this runs in any python
     parser = argparse.ArgumentParser(
         description="List Lambda functions not matching any of the given tags",
     )

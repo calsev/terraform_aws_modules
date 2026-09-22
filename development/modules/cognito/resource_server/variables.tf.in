@@ -1,0 +1,27 @@
+{{ name.var() }}
+
+variable "server_map" {
+  type = map(object({
+    identifier      = optional(string)
+    {{ name.var_item() }}
+    scope_map       = optional(map(string))
+    user_pool_id    = optional(string)
+  }))
+}
+
+variable "server_identifier_default" {
+  type    = string
+  default = null
+}
+
+variable "server_scope_map_default" {
+  type    = map(string)
+  default = {}
+}
+
+variable "server_user_pool_id_default" {
+  type    = string
+  default = null
+}
+
+{{ std.map() }}

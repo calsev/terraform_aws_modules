@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.161.0
+
+### New modules
+
+* Cognito resource server
+
+### General
+
+* Environment variable map for image build, ecs app
+* Cert default zone detection
+
+### Bugfix
+
+* ECR repo mirror dependencies bumped
+* S3 bucket support for no website
+* S3 bucket lifecycle version expiration ignored if greater than lifecycle expiration
+
 ## 0.160.1
 
 ### Bugfix
