@@ -226,6 +226,7 @@ variable "waf_map" {
       metric_enabled                        = optional(bool)
       metric_sampled_requests_enabled       = optional(bool)
       priority                              = optional(number)
+      scope_down_uri_path_contains          = optional(string) # Only count requests whose URI path contains this (URL-decoded, lowercased)
       type                                  = optional(string)
     })))
     scope                                             = optional(string)
@@ -318,6 +319,7 @@ variable "waf_rule_map_default" {
     metric_enabled                        = optional(bool)
     metric_sampled_requests_enabled       = optional(bool)
     priority                              = optional(number)
+    scope_down_uri_path_contains          = optional(string)
     type                                  = optional(string)
   }))
   default = {

@@ -95,12 +95,16 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
         dynamic "allow" {
           for_each = rule.value.type == "allow" ? { this = {} } : {}
           content {
-            custom_request_handling {
-              dynamic "insert_header" {
-                for_each = rule.value.action_header_map
-                content {
-                  name  = insert_header.key
-                  value = insert_header.value
+            # AWS requires at least one header inside custom_request_handling
+            dynamic "custom_request_handling" {
+              for_each = length(rule.value.action_header_map) == 0 ? {} : { this = {} }
+              content {
+                dynamic "insert_header" {
+                  for_each = rule.value.action_header_map
+                  content {
+                    name  = insert_header.key
+                    value = insert_header.value
+                  }
                 }
               }
             }
@@ -125,12 +129,16 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
         dynamic "captcha" {
           for_each = rule.value.type == "captcha" ? { this = {} } : {}
           content {
-            custom_request_handling {
-              dynamic "insert_header" {
-                for_each = rule.value.action_header_map
-                content {
-                  name  = insert_header.key
-                  value = insert_header.value
+            # AWS requires at least one header inside custom_request_handling
+            dynamic "custom_request_handling" {
+              for_each = length(rule.value.action_header_map) == 0 ? {} : { this = {} }
+              content {
+                dynamic "insert_header" {
+                  for_each = rule.value.action_header_map
+                  content {
+                    name  = insert_header.key
+                    value = insert_header.value
+                  }
                 }
               }
             }
@@ -139,12 +147,16 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
         dynamic "challenge" {
           for_each = rule.value.type == "challenge" ? { this = {} } : {}
           content {
-            custom_request_handling {
-              dynamic "insert_header" {
-                for_each = rule.value.action_header_map
-                content {
-                  name  = insert_header.key
-                  value = insert_header.value
+            # AWS requires at least one header inside custom_request_handling
+            dynamic "custom_request_handling" {
+              for_each = length(rule.value.action_header_map) == 0 ? {} : { this = {} }
+              content {
+                dynamic "insert_header" {
+                  for_each = rule.value.action_header_map
+                  content {
+                    name  = insert_header.key
+                    value = insert_header.value
+                  }
                 }
               }
             }
@@ -153,12 +165,16 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
         dynamic "count" {
           for_each = rule.value.type == "count" ? { this = {} } : {}
           content {
-            custom_request_handling {
-              dynamic "insert_header" {
-                for_each = rule.value.action_header_map
-                content {
-                  name  = insert_header.key
-                  value = insert_header.value
+            # AWS requires at least one header inside custom_request_handling
+            dynamic "custom_request_handling" {
+              for_each = length(rule.value.action_header_map) == 0 ? {} : { this = {} }
+              content {
+                dynamic "insert_header" {
+                  for_each = rule.value.action_header_map
+                  content {
+                    name  = insert_header.key
+                    value = insert_header.value
+                  }
                 }
               }
             }
@@ -191,7 +207,28 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
           evaluation_window_sec = rule.value.aggregation_window_seconds
           # forwarded_ip_config # TODO
           limit = rule.value.limit
-          # scope_down_statement # TODO
+          # Narrow the rate limit to one endpoint. The path is URL-decoded and
+          # lowercased first, so encoding or case variations still match.
+          dynamic "scope_down_statement" {
+            for_each = rule.value.scope_down_uri_path_contains == null ? {} : { this = {} }
+            content {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                positional_constraint = "CONTAINS"
+                search_string         = lower(rule.value.scope_down_uri_path_contains)
+                text_transformation {
+                  priority = 0
+                  type     = "URL_DECODE"
+                }
+                text_transformation {
+                  priority = 1
+                  type     = "LOWERCASE"
+                }
+              }
+            }
+          }
         }
         # regex_match_statement # STMT
         # regex_pattern_set_reference_statement # STMT
