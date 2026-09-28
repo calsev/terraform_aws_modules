@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.162.0
+
+### General
+
+* Scope down URI for WAF ACL
+* Update Terraform and tflint versions
+
+### Bugfix
+
+* Deprecation warnings for ipv6_cidr_block
+
 ## 0.161.0
 
 ### New modules

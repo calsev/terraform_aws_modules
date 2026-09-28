@@ -25,6 +25,11 @@ locals {
       for k_peer, v_peer in v.peer_map : k_peer if !v_peer.peer_id_is_key
     ])
   ]))
+  data_peer_vpc_ipv6_cidr_block_map = {
+    for k in local.data_peer_vpc_flattened_set : k => length(data.aws_vpc.peer_vpc[k].ipv6_cidr_block_associations) == 0 ? null : sort([
+      for association in data.aws_vpc.peer_vpc[k].ipv6_cidr_block_associations : association.ipv6_cidr_block
+    ])[0]
+  }
   l0_map = {
     for k, v in var.vpc_map : k => v
   }
@@ -52,7 +57,7 @@ locals {
           k_vpc_peer               = "${local.l1_map[k].name_simple}-${v_peer.k_peer}"
           peer_vpc_cidr_block      = v_peer.peer_id_is_key ? local.l0_map[k_peer].vpc_cidr_block : data.aws_vpc.peer_vpc[k_peer].cidr_block
           peer_vpc_id              = v_peer.peer_id_is_key ? local.l1_map[k_peer].vpc_id : k_peer
-          peer_vpc_ipv6_cidr_block = v_peer.peer_id_is_key ? local.l1_map[k_peer].vpc_ipv6_cidr_block : data.aws_vpc.peer_vpc[k_peer].ipv6_cidr_block
+          peer_vpc_ipv6_cidr_block = v_peer.peer_id_is_key ? local.l1_map[k_peer].vpc_ipv6_cidr_block : local.data_peer_vpc_ipv6_cidr_block_map[k_peer]
         })
       }
     }
