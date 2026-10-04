@@ -5,7 +5,10 @@ locals {
     for k, v in local.lx_map : v.bucket_key => {
       allow_public            = v.origin_allow_public
       dns_enabled             = v.origin_dns_enabled
+      enable_acceleration     = v.origin_enable_acceleration
+      log_target_bucket_name  = v.origin_log_target_bucket_name
       notification_lambda_map = v.notification_lambda_map
+      website_enabled         = v.origin_dns_enabled
     }
   }
   create_bucket_policy_map = {
@@ -65,7 +68,9 @@ locals {
       origin_connection_attempts                            = v.origin_connection_attempts == null ? var.domain_origin_connection_attempts_default : v.origin_connection_attempts
       origin_connection_timeout_seconds                     = v.origin_connection_timeout_seconds == null ? var.domain_origin_connection_timeout_seconds_default : v.origin_connection_timeout_seconds
       origin_dns_enabled                                    = v.origin_dns_enabled == null ? var.domain_origin_dns_enabled_default : v.origin_dns_enabled
+      origin_enable_acceleration                            = v.origin_enable_acceleration == null ? var.domain_origin_enable_acceleration_default : v.origin_enable_acceleration
       origin_fqdn                                           = replace(v.origin_fqdn, "_", "-")
+      origin_log_target_bucket_name                         = v.origin_log_target_bucket_name == null ? var.bucket_log_target_bucket_name_default : v.origin_log_target_bucket_name
       origin_path                                           = v.origin_path == null ? var.domain_origin_path_default : v.origin_path
       origin_request_policy_key                             = v.origin_request_policy_key == null ? var.domain_origin_request_policy_key_default : v.origin_request_policy_key
       price_class                                           = v.price_class == null ? var.domain_price_class_default : v.price_class

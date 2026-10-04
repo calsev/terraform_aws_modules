@@ -120,7 +120,9 @@ variable "domain_map" {
     origin_connection_attempts        = optional(number)
     origin_connection_timeout_seconds = optional(number)
     origin_dns_enabled                = optional(bool)
+    origin_enable_acceleration        = optional(bool)
     origin_fqdn                       = string
+    origin_log_target_bucket_name     = optional(string)
     origin_path                       = optional(string)
     origin_request_policy_key         = optional(string)
     price_class                       = optional(string)
@@ -266,6 +268,12 @@ variable "domain_origin_connection_timeout_seconds_default" {
 variable "domain_origin_dns_enabled_default" {
   type    = bool
   default = true
+}
+
+variable "domain_origin_enable_acceleration_default" {
+  type        = bool
+  default     = false
+  description = "Enable S3 Transfer Acceleration. Requires origin_dns_enabled=false so the generated bucket name contains no dots."
 }
 
 variable "domain_origin_path_default" {

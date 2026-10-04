@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.163.0
+
+### General
+
+* Bump deps for ECR mirror
+* Accelerator support for CDN origin
+* Variables for CI/Cd pipe stack
+
+### Bugfix
+
+* Key error when deleting security group
+
 ## 0.162.0
 
 ### General
