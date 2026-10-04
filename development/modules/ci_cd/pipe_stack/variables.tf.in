@@ -75,6 +75,7 @@ variable "pipe_map" {
     source_code_star_connection_key = optional(string)
     source_detect_changes           = optional(bool)
     source_repository_id            = optional(string)
+    variable_map                    = optional(map(string)) # Pipeline-level variables (name => default), referenced as #{variables.NAME}
     webhook_enabled                 = optional(bool)
   }))
 }
