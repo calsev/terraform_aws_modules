@@ -6,7 +6,7 @@ module "key_secret" {
   name_prefix_default             = var.name_prefix_default
   name_prepend_default            = var.name_prepend_default
   name_suffix_default             = var.name_suffix_default
-  policy_create_default           = false
+  policy_access_list_default      = []
   secret_is_param_default         = var.key_secret_is_param_default
   secret_map                      = local.lx_map
   secret_random_init_type_default = "ssh_key"

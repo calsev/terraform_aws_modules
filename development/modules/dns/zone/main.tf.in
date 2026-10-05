@@ -18,6 +18,7 @@ module "log_group" {
   log_map                    = local.create_log_map
   log_retention_days_default = var.log_retention_days_default
   name_prefix_default        = "/aws/route53/"
+  policy_access_list_default = []
   std_map                    = var.std_map
 }
 

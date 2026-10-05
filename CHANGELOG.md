@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.165.0
+
+### General
+
+* ECS service AZ rebalance param
+* IAM policy access_list controls policy creation only - docs are always created
+* IAM policy usage reduction
+* Secret rotation defaults to inline read_write permissions
+
 ## 0.164.0
 
 ### General

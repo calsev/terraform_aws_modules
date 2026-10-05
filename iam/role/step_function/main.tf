@@ -38,15 +38,13 @@ module "this_role" {
   source                   = "../../../iam/role/base"
   assume_role_service_list = ["states"]
   create_instance_profile  = false
-  embedded_role_policy_attach_arn_map = {
+  embedded_role_policy_inline_json_map = {
     log_read = {
-      policy = var.log_data.iam_policy_map["read"].iam_policy_arn
+      policy = jsonencode(var.log_data.policy_map["read"].iam_policy_doc)
     }
     log_write = {
-      policy = var.log_data.iam_policy_map["write"].iam_policy_arn
+      policy = jsonencode(var.log_data.policy_map["write"].iam_policy_doc)
     }
-  }
-  embedded_role_policy_inline_json_map = {
     manage_log_policy = {
       policy = data.aws_iam_policy_document.manage_log_policy.json
     }

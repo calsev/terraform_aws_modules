@@ -21,7 +21,6 @@ variable "key_map" {
     multi_region_enabled                       = optional(bool)
     {{ name.var_item() }}
     policy_access_list                         = optional(list(string))
-    policy_create                              = optional(bool)
     policy_lockout_safety_check_bypass_enabled = optional(bool)
     policy_name_append                         = optional(string)
     rotation_period_days                       = optional(number)

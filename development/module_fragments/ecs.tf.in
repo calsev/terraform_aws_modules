@@ -169,6 +169,16 @@ variable "compute_user_data_command_list_default" {
 {%- endmacro %}
 
 {% macro service_var(controller="ECS", elb_target=True) -%}
+variable "service_availability_zone_rebalancing_default" {
+  type        = string
+  default     = null
+  description = "Availability Zone rebalancing setting for the ECS service. Null preserves AWS behavior."
+  validation {
+    condition     = var.service_availability_zone_rebalancing_default == null ? true : contains(["DISABLED", "ENABLED"], var.service_availability_zone_rebalancing_default)
+    error_message = "Invalid Availability Zone rebalancing setting"
+  }
+}
+
 variable "service_assign_public_ip_default" {
   type        = bool
   default     = null
@@ -302,6 +312,7 @@ variable "service_sd_namespace_key_default" {
 {%- endmacro %}
 
 {% macro service_map_item() -%}
+  service_availability_zone_rebalancing_default                 = var.service_availability_zone_rebalancing_default
   service_assign_public_ip_default                               = var.service_assign_public_ip_default
   service_deployment_controller_circuit_breaker_enabled_default  = var.service_deployment_controller_circuit_breaker_enabled_default
   service_deployment_controller_circuit_breaker_rollback_default = var.service_deployment_controller_circuit_breaker_rollback_default

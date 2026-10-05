@@ -1,7 +1,8 @@
 module "stage_log" {
-  source  = "../../cw/log_group"
-  log_map = local.stage_x_map
-  std_map = var.std_map
+  source                     = "../../cw/log_group"
+  log_map                    = local.stage_x_map
+  policy_access_list_default = []
+  std_map                    = var.std_map
 }
 
 resource "aws_apigatewayv2_stage" "this_stage" {

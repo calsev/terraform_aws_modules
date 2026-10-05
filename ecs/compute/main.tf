@@ -58,10 +58,10 @@ resource "aws_ecs_capacity_provider" "this_capacity_provider" {
 }
 
 module "log_group" {
-  source                = "../../cw/log_group"
-  log_map               = local.create_log_map
-  policy_create_default = false
-  std_map               = var.std_map
+  source                     = "../../cw/log_group"
+  log_map                    = local.create_log_map
+  policy_access_list_default = []
+  std_map                    = var.std_map
 }
 
 resource "aws_ecs_cluster" "this_ecs_cluster" {

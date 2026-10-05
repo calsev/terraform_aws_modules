@@ -75,7 +75,7 @@ variable "monitor_data" {
 variable "secret_data_map" {
   type = map(object({
     policy_map = map(object({
-      iam_policy_arn = string
+      iam_policy_doc = any
     }))
     secret_id = string
   }))

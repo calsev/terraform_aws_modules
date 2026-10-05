@@ -27,7 +27,6 @@ variable "repo_map" {
     lifecycle_tag_max_count_default = optional(number)
     {{ name.var_item() }}
     policy_access_list      = optional(list(string))
-    policy_create           = optional(bool)
     policy_name_append      = optional(string)
   }))
 }

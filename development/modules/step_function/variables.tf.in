@@ -4,7 +4,6 @@ variable "machine_map" {
     log_level                    = optional(string)
     {{ name.var_item() }}
     policy_access_list           = optional(list(string))
-    policy_create                = optional(bool)
     policy_name_append           = optional(string)
     {{ iam.role_var_item() }}
   }))

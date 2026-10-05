@@ -1,7 +1,8 @@
 module "log" {
-  source  = "../cw/log_group"
-  log_map = local.create_log_map
-  std_map = var.std_map
+  source                     = "../cw/log_group"
+  log_map                    = local.create_log_map
+  policy_access_list_default = []
+  std_map                    = var.std_map
 }
 
 resource "aws_sfn_state_machine" "this_machine" {

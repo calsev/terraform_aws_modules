@@ -7,7 +7,6 @@ variable "bus_map" {
     log_retention_days            = optional(number)
     {{ name.var_item() }}
     policy_access_list            = optional(list(string))
-    policy_create                 = optional(bool)
     policy_name_append            = optional(string)
     sid_map = optional(map(object({
       access = string

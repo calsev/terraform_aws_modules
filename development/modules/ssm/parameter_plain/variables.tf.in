@@ -8,7 +8,6 @@ variable "param_map" {
     kms_key_id              = optional(string)
     {{ name.var_item() }}
     policy_access_list      = optional(list(string))
-    policy_create           = optional(bool)
     policy_name_append      = optional(string)
     tier                    = optional(string)
     type                    = optional(string)

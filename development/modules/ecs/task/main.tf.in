@@ -9,7 +9,8 @@ module "task_log" {
   source  = "../../cw/log_group"
   log_map = local.l0_map # This is used later
   {{ log.map_item() }}
-  std_map = var.std_map
+  policy_access_list_default = []
+  std_map                = var.std_map
 }
 
 resource "aws_ecs_task_definition" "this_task" {

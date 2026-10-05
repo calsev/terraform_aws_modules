@@ -1,11 +1,11 @@
 variable "log_data" {
   type = object({
-    iam_policy_map = object({
+    policy_map = object({
       read = object({
-        iam_policy_arn = string
+        iam_policy_doc = any
       })
       write = object({
-        iam_policy_arn = string
+        iam_policy_doc = any
       })
     })
   })

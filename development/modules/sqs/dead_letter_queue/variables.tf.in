@@ -1,12 +1,12 @@
 {{ name.var(append="dead_letter") }}
 
-{{ iam.policy_var_ar(access=["pull", "push"], append="queue") }}
+{{ iam.policy_var_ar(access=[], append="queue") }}
 
 {{ monitor.data() }}
 
 variable "queue_map" {
   type = map(object({
-    dead_letter_policy_create = optional(bool)
+    dead_letter_policy_access_list = optional(list(string))
     dead_letter_queue_enabled = optional(bool)
     {{ name.var_item() }}
   }))

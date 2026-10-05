@@ -434,11 +434,7 @@ variable "policy_access_list_default" {
     "read_write",
     "write",
   ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {

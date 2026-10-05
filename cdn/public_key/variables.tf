@@ -7,7 +7,6 @@ variable "key_map" {
     name_prepend            = optional(string)
     name_suffix             = optional(string)
     policy_access_list      = optional(list(string))
-    policy_create           = optional(bool)
     secret_is_param         = optional(bool)
   }))
 }
@@ -67,11 +66,7 @@ variable "policy_access_list_default" {
     "read_write",
     "write",
   ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {

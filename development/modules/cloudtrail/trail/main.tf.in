@@ -3,6 +3,7 @@ module "log_group" {
   log_map                    = local.lx_map
   log_retention_days_default = var.log_retention_days_default
   name_append_default        = "trail"
+  policy_access_list_default = []
   std_map                    = var.std_map
 }
 
@@ -10,6 +11,11 @@ module "logging_role" {
   source                             = "../../iam/role/base"
   for_each                           = local.create_role_map
   assume_role_service_list           = ["cloudtrail"]
+  embedded_role_policy_inline_json_map = {
+    log_write = {
+      policy = jsonencode(module.log_group.data[each.key].policy_map["write"].iam_policy_doc)
+    }
+  }
   name                               = "${each.key}_trail"
   role_policy_attach_arn_map_default = each.value.role_policy_attach_arn_map_default
   std_map                            = var.std_map

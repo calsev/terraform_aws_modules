@@ -11,9 +11,11 @@ module "trigger_role" {
       condition = length(each.value.ecs_targets) > 0
       policy    = var.iam_data.iam_policy_arn_ecs_start_task
     }
+  }
+  embedded_role_policy_inline_json_map = {
     queue_dead_letter_write = {
       condition = each.value.dead_letter_queue_enabled
-      policy    = each.value.dead_letter_queue_enabled ? module.dead_letter_queue.data[each.key].policy_map["push"].iam_policy_arn : null
+      policy    = each.value.dead_letter_queue_enabled ? jsonencode(module.dead_letter_queue.data[each.key].policy_map["push"].iam_policy_doc) : null
     }
   }
   map_policy                           = each.value

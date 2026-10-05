@@ -3,11 +3,7 @@ variable "policy_access_list_default" {
   default = [
     "write",
   ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {
@@ -126,7 +122,6 @@ variable "topic_map" {
     allow_events                       = optional(bool)
     enable_content_based_deduplication = optional(bool)
     policy_access_list                 = optional(list(string))
-    policy_create                      = optional(bool)
     policy_name_append                 = optional(string)
     policy_name_prefix                 = optional(string)
     is_fifo                            = optional(bool)

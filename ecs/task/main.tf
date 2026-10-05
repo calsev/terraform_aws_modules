@@ -11,6 +11,7 @@ module "task_log" {
   log_group_class_default    = var.log_group_class_default
   log_kms_key_id_default     = var.log_kms_key_id_default
   log_retention_days_default = var.log_retention_days_default
+  policy_access_list_default = []
   std_map                    = var.std_map
 }
 

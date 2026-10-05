@@ -202,6 +202,7 @@ module "ecs_service" {
   ecs_cluster_data                                               = local.ecs_cluster_data
   ecs_task_definition_data_map                                   = module.ecs_task.data
   elb_target_data_map                                            = module.elb_target.data
+  service_availability_zone_rebalancing_default                  = var.service_availability_zone_rebalancing_default
   service_assign_public_ip_default                               = var.service_assign_public_ip_default
   service_deployment_controller_circuit_breaker_enabled_default  = var.service_deployment_controller_circuit_breaker_enabled_default
   service_deployment_controller_circuit_breaker_rollback_default = var.service_deployment_controller_circuit_breaker_rollback_default

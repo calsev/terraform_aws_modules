@@ -42,16 +42,9 @@ variable "name_suffix_default" {
 }
 
 variable "policy_access_list_default" {
-  type = list(string)
-  default = [
-    "pull",
-    "push",
-  ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  type        = list(string)
+  default     = []
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {
@@ -93,14 +86,14 @@ variable "monitor_data" {
 
 variable "queue_map" {
   type = map(object({
-    dead_letter_policy_create = optional(bool)
-    dead_letter_queue_enabled = optional(bool)
-    name_append               = optional(string)
-    name_include_app_fields   = optional(bool)
-    name_infix                = optional(bool)
-    name_prefix               = optional(string)
-    name_prepend              = optional(string)
-    name_suffix               = optional(string)
+    dead_letter_policy_access_list = optional(list(string))
+    dead_letter_queue_enabled      = optional(bool)
+    name_append                    = optional(string)
+    name_include_app_fields        = optional(bool)
+    name_infix                     = optional(bool)
+    name_prefix                    = optional(string)
+    name_prepend                   = optional(string)
+    name_suffix                    = optional(string)
   }))
 }
 

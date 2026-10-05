@@ -15,7 +15,6 @@ variable "fs_map" {
     {{ name.var_item() }}
     performance_mode             = optional(string)
     policy_access_list           = optional(list(string))
-    policy_create                = optional(bool)
     policy_name_append           = optional(string)
     provisioned_throughput_mibps = optional(number)
     throughput_mode              = optional(string)
@@ -110,7 +109,7 @@ variable "fs_provisioned_throughput_mibps_default" {
 
 {{ name.var() }}
 
-{{ iam.policy_var_ar(append="efs") }}
+{{ iam.policy_var_ar(access=["read_write"], append="efs") }}
 
 {{ std.map() }}
 
