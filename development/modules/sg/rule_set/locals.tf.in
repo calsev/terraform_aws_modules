@@ -11,7 +11,7 @@ locals {
     local.has_private ? local.sg_map_private : null,
   )
   sg_map_internal = {
-    for k_sg, v_sg in var.sg_map_internal : replace("internal_${k_sg}", "/[-]/", "-") => merge(v_sg, {
+    for k_sg, v_sg in merge(var.sg_map_internal, var.sg_map_internal_additional) : replace("internal_${k_sg}", "/[-]/", "-") => merge(v_sg, {
       rule_map = {
         for k_rule, v_rule in v_sg.rule_map : replace(k_rule, var.std_map.name_replace_regex, "-") => merge(v_rule, {
           cidr_blocks      = v_rule.cidr_blocks == null ? var.cidr_blocks_internal : v_rule.cidr_blocks
@@ -25,7 +25,7 @@ locals {
     })
   }
   sg_map_public = {
-    for k_sg, v_sg in var.sg_map_public : replace("world_${k_sg}", var.std_map.name_replace_regex, "-") => merge(v_sg, {
+    for k_sg, v_sg in merge(var.sg_map_public, var.sg_map_public_additional) : replace("world_${k_sg}", var.std_map.name_replace_regex, "-") => merge(v_sg, {
       rule_map = {
         for k_rule, v_rule in v_sg.rule_map : replace(k_rule, var.std_map.name_replace_regex, "-") => merge(v_rule, {
           cidr_blocks      = v_rule.cidr_blocks == null ? var.cidr_blocks_public : v_rule.cidr_blocks
@@ -39,7 +39,7 @@ locals {
     })
   }
   sg_map_private = {
-    for k_sg, v_sg in var.sg_map_private == null ? var.sg_map_internal : var.sg_map_private : replace("private_${k_sg}", var.std_map.name_replace_regex, "-") => merge(v_sg, {
+    for k_sg, v_sg in merge(var.sg_map_private == null ? var.sg_map_internal : var.sg_map_private, var.sg_map_private_additional) : replace("private_${k_sg}", var.std_map.name_replace_regex, "-") => merge(v_sg, {
       rule_map = {
         for k_rule, v_rule in v_sg.rule_map : replace(k_rule, var.std_map.name_replace_regex, "-") => merge(v_rule, {
           cidr_blocks      = v_rule.cidr_blocks == null ? var.cidr_blocks_internal : v_rule.cidr_blocks

@@ -382,6 +382,42 @@ variable "vpc_map" {
       route_internal = optional(bool)
       route_public   = optional(bool)
     })))
+    sg_map_internal_additional = optional(map(object({
+      revoke_rules_on_delete = optional(bool, false)
+      rule_map = map(object({
+        from_port                = optional(number)
+        prefix_id_list           = optional(list(string), null)
+        protocol                 = optional(string)
+        to_port                  = optional(number)
+        source_is_self           = optional(bool, null)
+        source_security_group_id = optional(string, null)
+        type                     = optional(string)
+      }))
+    })), {})
+    sg_map_private_additional = optional(map(object({
+      revoke_rules_on_delete = optional(bool, false)
+      rule_map = map(object({
+        from_port                = optional(number)
+        prefix_id_list           = optional(list(string), null)
+        protocol                 = optional(string)
+        to_port                  = optional(number)
+        source_is_self           = optional(bool, null)
+        source_security_group_id = optional(string, null)
+        type                     = optional(string)
+      }))
+    })), {})
+    sg_map_public_additional = optional(map(object({
+      revoke_rules_on_delete = optional(bool, false)
+      rule_map = map(object({
+        from_port                = optional(number)
+        prefix_id_list           = optional(list(string), null)
+        protocol                 = optional(string)
+        to_port                  = optional(number)
+        source_is_self           = optional(bool, null)
+        source_security_group_id = optional(string, null)
+        type                     = optional(string)
+      }))
+    })), {})
     subnet_bit_length                   = optional(number) # The number of bits to add to the mask, defaults to ceil(log(#segments * #azs, 2)), set higher to accommodate future AZs
     vpc_cidr_block                      = string
     vpc_flow_log_destination_bucket_key = optional(string)

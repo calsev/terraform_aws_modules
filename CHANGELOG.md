@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.164.0
+
+### General
+
+* Extra SG for VPC stack
+
 ## 0.163.0
 
 ### General
