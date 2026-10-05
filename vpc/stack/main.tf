@@ -5,10 +5,13 @@ module "vpc" {
 }
 
 module "security_group_rule_set" {
-  source   = "../../sg/rule_set"
-  for_each = local.lx_map
-  std_map  = var.std_map
-  vpc_map  = module.vpc.data.vpc_map
+  source                     = "../../sg/rule_set"
+  for_each                   = local.lx_map
+  sg_map_internal_additional = each.value.sg_map_internal_additional
+  sg_map_private_additional  = each.value.sg_map_private_additional
+  sg_map_public_additional   = each.value.sg_map_public_additional
+  std_map                    = var.std_map
+  vpc_map                    = module.vpc.data.vpc_map
 }
 
 module "security_group" {

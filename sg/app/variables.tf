@@ -34,6 +34,26 @@ variable "cidr_blocks_private_ipv6" {
   description = "Ignored for any rule with source specified."
 }
 
+variable "security_group_from_port_default" {
+  type    = number
+  default = 0
+}
+
+variable "security_group_protocol_default" {
+  type    = string
+  default = "tcp"
+}
+
+variable "security_group_to_port_default" {
+  type    = number
+  default = 65535
+}
+
+variable "security_group_type_default" {
+  type    = string
+  default = "ingress"
+}
+
 variable "sg_map_internal" {
   type = map(object({
     revoke_rules_on_delete = optional(bool, false)
@@ -51,24 +71,6 @@ variable "sg_map_internal" {
   }))
   default     = {}
   description = "If CIDR block is provided, these will be created, with that CIDR inserted for each"
-}
-
-variable "sg_map_public" {
-  type = map(object({
-    revoke_rules_on_delete = optional(bool, false)
-    rule_map = map(object({
-      cidr_blocks              = optional(list(string))
-      from_port                = optional(number)
-      ipv6_cidr_blocks         = optional(list(string))
-      prefix_id_list           = optional(list(string), null)
-      protocol                 = optional(string)
-      to_port                  = optional(number)
-      source_is_self           = optional(bool, null)
-      source_security_group_id = optional(string, null)
-      type                     = optional(string)
-    }))
-  }))
-  default = {}
 }
 
 variable "sg_map_private" {
@@ -89,24 +91,22 @@ variable "sg_map_private" {
   default = {}
 }
 
-variable "security_group_from_port_default" {
-  type    = number
-  default = 0
-}
-
-variable "security_group_protocol_default" {
-  type    = string
-  default = "tcp"
-}
-
-variable "security_group_to_port_default" {
-  type    = number
-  default = 65535
-}
-
-variable "security_group_type_default" {
-  type    = string
-  default = "ingress"
+variable "sg_map_public" {
+  type = map(object({
+    revoke_rules_on_delete = optional(bool, false)
+    rule_map = map(object({
+      cidr_blocks              = optional(list(string))
+      from_port                = optional(number)
+      ipv6_cidr_blocks         = optional(list(string))
+      prefix_id_list           = optional(list(string), null)
+      protocol                 = optional(string)
+      to_port                  = optional(number)
+      source_is_self           = optional(bool, null)
+      source_security_group_id = optional(string, null)
+      type                     = optional(string)
+    }))
+  }))
+  default = {}
 }
 
 variable "std_map" {

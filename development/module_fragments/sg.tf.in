@@ -1,0 +1,114 @@
+{% macro map_type(cidr=True) -%}
+map(object({
+  revoke_rules_on_delete = optional(bool, false)
+  rule_map = map(object({
+    {% if cidr %}cidr_blocks              = optional(list(string))
+    {% endif %}from_port                = optional(number)
+    {% if cidr %}ipv6_cidr_blocks         = optional(list(string))
+    {% endif %}prefix_id_list           = optional(list(string), null)
+    protocol                 = optional(string)
+    to_port                  = optional(number)
+    source_is_self           = optional(bool, null)
+    source_security_group_id = optional(string, null)
+    type                     = optional(string)
+  }))
+}))
+{%- endmacro %}
+
+{% macro _map_var(name, default="{}", description=None) -%}
+variable "{{ name }}" {
+  type    = {{ map_type() | indent(2) }}
+  default = {{ default }}{% if description %}
+  description = "{{ description }}"{% endif %}
+}
+{%- endmacro %}
+
+{% macro var_item() -%}
+    sg_map_internal_additional = optional({{ map_type(cidr=False) | indent(6) }}, {})
+    sg_map_private_additional  = optional({{ map_type(cidr=False) | indent(6) }}, {})
+    sg_map_public_additional   = optional({{ map_type(cidr=False) | indent(6) }}, {})
+{%- endmacro %}
+
+{% macro var(maps=False, additional=False) -%}
+variable "cidr_blocks_internal" {
+  type        = list(string)
+  default     = ["10.0.0.0/8"]
+  description = "Set null to disable internal security groups. Ignored for any rule with source specified."
+}
+
+variable "cidr_blocks_internal_ipv6" {
+  type        = list(string)
+  default     = null
+  description = "Defaults to IPV6 CIDR blocks of all VPCs. Set to empty list to bootstrap a new VPC. Ignored for any rule with source specified."
+}
+
+variable "cidr_blocks_public" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "Ignored for any rule with source specified."
+}
+
+variable "cidr_blocks_public_ipv6" {
+  type        = list(string)
+  default     = ["::/0"]
+  description = "Ignored for any rule with source specified."
+}
+
+variable "cidr_blocks_private" {
+  type        = list(string)
+  default     = []
+  description = "Set null to disable private security groups. Ignored for any rule with source specified."
+}
+
+variable "cidr_blocks_private_ipv6" {
+  type        = list(string)
+  default     = null
+  description = "Ignored for any rule with source specified."
+}
+
+variable "security_group_from_port_default" {
+  type    = number
+  default = 0
+}
+
+variable "security_group_protocol_default" {
+  type    = string
+  default = "tcp"
+}
+
+variable "security_group_to_port_default" {
+  type    = number
+  default = 65535
+}
+
+variable "security_group_type_default" {
+  type    = string
+  default = "ingress"
+}{% if maps %}
+
+{{ _map_var("sg_map_internal", description="If CIDR block is provided, these will be created, with that CIDR inserted for each") }}
+
+{{ _map_var("sg_map_private") }}
+
+{{ _map_var("sg_map_public") }}{% endif %}{% if additional %}
+
+{{ _map_var("sg_map_internal_additional", description="Additional internal security groups merged with the standard rule set") }}
+
+{{ _map_var("sg_map_private_additional", description="Additional private security groups merged with the standard rule set") }}
+
+{{ _map_var("sg_map_public_additional", description="Additional public security groups merged with the standard rule set") }}{% endif %}
+{%- endmacro %}
+
+{% macro map_item(source="var", internal=True, private=True, public=True, defaults=True) -%}
+  {% if internal %}cidr_blocks_internal             = {{ source }}.cidr_blocks_internal
+  cidr_blocks_internal_ipv6        = {{ source }}.cidr_blocks_internal_ipv6
+  {% endif %}{% if private %}cidr_blocks_private              = {{ source }}.cidr_blocks_private
+  cidr_blocks_private_ipv6         = {{ source }}.cidr_blocks_private_ipv6
+  {% endif %}{% if public %}cidr_blocks_public               = {{ source }}.cidr_blocks_public
+  cidr_blocks_public_ipv6          = {{ source }}.cidr_blocks_public_ipv6
+  {% endif %}{% if defaults %}security_group_from_port_default = {{ source }}.security_group_from_port_default
+  security_group_protocol_default  = {{ source }}.security_group_protocol_default
+  security_group_to_port_default   = {{ source }}.security_group_to_port_default
+  security_group_type_default      = {{ source }}.security_group_type_default
+  {% endif %}
+{%- endmacro %}
