@@ -20,7 +20,6 @@ variable "fs_map" {
     name_suffix                  = optional(string)
     performance_mode             = optional(string)
     policy_access_list           = optional(list(string))
-    policy_create                = optional(bool)
     policy_name_append           = optional(string)
     provisioned_throughput_mibps = optional(number)
     throughput_mode              = optional(string)
@@ -162,15 +161,9 @@ variable "name_suffix_default" {
 variable "policy_access_list_default" {
   type = list(string)
   default = [
-    "read",
     "read_write",
-    "write",
   ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {

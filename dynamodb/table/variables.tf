@@ -78,11 +78,7 @@ variable "policy_access_list_default" {
   default = [
     "read_write",
   ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {
@@ -153,7 +149,6 @@ variable "table_map" {
     name_suffix                    = optional(string)
     point_in_time_recovery_enabled = optional(bool)
     policy_access_list             = optional(list(string))
-    policy_create                  = optional(bool)
     policy_name_append             = optional(string)
     range_key                      = optional(string)
     read_capacity                  = optional(number)

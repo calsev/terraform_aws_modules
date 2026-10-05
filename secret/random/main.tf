@@ -8,7 +8,6 @@ module "this_param" {
   name_suffix_default                         = var.name_suffix_default
   param_map                                   = local.create_param_map
   policy_access_list_default                  = var.policy_access_list_default
-  policy_create_default                       = var.policy_create_default
   policy_name_append_default                  = var.policy_name_append_default
   policy_name_prefix_default                  = var.policy_name_prefix_default
   param_secret_random_init_key_default        = var.secret_random_init_key_default
@@ -28,7 +27,6 @@ module "this_secret" {
   name_prepend_default                        = var.name_prepend_default
   name_suffix_default                         = var.name_suffix_default
   policy_access_list_default                  = var.policy_access_list_default
-  policy_create_default                       = var.policy_create_default
   policy_name_append_default                  = var.policy_name_append_default
   policy_name_prefix_default                  = var.policy_name_prefix_default
   secret_map                                  = local.create_secret_map

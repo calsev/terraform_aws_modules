@@ -21,7 +21,6 @@ variable "function_map" {
     memory_size_mib                                  = optional(number)
     {{ name.var_item() }}
     policy_access_list                               = optional(list(string))
-    policy_create                                    = optional(bool)
     policy_name_append                               = optional(string)
     publish_numbered_version                         = optional(bool)
     reserved_concurrent_executions                   = optional(number)

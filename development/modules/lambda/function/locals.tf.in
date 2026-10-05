@@ -16,8 +16,8 @@ locals {
   }
   create_log_map = {
     for k, v in local.lx_map : k => merge(v, {
-      name_prefix   = "/aws/lambda/" # Log group is implicitly /aws/lambda/function-name
-      policy_create = false
+      name_prefix       = "/aws/lambda/" # Log group is implicitly /aws/lambda/function-name
+      policy_access_list = []
     })
   }
   create_policy_map = {

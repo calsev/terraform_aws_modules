@@ -6,8 +6,10 @@ module "this_role" {
       condition = var.ecs_exec_enabled
       policy    = var.ecs_exec_enabled ? var.iam_data.iam_policy_arn_ecs_exec_ssm : null
     }
+  }
+  embedded_role_policy_inline_json_map = {
     log_write = {
-      policy = var.log_data.policy_map["write"].iam_policy_arn
+      policy = jsonencode(var.log_data.policy_map["write"].iam_policy_doc)
     }
   }
   map_policy                           = var.map_policy

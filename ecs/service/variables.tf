@@ -106,6 +106,7 @@ variable "service_map" {
     alarm_monitoring_enabled                       = optional(bool)
     alarm_rollback_enabled                         = optional(bool)
     assign_public_ip                               = optional(bool)
+    availability_zone_rebalancing                  = optional(string)
     container_definition_map                       = optional(map(object({})), {})
     deployment_controller_circuit_breaker_enabled  = optional(bool)
     deployment_controller_circuit_breaker_rollback = optional(bool)
@@ -136,6 +137,16 @@ variable "service_map" {
     vpc_security_group_key_list = optional(list(string))
     vpc_segment_key             = optional(string)
   }))
+}
+
+variable "service_availability_zone_rebalancing_default" {
+  type        = string
+  default     = null
+  description = "Availability Zone rebalancing setting for the ECS service. Null preserves AWS behavior."
+  validation {
+    condition     = var.service_availability_zone_rebalancing_default == null ? true : contains(["DISABLED", "ENABLED"], var.service_availability_zone_rebalancing_default)
+    error_message = "Invalid Availability Zone rebalancing setting"
+  }
 }
 
 variable "service_assign_public_ip_default" {

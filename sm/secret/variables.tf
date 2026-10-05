@@ -45,13 +45,8 @@ variable "policy_access_list_default" {
   type = list(string)
   default = [
     "read",
-    "read_write",
   ]
-}
-
-variable "policy_create_default" {
-  type    = bool
-  default = true
+  description = "Access variants to create as customer-managed policies. Policy documents are always returned."
 }
 
 variable "policy_name_append_default" {
@@ -75,7 +70,6 @@ variable "secret_map" {
     name_prepend            = optional(string)
     name_suffix             = optional(string)
     policy_access_list      = optional(list(string))
-    policy_create           = optional(bool)
     policy_name_append      = optional(string)
     recovery_window_days    = optional(string)
     resource_policy_json    = optional(string)

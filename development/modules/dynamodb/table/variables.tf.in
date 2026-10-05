@@ -34,7 +34,6 @@ variable "table_map" {
     {{ name.var_item(override=True) }}
     point_in_time_recovery_enabled = optional(bool)
     policy_access_list             = optional(list(string))
-    policy_create                  = optional(bool)
     policy_name_append             = optional(string)
     range_key                      = optional(string)
     read_capacity                  = optional(number)

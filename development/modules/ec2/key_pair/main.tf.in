@@ -1,7 +1,7 @@
 module "key_secret" {
   source                          = "../../secret/random"
   {{ name.map_item() }}
-  policy_create_default           = false
+  policy_access_list_default      = []
   secret_is_param_default         = var.key_secret_is_param_default
   secret_map                      = local.lx_map
   secret_random_init_type_default = "ssh_key"

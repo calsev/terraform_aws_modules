@@ -50,6 +50,7 @@ variable "service_map" {
     alarm_monitoring_enabled                       = optional(bool)
     alarm_rollback_enabled                         = optional(bool)
     assign_public_ip                               = optional(bool)
+    availability_zone_rebalancing                  = optional(string)
     container_definition_map                       = optional(map(object({})), {})
     deployment_controller_circuit_breaker_enabled  = optional(bool)
     deployment_controller_circuit_breaker_rollback = optional(bool)

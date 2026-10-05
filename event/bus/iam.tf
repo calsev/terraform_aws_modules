@@ -19,7 +19,6 @@ module "bus_policy" {
   name_prepend_default            = var.name_prepend_default
   name_suffix_default             = var.name_suffix_default
   policy_access_list_default      = var.policy_access_list_default
-  policy_create_default           = var.policy_create_default
   policy_map                      = local.event_bus_map
   policy_name_append_default      = var.policy_name_append_default
   policy_name_prefix_default      = var.policy_name_prefix_default

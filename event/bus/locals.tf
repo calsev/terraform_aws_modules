@@ -50,8 +50,8 @@ locals {
   log_map = {
     for k, v in local.lx_map : v.log_name => merge(v, {
       # Must begin /aws/events: https://aws.amazon.com/premiumsupport/knowledge-center/cloudwatch-log-group-eventbridge/
-      name_prefix   = "/aws/events/" # Must be here, rather than default, to overwrite
-      policy_create = false
+      name_prefix        = "/aws/events/" # Must be here, rather than default, to overwrite
+      policy_access_list = []
     }) if v.log_retention_days != null
   }
   log_target_map = {

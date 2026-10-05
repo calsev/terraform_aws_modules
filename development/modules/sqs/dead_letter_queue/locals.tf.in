@@ -12,8 +12,8 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      create_queue  = local.l1_map[k].dead_letter_queue_enabled
-      policy_create = local.l1_map[k].dead_letter_queue_enabled ? v.dead_letter_policy_create == null ? var.policy_create_default : v.dead_letter_policy_create : false
+      create_queue       = local.l1_map[k].dead_letter_queue_enabled
+      policy_access_list = local.l1_map[k].dead_letter_queue_enabled ? v.dead_letter_policy_access_list == null ? var.policy_access_list_default : v.dead_letter_policy_access_list : []
     }
   }
   lx_map = {

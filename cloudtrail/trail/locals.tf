@@ -15,9 +15,6 @@ locals {
   create_role_map = {
     for k, v in local.lx_map : k => merge(v, {
       role_policy_attach_arn_map_default = merge(
-        {
-          log_write = module.log_group.data[k].policy_map["write"].iam_policy_arn
-        },
         v.kms_key_policy_arn == null ? {} : {
           encrypt_log_object = v.kms_key_policy_arn
         }

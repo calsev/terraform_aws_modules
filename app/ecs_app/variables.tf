@@ -1392,6 +1392,16 @@ variable "service_elb_target_map_default" {
   description = "Map of target group key to container port. More than one target disables blue-green deployments. Defaults to blue target with all default attributes injected."
 }
 
+variable "service_availability_zone_rebalancing_default" {
+  type        = string
+  default     = null
+  description = "Availability Zone rebalancing setting for the ECS service. Null preserves AWS behavior."
+  validation {
+    condition     = var.service_availability_zone_rebalancing_default == null ? true : contains(["DISABLED", "ENABLED"], var.service_availability_zone_rebalancing_default)
+    error_message = "Invalid Availability Zone rebalancing setting"
+  }
+}
+
 variable "service_assign_public_ip_default" {
   type        = bool
   default     = null

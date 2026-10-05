@@ -19,13 +19,12 @@ locals {
   create_policy_map = {
     for k, v in local.create_doc_x_map : k => merge(v, {
       iam_policy_json = data.aws_iam_policy_document.this_policy_doc[v.k_all].json
-    }) if v.policy_create
+    }) if contains(v.policy_access_list, v.k_access)
   }
   {{ iam.policy_l0() }}
   l1_map = {
     for k, v in local.l0_map : k => merge(v, {
       policy_access_list = v.policy_access_list == null ? var.policy_access_list_default : v.policy_access_list
-      policy_create      = v.policy_create == null ? var.policy_create_default : v.policy_create
       service_name       = v.service_name == null ? var.policy_service_name_default : v.service_name
     })
   }
@@ -34,12 +33,18 @@ locals {
       pascal_map = {
         for resource_type, _ in v.resource_map : resource_type => join("", [for part in split("-", replace(resource_type, var.std_map.name_replace_regex, "-")) : title(part)])
       }
+      policy_doc_access_list = [
+        for k_access in keys(var.std_map.access_title_map) : k_access if anytrue([
+          for resource_type, _ in v.resource_map :
+          length(var.std_map.service_resource_access_action[local.l1_map[k].service_name][resource_type][k_access]) > 0
+        ])
+      ]
     }
   }
   l3_map = {
     for k, v in local.l0_map : k => {
       sid_map = {
-        for k_access in local.l1_map[k].policy_access_list : k_access => {
+        for k_access in local.l2_map[k].policy_doc_access_list : k_access => {
           k_all = replace("${k}_${local.l0_map[k].name_append}_${k_access}", "__", "_")
           resource_map = {
             for resource_type, resource_name_list in v.resource_map : resource_type => {

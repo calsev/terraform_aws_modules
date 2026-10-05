@@ -7,9 +7,11 @@ variable "ecs_exec_enabled" {
 
 variable "log_data" {
   type = object({
-    policy_map = map(object({
-      iam_policy_arn = string
-    }))
+    policy_map = object({
+      write = object({
+        iam_policy_doc = any
+      })
+    })
   })
 }
 
