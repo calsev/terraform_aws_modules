@@ -10,7 +10,7 @@ locals {
     for k, v in local.lx_map : [
       for index in range(3) : merge(v, {
         # See AWs console for verified identities > "DomainKeys Identified Mail (DKIM)" > "Publish DNS records"
-        dns_from_fqdn   = "${aws_sesv2_email_identity.this_domain[k].dkim_signing_attributes[0].tokens[index]}._domainkey"
+        dns_from_fqdn   = "${aws_sesv2_email_identity.this_domain[k].dkim_signing_attributes[0].tokens[index]}._domainkey${v.dkim_name_suffix}"
         dns_record_list = ["${aws_sesv2_email_identity.this_domain[k].dkim_signing_attributes[0].tokens[index]}.dkim.amazonses.com"]
         k               = k
         index           = index
@@ -27,15 +27,27 @@ locals {
       dns_record_list = [v.dmarc_record_string]
     })
   }
+  # Without a MAIL FROM subdomain the MAIL FROM records go on the domain itself, where a
+  # receiving domain's MX record must point at SES receiving instead
+  create_dns_mail_from_map = {
+    for k, v in local.lx_map : k => v if !(v.receive_enabled && v.mail_from_subdomain == null)
+  }
   create_dns_mx_map = {
-    for k, v in local.lx_map : k => merge(v, {
+    for k, v in local.create_dns_mail_from_map : k => merge(v, {
       # See AWs console for verified identities > "Custom MAIL FROM domain" > "Publish DNS records"
       dns_from_fqdn   = v.mail_from_fqdn
       dns_record_list = ["10 feedback-smtp.${var.std_map.aws_region_name}.amazonses.com"]
     })
   }
-  create_dns_txt_map = {
+  create_dns_receive_map = {
     for k, v in local.lx_map : k => merge(v, {
+      # See the SES developer guide, "Publishing an MX record for Amazon SES email receiving"
+      dns_from_fqdn   = v.name_simple
+      dns_record_list = ["10 inbound-smtp.${var.std_map.aws_region_name}.amazonaws.com"]
+    }) if v.receive_enabled
+  }
+  create_dns_txt_map = {
+    for k, v in local.create_dns_mail_from_map : k => merge(v, {
       # See AWs console for verified identities > "Custom MAIL FROM domain" > "Publish DNS records"
       dns_from_fqdn   = v.mail_from_fqdn
       dns_record_list = ["v=spf1 include:amazonses.com -all"]
@@ -55,12 +67,16 @@ locals {
       email_forwarding_enabled    = v.email_forwarding_enabled == null ? var.domain_email_forwarding_enabled_default : v.email_forwarding_enabled
       fallback_to_ses_send_domain = v.fallback_to_ses_send_domain == null ? var.domain_fallback_to_ses_send_domain_default : v.fallback_to_ses_send_domain
       mail_from_subdomain         = v.mail_from_subdomain == null ? var.domain_mail_from_subdomain_default : v.mail_from_subdomain
+      receive_enabled             = v.receive_enabled == null ? var.domain_receive_enabled_default : v.receive_enabled
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
       configuration_set_name = local.l1_map[k].configuration_set_key == null ? null : var.config_data_map[local.l1_map[k].configuration_set_key].configuration_set_name
-      mail_from_fqdn         = local.l1_map[k].mail_from_subdomain == null ? local.l1_map[k].name_simple : "${local.l1_map[k].mail_from_subdomain}.${local.l1_map[k].name_simple}"
+      # A bare "<token>._domainkey" is relative to the zone, so it is only right for the
+      # zone apex; a subdomain identity needs its own name appended or it never verifies
+      dkim_name_suffix = local.l1_map[k].name_simple == (local.l1_map[k].dns_from_zone_key == null ? var.domain_dns_from_zone_key_default : local.l1_map[k].dns_from_zone_key) ? "" : ".${local.l1_map[k].name_simple}"
+      mail_from_fqdn   = local.l1_map[k].mail_from_subdomain == null ? local.l1_map[k].name_simple : "${local.l1_map[k].mail_from_subdomain}.${local.l1_map[k].name_simple}"
     }
   }
   lx_map = {
@@ -76,8 +92,9 @@ locals {
           for index in range(3) : module.dns_dkim.data["${k}_${index}"]
         ]
         dns_dmarc    = module.dns_dmarc.data[k]
-        dns_mx       = module.dns_mx.data[k]
-        dns_txt      = module.dns_txt.data[k]
+        dns_mx       = lookup(module.dns_mx.data, k, null)
+        dns_receive  = lookup(module.dns_receive.data, k, null)
+        dns_txt      = lookup(module.dns_txt.data, k, null)
         identity_arn = aws_sesv2_email_identity.this_domain[k].arn
         mail_from_id = local.l1_map[k].mail_from_subdomain == null ? null : aws_sesv2_email_identity_mail_from_attributes.mail_from[k].id
       }

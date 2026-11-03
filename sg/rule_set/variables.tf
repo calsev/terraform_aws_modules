@@ -722,28 +722,7 @@ variable "sg_map_public" {
     open_vpn_in = {
       revoke_rules_on_delete = false
       rule_map = {
-        web = {
-          cidr_blocks              = null
-          from_port                = 943
-          ipv6_cidr_blocks         = null
-          prefix_id_list           = null
-          protocol                 = null
-          source_is_self           = null
-          source_security_group_id = null
-          to_port                  = null
-          type                     = null
-        }
-        api = {
-          cidr_blocks              = null
-          from_port                = 945
-          ipv6_cidr_blocks         = null
-          prefix_id_list           = null
-          protocol                 = null
-          source_is_self           = null
-          source_security_group_id = null
-          to_port                  = null
-          type                     = null
-        }
+        # web (943), api (945) - internal only, the web UI is served to the world on https (http_in)
         daemon = {
           cidr_blocks              = null
           from_port                = 1194

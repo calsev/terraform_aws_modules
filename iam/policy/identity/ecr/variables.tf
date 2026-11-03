@@ -72,7 +72,8 @@ variable "policy_map" {
     policy_access_list      = optional(list(string))
     policy_name_append      = optional(string)
     policy_name_prefix      = optional(string)
-    repo_name               = string
+    repo_name               = optional(string)
+    repo_name_list          = optional(list(string), [])
   }))
 }
 

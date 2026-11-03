@@ -30,6 +30,15 @@ module "dns_mx" {
   std_map                          = var.std_map
 }
 
+module "dns_receive" {
+  source                           = "../../dns/record"
+  dns_data                         = var.dns_data
+  record_dns_from_zone_key_default = var.domain_dns_from_zone_key_default
+  record_dns_type_default          = "MX"
+  record_map                       = local.create_dns_receive_map
+  std_map                          = var.std_map
+}
+
 module "dns_txt" {
   source                           = "../../dns/record"
   dns_data                         = var.dns_data

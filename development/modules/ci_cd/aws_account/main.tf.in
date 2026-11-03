@@ -1,10 +1,9 @@
 module "credential_secret" {
-  source         = "../../secret/data"
-  for_each       = var.server_type_to_secret
-  secret_key     = each.value.secret_key
-  ssm_param_name = each.value.ssm_param_name
-  sm_secret_name = each.value.sm_secret_name
-  std_map        = var.std_map
+  source          = "../../secret/data"
+  for_each        = var.server_type_to_secret
+  secret_id       = each.value.ssm_param_name == null ? each.value.sm_secret_name : each.value.ssm_param_name
+  secret_is_param = each.value.ssm_param_name != null
+  secret_key      = each.value.secret_key
 }
 
 resource "aws_codebuild_source_credential" "this_credential" {
