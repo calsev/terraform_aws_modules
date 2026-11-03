@@ -264,7 +264,7 @@ variable "image_search_ecs_gpu_tag_name" {
         amazon = "al2023-ami-ecs-hvm-*"
       }
       true = {
-        amazon = "amzn2-ami-ecs-gpu-*"
+        amazon = "al2023-ami-ecs-gpu-*"
       }
     }
   }

@@ -35,8 +35,14 @@ variable "detector_feature_map_default" {
       enabled     = true
     }
     RDS_LOGIN_EVENTS = {
-      add_on_list = []
-      enabled     = true
+      add_on_list = [
+        # RDS Data Activity Monitoring; AWS reports it on every detector, so leaving it out is drift
+        {
+          enabled = false
+          name    = "RDS_DATA_RISK"
+        },
+      ]
+      enabled = true
     }
     RUNTIME_MONITORING = {
       add_on_list = [

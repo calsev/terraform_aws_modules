@@ -30,6 +30,7 @@ variable "domain_map" {
     email_forwarding_enabled    = optional(bool)
     fallback_to_ses_send_domain = optional(bool)
     mail_from_subdomain         = optional(string)
+    receive_enabled             = optional(bool)
   }))
 }
 
@@ -71,6 +72,12 @@ variable "domain_fallback_to_ses_send_domain_default" {
 variable "domain_mail_from_subdomain_default" {
   type    = string
   default = null
+}
+
+variable "domain_receive_enabled_default" {
+  type        = bool
+  default     = false
+  description = "If true, the domain's MX record points at SES email receiving; a receipt rule set decides what happens to the mail"
 }
 
 variable "std_map" {

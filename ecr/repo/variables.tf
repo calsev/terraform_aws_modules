@@ -141,8 +141,29 @@ variable "repo_lifecycle_tag_map_default" {
     tag_max_count    = optional(number)
     tag_pattern_list = list(string)
   }))
+  # ECR never lets a lower-priority rule expire an image that matches a higher-priority
+  # rule's tags, but every rule still counts those images. So the environment tags get
+  # their own ordered rules (prd is never dropped due to dev which is never dropped due to v_),
+  # and version tags get a backstop. Multiple patterns in one rule must all match,
+  # hence one rule per pattern.
   default = {
     2 = {
+      tag_max_count    = 12
+      tag_pattern_list = ["prd*"]
+    }
+    3 = {
+      tag_max_count    = 12
+      tag_pattern_list = ["stg*"]
+    }
+    4 = {
+      tag_max_count    = 12
+      tag_pattern_list = ["dev*"]
+    }
+    5 = {
+      tag_max_count    = 90
+      tag_pattern_list = ["v_*"]
+    }
+    6 = {
       tag_max_count    = null
       tag_pattern_list = ["*"]
     }

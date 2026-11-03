@@ -41,8 +41,8 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      image_type           = local.l1_map[k].instance_allocation_type == "FARGATE" ? null : module.compute_common.data[k].has_gpu ? "ECS_AL2_NVIDIA" : "ECS_AL2023"
-      image_type_second    = local.l1_map[k].instance_allocation_type == "FARGATE" ? null : module.compute_common.data[k].has_gpu ? "ECS_AL2" : null # GPU envs have two compute configs
+      image_type           = local.l1_map[k].instance_allocation_type == "FARGATE" ? null : module.compute_common.data[k].has_gpu ? "ECS_AL2023_NVIDIA" : "ECS_AL2023"
+      image_type_second    = local.l1_map[k].instance_allocation_type == "FARGATE" ? null : module.compute_common.data[k].has_gpu ? "ECS_AL2023" : null # GPU envs have two compute configs
       resource_name_prefix = "${local.l1_map[k].name_effective}-"
       supports_update      = contains(["BEST_FIT_PROGRESSIVE", "SPOT_CAPACITY_OPTIMIZED"], local.l1_map[k].instance_allocation_strategy)
     }

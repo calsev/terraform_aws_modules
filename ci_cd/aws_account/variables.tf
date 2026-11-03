@@ -32,6 +32,10 @@ variable "server_type_to_secret" {
     sm_secret_name = optional(string)
   }))
   description = "Only one credential is allowed per server type per region. Sever types are BITBUCKET, GITHUB, GITHUB_ENTERPRISE. Token for github can be created at https://github.com/settings/tokens. The token must have permission repo, repo:status, admin:repo_hook. See https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html"
+  validation {
+    condition     = alltrue([for v in values(var.server_type_to_secret) : (v.ssm_param_name == null) != (v.sm_secret_name == null)])
+    error_message = "Exactly one of ssm_param_name and sm_secret_name is required"
+  }
 }
 
 variable "std_map" {

@@ -45,6 +45,9 @@ locals {
     ]
   ])
   sid_map = {
+    # An access level can grant nothing on one of the two resource types (public_write
+    # has no bucket actions), and a statement with no actions is an invalid policy
     for v_sid in local.sid_3_list_expanded : v_sid.sid => v_sid
+    if length(var.std_map.service_resource_access_action[local.service_name][v_sid.resource_type][v_sid.access]) > 0
   }
 }

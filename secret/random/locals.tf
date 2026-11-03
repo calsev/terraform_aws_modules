@@ -28,8 +28,8 @@ locals {
   }
   l2_map = {
     for k, v in local.l0_map : k => {
-      sm_secret_name = local.l1_map[k].secret_is_param ? null : local.l1_map[k].name_effective # Needed for data
-      ssm_param_name = local.l1_map[k].secret_is_param ? local.l1_map[k].name_effective : null # Needed for data
+      sm_secret_name = local.l1_map[k].secret_is_param ? null : local.l1_map[k].name_effective
+      ssm_param_name = local.l1_map[k].secret_is_param ? local.l1_map[k].name_effective : null
     }
   }
   lx_map = {

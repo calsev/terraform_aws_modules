@@ -10,7 +10,7 @@ packaging==26.3
 pip==26.2.1
 python-dateutil==2.9.0.post0
 s3transfer==0.19.2
-setuptools==84.0.0
+setuptools==84.1.0
 six==1.17.0
 types-s3transfer==0.16.0
 urllib3==2.8.0

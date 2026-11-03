@@ -11,20 +11,10 @@ locals {
     for k, v in local.l0_map : k => merge(v, module.name_map.data[k], {
       alert_target_path_map = {
         aws_region_name = "$.region"
-        cluster_id      = "$.detail.capacityProviderName"
         code            = "$.detail.stopCode"
         reason          = "$.detail.stoppedReason"
         task_name       = "$.detail.group"
       }
-      alert_target_template  = replace(replace(<<-EOT
-      {
-        "Message": "ECS task '<task_name>' failed!",
-        "Reason": "<reason>",
-        "Code": "<code>",
-        "URL": "https://<aws_region_name>.console.aws.amazon.com/ecs/v2/clusters/<cluster_id>/tasks"
-      }
-      EOT
-      , "\r\n", "\n"), "\r", "\n")
       docker_volume_map      = v.docker_volume_map == null ? var.task_docker_volume_map_default : v.docker_volume_map
       ecs_cluster_key        = v.ecs_cluster_key == null ? var.task_ecs_cluster_key_default == null ? k : var.task_ecs_cluster_key_default : v.ecs_cluster_key
       ecs_exec_enabled       = v.ecs_exec_enabled == null ? var.task_ecs_exec_enabled_default : v.ecs_exec_enabled
@@ -39,20 +29,31 @@ locals {
     for k, v in local.l0_map : k => {
       alert_event_pattern_json = jsonencode({
         detail = {
-          containers = {
-            exitCode = [
-              {
-                anything-but = [
-                  0,
+          # A task fails when an essential container exits non-zero, or when it never
+          # starts at all (an image that cannot be pulled, a secret that cannot be read).
+          "$or" = [
+            {
+              containers = {
+                exitCode = [
+                  {
+                    anything-but = [
+                      0,
+                    ]
+                  }
                 ]
               }
-            ]
-          }
+              stoppedReason = [
+                "Essential container in task exited"
+              ]
+            },
+            {
+              stopCode = [
+                "TaskFailedToStart",
+              ]
+            },
+          ]
           lastStatus = [
             "STOPPED",
-          ]
-          stoppedReason = [
-            "Essential container in task exited"
           ]
           taskDefinitionArn = [
             {
@@ -67,6 +68,15 @@ locals {
           "aws.ecs",
         ]
       })
+      alert_target_template = replace(replace(<<-EOT
+      {
+        "Message": "ECS task '<task_name>' failed!",
+        "Reason": "<reason>",
+        "Code": "<code>",
+        "URL": "https://<aws_region_name>.console.aws.amazon.com/ecs/v2/clusters/${basename(var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].ecs_cluster_arn)}/tasks"
+      }
+      EOT
+      , "\r\n", "\n"), "\r", "\n")
       capability_type = var.ecs_cluster_data[local.l1_map[k].ecs_cluster_key].capability_type
       docker_volume_map = merge(
         {

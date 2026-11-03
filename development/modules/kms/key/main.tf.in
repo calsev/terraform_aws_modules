@@ -9,7 +9,7 @@ resource "aws_kms_key" "this_key" {
   key_usage                          = each.value.key_usage
   multi_region                       = each.value.multi_region_enabled
   policy                             = each.value.iam_policy_json
-  rotation_period_in_days            = each.value.rotation_period_days
+  rotation_period_in_days            = each.value.rotation_period_days == 0 ? null : each.value.rotation_period_days
   tags                               = each.value.tags
   xks_key_id                         = each.value.xks_key_id
 }

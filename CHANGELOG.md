@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.166.0
+
+### General
+
+* ECR policy now takes list of repo names
+* Secret data takes secret_id (name or ARN) and secret_is_param, replacing sm_secret_name, ssm_param_name and std_map
+* Secret random reads each secret once it is ready, so a changing secret no longer defers every read
+* SM secret and SSM parameter secret output ready_arn_map
+* CI/CD account requires exactly one of ssm_param_name and sm_secret_name per credential
+* SES domain receive_enabled points the domain MX at SES receiving
+* ECS task failure alert also fires when a task fails to start
+* ECR repo lifecycle keeps environment and version tags in their own rules
+* Batch compute and instance template use AL2023 for GPU
+* Bump deps for ECR mirror
+
+### Bugfix
+
+* SES DKIM records for subdomain identities
+* ECS task failure alert links to the cluster, not the capacity provider
+* S3 bucket policy drops statements with no actions
+* DNS zone MX records overwrite existing records
+* GuardDuty RDS_DATA_RISK add-on drift
+* KMS key rotation period of 0 uses the AWS default
+* Untagged Lambda listing with an empty AWS_PROFILE
+
+### Security
+
+* OpenVPN web and API ports no longer open publicly
+
 ## 0.165.0
 
 ### General

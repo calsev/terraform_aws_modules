@@ -7,7 +7,8 @@ variable "policy_map" {
   type = map(object({
     {{ name.var_item() }}
     {{ iam.policy_var_item() }}
-    repo_name               = string
+    repo_name               = optional(string)
+    repo_name_list          = optional(list(string), [])
   }))
 }
 
