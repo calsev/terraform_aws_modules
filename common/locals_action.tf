@@ -651,6 +651,40 @@ locals {
         ]
       }
     }
+    glue = {
+      job = {
+        read = [
+          "BatchGetJobs",
+          "GetDataQualityModel",
+          "GetDataQualityModelResult",
+          "GetJob",
+          "GetJobBookmark",
+          "GetJobRun",
+          "GetJobRuns",
+          "GetJobUpgradeAnalysis",
+          "GetTags",
+          "GetTriggers",
+          "ListJobUpgradeAnalyses",
+        ]
+        write = [
+          "BatchStopJobRun",
+          "PutDataQualityProfileAnnotation",
+          "PutDataQualityStatisticAnnotation",
+          "StartJobRun",
+          "StartJobUpgradeAnalysis",
+          "StopJobUpgradeAnalysis",
+        ]
+      }
+      star = {
+        read = [
+          "GetJobs",
+          "ListJobs",
+        ]
+        write = [
+          "ResetJobBookmark",
+        ]
+      }
+    }
     kms = {
       alias = {
         # Only management actions
