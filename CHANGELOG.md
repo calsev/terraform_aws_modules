@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.167.0
+
+### New modules
+
+* DocumentDB cluster, instance and cluster parameter group
+
+### General
+
+* module-gen make target scaffolds a module's variables from a resource-only main.tf.in
+* Document why image builds default to both arches
+* Bump deps for ECR mirror
+
 ## 0.166.0
 
 ### General

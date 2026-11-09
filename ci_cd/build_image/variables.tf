@@ -60,8 +60,8 @@ variable "ecr_data_map" {
 variable "repo_map" {
   type = map(object({
     code_star_connection_key        = optional(string)
-    build_environment_size          = optional(string) # e.g. small, medium, large
-    image_build_arch_list           = optional(list(string))
+    build_environment_size          = optional(string)       # e.g. small, medium, large
+    image_build_arch_list           = optional(list(string)) # Keep both arches unless one cannot work; see build_image_build_arch_list_default
     image_ecr_repo_key              = optional(string)
     image_environment_key_arch      = optional(string)
     image_environment_key_repo_url  = optional(string)
@@ -118,6 +118,7 @@ variable "build_image_build_arch_list_default" {
     "amd",
     "arm",
   ]
+  description = "Build both arches by default. ECS mostly runs arm (Graviton) while local and CI builds mostly run amd, so building both catches arch-specific bugs before a deploy and keeps layer caches warm on both. Pin one arch only for an image that cannot be built or run on the other, such as a GPU/CUDA image or an amd-only upstream base, and comment why at the pin."
   validation {
     condition     = length(setsubtract(toset(var.build_image_build_arch_list_default), toset(["amd", "arm"]))) == 0
     error_message = "Invalid architectures"

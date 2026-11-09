@@ -1,0 +1,175 @@
+variable "cluster_map" {
+  type = map(object({
+    allow_major_version_upgrade = optional(bool)
+    apply_immediately           = optional(bool)
+    backup_retention_period_day = optional(number)
+    backup_window_utc           = optional(string)
+    cloudwatch_log_export_list  = optional(list(string))
+    deletion_protection         = optional(bool)
+    engine                      = optional(string)
+    engine_version              = optional(string) # Changes ignored
+    final_snapshot_enabled      = optional(bool)
+    final_snapshot_identifier   = optional(string) # Defaults to name_effective
+    instance_map = optional(map(object({
+      {{ document_db.instance_var_item() }}
+    })))
+    kms_key_id                  = optional(string)
+    maintenance_window_utc      = optional(string)
+    {{ name.var_item() }}
+    network_type                = optional(string)
+    parameter_group_name        = optional(string) # A cluster parameter group name, e.g. default.docdb8.0
+    password_secret_name_append = optional(string)
+    port                        = optional(number)
+    secret_is_param             = optional(bool)
+    snapshot_identifier         = optional(string)
+    storage_encrypted           = optional(bool)
+    storage_type                = optional(string)
+    subnet_group_name           = optional(string) # A DB subnet group name; RDS subnet groups serve DocumentDB
+    username                    = optional(string)
+    {{ vpc.var_item(az=False, seg=False) }}
+  }))
+}
+
+variable "cluster_allow_major_version_upgrade_default" {
+  type    = bool
+  default = false
+}
+
+variable "cluster_apply_immediately_default" {
+  type    = bool
+  default = false
+}
+
+variable "cluster_backup_retention_period_day_default" {
+  type    = number
+  default = 7
+  validation {
+    condition     = 1 <= var.cluster_backup_retention_period_day_default && var.cluster_backup_retention_period_day_default <= 35
+    error_message = "Invalid retention period"
+  }
+  description = "A medium-severity security finding if set less than 7."
+}
+
+variable "cluster_backup_window_utc_default" {
+  type        = string
+  default     = "05:00-07:00"
+  description = "Backup and maintenance windows cannot overlap"
+}
+
+variable "cluster_cloudwatch_log_export_list_default" {
+  type        = list(string)
+  default     = ["audit"]
+  description = "Audit export is a Security Hub control (DocumentDB.4). Exporting profiler logs also requires the profiler parameter to be enabled."
+}
+
+variable "cluster_deletion_protection_default" {
+  type        = bool
+  default     = true
+  description = "A medium-severity security finding if disabled."
+}
+
+variable "cluster_engine_default" {
+  type    = string
+  default = "docdb"
+}
+
+variable "cluster_engine_version_default" {
+  type    = string
+  default = "8.0.0"
+}
+
+variable "cluster_final_snapshot_enabled_default" {
+  type    = bool
+  default = true
+}
+
+variable "cluster_instance_map_default" {
+  type = map(object({
+    {{ document_db.instance_var_item() }}
+  }))
+  default = {
+    a = {}
+  }
+  description = "Instances for a cluster that does not specify its own"
+}
+
+variable "cluster_kms_key_id_default" {
+  type    = string
+  default = null
+}
+
+variable "cluster_maintenance_window_utc_default" {
+  type        = string
+  default     = "Sun:07:00-Sun:08:00"
+  description = "Backup and maintenance windows cannot overlap"
+}
+
+variable "cluster_network_type_default" {
+  type    = string
+  default = null
+  validation {
+    condition     = var.cluster_network_type_default == null ? true : contains(["DUAL", "IPV4"], var.cluster_network_type_default)
+    error_message = "Invalid network type"
+  }
+}
+
+variable "cluster_parameter_group_name_default" {
+  type        = string
+  default     = null
+  description = "Null uses the AWS default cluster parameter group"
+}
+
+variable "cluster_port_default" {
+  type    = number
+  default = 27017
+}
+
+variable "cluster_secret_is_param_default" {
+  type        = bool
+  default     = false
+  description = "If true, an SSM param will be created, otherwise a SM secret"
+}
+
+variable "cluster_snapshot_identifier_default" {
+  type    = string
+  default = null
+}
+
+variable "cluster_storage_encrypted_default" {
+  type    = bool
+  default = true
+}
+
+variable "cluster_storage_type_default" {
+  type    = string
+  default = null
+  validation {
+    condition     = var.cluster_storage_type_default == null ? true : contains(["iopt1", "standard"], var.cluster_storage_type_default)
+    error_message = "Invalid storage type"
+  }
+}
+
+variable "cluster_subnet_group_name_default" {
+  type    = string
+  default = null
+}
+
+variable "cluster_username_default" {
+  type    = string
+  default = null
+}
+
+{{ document_db.instance_var() }}
+
+{{ monitor.data() }}
+
+{{ name.var() }}
+
+variable "password_secret_name_append_default" {
+  type    = string
+  default = "db"
+}
+
+{{ std.map() }}
+
+{{ vpc.var(az=False, seg=False, sg=["internal_mongodb_in", "world_all_out"]) }}

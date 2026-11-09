@@ -1,0 +1,27 @@
+resource "aws_docdb_cluster_instance" "this_instance" {
+  for_each                        = local.lx_map
+  apply_immediately               = each.value.apply_immediately
+  auto_minor_version_upgrade      = each.value.auto_minor_version_upgrade
+  availability_zone               = each.value.availability_zone_name
+  ca_cert_identifier              = each.value.ca_cert_identifier
+  certificate_rotation_restart    = each.value.certificate_rotation_restart
+  cluster_identifier              = each.value.cluster_identifier
+  copy_tags_to_snapshot           = each.value.copy_tags_to_snapshot
+  enable_performance_insights     = each.value.performance_insights_enabled
+  engine                          = each.value.engine
+  identifier                      = each.value.name_effective
+  identifier_prefix               = null
+  instance_class                  = each.value.instance_class
+  performance_insights_kms_key_id = each.value.performance_insights_kms_key_arn
+  preferred_maintenance_window    = each.value.maintenance_window_utc
+  promotion_tier                  = each.value.promotion_tier
+  region                          = var.std_map.aws_region_name
+  tags                            = each.value.tags
+}
+
+module "alarm" {
+  source               = "../../cw/metric_alarm"
+  alarm_map            = local.create_alarm_x_map
+  name_prepend_default = "doc_db"
+  std_map              = var.std_map
+}
