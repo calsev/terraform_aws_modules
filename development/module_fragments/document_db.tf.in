@@ -1,0 +1,144 @@
+{% import 'development/module_fragments/alarm.tf.in' as alarm %}
+{% import 'development/module_fragments/name.tf.in' as name %}
+{% macro instance_var_item() -%}
+    {{ alarm.var_item() }}
+    apply_immediately               = optional(bool)
+    auto_minor_version_upgrade      = optional(bool)
+    availability_zone_name          = optional(string) # Defaults to an AZ the cluster subnet group spans
+    ca_cert_identifier              = optional(string)
+    certificate_rotation_restart    = optional(bool)
+    copy_tags_to_snapshot           = optional(bool)
+    engine                          = optional(string)
+    instance_class                  = optional(string)
+    maintenance_window_utc          = optional(string)
+    {{ name.var_item() }}
+    performance_insights_enabled    = optional(bool)
+    performance_insights_kms_key_arn = optional(string)
+    promotion_tier                  = optional(number)
+{%- endmacro %}
+
+{% macro _instance_var(precedence="") -%}
+variable "alert_level{{ precedence }}" {
+  type    = string
+  default = "general_medium"
+}
+
+variable "instance_alarm_map{{ precedence }}" {
+  {{ alarm.var_default_type() }}
+  default = {
+    cpu_utilization = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when CPU utilization is high for document database instance %s"
+      alarm_name                          = "CPU Usage for %s"
+      alert_level                         = null
+      metric_name                         = "CPUUtilization"
+      metric_namespace                    = "AWS/DocDB"
+      statistic_comparison_operator       = "GreaterThanThreshold"
+      statistic_evaluation_period_count   = 2
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 80
+    }
+    freeable_memory = {
+      alarm_action_enabled                = null
+      alarm_description                   = "Alarm when freeable memory is low for document database instance %s"
+      alarm_name                          = "Free Memory for %s"
+      alert_level                         = null
+      metric_name                         = "FreeableMemory"
+      metric_namespace                    = "AWS/DocDB"
+      statistic_comparison_operator       = "LessThanThreshold"
+      statistic_evaluation_period_count   = 3
+      statistic_evaluation_period_seconds = 300
+      statistic_for_metric                = "Average"
+      statistic_threshold_percentile      = null
+      statistic_threshold_value           = 1024 * 1024 * 1024 # 1 GiB
+    }
+  }
+}
+
+variable "instance_apply_immediately{{ precedence }}" {
+  type    = bool
+  default = false
+}
+
+variable "instance_auto_minor_version_upgrade{{ precedence }}" {
+  type    = bool
+  default = true
+}
+
+variable "instance_availability_zone_name{{ precedence }}" {
+  type    = string
+  default = null
+}
+
+variable "instance_ca_cert_identifier{{ precedence }}" {
+  type    = string
+  default = null
+}
+
+variable "instance_certificate_rotation_restart{{ precedence }}" {
+  type    = bool
+  default = null
+}
+
+variable "instance_class{{ precedence }}" {
+  type    = string
+  default = "db.t4g.medium"
+}
+
+variable "instance_copy_tags_to_snapshot{{ precedence }}" {
+  type    = bool
+  default = true
+}
+
+variable "instance_engine{{ precedence }}" {
+  type    = string
+  default = "docdb"
+}
+
+variable "instance_maintenance_window_utc{{ precedence }}" {
+  type        = string
+  default     = "Sun:07:00-Sun:08:00"
+  description = "Backup and maintenance windows cannot overlap"
+}
+
+variable "instance_performance_insights_enabled{{ precedence }}" {
+  type        = bool
+  default     = true
+  description = "The 7-day retention tier is free"
+}
+
+variable "instance_performance_insights_kms_key_arn{{ precedence }}" {
+  type    = string
+  default = null
+}
+
+variable "instance_promotion_tier{{ precedence }}" {
+  type    = number
+  default = null
+  validation {
+    condition     = var.instance_promotion_tier{{ precedence }} == null ? true : 0 <= var.instance_promotion_tier{{ precedence }} && var.instance_promotion_tier{{ precedence }} <= 15
+    error_message = "Promotion tier must be 0-15"
+  }
+}
+{%- endmacro %}
+
+{% macro instance_var() -%}{{ _instance_var(precedence="_default") }}{%- endmacro %}
+
+{% macro instance_map_item() -%}
+  alert_level_default                       = var.alert_level_default
+  instance_alarm_map_default                = var.instance_alarm_map_default
+  instance_apply_immediately_default        = var.instance_apply_immediately_default
+  instance_auto_minor_version_upgrade_default = var.instance_auto_minor_version_upgrade_default
+  instance_availability_zone_name_default   = var.instance_availability_zone_name_default
+  instance_ca_cert_identifier_default       = var.instance_ca_cert_identifier_default
+  instance_certificate_rotation_restart_default = var.instance_certificate_rotation_restart_default
+  instance_class_default                    = var.instance_class_default
+  instance_copy_tags_to_snapshot_default    = var.instance_copy_tags_to_snapshot_default
+  instance_engine_default                   = var.instance_engine_default
+  instance_maintenance_window_utc_default   = var.instance_maintenance_window_utc_default
+  instance_performance_insights_enabled_default = var.instance_performance_insights_enabled_default
+  instance_performance_insights_kms_key_arn_default = var.instance_performance_insights_kms_key_arn_default
+  instance_promotion_tier_default           = var.instance_promotion_tier_default
+{%- endmacro %}

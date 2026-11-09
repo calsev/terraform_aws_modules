@@ -1,0 +1,14 @@
+variable "instance_map" {
+  type = map(object({
+    cluster_identifier = string
+    {{ document_db.instance_var_item() }}
+  }))
+}
+
+{{ document_db.instance_var() }}
+
+{{ monitor.data() }}
+
+{{ name.var() }}
+
+{{ std.map() }}

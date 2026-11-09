@@ -1,0 +1,84 @@
+module "password_secret" {
+  source                                      = "../../secret/random"
+  name_append_default                         = var.name_append_default
+  name_include_app_fields_default             = var.name_include_app_fields_default
+  name_infix_default                          = var.name_infix_default
+  name_prefix_default                         = var.name_prefix_default
+  name_prepend_default                        = var.name_prepend_default
+  name_suffix_default                         = var.name_suffix_default
+  secret_is_param_default                     = var.cluster_secret_is_param_default
+  secret_map                                  = local.create_password_map
+  secret_random_init_key_default              = "password"
+  secret_random_special_character_set_default = "!#$%&*()-_=+[]{}<>:?" # DocumentDB forbids / " @
+  std_map                                     = var.std_map
+}
+
+resource "aws_docdb_cluster" "this_cluster" {
+  for_each                    = local.lx_map
+  allow_major_version_upgrade = each.value.allow_major_version_upgrade
+  apply_immediately           = each.value.apply_immediately
+  availability_zones          = null # Storage spans 3 AZs regardless; setting this causes replacement drift
+  backup_retention_period     = each.value.backup_retention_period_day
+  cluster_identifier          = each.value.name_effective
+  cluster_identifier_prefix   = null
+  # cluster_members is managed by the instance module
+  db_cluster_parameter_group_name = each.value.parameter_group_name
+  db_subnet_group_name            = each.value.subnet_group_name
+  deletion_protection             = each.value.deletion_protection
+  enabled_cloudwatch_logs_exports = each.value.cloudwatch_log_export_list
+  engine                          = each.value.engine
+  engine_version                  = each.value.engine_version
+  final_snapshot_identifier       = each.value.final_snapshot_enabled ? each.value.final_snapshot_identifier : null
+  # TODO: global_cluster_identifier
+  kms_key_id = each.value.kms_key_id
+  lifecycle {
+    # This list must be static
+    ignore_changes = [
+      engine_version,  # Allow auto updates
+      master_password, # Dirty because it is usually sensitive
+    ]
+  }
+  manage_master_user_password  = null # Conflicts with master_password
+  master_password              = jsondecode(module.password_secret.secret_map[each.key])["password"]
+  master_username              = each.value.username
+  network_type                 = each.value.network_type
+  port                         = each.value.port
+  preferred_backup_window      = each.value.backup_window_utc
+  preferred_maintenance_window = each.value.maintenance_window_utc
+  region                       = var.std_map.aws_region_name
+  # TODO: restore_to_point_in_time
+  # TODO: serverless_v2_scaling_configuration
+  skip_final_snapshot    = !each.value.final_snapshot_enabled
+  snapshot_identifier    = each.value.snapshot_identifier
+  storage_encrypted      = each.value.storage_encrypted
+  storage_type           = each.value.storage_type
+  tags                   = each.value.tags
+  vpc_security_group_ids = each.value.vpc_security_group_id_list
+}
+
+module "instance" {
+  source                                            = "../../document_db/instance"
+  alert_level_default                               = var.alert_level_default
+  instance_alarm_map_default                        = var.instance_alarm_map_default
+  instance_apply_immediately_default                = var.instance_apply_immediately_default
+  instance_auto_minor_version_upgrade_default       = var.instance_auto_minor_version_upgrade_default
+  instance_availability_zone_name_default           = var.instance_availability_zone_name_default
+  instance_ca_cert_identifier_default               = var.instance_ca_cert_identifier_default
+  instance_certificate_rotation_restart_default     = var.instance_certificate_rotation_restart_default
+  instance_class_default                            = var.instance_class_default
+  instance_copy_tags_to_snapshot_default            = var.instance_copy_tags_to_snapshot_default
+  instance_engine_default                           = var.instance_engine_default
+  instance_maintenance_window_utc_default           = var.instance_maintenance_window_utc_default
+  instance_performance_insights_enabled_default     = var.instance_performance_insights_enabled_default
+  instance_performance_insights_kms_key_arn_default = var.instance_performance_insights_kms_key_arn_default
+  instance_promotion_tier_default                   = var.instance_promotion_tier_default
+  instance_map                                      = local.create_instance_map
+  monitor_data                                      = var.monitor_data
+  name_append_default                               = var.name_append_default
+  name_include_app_fields_default                   = var.name_include_app_fields_default
+  name_infix_default                                = var.name_infix_default
+  name_prefix_default                               = var.name_prefix_default
+  name_prepend_default                              = var.name_prepend_default
+  name_suffix_default                               = var.name_suffix_default
+  std_map                                           = var.std_map
+}

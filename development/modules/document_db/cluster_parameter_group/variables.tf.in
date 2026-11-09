@@ -1,0 +1,36 @@
+variable "parameter_map" {
+  type = map(object({
+    db_family = optional(string)
+    {{ name.var_item() }}
+    param_map = optional(map(object({
+      apply_method = optional(string)
+      value        = string
+    })))
+  }))
+}
+
+{{ name.var() }}
+
+variable "parameter_db_family_default" {
+  type    = string
+  default = "docdb8.0"
+}
+
+variable "parameter_param_apply_method_default" {
+  type    = string
+  default = "pending-reboot"
+  validation {
+    condition     = contains(["immediate", "pending-reboot"], var.parameter_param_apply_method_default)
+    error_message = "Must be a valid apply method"
+  }
+}
+
+variable "parameter_param_map_default" {
+  type = map(object({
+    apply_method = optional(string)
+    value        = string
+  }))
+  default = {}
+}
+
+{{ std.map() }}

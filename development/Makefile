@@ -67,6 +67,12 @@ make-lint: make git-lint
 module-import:
 	$(FULL) cd .. && python development/script/module_import.py
 
+# Scaffold l1_map and variables from a resource-only main.tf.in into development/module_gen
+# make module-gen MODULE=development/modules/rds/parameter_group RESOURCE=resource.aws_db_parameter_group.this PREFIX=parameter
+module-gen:
+	@[ -n "$(MODULE)" ] && [ -n "$(RESOURCE)" ] && [ -n "$(PREFIX)" ] || (echo 'Usage: make module-gen MODULE=development/modules/<group>/<module> RESOURCE=resource.<type>.<name> PREFIX=<variable prefix>' && exit 1)
+	$(FULL) cd .. && python -m development.script.generate_module "$(MODULE)" "$(RESOURCE)" "$(PREFIX)"
+
 module-render:
 	$(FULL) cd .. && python development/script/module_render.py
 	make tf-fmt
@@ -176,6 +182,10 @@ tf-lint: tflint-install
 	cd ../dns/record && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/sd_public && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/zone && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../document_db && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../document_db/cluster && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../document_db/cluster_parameter_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../document_db/instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dynamodb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dynamodb/table && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dynamodb/terraform_lock && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
