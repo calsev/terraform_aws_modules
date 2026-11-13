@@ -40,8 +40,9 @@ variable "cluster_map" {
     snapshot_name                        = optional(string)
     snapshot_retention_days              = optional(number)
     snapshot_window_utc                  = optional(string)
-    subnet_group_key                     = optional(bool)
-    transit_encryption_required          = optional(string)
+    subnet_group_key                     = optional(string)
+    transit_encryption_required          = optional(bool)
+    user_group_id                        = optional(string)
     vpc_az_key_list                      = optional(list(string))
     vpc_key                              = optional(string)
     vpc_security_group_key_list          = optional(list(string))
@@ -285,6 +286,12 @@ variable "cluster_subnet_group_key_default" {
 variable "cluster_transit_encryption_required_default" {
   type    = bool
   default = false
+}
+
+variable "cluster_user_group_id_default" {
+  type        = string
+  default     = null
+  description = "An ElastiCache RBAC user group to attach (replication groups only). Requires transit encryption."
 }
 
 variable "name_append_default" {

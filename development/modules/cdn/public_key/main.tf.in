@@ -12,7 +12,9 @@ resource "aws_cloudfront_public_key" "this_key" {
   for_each    = local.lx_map
   encoded_key = jsondecode(module.key_secret.secret_map[each.key])["public_key"]
   lifecycle {
+    # A rotation function may replace the secret and records retirement in the comment
     ignore_changes = [
+      comment,
       encoded_key,
     ]
   }

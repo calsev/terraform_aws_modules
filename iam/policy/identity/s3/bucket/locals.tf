@@ -53,7 +53,8 @@ locals {
   l3_map = {
     for k, v in local.l0_map : k => {
       sid_map = {
-        for v_sid in local.l2_map[k].sid_list_expanded : v_sid.sid => v_sid
+        # public_write has no bucket actions; an empty statement is not a valid policy
+        for v_sid in local.l2_map[k].sid_list_expanded : v_sid.sid => v_sid if length(var.std_map.service_resource_access_action.s3[v_sid.resource_type][v_sid.access]) > 0
       }
       star_sid_map = {
         for v in local.l2_map[k].star_sid_list : v.sid => v

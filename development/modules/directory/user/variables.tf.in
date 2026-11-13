@@ -1,0 +1,28 @@
+variable "directory_data_map" {
+  type = map(object({
+    directory_id = string
+    name_simple  = string # The FQDN
+  }))
+}
+
+variable "user_map" {
+  type = map(object({
+    directory_key = optional(string)
+    email_address = optional(string) # Set at creation only
+    given_name    = optional(string) # Set at creation only
+    surname       = optional(string) # Set at creation only
+    user_name     = optional(string) # The sAMAccountName; defaults to the key
+  }))
+}
+
+variable "user_directory_key_default" {
+  type    = string
+  default = null
+}
+
+variable "password_secret_name_append_default" {
+  type    = string
+  default = "password"
+}
+
+{{ std.map() }}

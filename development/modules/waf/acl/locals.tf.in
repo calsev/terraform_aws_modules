@@ -1,6 +1,9 @@
 {{ name.map() }}
 
 locals {
+  create_ip_set_rate_exclude_map = {
+    for k, v in local.lx_map : k => v if length(v.rate_exclude_ip_cidr_list) != 0
+  }
   create_log_map = {
     for k, v in local.lx_map : k => merge(v, {
       waf_acl_arn = aws_wafv2_web_acl.this_waf_acl[k].arn
@@ -20,6 +23,7 @@ locals {
       default_action_type                               = v.default_action_type == null ? var.waf_default_action_type_default : v.default_action_type
       metric_enabled                                    = v.metric_enabled == null ? var.waf_metric_enabled_default : v.metric_enabled
       metric_sampled_requests_enabled                   = v.metric_sampled_requests_enabled == null ? var.waf_metric_sampled_requests_enabled_default : v.metric_sampled_requests_enabled
+      rate_exclude_ip_cidr_list                         = v.rate_exclude_ip_cidr_list == null ? var.waf_rate_exclude_ip_cidr_list_default : v.rate_exclude_ip_cidr_list
       rule_map                                          = v.rule_map == null ? var.waf_rule_map_default : v.rule_map
       scope                                             = v.scope == null ? var.waf_scope_default : v.scope
       size_inspection_limit_api_gateway_kb              = v.size_inspection_limit_api_gateway_kb == null ? var.waf_size_inspection_limit_api_gateway_kb_default : v.size_inspection_limit_api_gateway_kb
@@ -74,8 +78,9 @@ locals {
         for k_attr, v_attr in v : k_attr => v_attr if !contains([], k_attr)
       },
       {
-        waf_log     = module.log.data[k]
-        waf_acl_arn = aws_wafv2_web_acl.this_waf_acl[k].arn
+        waf_log                     = module.log.data[k]
+        waf_acl_arn                 = aws_wafv2_web_acl.this_waf_acl[k].arn
+        waf_ip_set_rate_exclude_arn = length(v.rate_exclude_ip_cidr_list) == 0 ? null : aws_wafv2_ip_set.this_ip_set_rate_exclude[k].arn
       }
     )
   }

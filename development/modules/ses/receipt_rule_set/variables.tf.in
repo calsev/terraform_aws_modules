@@ -1,0 +1,19 @@
+variable "rule_set_map" {
+  type = map(object({
+    active = optional(bool)
+    {{ name.var_item() }}
+  }))
+  validation {
+    condition     = length([for v in var.rule_set_map : v if v.active == true]) <= 1
+    error_message = "SES allows one active receipt rule set per account and region"
+  }
+}
+
+variable "rule_set_active_default" {
+  type    = bool
+  default = false
+}
+
+{{ name.var() }}
+
+{{ std.map() }}

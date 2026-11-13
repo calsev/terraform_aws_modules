@@ -47,9 +47,9 @@ variable "rotation_lambda_arn_default" {
 variable "rotation_method_default" {
   type        = string
   default     = null
-  description = "Ignored if rotation_lambda_arn is specified"
+  description = "Ignored if rotation_lambda_arn is specified. Every rotation_map entry needs one of the two."
   validation {
-    condition     = contains(["rotate_whole_string", "rotate_key_value", "rotate_key_value_list_newest_first"], var.rotation_method_default)
+    condition     = var.rotation_method_default == null ? true : contains(["rotate_whole_string", "rotate_key_value", "rotate_key_value_list_newest_first"], var.rotation_method_default)
     error_message = "Invalid rotation method"
   }
 }

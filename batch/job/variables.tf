@@ -79,6 +79,7 @@ variable "job_map" {
     role_policy_managed_name_map = optional(map(string))
     role_path                    = optional(string)
     secret_map                   = optional(map(string))
+    timeout_seconds              = optional(number)
     ulimit_map = optional(map(object({
       hard_limit = number
       soft_limit = number
@@ -229,6 +230,12 @@ variable "job_resource_num_vcpu_default" {
 variable "job_secret_map_default" {
   type    = map(string)
   default = {}
+}
+
+variable "job_timeout_seconds_default" {
+  type        = number
+  default     = null
+  description = "Attempt duration after which Batch terminates the job and marks it FAILED. Null for no timeout. Minimum 60."
 }
 
 variable "job_ulimit_map_default" {

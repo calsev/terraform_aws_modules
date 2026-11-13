@@ -1,3 +1,13 @@
+resource "aws_wafv2_ip_set" "this_ip_set_rate_exclude" {
+  for_each           = local.create_ip_set_rate_exclude_map
+  addresses          = each.value.rate_exclude_ip_cidr_list
+  description        = "Source IPs the rate rules of ${each.value.name_effective} do not count"
+  ip_address_version = "IPV4"
+  name               = "${each.value.name_effective}-rate-exclude"
+  scope              = each.value.scope
+  tags               = each.value.tags
+}
+
 resource "aws_wafv2_web_acl" "this_waf_acl" {
   for_each = local.lx_map
   association_config {
@@ -209,8 +219,10 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
           limit = rule.value.limit
           # Narrow the rate limit to one endpoint. The path is URL-decoded and
           # lowercased first, so encoding or case variations still match.
+          # rate_exclude_ip_cidr_list leaves those source IPs out of the count,
+          # alone or together with the path match.
           dynamic "scope_down_statement" {
-            for_each = rule.value.scope_down_uri_path_contains == null ? {} : { this = {} }
+            for_each = rule.value.scope_down_uri_path_contains != null && length(each.value.rate_exclude_ip_cidr_list) == 0 ? { this = {} } : {}
             content {
               byte_match_statement {
                 field_to_match {
@@ -225,6 +237,51 @@ resource "aws_wafv2_web_acl" "this_waf_acl" {
                 text_transformation {
                   priority = 1
                   type     = "LOWERCASE"
+                }
+              }
+            }
+          }
+          dynamic "scope_down_statement" {
+            for_each = rule.value.scope_down_uri_path_contains == null && length(each.value.rate_exclude_ip_cidr_list) != 0 ? { this = {} } : {}
+            content {
+              not_statement {
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.this_ip_set_rate_exclude[each.key].arn
+                  }
+                }
+              }
+            }
+          }
+          dynamic "scope_down_statement" {
+            for_each = rule.value.scope_down_uri_path_contains != null && length(each.value.rate_exclude_ip_cidr_list) != 0 ? { this = {} } : {}
+            content {
+              and_statement {
+                statement {
+                  byte_match_statement {
+                    field_to_match {
+                      uri_path {}
+                    }
+                    positional_constraint = "CONTAINS"
+                    search_string         = lower(rule.value.scope_down_uri_path_contains)
+                    text_transformation {
+                      priority = 0
+                      type     = "URL_DECODE"
+                    }
+                    text_transformation {
+                      priority = 1
+                      type     = "LOWERCASE"
+                    }
+                  }
+                }
+                statement {
+                  not_statement {
+                    statement {
+                      ip_set_reference_statement {
+                        arn = aws_wafv2_ip_set.this_ip_set_rate_exclude[each.key].arn
+                      }
+                    }
+                  }
                 }
               }
             }

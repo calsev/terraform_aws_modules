@@ -12,8 +12,13 @@ module "name_map" {
 }
 
 locals {
-  create_bucket_map = {
-    for k, v in local.lx_map : v.bucket_key => {
+  # Several domains may share one origin bucket: it is created once, from the first domain's
+  # settings, and every domain sharing it must agree on them (checked on the distribution)
+  bucket_domain_key_list_map = {
+    for k, v in local.lx_map : v.bucket_key => k...
+  }
+  bucket_setting_map = {
+    for k, v in local.lx_map : k => {
       allow_public            = v.origin_allow_public
       dns_enabled             = v.origin_dns_enabled
       enable_acceleration     = v.origin_enable_acceleration
@@ -22,25 +27,28 @@ locals {
       website_enabled         = v.origin_dns_enabled
     }
   }
+  create_bucket_map = {
+    for k_bucket, k_list in local.bucket_domain_key_list_map : k_bucket => local.bucket_setting_map[k_list[0]]
+  }
   create_bucket_policy_map = {
-    for k, v in local.lx_map : v.bucket_key => merge(local.create_bucket_map[v.bucket_key], {
-      sid_map = merge(
-        v.sid_map,
-        {
+    for k_bucket, k_list in local.bucket_domain_key_list_map : k_bucket => merge(local.create_bucket_map[k_bucket], {
+      sid_map = merge(concat(
+        [for k in k_list : local.lx_map[k].sid_map if local.lx_map[k].sid_map != null],
+        [{
           Cloudfront = {
             access = "public_read"
             condition_map = {
               cloudfront_distribution = {
                 test       = "StringEquals"
-                value_list = [aws_cloudfront_distribution.this_distribution[k].arn]
+                value_list = [for k in k_list : aws_cloudfront_distribution.this_distribution[k].arn]
                 variable   = "aws:SourceArn"
               }
             }
             identifier_list = ["cloudfront.amazonaws.com"]
             identifier_type = "Service"
           }
-        },
-      )
+        }],
+      )...)
     })
   }
   create_alias_1_list = flatten([

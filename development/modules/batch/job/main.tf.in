@@ -6,7 +6,13 @@ resource "aws_batch_job_definition" "this_job" {
   platform_capabilities = each.value.platform_capability_list
   propagate_tags        = true
   tags                  = each.value.tags
-  type                  = "container"
+  dynamic "timeout" {
+    for_each = each.value.timeout_seconds == null ? {} : { this = each.value.timeout_seconds }
+    content {
+      attempt_duration_seconds = timeout.value
+    }
+  }
+  type = "container"
 }
 
 module "alert_trigger" {

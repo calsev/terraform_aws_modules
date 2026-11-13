@@ -34,7 +34,6 @@ resource "aws_docdb_cluster" "this_cluster" {
   lifecycle {
     # This list must be static
     ignore_changes = [
-      engine_version,  # Allow auto updates
       master_password, # Dirty because it is usually sensitive
     ]
   }

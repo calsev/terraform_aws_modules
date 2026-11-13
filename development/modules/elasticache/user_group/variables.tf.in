@@ -1,0 +1,35 @@
+variable "group_map" {
+  type = map(object({
+    engine = optional(string)
+    {{ name.var_item() }}
+    user_map = map(object({
+      access_string = string
+    }))
+  }))
+  description = "Each group gets a disabled default user, plus one password user and one secret per user_map entry"
+}
+
+variable "group_default_user_access_string_default" {
+  type        = string
+  default     = "off resetchannels -@all"
+  description = "The group's default user: disabled, no keys, no channels, no commands"
+}
+
+variable "group_engine_default" {
+  type    = string
+  default = "valkey"
+  validation {
+    condition     = contains(["redis", "valkey"], var.group_engine_default)
+    error_message = "Invalid engine"
+  }
+}
+
+variable "user_password_special_character_set_default" {
+  type        = string
+  default     = "!#$%&*()-_=+[]{}<>:?"
+  description = "ElastiCache passwords are 16-128 printable characters without space , \" / or @"
+}
+
+{{ name.var() }}
+
+{{ std.map() }}
