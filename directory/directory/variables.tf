@@ -4,6 +4,8 @@ variable "directory_map" {
     active_directory_connect_customer_username    = optional(string)
     active_directory_edition                      = optional(string)
     alias                                         = optional(string)
+    data_access_enabled                           = optional(bool)
+    description                                   = optional(string)
     directory_type                                = optional(string)
     domain_controller_count                       = optional(number)
     instance_size                                 = optional(string)
@@ -47,6 +49,17 @@ variable "directory_alias_default" {
   description = "Must be unique in AWS"
 }
 
+variable "directory_data_access_enabled_default" {
+  type        = bool
+  default     = false
+  description = "Enables the Directory Service Data API (users and groups by API). Only MicrosoftAD supports it."
+}
+
+variable "directory_description_default" {
+  type    = string
+  default = null
+}
+
 variable "directory_type_default" {
   type    = string
   default = "SimpleAD"
@@ -67,8 +80,9 @@ variable "directory_domain_controller_count_default" {
 }
 
 variable "directory_instance_size_default" {
-  type    = string
-  default = "Small"
+  type        = string
+  default     = "Small"
+  description = "Ignored if directory_type is MicrosoftAD"
   validation {
     condition     = contains(["Large", "Small"], var.directory_instance_size_default)
     error_message = "Invalid instance size"

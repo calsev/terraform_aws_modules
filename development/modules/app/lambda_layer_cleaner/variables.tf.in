@@ -1,0 +1,43 @@
+variable "dry_run" {
+  type        = bool
+  default     = true
+  description = "If true, the cleaner only logs the versions it would delete. Before setting false, add every layer managed by another Terraform state or tool to excluded_layer_arn_list."
+}
+
+variable "event_schedule_expression_default" {
+  type    = string
+  default = "rate(7 days)"
+}
+
+variable "excluded_layer_arn_list" {
+  type        = list(string)
+  default     = []
+  description = "Exact unversioned layer ARNs whose versions are never deleted, now or in future. Add layers that other Terraform states or tools manage: the cleaner cannot see their current versions, so it would delete versions they still own and they would recreate them."
+  validation {
+    condition     = alltrue([for arn in var.excluded_layer_arn_list : can(regex("^arn:[^:]+:lambda:[^:]+:[0-9]{12}:layer:[A-Za-z0-9_-]+$", arn))])
+    error_message = "Each exclusion must be an unversioned layer ARN, such as arn:aws:lambda:us-east-1:123456789012:layer:my-layer"
+  }
+}
+
+variable "function_timeout_seconds_default" {
+  type        = number
+  default     = 300
+  description = "Listing every function version and layer version can take time"
+}
+
+{{ iam.data() }}
+
+variable "managed_layer_version_arn_list" {
+  type        = list(string)
+  description = "The layer version ARNs the deploying stack currently manages, which are never deleted"
+}
+
+{{ log.var(retention=14) }}
+
+{{ monitor.data() }}
+
+{{ name.var() }}
+
+{{ std.map() }}
+
+{{ vpc.var(map_default="null", map_desc="Must be provided if the function is configured in a VPC") }}

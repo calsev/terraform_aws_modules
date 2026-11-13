@@ -19,7 +19,7 @@ locals {
       bundle_owner                           = v.bundle_owner == null ? var.workspace_bundle_owner_default : v.bundle_owner
       compute_type_name                      = v.compute_type_name == null ? var.workspace_compute_type_name_default : v.compute_type_name
       directory_key                          = v.directory_key == null ? var.workspace_directory_key_default : v.directory_key
-      kms_key_id_volume_encryption           = v.kms_key_id_volume_encryption == null ? var.workspace_kms_key_id_volume_encryption_default == null ? data.aws_kms_key.workspaces.id : var.workspace_kms_key_id_volume_encryption_default : v.kms_key_id_volume_encryption
+      kms_key_id_volume_encryption           = v.kms_key_id_volume_encryption == null ? var.workspace_kms_key_id_volume_encryption_default == null ? data.aws_kms_key.workspaces.arn : var.workspace_kms_key_id_volume_encryption_default : v.kms_key_id_volume_encryption
       root_volume_encryption_enabled         = v.root_volume_encryption_enabled == null ? var.workspace_root_volume_encryption_enabled_default : v.root_volume_encryption_enabled
       root_volume_size_gib                   = v.root_volume_size_gib == null ? var.workspace_root_volume_size_gib_default : v.root_volume_size_gib
       running_mode                           = v.running_mode == null ? var.workspace_running_mode_default : v.running_mode

@@ -114,6 +114,8 @@ tf-lint: tflint-install
 	cd ../app/ecr_repo_mirror/app/docker/env && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecr_repo_mirror/app/requirements && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/ecs_app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/lambda_layer_cleaner && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../app/lambda_layer_cleaner/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/log_group_retainer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/log_group_retainer/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../app/open_vpn_instance && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -177,6 +179,7 @@ tf-lint: tflint-install
 	cd ../cw/metric_filter && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../directory/directory && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../directory/user && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/aws_account && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../dns/record && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -212,6 +215,7 @@ tf-lint: tflint-install
 	cd ../elasticache/cluster && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elasticache/parameter_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elasticache/subnet_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../elasticache/user_group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elb && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elb/listener && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../elb/listener_certificate && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -348,6 +352,8 @@ tf-lint: tflint-install
 	cd ../lambda && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/alb_target && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/function && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../lambda/layer && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../lambda/layer_permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/monitor && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/monitor_auto && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../lambda/permission && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
@@ -386,6 +392,8 @@ tf-lint: tflint-install
 	cd ../ses/domain_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/email_identity && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../ses/ip_pool && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ses/receipt_rule && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
+	cd ../ses/receipt_rule_set && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg/app && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl
 	cd ../sg/group && $(LINT) --config=$(DEV_ROOT)/.tflint.hcl

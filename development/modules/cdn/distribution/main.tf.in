@@ -126,8 +126,14 @@ resource "aws_cloudfront_distribution" "this_distribution" {
   }
   default_root_object = each.value.default_root_object
   enabled             = each.value.enabled
-  http_version        = each.value.http_version_max_supported
-  is_ipv6_enabled     = each.value.ipv6_enabled
+  lifecycle {
+    precondition {
+      condition     = local.bucket_setting_map[each.key] == local.create_bucket_map[each.value.bucket_key]
+      error_message = "Domains sharing origin bucket ${each.value.origin_fqdn} must agree on its origin_* and notification_lambda_map settings"
+    }
+  }
+  http_version    = each.value.http_version_max_supported
+  is_ipv6_enabled = each.value.ipv6_enabled
   dynamic "logging_config" {
     for_each = each.value.logging_bucket_name == null ? {} : { this = {} }
     content {

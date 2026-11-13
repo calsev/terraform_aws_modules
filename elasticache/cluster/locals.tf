@@ -66,6 +66,7 @@ locals {
       snapshot_window_utc                = v.snapshot_window_utc == null ? var.cluster_snapshot_window_utc_default : v.snapshot_window_utc
       subnet_group_key                   = v.subnet_group_key == null ? var.cluster_subnet_group_key_default : v.subnet_group_key
       transit_encryption_required        = v.transit_encryption_required == null ? var.cluster_transit_encryption_required_default : v.transit_encryption_required
+      user_group_id                      = v.user_group_id == null ? var.cluster_user_group_id_default : v.user_group_id
     })
   }
   l2_map = {

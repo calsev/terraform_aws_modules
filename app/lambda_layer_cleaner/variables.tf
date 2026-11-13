@@ -1,0 +1,207 @@
+variable "dry_run" {
+  type        = bool
+  default     = true
+  description = "If true, the cleaner only logs the versions it would delete. Before setting false, add every layer managed by another Terraform state or tool to excluded_layer_arn_list."
+}
+
+variable "event_schedule_expression_default" {
+  type    = string
+  default = "rate(7 days)"
+}
+
+variable "excluded_layer_arn_list" {
+  type        = list(string)
+  default     = []
+  description = "Exact unversioned layer ARNs whose versions are never deleted, now or in future. Add layers that other Terraform states or tools manage: the cleaner cannot see their current versions, so it would delete versions they still own and they would recreate them."
+  validation {
+    condition     = alltrue([for arn in var.excluded_layer_arn_list : can(regex("^arn:[^:]+:lambda:[^:]+:[0-9]{12}:layer:[A-Za-z0-9_-]+$", arn))])
+    error_message = "Each exclusion must be an unversioned layer ARN, such as arn:aws:lambda:us-east-1:123456789012:layer:my-layer"
+  }
+}
+
+variable "function_timeout_seconds_default" {
+  type        = number
+  default     = 300
+  description = "Listing every function version and layer version can take time"
+}
+
+variable "iam_data" {
+  type = object({
+    iam_instance_profile_arn_ecs        = string
+    iam_policy_arn_batch_submit_job     = string
+    iam_policy_arn_ec2_associate_eip    = string
+    iam_policy_arn_ec2_modify_attribute = string
+    iam_policy_arn_ecr_get_token        = string
+    iam_policy_arn_ecs_exec_ssm         = string
+    iam_policy_arn_ecs_start_task       = string
+    iam_policy_arn_ecs_task_execution   = string
+    iam_policy_arn_lambda_vpc           = string
+    iam_role_arn_backup_create          = string
+    iam_role_arn_batch_service          = string
+    iam_role_arn_batch_spot_fleet       = string
+    iam_role_arn_ecs_task_execution     = string
+    iam_role_arn_rds_monitor            = string
+    key_pair_map = map(object({
+      key_pair_name = string
+    }))
+  })
+}
+
+variable "managed_layer_version_arn_list" {
+  type        = list(string)
+  description = "The layer version ARNs the deploying stack currently manages, which are never deleted"
+}
+
+variable "log_group_class_default" {
+  type    = string
+  default = "STANDARD"
+  validation {
+    condition     = contains(["INFREQUENT_ACCESS", "STANDARD"], var.log_group_class_default)
+    error_message = "Invalid log group class"
+  }
+}
+
+variable "log_kms_key_id_default" {
+  type    = string
+  default = null
+}
+
+variable "log_retention_days_default" {
+  type    = number
+  default = 14
+  validation {
+    condition     = contains([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.log_retention_days_default)
+    error_message = "Log retention must be one of a set of allowed values"
+  }
+}
+
+variable "monitor_data" {
+  type = object({
+    alert = object({
+      topic_map = map(object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        topic_arn = string
+      }))
+    })
+    ecs_ssm_param_map = object({
+      cpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
+      gpu = object({
+        policy_map = map(object({
+          iam_policy_arn = string
+        }))
+        name_effective = string
+      })
+    })
+  })
+}
+
+variable "name_append_default" {
+  type        = string
+  default     = ""
+  description = "Appended after key"
+}
+
+variable "name_include_app_fields_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project context will be prefixed to the name. Ignored if not name_infix."
+}
+
+variable "name_infix_default" {
+  type        = bool
+  default     = true
+  description = "If true, standard project prefix and resource suffix will be added to the name"
+}
+
+variable "name_prefix_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before context prefix"
+}
+
+variable "name_prepend_default" {
+  type        = string
+  default     = ""
+  description = "Prepended before key"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "name_regex_allow_list" {
+  type        = list(string)
+  default     = []
+  description = "By default, all punctuation is replaced by -"
+}
+
+variable "name_suffix_default" {
+  type        = string
+  default     = ""
+  description = "Appended after context suffix"
+}
+
+variable "std_map" {
+  type = object({
+    access_title_map               = map(string)
+    aws_account_id                 = string
+    aws_region_name                = string
+    config_name                    = string
+    env                            = string
+    iam_partition                  = string
+    name_replace_regex             = string
+    resource_name_prefix           = string
+    resource_name_suffix           = string
+    service_resource_access_action = map(map(map(list(string))))
+    tags                           = map(string)
+  })
+}
+
+variable "vpc_az_key_list_default" {
+  type = list(string)
+  default = [
+    "a",
+    "b",
+  ]
+}
+
+variable "vpc_data_map" {
+  type = map(object({
+    name_simple           = string
+    security_group_id_map = map(string)
+    segment_map = map(object({
+      route_public  = bool
+      subnet_id_map = map(string)
+      subnet_map = map(object({
+        availability_zone_name = string
+      }))
+    }))
+    vpc_assign_ipv6_cidr = bool
+    vpc_cidr_block       = string
+    vpc_id               = string
+    vpc_ipv6_cidr_block  = string
+  }))
+  default     = null
+  description = "Must be provided if the function is configured in a VPC"
+}
+
+variable "vpc_key_default" {
+  type    = string
+  default = null
+}
+
+variable "vpc_security_group_key_list_default" {
+  type = list(string)
+  default = [
+    "world_all_out",
+  ]
+}
+
+variable "vpc_segment_key_default" {
+  type    = string
+  default = "internal"
+}

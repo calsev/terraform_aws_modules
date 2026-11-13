@@ -25,7 +25,6 @@ locals {
       workspace_access_from_zero_client_allowed           = v.workspace_access_from_zero_client_allowed == null ? var.directory_workspace_access_from_zero_client_allowed_default : v.workspace_access_from_zero_client_allowed
       workspace_creation_internet_access_enabled          = v.workspace_creation_internet_access_enabled == null ? var.directory_workspace_creation_internet_access_enabled_default : v.workspace_creation_internet_access_enabled
       workspace_creation_maintenance_mode_enabled         = v.workspace_creation_maintenance_mode_enabled == null ? var.directory_workspace_creation_maintenance_mode_enabled_default : v.workspace_creation_maintenance_mode_enabled
-      workspace_creation_ou                               = v.workspace_creation_ou == null ? var.directory_workspace_creation_ou_root_default == null ? null : "OU=${k},${var.directory_workspace_creation_ou_root_default}" : v.workspace_creation_ou
       workspace_creation_user_local_administrator_enabled = v.workspace_creation_user_local_administrator_enabled == null ? var.directory_workspace_creation_user_local_administrator_enabled_default : v.workspace_creation_user_local_administrator_enabled
       workspace_creation_vpc_security_group_id_custom     = v.workspace_creation_vpc_security_group_id_custom == null ? var.directory_workspace_creation_vpc_security_group_id_custom_default : v.workspace_creation_vpc_security_group_id_custom
     })
@@ -33,6 +32,8 @@ locals {
   l2_map = {
     for k, v in local.l0_map : k => {
       service_directory_id = var.service_directory_data_map[local.l1_map[k].service_directory_key].directory_id
+      # WorkSpaces does not check that the OU exists, and a missing one fails every domain join
+      workspace_creation_ou = v.workspace_creation_ou == null ? var.service_directory_data_map[local.l1_map[k].service_directory_key].directory_ou_computer : v.workspace_creation_ou
     }
   }
   lx_map = {

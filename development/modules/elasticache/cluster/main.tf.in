@@ -97,5 +97,5 @@ resource "aws_elasticache_replication_group" "this_cluster" {
   tags                        = each.value.tags
   transit_encryption_enabled  = true
   transit_encryption_mode     = each.value.transit_encryption_required ? "required" : "preferred"
-  user_group_ids              = null # AUTH
+  user_group_ids              = each.value.user_group_id == null ? null : [each.value.user_group_id] # RBAC; requires transit encryption
 }

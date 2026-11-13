@@ -24,9 +24,9 @@ variable "{{ name }}" {
 {%- endmacro %}
 
 {% macro var_item() -%}
-    sg_map_internal_additional = optional({{ map_type(cidr=False) | indent(6) }}, {})
-    sg_map_private_additional  = optional({{ map_type(cidr=False) | indent(6) }}, {})
-    sg_map_public_additional   = optional({{ map_type(cidr=False) | indent(6) }}, {})
+    sg_map_internal_additional = optional({{ map_type() | indent(6) }}, {})
+    sg_map_private_additional  = optional({{ map_type() | indent(6) }}, {})
+    sg_map_public_additional   = optional({{ map_type() | indent(6) }}, {})
 {%- endmacro %}
 
 {% macro var(maps=False, additional=False) -%}
