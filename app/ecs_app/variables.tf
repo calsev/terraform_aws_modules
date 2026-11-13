@@ -189,23 +189,26 @@ variable "app_map" {
     path_include_env                            = optional(bool)
     path_repo_root_to_spec_directory            = optional(string)
     path_terraform_app_to_repo_root             = optional(string)
-    provider_instance_warmup_period_s           = optional(number)
-    provider_managed_termination_protection     = optional(bool)
-    provider_step_size_max                      = optional(number)
-    resource_memory_gib                         = optional(number)
-    resource_num_vcpu                           = optional(string)
-    role_policy_attach_arn_map                  = optional(map(string))
-    role_policy_create_json_map                 = optional(map(string))
-    role_policy_inline_json_map                 = optional(map(string))
-    role_policy_managed_name_map                = optional(map(string))
-    role_path                                   = optional(string)
-    sticky_cookie_enabled                       = optional(bool)
-    source_branch                               = optional(string)
-    source_build_spec_image                     = optional(string)
-    source_build_spec_manifest                  = optional(string)
-    source_code_star_connection_key             = optional(string)
-    source_detect_changes                       = optional(bool)
-    source_repository_id                        = optional(string)
+    # The app whose pipeline deploys this one, after building the image they share: this app
+    # then has no pipeline or image build of its own, and runs that app's image by default
+    pipe_deploy_with_app_key                = optional(string)
+    provider_instance_warmup_period_s       = optional(number)
+    provider_managed_termination_protection = optional(bool)
+    provider_step_size_max                  = optional(number)
+    resource_memory_gib                     = optional(number)
+    resource_num_vcpu                       = optional(string)
+    role_policy_attach_arn_map              = optional(map(string))
+    role_policy_create_json_map             = optional(map(string))
+    role_policy_inline_json_map             = optional(map(string))
+    role_policy_managed_name_map            = optional(map(string))
+    role_path                               = optional(string)
+    sticky_cookie_enabled                   = optional(bool)
+    source_branch                           = optional(string)
+    source_build_spec_image                 = optional(string)
+    source_build_spec_manifest              = optional(string)
+    source_code_star_connection_key         = optional(string)
+    source_detect_changes                   = optional(bool)
+    source_repository_id                    = optional(string)
     trigger_map = optional(map(object({
       event_list    = optional(list(string))
       sns_topic_arn = optional(string)
@@ -217,6 +220,16 @@ variable "app_map" {
     vpc_segment_key                      = optional(string)
     vpc_security_group_key_list_instance = optional(list(string))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.app_map : v.pipe_deploy_with_app_key == null ? true : (
+        v.pipe_deploy_with_app_key != k &&
+        contains(keys(var.app_map), v.pipe_deploy_with_app_key) &&
+        try(var.app_map[v.pipe_deploy_with_app_key].pipe_deploy_with_app_key == null, false)
+      )
+    ])
+    error_message = "pipe_deploy_with_app_key must name another app in app_map that has its own pipeline (no self-references or chains)"
+  }
 }
 
 variable "app_action_order_default_forward_default" {

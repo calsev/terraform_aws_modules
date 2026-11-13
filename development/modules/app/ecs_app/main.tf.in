@@ -95,8 +95,9 @@ module "app_spec" {
   source   = "../../local_config"
   for_each = local.create_file_app_spec_x_map
   content  = each.value.revision_spec
-  name     = "app"
-  std_map  = var.std_map
+  # One file per CodeDeploy app: a stack with several would otherwise write them all to one path
+  name    = length(local.create_file_app_spec_x_map) > 1 ? "app_${each.key}" : "app"
+  std_map = var.std_map
 }
 
 resource "local_file" "deploy_script" {

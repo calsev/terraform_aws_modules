@@ -11,8 +11,10 @@ module "password_secret" {
 resource "aws_directory_service_directory" "this_dir" {
   for_each                             = local.lx_map
   alias                                = each.value.alias
+  description                          = each.value.description
   desired_number_of_domain_controllers = each.value.domain_controller_count
   edition                              = each.value.active_directory_edition
+  enable_directory_data_access         = each.value.data_access_enabled
   enable_sso                           = each.value.sso_enabled
   name                                 = each.value.name_simple # This is the FQDN
   dynamic "connect_settings" {

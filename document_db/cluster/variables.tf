@@ -7,7 +7,7 @@ variable "cluster_map" {
     cloudwatch_log_export_list  = optional(list(string))
     deletion_protection         = optional(bool)
     engine                      = optional(string)
-    engine_version              = optional(string) # Changes ignored
+    engine_version              = optional(string) # A major version change needs allow_major_version_upgrade
     final_snapshot_enabled      = optional(bool)
     final_snapshot_identifier   = optional(string) # Defaults to name_effective
     instance_map = optional(map(object({

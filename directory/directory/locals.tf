@@ -35,16 +35,22 @@ locals {
       active_directory_connect_customer_username    = v.active_directory_connect_customer_username == null ? var.directory_active_directory_connect_customer_username_default : v.active_directory_connect_customer_username
       active_directory_edition                      = v.active_directory_edition == null ? var.directory_active_directory_edition_default : v.active_directory_edition
       alias                                         = v.alias == null ? var.directory_alias_default : v.alias
+      data_access_enabled                           = v.data_access_enabled == null ? var.directory_data_access_enabled_default : v.data_access_enabled
+      description                                   = v.description == null ? var.directory_description_default : v.description
       directory_type                                = v.directory_type == null ? var.directory_type_default : v.directory_type
-      instance_size                                 = v.instance_size == null ? var.directory_instance_size_default : v.instance_size
       password_secret_is_param                      = v.password_secret_is_param == null ? var.directory_password_secret_is_param_default : v.password_secret_is_param
       password_secret_name_append                   = v.password_secret_name_append == null ? var.password_secret_name_append_default : v.password_secret_name_append
     })
   }
   l2_map = {
     for k, v in local.l0_map : k => {
+      # Managed Microsoft AD names its admin Admin; Simple AD, Administrator
+      admin_user_name             = local.l1_map[k].directory_type == "MicrosoftAD" ? "Admin" : local.l1_map[k].directory_type == "SimpleAD" ? "Administrator" : local.l1_map[k].active_directory_connect_customer_username
+      dn_root                     = join(",", [for part in split(".", local.l1_map[k].name_simple) : "DC=${part}"])
       domain_controller_count     = local.l1_map[k].directory_type == "MicrosoftAD" ? v.domain_controller_count == null ? var.directory_domain_controller_count_default : v.domain_controller_count : null
+      instance_size               = local.l1_map[k].directory_type == "MicrosoftAD" ? null : v.instance_size == null ? var.directory_instance_size_default : v.instance_size # MicrosoftAD sizes by edition
       is_active_directory_connect = local.l1_map[k].directory_type == "ADConnector"
+      is_microsoft_ad             = local.l1_map[k].directory_type == "MicrosoftAD"
       sso_enabled                 = v.sso_enabled == null ? var.directory_sso_enabled_default == null ? local.l1_map[k].alias != null : var.directory_sso_enabled_default : v.sso_enabled
       supports_vpc                = contains(["MicrosoftAD", "SimpleAD"], local.l1_map[k].directory_type)
     }
@@ -59,8 +65,12 @@ locals {
       },
       {
         directory_access_url = aws_directory_service_directory.this_dir[k].access_url
+        directory_dns_ip_set = aws_directory_service_directory.this_dir[k].dns_ip_addresses
         directory_id         = aws_directory_service_directory.this_dir[k].id
-        password             = module.password_secret.data[k]
+        # Managed Microsoft AD delegates one OU, named by the NetBIOS name, with Computers and Users under it
+        directory_ou_computer = v.is_microsoft_ad ? "OU=Computers,OU=${aws_directory_service_directory.this_dir[k].short_name},${v.dn_root}" : null
+        directory_ou_user     = v.is_microsoft_ad ? "OU=Users,OU=${aws_directory_service_directory.this_dir[k].short_name},${v.dn_root}" : null
+        password              = module.password_secret.data[k]
       }
     )
   }

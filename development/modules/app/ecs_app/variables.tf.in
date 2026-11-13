@@ -118,6 +118,9 @@ variable "app_map" {
     path_include_env                            = optional(bool)
     path_repo_root_to_spec_directory            = optional(string)
     path_terraform_app_to_repo_root             = optional(string)
+    # The app whose pipeline deploys this one, after building the image they share: this app
+    # then has no pipeline or image build of its own, and runs that app's image by default
+    pipe_deploy_with_app_key                    = optional(string)
     provider_instance_warmup_period_s           = optional(number)
     provider_managed_termination_protection     = optional(bool)
     provider_step_size_max                      = optional(number)
@@ -139,6 +142,16 @@ variable "app_map" {
     {{ vpc.var_item() }}
     vpc_security_group_key_list_instance = optional(list(string))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.app_map : v.pipe_deploy_with_app_key == null ? true : (
+        v.pipe_deploy_with_app_key != k &&
+        contains(keys(var.app_map), v.pipe_deploy_with_app_key) &&
+        try(var.app_map[v.pipe_deploy_with_app_key].pipe_deploy_with_app_key == null, false)
+      )
+    ])
+    error_message = "pipe_deploy_with_app_key must name another app in app_map that has its own pipeline (no self-references or chains)"
+  }
 }
 
 variable "app_action_order_default_forward_default" {

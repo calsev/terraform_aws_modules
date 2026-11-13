@@ -20,7 +20,17 @@ module "lambda_permission" {
 }
 
 resource "aws_secretsmanager_secret_rotation" "this_rotation" {
-  for_each            = local.create_rotation_map
+  for_each = local.create_rotation_map
+  # Configuring rotation invokes testSecret, so Secrets Manager must be able to call the function first
+  depends_on = [
+    module.lambda_permission,
+  ]
+  lifecycle {
+    precondition {
+      condition     = each.value.lambda_arn != null
+      error_message = "Each rotation needs a rotation_method or a rotation_lambda_arn"
+    }
+  }
   rotate_immediately  = each.value.rotate_immediately
   rotation_lambda_arn = each.value.lambda_arn
   rotation_rules {

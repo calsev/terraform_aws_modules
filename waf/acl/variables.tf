@@ -215,6 +215,7 @@ variable "waf_map" {
     })))
     metric_enabled                  = optional(bool)
     metric_sampled_requests_enabled = optional(bool)
+    rate_exclude_ip_cidr_list       = optional(list(string)) # The rate rules do not count requests from these IPv4 CIDRs
     rule_map = optional(map(object({
       action_block_custom_response_body_key = optional(string)
       action_block_response_code            = optional(number)
@@ -306,6 +307,11 @@ variable "waf_metric_sampled_requests_enabled_default" {
   default = true
 }
 
+variable "waf_rate_exclude_ip_cidr_list_default" {
+  type        = list(string)
+  default     = []
+  description = "IPv4 CIDRs that no rate rule counts, such as our own NAT gateways. Empty adds no IP set and leaves the rules as they are."
+}
 
 variable "waf_rule_map_default" {
   type = map(object({

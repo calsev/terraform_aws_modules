@@ -17,6 +17,10 @@ locals {
       build_map = merge(
         module.code_build.data[k].build_map,
         v.image_build_enabled ? module.image_build.data[k].build_map : null,
+        {
+          # The deploy projects of the apps this pipeline also deploys
+          for k_with in v.pipe_deploy_app_key_list : "pipe_deploy_${k_with}" => module.code_build.data[k_with].build_map["pipe_deploy"]
+        },
       )
     }
   }
@@ -49,19 +53,28 @@ locals {
         v.image_build_enabled ? module.image_build.data[k].build_stage_list : [],
         [
           {
-            action_map = {
-              CodeDeployTrigger = {
-                # The CodeDeploy integration insists on managing the task as well, so we use CodeBuild, see
-                # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
-                configuration_build_project_key = "pipe_deploy"
-                input_artifact_list             = [v.build_artifact_name]
-              }
-            }
+            # Actions in one stage run in parallel: this app and each app this pipeline also deploys
+            action_map = merge(
+              {
+                CodeDeployTrigger = {
+                  # The CodeDeploy integration insists on managing the task as well, so we use CodeBuild, see
+                  # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECSbluegreen.html#action-reference-ECSbluegreen-config
+                  configuration_build_project_key = "pipe_deploy"
+                  input_artifact_list             = [v.build_artifact_name]
+                }
+              },
+              {
+                for k_with in v.pipe_deploy_app_key_list : "CodeDeployTrigger_${k_with}" => {
+                  configuration_build_project_key = "pipe_deploy_${k_with}"
+                  input_artifact_list             = [local.lx_map[k_with].build_artifact_name]
+                }
+              },
+            )
             name = "ServiceDeploy"
           },
         ],
       )
-    })
+    }) if v.pipe_deploy_with_app_key == null
   }
   create_ci_cd_deploy_policy_map = {
     for k, v in local.lx_map : k => merge(v, {
@@ -201,9 +214,15 @@ locals {
         target_protocol_http_version = null
         target_type                  = null
       } } : var.service_elb_target_map_default : v.elb_target_map
-      image_build_arch_list            = v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
-      image_ecr_repo_key               = v.image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : v.image_ecr_repo_key
-      image_tag_base                   = v.image_tag_base == null ? var.build_image_tag_base_default : v.image_tag_base
+      # An app deployed by another app's pipeline builds no image and runs that app's by default
+      image_build_arch_list = v.pipe_deploy_with_app_key != null ? [] : v.image_build_arch_list == null ? var.build_image_build_arch_list_default : v.image_build_arch_list
+      image_ecr_repo_key = v.image_ecr_repo_key != null ? v.image_ecr_repo_key : v.pipe_deploy_with_app_key == null ? var.build_image_ecr_repo_key_default : (
+        var.app_map[v.pipe_deploy_with_app_key].image_ecr_repo_key == null ? var.build_image_ecr_repo_key_default : var.app_map[v.pipe_deploy_with_app_key].image_ecr_repo_key
+      )
+      image_tag_base = v.image_tag_base != null ? v.image_tag_base : v.pipe_deploy_with_app_key == null ? var.build_image_tag_base_default : (
+        var.app_map[v.pipe_deploy_with_app_key].image_tag_base == null ? var.build_image_tag_base_default : var.app_map[v.pipe_deploy_with_app_key].image_tag_base
+      )
+      pipe_deploy_app_key_list         = sort([for k_with, v_with in local.l0_map : k_with if v_with.pipe_deploy_with_app_key == k])
       path_include_env                 = v.path_include_env == null ? var.app_path_include_env_default : v.path_include_env
       path_repo_root_to_spec_directory = v.path_repo_root_to_spec_directory == null ? var.app_path_repo_root_to_spec_directory_default : v.path_repo_root_to_spec_directory
       path_terraform_app_to_repo_root  = trim(v.path_terraform_app_to_repo_root == null ? var.app_path_terraform_app_to_repo_root_default : v.path_terraform_app_to_repo_root, "/")
@@ -300,7 +319,7 @@ locals {
       {
         ci_cd_build   = module.code_build.data[k]
         ci_cd_image   = v.image_build_enabled ? module.image_build.data[k] : null
-        ci_cd_pipe    = module.code_pipe.data[k]
+        ci_cd_pipe    = v.pipe_deploy_with_app_key == null ? module.code_pipe.data[k] : null
         cluster       = local.ecs_cluster_data[k]
         deploy_app    = module.codedeploy_app.data[k]
         deploy_config = module.codedeploy_config.data[k]

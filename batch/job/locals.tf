@@ -57,6 +57,7 @@ locals {
       parameter_map              = v.parameter_map == null ? var.job_parameter_map_default : v.parameter_map
       privileged                 = v.privileged == null ? var.job_privileged_default : v.privileged
       secret_map                 = v.secret_map == null ? var.job_secret_map_default : v.secret_map
+      timeout_seconds            = v.timeout_seconds == null ? var.job_timeout_seconds_default : v.timeout_seconds
       ulimit_map                 = v.ulimit_map == null ? var.job_ulimit_map_default : v.ulimit_map
       username                   = v.username == null ? var.job_username_default : v.username
     })

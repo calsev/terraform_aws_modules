@@ -1,0 +1,116 @@
+variable "layer_map" {
+  type = map(object({
+    compatible_architecture_list        = optional(list(string))
+    compatible_runtime_list             = optional(list(string))
+    description                         = optional(string)
+    license_info                        = optional(string)
+    {{ name.var_item() }}
+    permission_aws_account_id_list      = optional(list(string))
+    pip_platform                        = optional(string)
+    pip_requirement_list                = optional(list(string))
+    skip_destroy                        = optional(bool)
+    source_package_archive_local_path   = optional(string)
+    source_package_created_archive_path = optional(string) # Defaults to the directory with .zip appended
+    source_package_directory_local_path = optional(string)
+    source_package_s3_bucket_name       = optional(string)
+    source_package_s3_object_hash       = optional(string)
+    source_package_s3_object_key        = optional(string) # Defaults to ${var.layer_source_package_s3_object_key_base_default}/layer_package_${key}.zip
+    source_package_s3_object_version    = optional(string)
+  }))
+}
+
+variable "layer_build_directory_default" {
+  type        = string
+  default     = null
+  description = "Where pip sources are built and zipped. Defaults to .build/lambda_layer under the root module, which must be git-ignored."
+}
+
+variable "layer_compatible_architecture_list_default" {
+  type        = list(string)
+  default     = ["arm64"]
+  description = "A pip source must have exactly one of arm64 or x86_64"
+}
+
+variable "layer_compatible_runtime_list_default" {
+  type        = list(string)
+  default     = []
+  description = "A pip source must have exactly one Python runtime"
+}
+
+variable "layer_description_default" {
+  type    = string
+  default = null
+}
+
+variable "layer_license_info_default" {
+  type    = string
+  default = null
+}
+
+variable "layer_permission_aws_account_id_list_default" {
+  type        = list(string)
+  default     = null
+  description = "Accounts granted lambda:GetLayerVersion. Defaults to the current account."
+}
+
+variable "layer_pip_platform_default" {
+  type        = string
+  default     = null
+  description = "Overrides the pip platform derived from the runtime: manylinux_2_34 for python3.12 and newer (Amazon Linux 2023), manylinux2014 for older ones. A manylinux override sets the glibc ceiling and is expanded to every older tag; any other platform is passed to pip as is."
+}
+
+variable "layer_pip_python_executable_default" {
+  type        = string
+  default     = "python"
+  description = "The interpreter that runs the build script at plan and apply. Applying needs pip, pex==2.107.1 and packaging==26.3 installed in it; no local installation of the target Python runtime is needed."
+}
+
+variable "layer_pip_requirement_list_default" {
+  type        = list(string)
+  default     = []
+  description = "If not empty, the layer is pip-installed from these requirements, which overrides any other source. Pin them exactly (==): they are the build's identity, so an unpinned requirement never picks up a new release. The build runs at apply, so a layer replaced for any reason other than its configuration (such as deletion outside Terraform) must be applied where the build output exists or the build inputs changed."
+}
+
+variable "layer_skip_destroy_default" {
+  type        = bool
+  default     = true
+  description = "If true, a replaced layer version (and its grants) is kept, so functions pinned to it can still deploy"
+}
+
+variable "layer_source_package_archive_local_path_default" {
+  type        = string
+  default     = null
+  description = "Overrides a local directory or S3 object"
+}
+
+variable "layer_source_package_directory_local_path_default" {
+  type        = string
+  default     = null
+  description = "Ignored if an archive path is provided. Overrides an S3 object. The directory must hold the layer layout, such as python/."
+}
+
+variable "layer_source_package_s3_bucket_name_default" {
+  type        = string
+  default     = null
+  description = "If no local or pip source is provided, the object must exist in S3. Otherwise optionally provide a bucket to upload the zip, which is required for zips over 50 MB."
+}
+
+variable "layer_source_package_s3_object_hash_default" {
+  type        = string
+  default     = null
+  description = "Ignored unless the source is an existing S3 object; a change replaces the layer version"
+}
+
+variable "layer_source_package_s3_object_key_base_default" {
+  type    = string
+  default = "lambda_layer"
+}
+
+variable "layer_source_package_s3_object_version_default" {
+  type    = string
+  default = null
+}
+
+{{ name.var() }}
+
+{{ std.map() }}

@@ -95,7 +95,7 @@ variable "workspace_bundle_id_default" {
 
 variable "workspace_bundle_name_default" {
   type        = string
-  default     = "Standard with Ubuntu 22.04"
+  default     = "Standard with Ubuntu 26.04"
   description = "Must be provided if a bundle_id is not specified for any workspace"
 }
 
@@ -121,7 +121,7 @@ variable "workspace_directory_key_default" {
 variable "workspace_kms_key_id_volume_encryption_default" {
   type        = string
   default     = null
-  description = "Defaults to alias/aws/workspaces"
+  description = "A key ARN, as WorkSpaces stores it; an ID or alias forces replacement on every plan. Defaults to alias/aws/workspaces."
 }
 
 variable "workspace_root_volume_encryption_enabled_default" {

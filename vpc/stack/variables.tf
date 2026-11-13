@@ -385,7 +385,9 @@ variable "vpc_map" {
     sg_map_internal_additional = optional(map(object({
       revoke_rules_on_delete = optional(bool, false)
       rule_map = map(object({
+        cidr_blocks              = optional(list(string))
         from_port                = optional(number)
+        ipv6_cidr_blocks         = optional(list(string))
         prefix_id_list           = optional(list(string), null)
         protocol                 = optional(string)
         to_port                  = optional(number)
@@ -397,7 +399,9 @@ variable "vpc_map" {
     sg_map_private_additional = optional(map(object({
       revoke_rules_on_delete = optional(bool, false)
       rule_map = map(object({
+        cidr_blocks              = optional(list(string))
         from_port                = optional(number)
+        ipv6_cidr_blocks         = optional(list(string))
         prefix_id_list           = optional(list(string), null)
         protocol                 = optional(string)
         to_port                  = optional(number)
@@ -409,7 +413,9 @@ variable "vpc_map" {
     sg_map_public_additional = optional(map(object({
       revoke_rules_on_delete = optional(bool, false)
       rule_map = map(object({
+        cidr_blocks              = optional(list(string))
         from_port                = optional(number)
+        ipv6_cidr_blocks         = optional(list(string))
         prefix_id_list           = optional(list(string), null)
         protocol                 = optional(string)
         to_port                  = optional(number)

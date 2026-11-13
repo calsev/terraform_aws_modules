@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.168.0
+
+### New modules
+
+* Directory Service user
+* ElastiCache user group
+* Lambda layer and layer permission
+* Lambda layer cleaner app
+* SES receipt rule and receipt rule set
+
+### General
+
+* ElastiCache user group and Lambda layer permission require AWS provider 6 for per-resource regions
+* ECS app can be deployed by another app's pipeline, sharing its image (pipe_deploy_with_app_key)
+* Batch job takes an attempt timeout
+* CDN domains can share an origin bucket; public key comments and key group membership are left to key rotation
+* Directory takes a description and can enable the directory data API (MicrosoftAD); WorkSpaces directory and workspace follow
+* DocumentDB cluster engine version is managed, not ignored
+* ElastiCache cluster takes an RBAC user group; fix subnet_group_key and transit_encryption_required types
+* S3 bucket CORS configuration is set by cors_enabled (default website_enabled); bucket identity policy skips empty statements
+* Secret rotation plans with a rotation function created in the same apply, and waits for its permission
+* Additional SG maps take CIDRs
+* WAF ACL rate rules can exclude IPv4 CIDRs
+* Bump deps for ECR mirror
+
 ## 0.167.0
 
 ### New modules
