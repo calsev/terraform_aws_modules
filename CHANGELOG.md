@@ -12,6 +12,7 @@
 
 ### General
 
+* ElastiCache user group and Lambda layer permission require AWS provider 6 for per-resource regions
 * ECS app can be deployed by another app's pipeline, sharing its image (pipe_deploy_with_app_key)
 * Batch job takes an attempt timeout
 * CDN domains can share an origin bucket; public key comments and key group membership are left to key rotation
